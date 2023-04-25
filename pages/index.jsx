@@ -1,43 +1,72 @@
 import Head from 'next/head'
 import useSWR from 'swr'
+import { useState } from 'react'
 
 import Header from '../components/Header'
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
-
-
 function useQuestions () {
   const { data, error, isLoading } = useSWR(`/api/questions/`, fetcher)
  
   return {
-    questions: data?.data,
+    data: data?.data,
     isLoading,
     error
   }
 }
 
-function Question({ question }) {
+const languages = {
+  'it': {
+    'it': 'italiano',
+  },
+  'fu': {
+    'it': 'friulano',
+  },
+  'de': {
+    'it': 'tedesco',
+  },
+}
+
+function LanguageChoice() {
+  return <select>
+    { Object.entries(languages).map(([code, data]) => <option key={code} value={code}>
+      { data.it }
+    </option>)}
+  </select>
+}
+
+function Question({ question, engine }) {
   return <div>
-    <p><b>[{question.title}]</b>
-    {} {question.content}</p>
-    <ul>
-    {question.options.map(option => {
-      const id = `${question.id}-${option.value}`
-      return <li>
-        <input type="radio" id={id} name={question._id} value={option.value} />
-        <label for={id}>{option.content}</label>
-      </li>})}
-    </ul>
+    <p><b>{question.question.it}</b><br />
+    <LanguageChoice />
+    </p>
   </div>
 }
 
+function useEngine() {
+  let [state, setState] = useState({})
+
+  function answers(q) {
+    if (state[q]) return state[q]
+    return []
+  }
+
+  return {
+    question: q => ({
+      ...q,
+      answers: answers(q),
+    })
+  }
+}
+
 function Questions() {
-  const { questions, isLoading, error } = useQuestions()
+  const { data, isLoading, error } = useQuestions()
+  const engine = useEngine()
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Failed to load</div>
   return <div>
-    {questions.map(question => <Question key={question.id} question={question} />)}
+    {data.questions.map(q => <Question key={q.code} question={engine.question(q)}/>)}
   </div>
 }
 
@@ -45,7 +74,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>respont</title>
+        <title>fotografia linguistica</title>
         <link rel="icon" href="/favicon.ico" />
         <link
           rel="stylesheet"
