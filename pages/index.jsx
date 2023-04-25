@@ -5,8 +5,6 @@ import Header from '../components/Header'
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
-
-
 function useQuestions () {
   const { data, error, isLoading } = useSWR(`/api/questions/`, fetcher)
  
@@ -47,12 +45,6 @@ export default function Home() {
       <Head>
         <title>respont</title>
         <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-          crossorigin="anonymous"
-        />      
       </Head>
       <Header />
       <main>
