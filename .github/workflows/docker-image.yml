@@ -22,7 +22,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: /paolini/scandai
+        images: paolini/scandai
         tags: |
           type=ref,event=tag
           type=ref,event=branch
@@ -32,7 +32,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        registry: hub.docker.com
     - name: Build and push
       id: docker_build
       uses: docker/build-push-action@v3
