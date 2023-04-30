@@ -1,0 +1,13 @@
+version: "2.1"
+
+services:
+  scandai:
+    image: paolini/scandai
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+
+networks:
+  backend:
