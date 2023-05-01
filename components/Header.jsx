@@ -10,6 +10,7 @@ export default function Header() {
       <Navbar bg="light" expand="lg">
         <Container>
           <Navbar.Brand href="#home">{name}-{version}</Navbar.Brand>
+{/*          
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -28,6 +29,7 @@ export default function Header() {
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
+    */}
         </Container>
       </Navbar>
     );

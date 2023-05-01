@@ -7,11 +7,35 @@ import Header from '../components/Header'
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
+function rehydrate(data) {
+  const questions = data.questions
+
+  const subsections = data.subsections.map(ss => ({
+    ...ss,
+    questions: questions.filter(q => q.code.startsWith(ss.code)),
+    section: data.sections.find(s => ss.code.startsWith(s.code)),
+  }))
+
+  const sections = data.sections.map(s=>({
+    ...s,
+    subsections: subsections
+      .filter(ss => ss.code.startsWith(s.code)) 
+    }))
+
+  console.log(sections)
+  console.log(subsections)
+
+  return {
+    sections,
+    subsections,
+    questions,
+  }
+}
+
 function useQuestions () {
   const { data, error, isLoading } = useSWR(`/api/questions/`, fetcher)
- 
   return {
-    data: data?.data,
+    data: data ? rehydrate(data.data): null,
     isLoading,
     error
   }
@@ -92,8 +116,7 @@ function LanguageAnswer({answer, setAnswer}) {
   </>
 }
 
-function Question({ question }) {
-  const [answer, setAnswer] = useState([])
+function Question({ question, answer, setAnswer }) {
   return <div>
     <b>{question.question.it}</b><br />
     <LanguageAnswer answer={answer} setAnswer={setAnswer}/>
@@ -101,29 +124,52 @@ function Question({ question }) {
   </div>
 }
 
-function useEngine() {
-  let [state, setState] = useState({})
-
-  function answers(q) {
-    if (state[q]) return state[q]
-    return []
-  }
-
-  return {
-    question: q => ({
-      ...q,
-      answers: answers(q),
-    })
-  }
+function Subsection({ subsection, answers, setAnswers }) {
+  return <div key={subsection.code}>
+    <h4>{subsection.title.it}</h4>
+    {
+      subsection.questions.map(q => 
+        <Question 
+          key={q.code} 
+          question={q}
+          answer={answers[q.code]}
+          setAnswer={(a) => setAnswers(answers => ({
+            ...answers, 
+            [q.code]: typeof(a) === 'function' 
+              ? a(answers[q.code])
+              : a
+          }))}
+        />)
+    }
+  </div>
 }
 
 function Questions() {
   const { data, isLoading, error } = useQuestions()
-  const engine = useEngine()
+  const [pageCount, setPageCount] = useState(0)
+  const [answers, setAnswers] = useState(null)
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Failed to load</div>
+  if (pageCount >= data.subsections.length) return <div>Done!</div>
+  if (answers === null) {
+    setAnswers(Object.fromEntries(
+      data.questions.map(q => [q.code, []])
+    ))
+    return <div>Loading...</div>
+  }
+  const subsection = data.subsections[pageCount]
   return <div>
-    {data.questions.map(q => <Question key={q.code} question={engine.question(q)}/>)}
+      <h3>{subsection.section.title.it}</h3>
+      <Subsection 
+        key={subsection.code} 
+        subsection={subsection}
+        answers={answers}
+        setAnswers={setAnswers}
+      />
+      <br />
+      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>Indietro</Button>
+      <span> pagina {pageCount+1} di {data.subsections.length} </span>
+      <Button disabled={pageCount>=data.subsections.length-1} onClick={()=>setPageCount(p => p+1)}>Avanti</Button>
   </div>
 }
 
@@ -136,7 +182,6 @@ export default function Home() {
       </Head>
       <Header />
       <main>
-        <h4>domande</h4>
         <Questions />
       </main>
     </>
