@@ -7,35 +7,10 @@ import Header from '../components/Header'
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
-function rehydrate(data) {
-  const questions = data.questions
-
-  const subsections = data.subsections.map(ss => ({
-    ...ss,
-    questions: questions.filter(q => q.code.startsWith(ss.code)),
-    section: data.sections.find(s => ss.code.startsWith(s.code)),
-  }))
-
-  const sections = data.sections.map(s=>({
-    ...s,
-    subsections: subsections
-      .filter(ss => ss.code.startsWith(s.code)) 
-    }))
-
-  console.log(sections)
-  console.log(subsections)
-
-  return {
-    sections,
-    subsections,
-    questions,
-  }
-}
-
 function useQuestions () {
   const { data, error, isLoading } = useSWR(`/api/questions/`, fetcher)
   return {
-    data: data ? rehydrate(data.data): null,
+    data: data?.data,
     isLoading,
     error
   }
@@ -222,10 +197,10 @@ function Subsection({ subsection, answers, setAnswers, extraLanguages }) {
   </div>
 }
 
-function computeExtraLanguages(data, answers) {
+function extractExtraLanguages(questions, answers) {
   let extraLanguages = []
   const languages = Object.keys(languages_answer)
-  for (const q of data.questions) {
+  for (const q of questions) {
     if (q.type === 'choose language') {
       for (const l of answers[q.code]) {
         if (!extraLanguages.includes(l) && !languages.includes(l)) {
@@ -237,21 +212,48 @@ function computeExtraLanguages(data, answers) {
   return extraLanguages
 }
 
+function extractQuestions(data) {
+  let questions = []
+  for (const s of data.sections) {
+    for (const ss of s.subsections) {
+      for (const q of ss.questions) {
+        questions.push(q)
+      }
+    }
+  }
+  return questions
+}
+
+function extractSubsections(data) {
+  let subsections = []
+  for (const s of data.sections) {
+    for (const ss of s.subsections) {
+      subsections.push({
+        ...ss,
+        section: s
+      })
+    }
+  }
+  return subsections
+}
+
 function Questions() {
   const { data, isLoading, error } = useQuestions()
   const [pageCount, setPageCount] = useState(0)
   const [answers, setAnswers] = useState(null)
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Failed to load</div>
-  if (pageCount >= data.subsections.length) return <div>Done!</div>
+  const questions = extractQuestions(data)
   if (answers === null) {
     setAnswers(Object.fromEntries(
-      data.questions.map(q => [q.code, []])
+      questions.map(q => [q.code, []])
       ))
       return <div>Loading...</div>
     }
-  const extraLanguages = computeExtraLanguages(data, answers)
-  const subsection = data.subsections[pageCount]
+  const extraLanguages = extractExtraLanguages(questions, answers)
+  const subsections = extractSubsections(data)
+  const subsection = subsections[pageCount]
+  if (pageCount >= subsections.length) return <div>Done!</div>
   return <div>
       <h3>{subsection.section.title.it}</h3>
       <Subsection 
@@ -263,8 +265,8 @@ function Questions() {
       />
       <br />
       <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>Indietro</Button>
-      <span> pagina {pageCount+1} di {data.subsections.length} </span>
-      <Button disabled={pageCount>=data.subsections.length-1} onClick={()=>setPageCount(p => p+1)}>Avanti</Button>
+      <span> pagina {pageCount+1} di {subsections.length} </span>
+      <Button disabled={pageCount>=subsections.length-1} onClick={()=>setPageCount(p => p+1)}>Avanti</Button>
   </div>
 }
 
