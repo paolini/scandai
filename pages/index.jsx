@@ -116,23 +116,101 @@ function LanguageAnswer({answer, setAnswer}) {
   </>
 }
 
-function Question({ question, answer, setAnswer }) {
+const ages = [
+  { 
+    code: '',
+    it: 'Mai (non so la lingua)'
+  },
+  { 
+    code: '0-3',
+    it: '0-3 anni'
+  },
+  {
+    code: '3-6',
+    it: '3-6 anni'
+  },
+  {
+    code: '6-9',
+    it: '6-9 anni'
+  },
+  {
+    code: '9-12',
+    it: '9-12 anni'
+  },
+  {
+    code: '12-15',
+    it: '12-15 anni'
+  },
+]
+
+function AgeAnswerRow({ code, language, answer, setAnswer }) {
+  return <tr key={code}>
+    <td>{language.it || language}</td>
+    {ages.map(age => <td key={age.code}>
+      <input 
+        type="radio" 
+        name={code} 
+        value={age.code} 
+        checked={answer[code] === age.code} 
+        onChange={() => setAnswer(a => ({
+            ...a, 
+            [code]: age.code
+          }))}
+      />
+    </td>)}
+  </tr>
+}
+
+function MapLanguageToAgeAnswer({ answer, setAnswer, extraLanguages }) {
+  return <>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          {ages.map(age => <th key={age.code}>{age.it}</th>)}
+        </tr>
+      </thead>
+    {Object.entries(languages_answer).concat(extraLanguages.map(l => [l,l])).map(([code, language]) => 
+          <AgeAnswerRow
+            key={code}
+            code={code}
+            language={language}
+            answer={answer}
+            setAnswer={setAnswer}
+          />
+          )} 
+    </table>
+  </>
+}
+
+function Answer({ question, answer, setAnswer, extraLanguages }) {
+  if (question.type === 'choose language') {
+    return <LanguageAnswer answer={answer} setAnswer={setAnswer}/>
+  }
+  if (question.type === 'map language to age') {
+    return <MapLanguageToAgeAnswer answer={answer} setAnswer={setAnswer} extraLanguages={extraLanguages} />
+  }
+  return <>Unsupported question type: {question.type}</>
+}
+
+function Question({ question, answer, setAnswer, extraLanguages }) {
   return <div>
     <b>{question.question.it}</b><br />
-    <LanguageAnswer answer={answer} setAnswer={setAnswer}/>
+    <Answer question={question} answer={answer} setAnswer={setAnswer} extraLanguages={extraLanguages} />
     <br />
   </div>
 }
 
-function Subsection({ subsection, answers, setAnswers }) {
+function Subsection({ subsection, answers, setAnswers, extraLanguages }) {
   return <div key={subsection.code}>
-    <h4>{subsection.title.it}</h4>
+    { subsection.title  && <h4>{subsection.title.it}</h4> }
     {
       subsection.questions.map(q => 
         <Question 
           key={q.code} 
           question={q}
           answer={answers[q.code]}
+          extraLanguages={extraLanguages}
           setAnswer={(a) => setAnswers(answers => ({
             ...answers, 
             [q.code]: typeof(a) === 'function' 
@@ -142,6 +220,21 @@ function Subsection({ subsection, answers, setAnswers }) {
         />)
     }
   </div>
+}
+
+function computeExtraLanguages(data, answers) {
+  let extraLanguages = []
+  const languages = Object.keys(languages_answer)
+  for (const q of data.questions) {
+    if (q.type === 'choose language') {
+      for (const l of answers[q.code]) {
+        if (!extraLanguages.includes(l) && !languages.includes(l)) {
+          extraLanguages.push(l)
+        }
+     }
+    }
+  }
+  return extraLanguages
 }
 
 function Questions() {
@@ -154,9 +247,10 @@ function Questions() {
   if (answers === null) {
     setAnswers(Object.fromEntries(
       data.questions.map(q => [q.code, []])
-    ))
-    return <div>Loading...</div>
-  }
+      ))
+      return <div>Loading...</div>
+    }
+  const extraLanguages = computeExtraLanguages(data, answers)
   const subsection = data.subsections[pageCount]
   return <div>
       <h3>{subsection.section.title.it}</h3>
@@ -165,6 +259,7 @@ function Questions() {
         subsection={subsection}
         answers={answers}
         setAnswers={setAnswers}
+        extraLanguages={extraLanguages}
       />
       <br />
       <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>Indietro</Button>
