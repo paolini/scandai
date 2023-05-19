@@ -1,28 +1,5 @@
-FROM node:18
-
-# Create app directory
-WORKDIR /app
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-
-# If you are building your code for production
-RUN npm ci --only=production
-
-# Bundle app source
-COPY .next ./.next
-COPY entrypoint.sh ./
-
-EXPOSE 3000
-
-CMD [ "./entrypoint.sh" ]
-#ENTRYPOINT "tail -f /dev/null"
-
 # To build the image:
 #
-# $ npm run build
 # $ VERSION=$( node -e "console.log(require('./package.json').version)" )
 # $ docker build . -t paolini/scandai:$VERSION
 # $ docker tag paolini/scandai:$VERSION paolini/scandai:latest
@@ -32,3 +9,30 @@ CMD [ "./entrypoint.sh" ]
 #
 # To push the image:
 # $ docker push paolini/scandai
+
+FROM node:16-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production 
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build 
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV production
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+EXPOSE 3000
+USER nextjs
+CMD ["node", "server.js"]
