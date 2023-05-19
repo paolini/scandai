@@ -27,16 +27,18 @@ export default function LanguageToAgeAnswer({ answer, setAnswer, ages, languages
           {ages.map(age => <th key={age.code}>{age.it}</th>)}
         </tr>
       </thead>
-    {Object.entries(languages).concat(extraLanguages.map(l => [l,l])).map(([code, language]) => 
-          <AgeAnswerRow
+      <tbody>
+      {Object.entries(languages).concat(extraLanguages.map(l => [l,l])).map(([code, language]) => 
+            <AgeAnswerRow
             key={code}
             code={code}
             language={language}
             answer={answer}
             ages={ages}
             setAnswer={setAnswer}
-          />
-          )} 
+            />
+            )} 
+      </tbody>
     </table>
   </>
 }
