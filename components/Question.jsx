@@ -1,16 +1,16 @@
-import useSWR from 'swr'
-
 import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
+import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 
 function Answer({ question, answer, setAnswer, data, extraLanguages }) {
-  if (question.type === 'choose language') {
+  if (question.type === 'choose-language') {
     return <LanguageAnswer answer={answer} setAnswer={setAnswer} languages={data.languages}/>
   }
-  if (question.type === 'map language to age') {
+  if (question.type === 'map-language-to-age') {
     return <LanguageToAgeAnswer answer={answer} setAnswer={setAnswer} languages={data.languages} ages={data.ages} extraLanguages={extraLanguages} />
   }
-  return <>Unsupported question type: {question.type}</>
+  if (question.type === 'map-language-to-competence')
+  return <LanguageToCompetenceAnswer answer={answer} setAnswer={setAnswer} languages={data.languages} ages={data.ages} competences={data.competences} competenceValues={data.competenceValues} extraLanguages={extraLanguages} />
 }
 
 export default function Question({ question, answer, setAnswer, data, extraLanguages }) {
