@@ -41,6 +41,6 @@ jobs:
       with:
         push: true
         context: .
-        tags: paolini/scandai:${{ env.VERSION }}
+        tags: paolini/scandai:${{ env.VERSION }} , paolini/scandai:latest
 #        tags: ${{ steps.meta.outputs.tags }}
 #        labels: ${{ steps.meta.outputs.labels }}
