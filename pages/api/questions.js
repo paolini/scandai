@@ -1,5 +1,8 @@
 const data = {
   version: "0.1.0",
+  submitMessage: {
+    it: "Grazie per aver compilato il questionario!",
+  },
   languages: {
     it: {
       it: 'Italiano',
