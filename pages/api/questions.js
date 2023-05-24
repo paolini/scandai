@@ -63,6 +63,7 @@ const data = {
     },
     _0: { 
       it: "Nessuna competenza",
+      fu: "Nissune competence",
     },
     _1: {},
     _2: {},
