@@ -16,7 +16,6 @@ function useQuestions () {
 }
 
 function extractExtraLanguages(questions, answers, languages) {
-  console.log(`extractExtraLanguages: ${JSON.stringify({answers})}`)
   let extraLanguages = []
   const languageCodes = Object.keys(languages)
   for (const q of questions) {
@@ -72,9 +71,9 @@ export default function Questions() {
   const extraLanguages = extractExtraLanguages(questions, answers, data.languages)
   const subsections = extractSubsections(data)
   const subsection = subsections[pageCount]
-  console.log(`extraLanguages: ${JSON.stringify(extraLanguages)}`)
   if (pageCount >= subsections.length) return <div>Done!</div>
   return <div>
+      <div style={{position: "relative",float: "right"}}>versione questionario: {data.version}</div>
       <h3>{subsection.section.title.it}</h3>
       <QuestionsSubsection 
         key={subsection.code} 

@@ -2,6 +2,15 @@
 
 Code is deployed here: [https://scandai.matb.it](https://scandai.matb.it)
 
+Il testo usato nel questionario si trova nel file [/pages/api/questions.js](https://github.com/paolini/scandai/blob/main/pages/api/questions.js).
+Lo puoi modificare direttamente su github, premendo sul link precedente.
+
+Le modifiche vengono inviate tramite un "commit" che richiede un breve messaggio descrittivo. La "continuous integration" di github provvederà a compilare il nuovo codice e produrre una nuova immagine. Il server in produzione si accorgerà della presenza di una nuova immagine e si aggiornerà automaticamente. Per verificare che la compilazione sia andata a buon fine 
+basta aprire la pagina [actions](https://github.com/paolini/scandai/actions) su github. 
+Se si modifica il testo del questionario è opportuno incrementare il numero 
+di versione, nello stesso file. Questo numero viene visualizzato in alto a destra sul questionario e quindi è utile per verificare che effettivamente 
+il server si sia aggiornato.
+
 ## Development
 
 First, run the development server:

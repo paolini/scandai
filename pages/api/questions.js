@@ -1,4 +1,5 @@
 const data = {
+  version: "0.1.0",
   languages: {
     it: {
       it: 'Italiano',
