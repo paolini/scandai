@@ -15,10 +15,8 @@ function OtherLanguage({addLanguage}) {
   }
   
 export default function LanguageAnswer({answer, setAnswer, languages }) {
-    const other_answers = answer.filter(a => !Object.keys(languages).includes(a))
     return <>{[
-        ...Object.entries(languages).map(([code, data]) => [code, data.it]),
-        ...other_answers.map(a => [a, a])
+        ...Object.entries(languages).map(([code, data]) => [code, data.it || data]),
         ].map(([code, language]) => 
             <LanguageCheckbox 
                 key={code} 

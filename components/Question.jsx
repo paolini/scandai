@@ -4,7 +4,7 @@ import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 
 function Answer({ question, answer, setAnswer, data, extraLanguages }) {
   if (question.type === 'choose-language') {
-    return <LanguageAnswer answer={answer} setAnswer={setAnswer} languages={data.languages}/>
+    return <LanguageAnswer answer={answer} setAnswer={setAnswer} languages={{...data.languages,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}/>
   }
   if (question.type === 'map-language-to-age') {
     return <LanguageToAgeAnswer answer={answer} setAnswer={setAnswer} languages={data.languages} ages={data.ages} extraLanguages={extraLanguages} />

@@ -73,7 +73,7 @@ export default function Questions() {
   if (answers === null) {
     setAnswers(Object.fromEntries(
       questions.map(q => [q.code, 
-        [q.type === 'map-language-to-competence' ? {} : []]
+        q.type === 'map-language-to-competence' ? {} : []
       ])))
       return <div>Loading...</div>
   }
