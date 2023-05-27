@@ -4,6 +4,8 @@ services:
   scandai:
     image: paolini/scandai
     restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/scandai
     ports:
       - 3000:3000
     networks:
@@ -11,12 +13,12 @@ services:
 
   mongodb:
     image: mongo
+    restart: unless-stopped
     environment:
       - PUID=1000
       - PGID=1000
     volumes:
       - ./database:/data/db
-    restart: unless-stopped
     networks:
       - backend
 

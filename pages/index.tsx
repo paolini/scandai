@@ -38,7 +38,7 @@ export default function Home({
       </Head>
       <Header />
       <main>
-        <div>Connected: {isConnected?"true":"false"}</div>
+        { !isConnected && <div>DB not connected!</div> }
         <Questions />
       </main>
     </>
