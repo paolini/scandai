@@ -14,10 +14,10 @@ export const getServerSideProps: GetServerSideProps<
   ConnectionStatus
 > = async () => {
   try {
-    await connectedPromise
+    let isConnected = await connectedPromise
 
     return {
-      props: { isConnected: true },
+      props: { isConnected },
     }
   } catch (e) {
     console.error(e)
