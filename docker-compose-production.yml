@@ -9,5 +9,16 @@ services:
     networks:
       - backend
 
+  mongodb:
+    image: mongo
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./database:/data/db
+    restart: unless-stopped
+    networks:
+      - backend
+
 networks:
   backend:
