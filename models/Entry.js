@@ -7,6 +7,8 @@ const EntrySchema = new mongoose.Schema({
         type: Object,
         required: true
     },
+}, {
+    timestamps: true
 })
 
 export default mongoose.models.Entry || mongoose.model('Entry', EntrySchema)
