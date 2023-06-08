@@ -1,71 +1,104 @@
 import { Types } from 'mongoose'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+  } from 'chart.js';
+import { Bar } from "react-chartjs-2"
 
-import { useClasses, useQuestions, useEntries } from '@/lib/api'
+import { useClasses, useEntries, useStats } from '@/lib/api'
 import { IEntry } from '@/models/Entry'
 import { IClass } from '@/models/Class'
-import { IQuestion } from '@/pages/api/questions'
+import { IStats, IQuestionStat } from '@/pages/api/stats'
+import questionsData, { extractQuestions, IQuestion } from '@/lib/questions'
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+)
 
 export default function Stats() {
-    const classesQuery = useClasses()
-    const questionsQuery = useQuestions()
-    const entriesQuery = useEntries()
+    const statsQuery = useStats()
 
-    if (classesQuery.isLoading || questionsQuery.isLoading || entriesQuery.isLoading) return <div>Loading...</div>
-    if (!(classesQuery.data && questionsQuery.data && entriesQuery.data)) return <div>Failed to load</div>
+    if (statsQuery.isLoading) return <div>Loading...</div>
+    if (!statsQuery.data) return <div>Failed to load</div>
 
-    const questions: {[key:string]: IQuestion} = {}
-    console.log('data', JSON.stringify(questionsQuery.data))
-    for (const q of questionsQuery.data.data.sections) {
-        for (const s of q.subsections) {
-            for (const qq of s.questions) {
-                questions[qq.code] = qq
-            }
-        }
-    }
+    const stats = statsQuery.data.data
+
+    const questions: {[key:string]: IQuestionStat} 
+        = Object.fromEntries(stats.questions.map(
+            q => [q.question.code, q]))
 
     return <div>
         <h1>Risultati aggregati</h1>
-        <ListClasses classes={classesQuery.data.data} entries={entriesQuery.data.data} />
-        <GraphQuestion entries={entriesQuery.data.data} question={questions["1.1.a.1"]} />
+        <ListClasses stats={stats} />
+        <GraphQuestion stat={questions["1.1.a.1"]} />
     </div>
 }
 
-function ListClasses({classes, entries: entries}: {classes: IClass[], entries: IEntry[]}) {
-    let classIds: Types.ObjectId[] = []
-    for (const e of entries) {
-        if (!classIds.includes(e.classId)) classIds.push(e.classId)
-    }
+function ListClasses({ stats }: {stats: IStats}) {
     return <div>
         <h2>Classi che hanno partecipato</h2>
         <ul>
-            { classes
-                .filter(c => classIds.includes(c._id))
-                .map(c => 
+            { stats.classes.map(c => 
                     <li key={c._id.toString()}>
                         {c.school} {c.class}
                     </li>
                 )
             }
         </ul>
-        Totale questionari: {entries.length}
+        Totale questionari: {stats.entriesCount}
     </div>
 }
 
-function GraphChooseLanguageQuestion({entries, question}: {entries: IEntry[], question: IQuestion}) {
-    return <ul>
-        { entries.map((e: IEntry) =>
-            <li key={e._id.toString()}>
-                {JSON.stringify(e.answers[question.code])}
-            </li>
-        )}
-    </ul>
-}
-
-function GraphQuestion({entries, question}: {entries: IEntry[], question: IQuestion}) {
+function GraphQuestion({stat}: {stat: IQuestionStat}) {
     return <div>
-        title: {question.question.it}<br />
-        code: {question.code}
-        type: {question.type}
-        <GraphChooseLanguageQuestion entries={entries} question={question} />
+        title: {stat.question.question.it}<br />
+        code: {stat.question.code}
+        type: {stat.question.type}
+        <GraphChooseLanguageQuestion stat={stat} />
     </div>
 }
+
+function GraphChooseLanguageQuestion({stat}: {stat: IQuestionStat}) {
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+            },
+          title: {
+            display: true,
+            text: 'Chart.js Bar Chart',
+        },
+        },
+    }
+
+    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    
+    const data = {
+        labels,
+        datasets: [
+          {
+            data: [1,4,6,3,2,3,6,7,4,3,4,1],
+            backgroundColor: 'orange',
+          },
+        ],
+      };
+      
+      return <>
+        <pre>
+            {JSON.stringify(stat)}
+        </pre>
+        <Bar options={options} data={data} />
+    </>
+}
+

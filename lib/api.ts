@@ -1,8 +1,8 @@
 import useSWR from 'swr'
 
-import { IQuestions } from '@/pages/api/questions'
 import { IClass } from '@/models/Class'
 import { IEntry } from '@/models/Entry'
+import { IStats } from '@/pages/api/stats'
 
 const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
 
@@ -18,10 +18,10 @@ export function useClasses() {
     return useApi<IClass[]>('classes')
 }
 
-export function useQuestions() {
-    return useApi<IQuestions>('questions')
-}
-
 export function useEntries() {
     return useApi<IEntry[]>('entries')
+}
+
+export function useStats() {
+    return useApi<IStats>('stats')
 }

@@ -1,9 +1,8 @@
 import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
 
-import { useQuestions } from '@/lib/api'
-import { IQuestion, IQuestions, LocalizedString } from '@/pages/api/questions'
-import { IClass } from '@/models/Class'
+import questionsData, { extractQuestions, extractSubsections } from '@/lib/questions'
+import { IQuestion, IQuestions, LocalizedString } from '@/lib/questions'
 import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
 import AddMessageContext from '@/components/AddMessageContext'
@@ -23,41 +22,15 @@ function extractExtraLanguages(questions: IQuestion[], answers: {[key:string]: a
   return extraLanguages
 }
 
-function extractQuestions(data: IQuestions) {
-  let questions = []
-  for (const s of data.sections) {
-    for (const ss of s.subsections) {
-      for (const q of ss.questions) {
-        questions.push(q)
-      }
-    }
-  }
-  return questions
-}
-
-function extractSubsections(data: IQuestions) {
-  let subsections = []
-  for (const s of data.sections) {
-    for (const ss of s.subsections) {
-      subsections.push({
-        ...ss,
-        section: s
-      })
-    }
-  }
-  return subsections
-}
-
 export default function Questions({submit, submitted}
   : {submit: (answers: IAnswers) => void, submitted: boolean}) {
-  const { data, isLoading, error } = useQuestions()
+
   const [pageCount, setPageCount] = useState(0)
   const [answers, setAnswers] = useState<IAnswers>({})
   const addMessage = useContext(AddMessageContext)
 
-  if (isLoading) return <div>Loading...</div>
-  if (!data) return <div>Failed to load</div>
-  const questions = extractQuestions(data.data)
+  const questions = extractQuestions(questionsData)
+
   if (Object.keys(answers).length === 0) {
     setAnswers(Object.fromEntries(
       questions.map(q => [q.code, 
@@ -65,20 +38,20 @@ export default function Questions({submit, submitted}
       ])))
     return <div>Loading...</div>
   }
-  const extraLanguages = extractExtraLanguages(questions, answers, data.data.languages)
-  const subsections = extractSubsections(data.data)
+  const extraLanguages = extractExtraLanguages(questions, answers, questionsData.languages)
+  const subsections = extractSubsections(questionsData)
   const subsection = subsections[pageCount]
-  if (submitted) return <div>{data.data.submitMessage.it}</div>
+  if (submitted) return <div>{questionsData.submitMessage.it}</div>
 
   return <div>
-      <div style={{position: "relative",float: "right"}}>versione questionario: {data.data.version}</div>
+      <div style={{position: "relative",float: "right"}}>versione questionario: {questionsData.version}</div>
       <h3>{subsection.section.title.it}</h3>
       <QuestionsSubsection 
         key={subsection.code} 
         subsection={subsection}
         answers={answers}
         setAnswers={setAnswers}
-        data={data.data}
+        data={questionsData}
         extraLanguages={extraLanguages}
       />
       <br />
@@ -94,6 +67,5 @@ export default function Questions({submit, submitted}
       { pageCount < subsections.length 
         && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>Fine</Button>
       } 
-
   </div>
 }

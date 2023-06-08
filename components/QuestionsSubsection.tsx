@@ -1,6 +1,6 @@
 import { SetStateAction, Dispatch } from 'react'
 
-import { ISubsection, IQuestions } from '@/pages/api/questions'
+import { ISubsection, IQuestions } from '@/lib/questions'
 import Question, {IAnswer, IAnswers} from './Question'
 
 

@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-
 export interface LocalizedString {
     [key: string]: string,
 }
@@ -40,7 +38,7 @@ export interface IQuestions {
     sections: ISection[],    
 }
 
-const data : IQuestions = {
+const questions : IQuestions = {
   version: "0.1.0",
   submitMessage: {
     it: "Grazie per aver compilato il questionario!",
@@ -401,6 +399,29 @@ const data : IQuestions = {
   ],
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({ data })
+export default questions
+
+export function extractQuestions(data: IQuestions) {
+  let questions = []
+  for (const s of data.sections) {
+    for (const ss of s.subsections) {
+      for (const q of ss.questions) {
+        questions.push(q)
+      }
+    }
+  }
+  return questions
+}
+
+export function extractSubsections(data: IQuestions) {
+  let subsections = []
+  for (const s of data.sections) {
+    for (const ss of s.subsections) {
+      subsections.push({
+        ...ss,
+        section: s
+      })
+    }
+  }
+  return subsections
 }

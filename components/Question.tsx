@@ -1,7 +1,7 @@
 import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
-import { IQuestion, IQuestions } from '@/pages/api/questions' 
+import { IQuestion, IQuestions } from '@/lib/questions' 
 
 export interface IAnswer extends Object {}
 

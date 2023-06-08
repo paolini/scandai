@@ -3,7 +3,11 @@ import mongoose, {Types} from 'mongoose'
 export interface IEntry {
     _id: Types.ObjectId,
     classId: Types.ObjectId,
-    answers: any,
+    answers: {
+        [key: string]: 
+            string[] | 
+            {[key: string]: {[key: string]: string}}
+    },
 }
 
 const EntrySchema = new mongoose.Schema({
