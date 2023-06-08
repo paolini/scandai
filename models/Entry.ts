@@ -3,7 +3,7 @@ import mongoose, {Types} from 'mongoose'
 export interface IEntry {
     _id: Types.ObjectId,
     classId: Types.ObjectId,
-    answers: Object,
+    answers: any,
 }
 
 const EntrySchema = new mongoose.Schema({

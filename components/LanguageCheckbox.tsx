@@ -1,11 +1,13 @@
-const Checkbox = ({ name, label, selected, setSelected }) => (
+const Checkbox = ({ name, label, selected, setSelected }
+  : { name?: string, label: string, selected: boolean, setSelected?: (selected: boolean) => void }
+  ) => (
     <div className="form-check">
       <label>
         <input
           type="checkbox"
           name={name || label}
           checked={selected}
-          onChange={setSelected ? evt=>setSelected(evt.target.checked) : null}
+          onChange={setSelected ? evt=>setSelected(evt.target.checked) : undefined}
           className="form-check-input"
         />
         {label}
@@ -13,7 +15,8 @@ const Checkbox = ({ name, label, selected, setSelected }) => (
     </div>
   )
   
-export default function LanguageCheckbox({ name, label, answer, setAnswer }) {
+export default function LanguageCheckbox({ name, label, answer, setAnswer }
+  : { name: string, label: string, answer: string[], setAnswer: (f: ((a: string[]) => void)) => void }) {
     return <Checkbox
       name={name}
       label={label} 

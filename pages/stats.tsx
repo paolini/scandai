@@ -51,9 +51,21 @@ function ListClasses({classes, entries: entries}: {classes: IClass[], entries: I
     </div>
 }
 
+function GraphChooseLanguageQuestion({entries, question}: {entries: IEntry[], question: IQuestion}) {
+    return <ul>
+        { entries.map((e: IEntry) =>
+            <li key={e._id.toString()}>
+                {JSON.stringify(e.answers[question.code])}
+            </li>
+        )}
+    </ul>
+}
+
 function GraphQuestion({entries, question}: {entries: IEntry[], question: IQuestion}) {
     return <div>
         title: {question.question.it}<br />
         code: {question.code}
+        type: {question.type}
+        <GraphChooseLanguageQuestion entries={entries} question={question} />
     </div>
 }

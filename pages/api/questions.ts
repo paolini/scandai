@@ -1,10 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export interface LocalizedString {
-    it?: string,
-    fu?: string,
-    de?: string,
-    sl?: string,
+    [key: string]: string,
 }
 
 export interface LocalizedStringWithCode extends LocalizedString {

@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
 
 import { useQuestions } from '@/lib/api'
+import { IQuestion, IQuestions, LocalizedString } from '@/pages/api/questions'
+import { IClass } from '@/models/Class'
 import QuestionsSubsection from './QuestionsSubsection'
+import { IAnswers } from './Question'
+import AddMessageContext from '@/components/AddMessageContext'
 
-function extractExtraLanguages(questions, answers, languages) {
-  let extraLanguages = []
+function extractExtraLanguages(questions: IQuestion[], answers: {[key:string]: any}, languages: {[key:string]: LocalizedString}) {
+  let extraLanguages: string[] = []
   const languageCodes = Object.keys(languages)
   for (const q of questions) {
     if (q.type === 'choose-language') {
@@ -19,7 +23,7 @@ function extractExtraLanguages(questions, answers, languages) {
   return extraLanguages
 }
 
-function extractQuestions(data) {
+function extractQuestions(data: IQuestions) {
   let questions = []
   for (const s of data.sections) {
     for (const ss of s.subsections) {
@@ -31,7 +35,7 @@ function extractQuestions(data) {
   return questions
 }
 
-function extractSubsections(data) {
+function extractSubsections(data: IQuestions) {
   let subsections = []
   for (const s of data.sections) {
     for (const ss of s.subsections) {
@@ -44,67 +48,37 @@ function extractSubsections(data) {
   return subsections
 }
 
-function Messages({messages}) {
-  if (messages.length === 0) return null
-  return <div>
-    {messages.map((m, i) => <div key={i} className="alert alert-danger" role="alert">{m}</div>)}
-  </div>
-}
-
-export default function Questions({myClass}) {
-  const classId = myClass._id
+export default function Questions({submit, submitted}
+  : {submit: (answers: IAnswers) => void, submitted: boolean}) {
   const { data, isLoading, error } = useQuestions()
   const [pageCount, setPageCount] = useState(0)
-  const [answers, setAnswers] = useState(null)
-  const [messages, setMessages] = useState([])
+  const [answers, setAnswers] = useState<IAnswers>({})
+  const addMessage = useContext(AddMessageContext)
+
   if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Failed to load</div>
-  const questions = extractQuestions(data)
-  if (answers === null) {
+  if (!data) return <div>Failed to load</div>
+  const questions = extractQuestions(data.data)
+  if (Object.keys(answers).length === 0) {
     setAnswers(Object.fromEntries(
       questions.map(q => [q.code, 
         q.type === 'map-language-to-competence' ? {} : []
       ])))
-      return <div>Loading...</div>
+    return <div>Loading...</div>
   }
-  const extraLanguages = extractExtraLanguages(questions, answers, data.languages)
-  const subsections = extractSubsections(data)
+  const extraLanguages = extractExtraLanguages(questions, answers, data.data.languages)
+  const subsections = extractSubsections(data.data)
   const subsection = subsections[pageCount]
-  if (pageCount >= subsections.length) return <div>{data.submitMessage.it}</div>
-
-  async function submit() {
-    try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          answers,
-          classId
-        })
-      })
-      console.log(res)
-      if (res.status === 200) {
-        setPageCount(subsections.length)
-      } else {
-        setMessages(messages => [...messages, res.statusText])
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  if (submitted) return <div>{data.data.submitMessage.it}</div>
 
   return <div>
-      <Messages messages={messages} />
-      <div style={{position: "relative",float: "right"}}>versione questionario: {data.version}</div>
+      <div style={{position: "relative",float: "right"}}>versione questionario: {data.data.version}</div>
       <h3>{subsection.section.title.it}</h3>
       <QuestionsSubsection 
         key={subsection.code} 
         subsection={subsection}
         answers={answers}
         setAnswers={setAnswers}
-        data={data}
+        data={data.data}
         extraLanguages={extraLanguages}
       />
       <br />
@@ -115,7 +89,7 @@ export default function Questions({myClass}) {
       }
       {
         pageCount >= subsections.length-1 &&
-        <Button onClick={submit}>Invia</Button>
+        <Button onClick={() => submit(answers)}>Invia</Button>
       }
       { pageCount < subsections.length 
         && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>Fine</Button>
