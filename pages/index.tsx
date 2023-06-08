@@ -1,8 +1,11 @@
-import Head from 'next/head'
+import { useState } from 'react'
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
+import { Button } from 'react-bootstrap'
 
+import Head from 'next/head'
 import Questions from './Questions'
 import Header from '../components/Header'
+import ClassSelector from '../components/ClassSelector'
 
 import connectedPromise from '../lib/mongodb'
 
@@ -27,9 +30,23 @@ export const getServerSideProps: GetServerSideProps<
   }
 }
 
-export default function Home({
+function Welcome({start, myClass, setMyClass}) {
+  return <div>
+      <h1>Scegli la tua classe</h1>
+      <ClassSelector myClass={myClass} setMyClass={setMyClass}/>
+      <br />
+      <Button 
+        onClick={start} 
+        disabled={myClass === null}
+      >compila il questionario</Button>
+    </div>
+}
+
+export default function Splash({
   isConnected,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [started, setStarted] = useState(false)
+  const [myClass, setMyClass] = useState(null)
   return (
     <>
       <Head>
@@ -39,7 +56,14 @@ export default function Home({
       <Header />
       <main>
         { !isConnected && <div>DB not connected!</div> }
-        <Questions />
+        { started
+          ? <Questions myClass={myClass} />
+          : <Welcome 
+              start={() => setStarted(true)}
+              myClass={myClass}
+              setMyClass={setMyClass}
+            /> 
+        }
       </main>
     </>
   )

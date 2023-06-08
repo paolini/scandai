@@ -62,7 +62,8 @@ function Messages({messages}) {
   </div>
 }
 
-export default function Questions() {
+export default function Questions({myClass}) {
+  const classId = myClass._id
   const { data, isLoading, error } = useQuestions()
   const [pageCount, setPageCount] = useState(0)
   const [answers, setAnswers] = useState(null)
@@ -89,7 +90,10 @@ export default function Questions() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(answers)
+        body: JSON.stringify({
+          answers,
+          classId
+        })
       })
       console.log(res)
       if (res.status === 200) {
