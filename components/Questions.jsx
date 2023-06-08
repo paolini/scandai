@@ -2,7 +2,7 @@ import useSWR from 'swr'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 
-import QuestionsSubsection from '../components/QuestionsSubsection'
+import QuestionsSubsection from './QuestionsSubsection'
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
