@@ -39,7 +39,7 @@ function Welcome({start, myClass, setMyClass}:{
   setMyClass: Dispatch<IClass|undefined>,
 }) {
   return <div>
-      <h1>Scegli la tua classe</h1>
+      <h2>Scegli la tua classe</h2>
       <ClassSelector myClass={myClass} setMyClass={setMyClass}/>
       <br />
       <Button 
@@ -93,6 +93,7 @@ export default function Splash({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <Header />
         <Messages messages={messages} />
         <AddMessageContext.Provider value={addMessage}>
           { !isConnected && <div>DB not connected!</div> }
