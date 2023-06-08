@@ -1,6 +1,10 @@
-import mongoose from 'mongoose'
+import mongoose, {Types} from 'mongoose'
 
-console.log(`importing Entry.js`)
+export interface IEntry {
+    _id: Types.ObjectId,
+    classId: Types.ObjectId,
+    answers: Object,
+}
 
 const EntrySchema = new mongoose.Schema({
     classId: {
@@ -16,4 +20,4 @@ const EntrySchema = new mongoose.Schema({
     timestamps: true
 })
 
-export default mongoose.models.Entry || mongoose.model('Entry', EntrySchema)
+export default mongoose.models.Entry || mongoose.model<IEntry>('Entry', EntrySchema)

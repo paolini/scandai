@@ -1,4 +1,49 @@
-const data = {
+import { NextApiRequest, NextApiResponse } from 'next'
+
+export interface LocalizedString {
+    it?: string,
+    fu?: string,
+    de?: string,
+    sl?: string,
+}
+
+export interface LocalizedStringWithCode extends LocalizedString {
+    code: string,
+}
+
+export interface IQuestion {
+    code: string,
+    type: string,
+    question: LocalizedString,
+}
+
+export interface ISubsection {
+    code: string,
+    title?: LocalizedString,
+    questions: IQuestion[],
+}
+
+export interface ISection {
+    code: string,
+    title: LocalizedString,
+    subsections: ISubsection[],
+}
+
+export interface IQuestions {
+    version: string,
+    submitMessage: LocalizedString,
+    languages: {
+        [key: string]: LocalizedString,
+    },
+    ages: LocalizedStringWithCode[],
+    competences: LocalizedStringWithCode[],
+    competenceValues: {
+        [key: string]: LocalizedString,
+    },
+    sections: ISection[],    
+}
+
+const data : IQuestions = {
   version: "0.1.0",
   submitMessage: {
     it: "Grazie per aver compilato il questionario!",
@@ -359,7 +404,6 @@ const data = {
   ],
 }
 
-export default function handler(req, res) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({ data })
 }
-

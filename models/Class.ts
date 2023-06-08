@@ -1,7 +1,5 @@
 import mongoose, {Types} from 'mongoose'
 
-console.log(`importing Class.js`)
-
 export interface IClass {
     _id: Types.ObjectId,
     slug: string,

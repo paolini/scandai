@@ -1,19 +1,8 @@
-import useSWR from 'swr'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 
+import { useQuestions } from '@/lib/api'
 import QuestionsSubsection from './QuestionsSubsection'
-
-const fetcher = (...args) => fetch(...args).then(res => res.json())
-
-function useQuestions () {
-  const { data, error, isLoading } = useSWR(`/api/questions/`, fetcher)
-  return {
-    data: data?.data,
-    isLoading,
-    error
-  }
-}
 
 function extractExtraLanguages(questions, answers, languages) {
   let extraLanguages = []
