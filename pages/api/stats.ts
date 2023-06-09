@@ -58,6 +58,7 @@ function aggregate(entries: IEntryWithClass[]): IStats {
     const classIds: Types.ObjectId[] = []
     const classes: IClass[] = []
     for (const e of entries) {
+        console.log('class', e.class)
         if (!classIds.includes(e.class._id)) {
             classIds.push(e.class._id)
             classes.push(e.class)
