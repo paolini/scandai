@@ -13,6 +13,7 @@ export type IChooseLanguageStat = {
 export type IQuestionStat = {
     question: IQuestion,
     answers: IChooseLanguageStat,
+    counts: number[],
 }
 
 export interface IStats {
@@ -30,21 +31,29 @@ function aggregate(entries: IEntryWithClass[]): IStats {
     const questions = extractQuestions(data).map(question => {
         if (question.type === 'choose-language') {
             let answers: {[key: string]: number} = {...languagesZeroCount}
-            let count = 0
+            let languageCount = 0
+            let counts: number[] = []
             for (const e of entries) {
                 const answer = e.answers[question.code]
                 assert(Array.isArray(answer))
+                const n = Math.min(answer.length,10)
+                while (counts.length<n+1) {
+                    counts.push(0)
+                }
+                counts[n] ++ 
                 for (const lang of answer) {
                     if (lang in answers) answers[lang]++
                     else answers[lang] = 1
-                    count++
+                    languageCount++
                 }
             }
-            for (const key of Object.keys(answers)) {
-                answers[key] /= count
+            if (languageCount>0) {
+                for (const key of Object.keys(answers)) {
+                    answers[key] /= languageCount
+                }
             }
-            return {question, answers}
-        } else return {question, answers: null}
+            return {question, answers, counts}
+        } else return {question, answers: {}, counts: []}
     })
     const classIds: Types.ObjectId[] = []
     const classes: IClass[] = []

@@ -59,10 +59,7 @@ function ListClasses({ stats }: {stats: IStats}) {
 }
 
 function GraphQuestion({stat}: {stat: IQuestionStat}) {
-    return <div>
-        title: {stat.question.question.it}<br />
-        code: {stat.question.code}
-        type: {stat.question.type}
+    return <div style={{maxWidth:1000}}>
         <GraphChooseLanguageQuestion stat={stat} />
     </div>
 }
@@ -76,11 +73,13 @@ function GraphChooseLanguageQuestion({stat}: {stat: IQuestionStat}) {
             responsive: true,
             plugins: {
                 legend: {
+                    display: false,
                     position: 'top' as const,
                 },
                 datalabels: {
                     anchor: 'end',
-                    formatter: value => `${value*100}%`
+                    align: 'end',
+                    formatter: value => `${Math.round(value*100)}%`
                 },
                 title: {
                     display: true,
@@ -89,11 +88,15 @@ function GraphChooseLanguageQuestion({stat}: {stat: IQuestionStat}) {
             },
             scales: {
                 y: {
+                    min: 0,
+                    max: 1,
                     ticks: {
+                        precision: 1,
                         format: {
-                            style: 'percent'
-                        }
-                    }
+                            style: 'percent',
+                        },
+                        callback: value => typeof(value)==='number'?`${Math.round(value*100)}%`:'???',
+                    },
                 }
             }
         }} 
