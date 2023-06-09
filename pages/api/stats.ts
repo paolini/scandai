@@ -30,13 +30,18 @@ function aggregate(entries: IEntryWithClass[]): IStats {
     const questions = extractQuestions(data).map(question => {
         if (question.type === 'choose-language') {
             let answers: {[key: string]: number} = {...languagesZeroCount}
+            let count = 0
             for (const e of entries) {
                 const answer = e.answers[question.code]
                 assert(Array.isArray(answer))
                 for (const lang of answer) {
                     if (lang in answers) answers[lang]++
                     else answers[lang] = 1
+                    count++
                 }
+            }
+            for (const key of Object.keys(answers)) {
+                answers[key] /= count
             }
             return {question, answers}
         } else return {question, answers: null}

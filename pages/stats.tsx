@@ -1,4 +1,3 @@
-import { Types } from 'mongoose'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -9,12 +8,11 @@ import {
     Legend,
   } from 'chart.js';
 import { Bar } from "react-chartjs-2"
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 
-import { useClasses, useEntries, useStats } from '@/lib/api'
-import { IEntry } from '@/models/Entry'
-import { IClass } from '@/models/Class'
+import { useStats } from '@/lib/api'
 import { IStats, IQuestionStat } from '@/pages/api/stats'
-import questionsData, { extractQuestions, IQuestion } from '@/lib/questions'
+import questionsData from '@/lib/questions'
 
 ChartJS.register(
     CategoryScale,
@@ -23,6 +21,7 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
+    ChartDataLabels,
 )
 
 export default function Stats() {
@@ -69,36 +68,44 @@ function GraphQuestion({stat}: {stat: IQuestionStat}) {
 }
 
 function GraphChooseLanguageQuestion({stat}: {stat: IQuestionStat}) {
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-          title: {
-            display: true,
-            text: 'Chart.js Bar Chart',
-        },
-        },
-    }
-
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-    
-    const data = {
-        labels,
-        datasets: [
-          {
-            data: [1,4,6,3,2,3,6,7,4,3,4,1],
-            backgroundColor: 'orange',
-          },
-        ],
-      };
+    const languages = questionsData.languages
+    if (!stat.answers) return <div>invalid answers</div>
       
-      return <>
-        <pre>
-            {JSON.stringify(stat)}
-        </pre>
-        <Bar options={options} data={data} />
-    </>
+    return <Bar 
+        options={{
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top' as const,
+                },
+                datalabels: {
+                    anchor: 'end',
+                    formatter: value => `${value*100}%`
+                },
+                title: {
+                    display: true,
+                    text: stat.question.question.it,
+                },
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        format: {
+                            style: 'percent'
+                        }
+                    }
+                }
+            }
+        }} 
+        data={{
+            labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
+            datasets: [
+                {
+                data: Object.entries(stat.answers).map(([key, val])=>val),
+                backgroundColor: 'orange',
+                },
+            ],
+            }} 
+    />
 }
 
