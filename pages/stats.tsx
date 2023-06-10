@@ -122,8 +122,8 @@ function GraphChooseLanguageQuestion({stat}
                     position: 'top' as const,
                 },
                 datalabels: {
-                    anchor: 'end',
-                    align: 'end',
+                    anchor: 'center',
+                    align: 'center',
                     formatter: value => `${Math.round(value*100)}%`
                 },
                 title: {
@@ -227,8 +227,8 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                 },
                 datalabels: {
                     anchor: 'end',
-                    align: 'end',
-                    formatter: value => `${Math.round(value*100)}%`
+                    align: 'start',
+                    formatter: value => (value>0?`${Math.round(value*100)}%`:null),
                 },
                 title: {
                     display: true,
