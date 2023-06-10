@@ -2,13 +2,15 @@ import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
 
 import questionsData, { extractQuestions, extractSubsections, extractExtraLanguages } from '@/lib/questions'
-import { IQuestion, IQuestions, LocalizedString } from '@/lib/questions'
 import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
-import AddMessageContext from '@/components/AddMessageContext'
+import { AddMessageContext } from '@/components/Messages'
+import { IClass } from '@/models/Class'
 
-export default function Questions({submit, submitted}
-  : {submit: (answers: IAnswers) => void, submitted: boolean}) {
+export default function Questions({submit, submitted, myClass } : {
+    submit: (answers: IAnswers) => void, 
+    submitted: boolean
+    myClass: IClass}) {
 
   const [pageCount, setPageCount] = useState(0)
   const [answers, setAnswers] = useState<IAnswers>({})
@@ -29,7 +31,7 @@ export default function Questions({submit, submitted}
   if (submitted) return <div>{questionsData.submitMessage.it}</div>
 
   return <div>
-      <div style={{position: "relative",float: "right"}}>versione questionario: {questionsData.version}</div>
+      <div style={{position: "relative",float: "right"}}>{myClass.school} {myClass.class} -- versione questionario: {questionsData.version}</div>
       <h3>{subsection.section.title.it}</h3>
       <QuestionsSubsection 
         key={subsection.code} 

@@ -1,4 +1,4 @@
-import { useState, Dispatch } from 'react'
+import { useState, useContext, Dispatch } from 'react'
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import { Button } from 'react-bootstrap'
 
@@ -8,17 +8,23 @@ import Questions from '@/components/Questions'
 import Header from '@/components/Header'
 import ClassSelector from '@/components/ClassSelector'
 import connectedPromise from '@/lib/mongodb'
-import AddMessageContext from '@/components/AddMessageContext'
 import { IAnswers } from '@/components/Question'
-import { assert } from 'console'
+import Messages, { AddMessageContext } from '@/components/Messages'
+import Page from '@/components/Page'
+
+export default function Index({isConnected}
+  : InferGetServerSidePropsType<typeof getServerSideProps>
+  ) {
+    return <Page>
+      <Splash isConnected={isConnected} />
+    </Page>
+}
 
 type ConnectionStatus = {
   isConnected: boolean
 }
 
-export const getServerSideProps: GetServerSideProps<
-  ConnectionStatus
-> = async () => {
+export const getServerSideProps: GetServerSideProps<ConnectionStatus> = async () => {
   try {
     let isConnected = await connectedPromise
 
@@ -39,28 +45,25 @@ function Welcome({start, myClass, setMyClass}:{
   setMyClass: Dispatch<IClass|undefined>,
 }) {
   return <div>
+      <h1>Benvenuto</h1>
       <h2>Scegli la tua classe</h2>
       <ClassSelector myClass={myClass} setMyClass={setMyClass}/>
       <br />
-      <Button 
+      <Button
+        className="m-2" 
         onClick={start} 
-        disabled={myClass === null}
+        disabled={!myClass}
       >compila il questionario</Button>
     </div>
 }
 
-
-export default function Splash({
+export function Splash({
   isConnected,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [messages, setMessages] = useState<string[]>([])
+}: {isConnected: boolean}) {
   const [started, setStarted] = useState<boolean>(false)
   const [myClass, setMyClass] = useState<IClass>()
   const [submitted, setSubmitted] = useState<boolean>(false)
-
-  function addMessage(message: string) {
-    setMessages((messages) => [...messages, message]) 
-  }
+  const addMessage = useContext(AddMessageContext)
 
   async function submit(answers: IAnswers) {
     const classId = myClass?myClass._id:''
@@ -88,30 +91,13 @@ export default function Splash({
 
   return (
     <>
-      <Head>
-        <title>fotografia linguistica</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <Header />
-        <Messages messages={messages} />
-        <AddMessageContext.Provider value={addMessage}>
           { !isConnected && <div>DB not connected!</div> }
           { (!started) && <Welcome 
                 start={() => setStarted(true)}
                 myClass={myClass}
                 setMyClass={setMyClass}
                 /> }
-          { started && myClass && <Questions submit={submit} submitted={submitted} />}
-        </AddMessageContext.Provider>
-      </main>
+          { started && myClass && <Questions submit={submit} submitted={submitted} myClass={myClass} />}
     </>
   )
-}
-
-function Messages({messages}: {messages: string[]}) {
-  if (messages.length === 0) return null
-  return <div>
-    {messages.map((m, i) => <div key={i} className="alert alert-danger" role="alert">{m}</div>)}
-  </div>
 }
