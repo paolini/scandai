@@ -1,26 +1,11 @@
 import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
 
-import questionsData, { extractQuestions, extractSubsections } from '@/lib/questions'
+import questionsData, { extractQuestions, extractSubsections, extractExtraLanguages } from '@/lib/questions'
 import { IQuestion, IQuestions, LocalizedString } from '@/lib/questions'
 import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
 import AddMessageContext from '@/components/AddMessageContext'
-
-function extractExtraLanguages(questions: IQuestion[], answers: {[key:string]: any}, languages: {[key:string]: LocalizedString}) {
-  let extraLanguages: string[] = []
-  const languageCodes = Object.keys(languages)
-  for (const q of questions) {
-    if (q.type === 'choose-language') {
-      for (const l of answers[q.code]) {
-        if (!extraLanguages.includes(l) && !languageCodes.includes(l)) {
-          extraLanguages.push(l)
-        }
-     }
-    }
-  }
-  return extraLanguages
-}
 
 export default function Questions({submit, submitted}
   : {submit: (answers: IAnswers) => void, submitted: boolean}) {

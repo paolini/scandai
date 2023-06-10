@@ -1,5 +1,12 @@
+export const languageCodes = ['it','fu','sl','de']
+export type LanguageCode = typeof languageCodes[number]
+
 export interface LocalizedString {
-    [key: string]: string,
+  [key: LanguageCode]: string
+}
+
+export type LocalizedLanguages = {
+  [key: LanguageCode]: LocalizedString
 }
 
 export interface LocalizedStringWithCode extends LocalizedString {
@@ -24,6 +31,10 @@ export interface ISection {
     subsections: ISubsection[],
 }
 
+export interface ICompetenceValue extends LocalizedString {
+  level: string,
+}
+
 export interface IQuestions {
     version: string,
     submitMessage: LocalizedString,
@@ -33,7 +44,7 @@ export interface IQuestions {
     ages: LocalizedStringWithCode[],
     competences: LocalizedStringWithCode[],
     competenceValues: {
-        [key: string]: LocalizedString,
+        [key: string]: ICompetenceValue,
     },
     sections: ISection[],    
 }
@@ -103,22 +114,43 @@ const questions : IQuestions = {
   ],
   competenceValues: {
     _: {
+      level: '0',
       it: "Scegli...",
     },
     _0: { 
+      level: '0',
       it: "Nessuna competenza",
       fu: "Nissune competence",
     },
-    _1: {},
-    _2: {},
-    _3: {},
-    _4: {},
-    _5: {},
-    _6: {},
-    _7: {},
-    _8: {},
-    _9: {},
+    _1: {
+      level: '0',
+    },
+    _2: {
+      level: '0'
+    },
+    _3: {
+      level: 'A',
+    },
+    _4: {
+      level: 'A',
+    },
+    _5: {
+      level: 'A',
+    },
+    _6: {
+      level: 'B',
+    },
+    _7: {
+      level: 'B',
+    },
+    _8: {
+      level: 'C',
+    },
+    _9: {
+      level: 'C',
+    },
     _10: {
+      level: 'C',
       it: "Competenza avanzata",
     },
   },
@@ -424,4 +456,25 @@ export function extractSubsections(data: IQuestions) {
     }
   }
   return subsections
+}
+
+export function extractExtraLanguages(questions: IQuestion[], answers: {[key:string]: any}, languages: {[key:string]: LocalizedString}) {
+  let extraLanguages: string[] = []
+  const languageCodes = Object.keys(languages)
+  for (const q of questions) {
+    if (q.type === 'choose-language') {
+      for (const l of answers[q.code]) {
+        if (!extraLanguages.includes(l) && !languageCodes.includes(l)) {
+          extraLanguages.push(l)
+        }
+     }
+    }
+  }
+  return extraLanguages
+}
+
+export function extractLevels(questions: IQuestions): string[] {
+  return Object.values(questions.competenceValues).reduce(
+    (levels: string[], x) => ((levels.includes(x.level)) ? levels : [...levels, x.level]), 
+    [])
 }

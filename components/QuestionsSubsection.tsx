@@ -1,8 +1,8 @@
 import { SetStateAction, Dispatch } from 'react'
 
 import { ISubsection, IQuestions } from '@/lib/questions'
-import Question, {IAnswer, IAnswers} from './Question'
-
+import Question, { IAnswers } from './Question'
+import { Answer } from '@/models/Entry'
 
 export default function QuestionsSubsection({ subsection, answers, setAnswers, data, extraLanguages }
   :{subsection: ISubsection, answers: IAnswers, setAnswers: Dispatch<SetStateAction<IAnswers>>, data: IQuestions, extraLanguages: string[]}) {
@@ -16,7 +16,7 @@ export default function QuestionsSubsection({ subsection, answers, setAnswers, d
           answer={answers[q.code]}
           data={data}
           extraLanguages={extraLanguages}
-          setAnswer={(a: IAnswer|((_:IAnswer)=> IAnswer)) => setAnswers(
+          setAnswer={(a: Answer|((_:Answer)=> Answer)) => setAnswers(
             (answers: IAnswers) => ({
               ...answers, 
               [q.code]: typeof(a) === 'function' 

@@ -18,7 +18,11 @@ function OtherLanguage({addLanguage}: {
   }
   
 export default function LanguageAnswer({answer, setAnswer, languages }
-    : {answer: string[], setAnswer: (f: ((a: string[]) => void)) => void, languages: {[key: string]: string|LocalizedString}}) {
+    : {
+      answer: string[], 
+      setAnswer: (f: ((a: string[]) => void)) => void, 
+      languages: {[key: string]: string|LocalizedString}
+    }) {
     return <>{[
         ...Object.entries(languages).map(([code, data]:[string,string|LocalizedString]):[string,string] => [code, typeof(data) === 'string' ? data : data['it']]),
         ].map(([code, language]:[string,string]) => 

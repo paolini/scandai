@@ -2,23 +2,37 @@ import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 import { IQuestion, IQuestions } from '@/lib/questions' 
-
-export interface IAnswer extends Object {}
+import { Answer, QuestionCode } from '@/models/Entry'
 
 export interface IAnswers {
-  [key: string]: IAnswer,
+  [key: QuestionCode]: Answer,
 }
 
 function Answer({ question, answer, setAnswer, data, extraLanguages }
   : { question: IQuestion, answer: any, setAnswer: any, data: IQuestions, extraLanguages: string[] }) {
   if (question.type === 'choose-language') {
-    return <LanguageAnswer answer={answer} setAnswer={setAnswer} languages={{...data.languages,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}/>
+    return <LanguageAnswer 
+      answer={answer} 
+      setAnswer={setAnswer} 
+      languages={{...data.languages,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}
+      />
   }
   if (question.type === 'map-language-to-age') {
-    return <LanguageToAgeAnswer answer={answer} setAnswer={setAnswer} languages={data.languages} ages={data.ages} extraLanguages={extraLanguages} />
+    return <LanguageToAgeAnswer 
+      answer={answer} 
+      setAnswer={setAnswer} 
+      languages={data.languages} 
+      ages={data.ages} 
+      extraLanguages={extraLanguages} />
   }
   if (question.type === 'map-language-to-competence') {
-    return <LanguageToCompetenceAnswer answer={answer} setAnswer={setAnswer} languages={data.languages} ages={data.ages} competences={data.competences} competenceValues={data.competenceValues} extraLanguages={extraLanguages} />
+    return <LanguageToCompetenceAnswer 
+      answer={answer} 
+      setAnswer={setAnswer} 
+      languages={data.languages} 
+      competences={data.competences} 
+      competenceValues={data.competenceValues} 
+      extraLanguages={extraLanguages} />
   }
   return <div>
     Unknown question type: {question.type}
