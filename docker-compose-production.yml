@@ -6,7 +6,9 @@ services:
     restart: unless-stopped
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/scandai
-    ports:
+      - GOOGLE_CLIENT_ID=xxxxxx
+      - GOOGLE_CLIENT_SECRET=yyyyyy
+#    ports:
       - 3000:3000
     networks:
       - backend

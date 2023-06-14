@@ -32,10 +32,10 @@ export default function Header() {
             /* user is authenticated */
             <NavDropdown title={<>
                 {session.user.image && 
-                <Image
+                <img
                   src={session.user.image}
                   className="rounded-circle"
-                  height="22"
+                  width="22"
                   alt="Avatar"
                   loading="lazy"
                 />}
