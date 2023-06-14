@@ -9,8 +9,9 @@ export default function Cookies({}) {
       <h2>Tipi di cookie utilizzati</h2>
       <ol>
         <li><strong>Cookie strettamente necessari:</strong> Questi cookie sono essenziali per consentire il corretto funzionamento del sito web. Vengono utilizzati per autenticare gli utenti, gestire la sessione di navigazione e garantire la sicurezza del sito.</li>
-        <li><strong>Cookie di prestazione:</strong> Questi cookie raccolgono informazioni sull'utilizzo del sito web, come le pagine visitate e gli errori riscontrati. Questi dati vengono utilizzati per migliorare il funzionamento del sito e per raccogliere statistiche anonime sull'utilizzo.</li>
-        <li><strong>Cookie di funzionalità:</strong> Questi cookie consentono al sito web di ricordare le scelte che hai fatto (come la lingua o la regione) e di fornire funzionalità personalizzate. Possono anche essere utilizzati per fornire servizi richiesti, come la visualizzazione di un video o l'interazione con i social media.</li>
+        <li><strong>Cookie di prestazione:</strong> 
+        Questi cookie raccolgono informazioni sull&amp;utilizzo del sito web, come le pagine visitate e gli errori riscontrati. Questi dati vengono utilizzati per migliorare il funzionamento del sito e per raccogliere statistiche anonime sull&amp;utilizzo.</li>
+        <li><strong>Cookie di funzionalità:</strong> Questi cookie consentono al sito web di ricordare le scelte che hai fatto (come la lingua o la regione) e di fornire funzionalità personalizzate. Possono anche essere utilizzati per fornire servizi richiesti, come la visualizzazione di un video o l&amp;interazione con i social media.</li>
         <li><strong>Cookie di targeting e pubblicitari:</strong> Questi cookie vengono utilizzati per mostrarti annunci pubblicitari pertinenti in base ai tuoi interessi. Possono essere forniti da terze parti e vengono utilizzati per tracciare la tua attività di navigazione su diversi siti web.</li>
       </ol>
     

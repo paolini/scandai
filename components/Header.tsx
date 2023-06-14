@@ -1,5 +1,6 @@
 import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import Image from 'next/image'
 
 import package_json from '../package.json'
 //import { name, version } from '../package.json'
@@ -31,7 +32,7 @@ export default function Header() {
             /* user is authenticated */
             <NavDropdown title={<>
                 {session.user.image && 
-                <img
+                <Image
                   src={session.user.image}
                   className="rounded-circle"
                   height="22"

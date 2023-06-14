@@ -6,11 +6,11 @@ export default function Privacy({}) {
 
   <h2>Raccolta delle informazioni</h2>
 
-  <p>Quando si visita il nostro sito web, potremmo raccogliere informazioni personali, come il nome, l'indirizzo email e altri dati pertinenti. Questi dati vengono raccolti in modo volontario mediante moduli di registrazione, sondaggi, commenti o altre interazioni con il sito.</p>
+  <p>Quando si visita il nostro sito web, potremmo raccogliere informazioni personali, come il nome, l&amp;indirizzo email e altri dati pertinenti. Questi dati vengono raccolti in modo volontario mediante moduli di registrazione, sondaggi, commenti o altre interazioni con il sito.</p>
 
   <h2>Utilizzo delle informazioni</h2>
 
-  <p>Le informazioni personali raccolte vengono utilizzate per migliorare l'esperienza degli utenti sul nostro sito web. Potremmo utilizzare queste informazioni per rispondere alle richieste degli utenti, fornire servizi personalizzati, inviare comunicazioni informative o promozionali e per altri scopi correlati.</p>
+  <p>Le informazioni personali raccolte vengono utilizzate per migliorare l&amp;esperienza degli utenti sul nostro sito web. Potremmo utilizzare queste informazioni per rispondere alle richieste degli utenti, fornire servizi personalizzati, inviare comunicazioni informative o promozionali e per altri scopi correlati.</p>
 
   <h2>Protezione delle informazioni</h2>
 
@@ -22,9 +22,9 @@ export default function Privacy({}) {
 
   <h2>Cookies</h2>
 
-  <p>Il nostro sito web utilizza i cookies per migliorare l'esperienza degli utenti. I cookies sono file di testo salvati sul dispositivo dell'utente che ci aiutano a riconoscerlo quando ritorna sul nostro sito. Gli utenti possono scegliere di disabilitare i cookies nelle impostazioni del proprio browser, ma ciò potrebbe limitare alcune funzionalità del sito.</p>
+  <p>Il nostro sito web utilizza i cookies per migliorare l&amp;esperienza degli utenti. I cookies sono file di testo salvati sul dispositivo dell&amp;utente che ci aiutano a riconoscerlo quando ritorna sul nostro sito. Gli utenti possono scegliere di disabilitare i cookies nelle impostazioni del proprio browser, ma ciò potrebbe limitare alcune funzionalità del sito.</p>
 
-  <h2>Modifiche all'informativa sulla privacy</h2>
+  <h2>Modifiche all&amp;informativa sulla privacy</h2>
 
   <p>Ci riserviamo il diritto di apportare modifiche a questa informativa sulla privacy. Le modifiche saranno pubblicate su questa pagina con una nuova data di aggiornamento. Gli utenti sono invitati a consultare periodicamente questa pagina per rimanere informati su eventuali modifiche.</p>
 
