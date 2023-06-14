@@ -35,6 +35,16 @@ To build for production:
 npm run build
 ```
 
+set these variables in the environment:
+
+```
+    MONGODB_URI=mongodb://localhost:27017/scandai
+    NEXTAUTH_URL=http://localhost:3000/api/auth 
+    NEXTAUTH_SECRET=secret
+    GOOGLE_CLIENT_ID=client_id
+    GOOGLE_CLIENT_SECRET=client_secret
+```
+
 ## links
 
 http://scandai.lavplu.eu/
