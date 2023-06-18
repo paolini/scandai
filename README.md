@@ -43,6 +43,8 @@ set these variables in the environment:
     NEXTAUTH_SECRET=secret
     GOOGLE_CLIENT_ID=client_id
     GOOGLE_CLIENT_SECRET=client_secret
+    ADMIN_USERNAME=admin
+    ADMIN_PASSWORD=your_secret_password
 ```
 
 ## links

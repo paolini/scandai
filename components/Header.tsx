@@ -1,6 +1,5 @@
 import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import Image from 'next/image'
 
 import package_json from '../package.json'
 //import { name, version } from '../package.json'
@@ -10,6 +9,7 @@ export default function Header() {
   const loading = status === "loading"
 
   return <Navbar bg="light" expand="lg">
+    { /*JSON.stringify(session)*/ }
     <Container>
       <Navbar.Brand href="/">{package_json.name}-{package_json.version}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
