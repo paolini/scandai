@@ -30,7 +30,7 @@ ChartJS.register(
     Colors,
 )
 
-export default function Stats() {
+export default function Report() {
     const statsQuery = useStats()
 
     if (statsQuery.isLoading) return <div>Loading...</div>
@@ -46,19 +46,44 @@ export default function Stats() {
         <Header />
         <h1>Risultati aggregati</h1>
         <ListClasses stats={stats} />
-        <GraphQuestion questions={questions} code="1.1.a.1" />
-        <GraphQuestionCounts questions={questions} code="1.1.a.1" />
-        <h3>Competenze linguistiche autovalutate</h3>
-        <p><b>Legenda</b>
-            <br/>
-            <i>abilità:</i>
-            <ul>
-                {questionsData.competences.map(c =>
-                    <li key={c.code}>{c.code}: {c.it}</li>)}                
-            </ul>
-        </p>
-        <GraphQuestion questions={questions} code="2.2.1" />
+        { stats.questions.map(q => <ReportQuestion key={q.question.code} question={q} />) }
     </>
+}
+
+function ReportQuestion({question}:{question: IQuestionStat}) {
+    if (question.type==='choose-language') {
+        return <>
+            <div style={{maxWidth:1000}}>
+                <GraphChooseLanguageQuestion stat={question} />
+            </div>            
+            <GraphQuestionCounts question={question} />
+        </>
+    }
+    if (question.type === 'map-language-to-competence') {
+        return <>
+            <CompetenceLegend />
+            <div style={{maxWidth:1000}}>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="it"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="fu"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="de"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="sl"/>
+            </div>
+        </>
+    }
+    return <>not implemented {question.type}</>
+}
+
+function CompetenceLegend() {
+    const competences = questionsData.competences
+    return <p>
+        <b>Legenda</b>
+        <br/>
+        <i>abilità:</i>
+        <ul>
+            {competences.map(c =>
+                <li key={c.code}>{c.code}: {c.it}</li>)}                
+        </ul>
+    </p>
 }
 
 function ListClasses({ stats }: {stats: IStats}) {
@@ -76,30 +101,9 @@ function ListClasses({ stats }: {stats: IStats}) {
     </div>
 }
 
-function GraphQuestion({questions, code}
-    : {questions: {[key:string]: IQuestionStat},code: string}) {
-    if (!(code in questions)) return <div>Unknown question code: {code}</div>
-    const stat = questions[code]
-    if (stat.type==='choose-language') {
-        return <div style={{maxWidth:1000}}>
-            <GraphChooseLanguageQuestion stat={stat} />
-        </div>
-    }
-    if (stat.type==='map-language-to-competence') {
-        return <div style={{maxWidth:1000}}>
-            <GraphMapLanguageToCompetenceQuestion stat={stat} title="Competenze linguistiche autovalutate" language="it"/>
-            <GraphMapLanguageToCompetenceQuestion stat={stat} title="Competenze linguistiche autovalutate" language="fu"/>
-            <GraphMapLanguageToCompetenceQuestion stat={stat} title="Competenze linguistiche autovalutate" language="de"/>
-            <GraphMapLanguageToCompetenceQuestion stat={stat} title="Competenze linguistiche autovalutate" language="sl"/>
-        </div>
-    }
-    return <div>Unknown question type {stat.question.type}</div>
-}
-
-function GraphQuestionCounts({questions, code}
-    : {questions: {[key:string]:IQuestionStat},code: string}) {
-    if (!(code in questions)) return <div>Unknown question code: {code}</div>
-    const stat = questions[code]
+function GraphQuestionCounts({question}
+    : {question: IQuestionStat}) {
+    const stat = question
     if (stat.type == 'choose-language') {
         return <div style={{maxWidth:640}}>
             <GraphChooseLanguageQuestionCounts stat={stat} />
