@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
+import { assert } from '@/lib/assert'
 
 import questionsData, { extractQuestions, extractSubsections, extractExtraLanguages } from '@/lib/questions'
 import QuestionsSubsection from './QuestionsSubsection'
@@ -18,11 +19,22 @@ export default function Questions({submit, submitted, myClass } : {
 
   const questions = extractQuestions(questionsData)
 
+  function empty_answer(question_type: string) {
+    switch(question_type) {
+      case 'map-language-to-competence':
+        return {}
+      case 'map-language-to-age':
+        return {}
+      case 'choose-language':
+        return []
+      default:
+        assert(false, "unknown question type: "+question_type)
+    }
+  }
+
   if (Object.keys(answers).length === 0) {
     setAnswers(Object.fromEntries(
-      questions.map(q => [q.code, 
-        q.type === 'map-language-to-competence' ? {} : []
-      ])))
+      questions.map(q => [q.code, empty_answer(q.type)])))
     return <div>Loading...</div>
   }
   const extraLanguages = extractExtraLanguages(questions, answers, questionsData.languages)

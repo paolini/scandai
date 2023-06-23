@@ -12,7 +12,7 @@ function AgeAnswerRow({ code, language, ages, answer, setAnswer }
     answer: {[key: string]: string},
     setAnswer: Dispatch<(a: Answer)=>void>
   }) {
-  assert(!Array.isArray(answer))
+  assert(!Array.isArray(answer),"answer is not an object: "+JSON.stringify(answer))
   return <tr key={code}>
     <td>{typeof(language)==='string'? language : language.it}</td>
     {ages.map(age => <td key={age.code}>
