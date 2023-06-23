@@ -1,42 +1,17 @@
 import { useState, useContext, Dispatch } from 'react'
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import { Button } from 'react-bootstrap'
 
 import {IClass} from '@/models/Class'
-import Head from 'next/head'
 import Questions from '@/components/Questions'
-import Header from '@/components/Header'
 import ClassSelector from '@/components/ClassSelector'
-import connectedPromise from '../lib/mongodb'
 import { IAnswers } from '@/components/Question'
-import Messages, { AddMessageContext } from '@/components/Messages'
+import { AddMessageContext } from '@/components/Messages'
 import Page from '@/components/Page'
 
-export default function Index({isConnected}
-  : InferGetServerSidePropsType<typeof getServerSideProps>
-  ) {
+export default function Index({}) {
     return <Page>
-      <Splash isConnected={isConnected} />
+      <Splash/>
     </Page>
-}
-
-type ConnectionStatus = {
-  isConnected: boolean
-}
-
-export const getServerSideProps: GetServerSideProps<ConnectionStatus> = async () => {
-  try {
-    let isConnected = !!(await connectedPromise)
-
-    return {
-      props: { isConnected },
-    }
-  } catch (e) {
-    console.error(e)
-    return {
-      props: { isConnected: false },
-    }
-  }
 }
 
 function Welcome({start, myClass, setMyClass}:{
@@ -57,9 +32,7 @@ function Welcome({start, myClass, setMyClass}:{
     </div>
 }
 
-export function Splash({
-  isConnected,
-}: {isConnected: boolean}) {
+export function Splash({}) {
   const [started, setStarted] = useState<boolean>(false)
   const [myClass, setMyClass] = useState<IClass>()
   const [submitted, setSubmitted] = useState<boolean>(false)
@@ -91,7 +64,6 @@ export function Splash({
 
   return (
     <>
-          { !isConnected && <div>DB not connected!</div> }
           { (!started) && <Welcome 
                 start={() => setStarted(true)}
                 myClass={myClass}
