@@ -11,10 +11,17 @@ import {
   } from 'chart.js';
 import { Bar, Doughnut } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { Table } from 'react-bootstrap'
 
 import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
-import { IStats, IQuestionStat, IChooseLanguageQuestionStat, IMapLanguageToCompetenceQuestionStat } from '@/pages/api/stats'
+import { 
+    IStats, 
+    IQuestionStat, 
+    IChooseLanguageQuestionStat, 
+    IMapLanguageToCompetenceQuestionStat, 
+    IMapLanguageToAgeQuestionStat
+} from '@/pages/api/stats'
 import questionsData, { extractLevels } from '@/lib/questions'
 import Header from '@/components/Header'
 
@@ -50,29 +57,6 @@ export default function Report() {
     </>
 }
 
-function ReportQuestion({question}:{question: IQuestionStat}) {
-    if (question.type==='choose-language') {
-        return <>
-            <div style={{maxWidth:1000}}>
-                <GraphChooseLanguageQuestion stat={question} />
-            </div>            
-            <GraphQuestionCounts question={question} />
-        </>
-    }
-    if (question.type === 'map-language-to-competence') {
-        return <>
-            <CompetenceLegend />
-            <div style={{maxWidth:1000}}>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="it"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="fu"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="de"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="sl"/>
-            </div>
-        </>
-    }
-    return <>not implemented {question.type}</>
-}
-
 function CompetenceLegend() {
     const competences = questionsData.competences
     return <p>
@@ -99,6 +83,40 @@ function ListClasses({ stats }: {stats: IStats}) {
         </ul>
         Totale questionari: {stats.entriesCount}
     </div>
+}
+
+function ReportQuestion({question}:{question: IQuestionStat}) {
+    if (question.type==='choose-language') {
+        return <>
+            <div style={{maxWidth:1000}}>
+                <GraphChooseLanguageQuestion stat={question} />
+            </div>            
+            <TableChooseLanguageQuestion stat={question} />
+            <GraphQuestionCounts question={question} />
+        </>
+    }
+    
+    if (question.type === 'map-language-to-competence') {
+        return <>
+            <CompetenceLegend />
+            <div style={{maxWidth:1000}}>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="it"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="fu"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="de"/>
+                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="sl"/>
+            </div>
+        </>
+    }
+
+    if (question.type === 'map-language-to-age') {
+        return <>
+            <div style={{maxWidth:1000}}>
+                <GraphMapLanguageToAgeQuestion stat={question} />
+            </div>
+        </>
+    }
+
+    return <>not implemented {question.type}</>
 }
 
 function GraphQuestionCounts({question}
@@ -153,12 +171,37 @@ function GraphChooseLanguageQuestion({stat}
             labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
             datasets: [
                 {
-                data: Object.entries(stat.answers).map(([key, val])=>val),
+                data: Object.entries(stat.answers).map(([key, val])=>val.fraction),
                 // backgroundColor: 'orange',
                 },
             ],
             }} 
     />
+}
+
+function TableChooseLanguageQuestion({stat}
+    : {stat: IChooseLanguageQuestionStat}) {
+    const languages = questionsData.languages
+    if (!stat.answers) return <div>invalid answers</div>
+      
+    return <Table>
+        <thead>
+            <tr>
+            {Object.keys(stat.answers).map(id => 
+                <td key={id}>
+                    {(id in languages?languages[id]['it']:id)}
+                </td>)}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    {val.count} ({val.fraction*100}%)
+                </td>)}
+            </tr>
+        </tbody>
+    </Table>
 }
 
 function GraphChooseLanguageQuestionCounts({stat}: {stat: IChooseLanguageQuestionStat}) {      
@@ -260,6 +303,69 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                     data: computeDataset(x),
                     label: competence,
                 })) 
+        }}
+    />
+}
+
+function GraphMapLanguageToAgeQuestion({stat}
+    : {
+        stat: IMapLanguageToAgeQuestionStat,
+    }) {
+    const stats = stat.answers
+    const ages = questionsData.ages.map(x => x.code)
+    const languages = Object.keys(questionsData.languages)
+    const title = "Età di apprendimento lingua"
+
+    Object.keys(stat.answers).forEach(lang => {
+        if (!(languages.includes(lang))) {
+            languages.push(lang)
+        }
+    })
+
+    const datasets = ages.map(age => 
+        ({
+            data: languages.map(lang => stats[lang]?.[age].fraction || 0),
+            label: age || 'mai',
+        }))
+
+    const labels = languages.map(lang => (lang in questionsData.languages
+        ?questionsData.languages[lang]['it']:lang))
+
+    return <Bar 
+        options={{
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top' as const,
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'start',
+                    formatter: value => (value>0?`${Math.round(value*100)}%`:null),
+                },
+                title: {
+                    display: true,
+                    text: `${title || stat.question.question.it}`,
+                },
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1,
+                    ticks: {
+                        precision: 1,
+                        format: {
+                            style: 'percent',
+                        },
+                        callback: value => typeof(value)==='number'?`${Math.round(value*100)}%`:'???',
+                    },
+                }
+            }
+        }} 
+        data={{
+            labels,
+            datasets
         }}
     />
 }
