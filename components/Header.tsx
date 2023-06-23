@@ -9,7 +9,7 @@ export default function Header() {
   const loading = status === "loading"
 
   return <Navbar bg="light" expand="lg">
-    { /*JSON.stringify(session)*/ }
+    { JSON.stringify(session) }
     <Container>
       <Navbar.Brand href="/">{package_json.name}-{package_json.version}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />

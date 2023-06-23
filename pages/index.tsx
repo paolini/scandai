@@ -7,7 +7,7 @@ import Head from 'next/head'
 import Questions from '@/components/Questions'
 import Header from '@/components/Header'
 import ClassSelector from '@/components/ClassSelector'
-import connectedPromise from '@/lib/mongodb'
+import connectedPromise from '../lib/mongodb'
 import { IAnswers } from '@/components/Question'
 import Messages, { AddMessageContext } from '@/components/Messages'
 import Page from '@/components/Page'
@@ -26,7 +26,7 @@ type ConnectionStatus = {
 
 export const getServerSideProps: GetServerSideProps<ConnectionStatus> = async () => {
   try {
-    let isConnected = await connectedPromise
+    let isConnected = !!(await connectedPromise)
 
     return {
       props: { isConnected },

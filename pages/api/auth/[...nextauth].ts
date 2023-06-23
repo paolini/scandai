@@ -2,9 +2,11 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
+import { MongoDBAdapter } from "@auth/mongodb-adapter"
 
-import dbConnect from '@/lib/mongodb'
+import clientPromise from "../../../lib/mongodb"
 import User from '@/models/User'
+import assert from "assert"
 
 // augment next-auth types
 declare module "next-auth" {
@@ -49,7 +51,7 @@ providers.push(CredentialsProvider({
 
         if (!credentials) return null
 
-        await dbConnect
+        await clientPromise
         const user = await User.findOne({ username: credentials.username })
         if (user) {
             const isValid = await compare(credentials.password, user.password)
@@ -72,6 +74,8 @@ export default NextAuth({
     // Configure one or more authentication providers
     providers,
 
+    // adapter: MongoDBAdapter(clientPromise),
+
     callbacks: {
         async jwt({ token, user }) {
             console.log('jwt', token, user)
@@ -90,12 +94,15 @@ export default NextAuth({
             return session
         },
         /*
-        async signIn(user, account, profile) {
-            if (account.provider === 'google') {
+        async signIn({user, account, profile, email, credentials}) {
+            if (account?.provider === 'google') {
+                assert(profile)
                 const { name, email, image } = profile
-                await dbConnect
+                await clientPromise
                 const user = await User.findOne({ email })
-                if (!user) {
+                if (user) {
+                    user.
+                } else {
                     const newUser = new User({
                         username: email,
                         email: email
@@ -104,7 +111,6 @@ export default NextAuth({
                 }
             }
             return true
-        },
-*/
+        },*/
     }
 })
