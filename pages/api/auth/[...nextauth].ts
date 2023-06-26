@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
 import clientPromise from "../../../lib/mongodb"
 import User from '@/models/User'
@@ -74,7 +74,7 @@ export default NextAuth({
     // Configure one or more authentication providers
     providers,
 
-    // adapter: MongoDBAdapter(clientPromise),
+    adapter: MongoDBAdapter(clientPromise),
 
     callbacks: {
         async jwt({ token, user }) {

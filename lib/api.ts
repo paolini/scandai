@@ -4,7 +4,14 @@ import { IClass } from '@/models/Class'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 
-const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
+// const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
+
+async function fetcher(...args: [any]) {
+    const res = await fetch(...args)
+    if (!res.ok) throw new Error(`${res.statusText} (${res.status})`)
+    const json = await res.json()
+    return json 
+}
 
 interface Data<T> {
     data: T

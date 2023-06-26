@@ -18,7 +18,9 @@ async function init() {
     await createAdminUser(mongoose.connection)
     await migrate(mongoose.connection, { apply: true })
 
-    return promise
+    const mongodb = await mongoose.connection.getClient()
+
+    return mongodb
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a
