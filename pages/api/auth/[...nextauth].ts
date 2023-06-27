@@ -5,8 +5,8 @@ import { compare } from "bcrypt"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
 import clientPromise from "../../../lib/mongodb"
-import User from '@/models/User'
-import assert from "assert"
+import User, {IUser} from '@/models/User'
+import Account from '@/models/Account'
 
 // augment next-auth types
 declare module "next-auth" {
@@ -16,13 +16,13 @@ declare module "next-auth" {
 
   interface Session {
     roles?: string[]
-    user?: User
+    dbUser?: IUser
   }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-      roles?: string[];
+      dbUser?: IUser
     }
   }
 
@@ -76,24 +76,37 @@ export default NextAuth({
 
     adapter: MongoDBAdapter(clientPromise),
 
+    session: {
+        strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
+
     callbacks: {
-        async jwt({ token, user }) {
-            console.log('jwt', token, user)
-            if (user) {
-                token.id = user.id
-                token.roles = user.roles
+        async jwt({ token, account }) {
+            console.log('* jwt', token, account)
+            // account is present only the first time the user signs in
+            // otherwise token already contains the user info
+            if (!token.dbUser && token.sub) {
+                const dbUser = await User.findById(token.sub)
+                if (dbUser) {
+                    token.dbUser = dbUser
+                } else {
+                    console.log(`User not found with id ${token.sub}`)
+                }
             }
             return token
         },
-
+        
         async session({session, token}) {
-            console.log('session', session, token)
-            if (token && session.user) {
-                session.roles = token.roles
+            console.log('* session', session, token)
+            if (token && token.dbUser) {
+                session.dbUser = token.dbUser
             }
             return session
         },
-        /*
+    
+
+        /**
         async signIn({user, account, profile, email, credentials}) {
             if (account?.provider === 'google') {
                 assert(profile)
@@ -111,6 +124,6 @@ export default NextAuth({
                 }
             }
             return true
-        },*/
+        },**/
     }
 })
