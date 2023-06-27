@@ -197,7 +197,7 @@ function TableChooseLanguageQuestion({stat}
             <tr>
             {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
-                    {val.count} ({val.fraction*100}%)
+                    {val.count} ({Math.round(val.fraction*100)}%)
                 </td>)}
             </tr>
         </tbody>

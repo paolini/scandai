@@ -2,8 +2,15 @@ import { getServerSession } from 'next-auth'
 
 import authOptions from "./auth/[...nextauth]"
 
+async function getSessionUser(req, res) {
+  const session = await getServerSession(req, res, authOptions)
+  return session
+}
+
 export default async (req, res) => {
-    const session = await getServerSession(req, res, authOptions)
+    const session = await getSessionUser(req, res, authOptions)
+    console.log(`* admin ${JSON.stringify(session)}`)
+
 
     if (session) {
         res.send({
