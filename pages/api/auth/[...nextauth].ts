@@ -1,4 +1,4 @@
-import NextAuth from "next-auth"
+import NextAuth, {DefaultSession} from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
@@ -6,7 +6,6 @@ import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
 import clientPromise from "../../../lib/mongodb"
 import User, {IUser} from '@/models/User'
-import Account from '@/models/Account'
 
 // augment next-auth types
 declare module "next-auth" {
@@ -15,13 +14,15 @@ declare module "next-auth" {
   }
 
   interface Session {
+    id: string;
     roles?: string[]
     dbUser?: IUser
   }
 }
 
-declare module "next-auth/jwt" {
+declare module "next-auth/jwt/types" {
     interface JWT {
+      uid: string;  
       dbUser?: IUser
     }
   }
