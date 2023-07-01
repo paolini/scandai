@@ -10,12 +10,12 @@ import User, {IUser} from '@/models/User'
 // augment next-auth types
 declare module "next-auth" {
   interface User {
-    roles?: string[]
+    isAdmin: boolean
   }
 
   interface Session {
-    id: string;
-    roles?: string[]
+    id: string
+    isAdmin?: boolean
     dbUser?: IUser
   }
 }
@@ -60,7 +60,7 @@ providers.push(CredentialsProvider({
                 id: user._id,
                 name: user.username,
                 email: user.email || `${user.username}@local`,
-                roles: user.roles,
+                isAdmin: user.isAdmin,
             }
             console.error(`Password not valid for user ${credentials.username}`)
         } else {
@@ -84,7 +84,8 @@ export default NextAuth({
 
     callbacks: {
         async jwt({ token, account }) {
-            console.log('* jwt', token, account)
+            // console.log('* jwt', token, account)
+            
             // account is present only the first time the user signs in
             // otherwise token already contains the user info
             if (!token.dbUser && token.sub) {
@@ -99,7 +100,8 @@ export default NextAuth({
         },
         
         async session({session, token}) {
-            console.log('* session', session, token)
+            // console.log('* session', session, token)
+            
             if (token && token.dbUser) {
                 session.dbUser = token.dbUser
             }

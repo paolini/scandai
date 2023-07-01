@@ -19,19 +19,27 @@ export default async function createAdminUser(db: Connection) {
     if (user) {
         console.log(`admin user "${username}" already exists.`)
         if (await compare(password, user.password)) {
-        console.log(`admin user "${username}" password already matches env variable ADMIN_PASSWORD.`)
+            console.log(`admin user "${username}" password already matches env variable ADMIN_PASSWORD.`)
         } else {
-        await users.updateOne(
-            { _id: user._id }, 
-            { $set: {password: encryptedPassword }})
-        console.log(`admin user "${username}" password updated to match ADMIN_PASSWORD env variable.`)
+            await users.updateOne(
+                { _id: user._id }, 
+                { $set: {password: encryptedPassword }})
+            console.log(`admin user "${username}" password updated to match ADMIN_PASSWORD env variable.`)
+        }
+        if (user.isAdmin) {
+            console.log(`admin user "${username}" already has admin role.`)
+        } else {
+            await users.updateOne(
+                { _id: user._id }, 
+                { $set: {isAdmin: true }})
+            console.log(`set admin role to admin user "${username}".`)
         }
     } else {
         console.log(`creating admin user ${username}`)
         const user = {
-        username,
-        password: encryptedPassword,
-        roles: ['admin'],
+            username,
+            password: encryptedPassword,
+            isAdmin: true,
         }
         await users.insertOne(user)
         console.log(`admin user ${username} created.`)

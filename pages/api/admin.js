@@ -1,18 +1,11 @@
-import { getServerSession } from 'next-auth' 
-import { getToken } from 'next-auth/jwt'
 
 import authOptions from "./auth/[...nextauth]"
 
-async function getSessionUser(req, res) {
-  const token = await getToken({req})
-  const session = await getServerSession(req, res, authOptions)
-  return token.dbUser
-}
+import getSessionUser from "@/lib/getSessionUser"
 
 export default async (req, res) => {
     const user = await getSessionUser(req, res, authOptions)
     console.log(`* admin ${JSON.stringify(user)}`)
-
 
     if (user) {
         res.send({

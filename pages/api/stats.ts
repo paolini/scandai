@@ -1,4 +1,3 @@
-import dbConnect from '../../lib/mongodb'
 import Entry, { IEntry } from '@/models/Entry'
 import { IClass } from '@/models/Class'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -225,7 +224,6 @@ function aggregate(entries: IEntryWithClass[]): IStats {
 export default async function handler(
     req: NextApiRequest, 
     res: NextApiResponse) {
-    await dbConnect
     try {
         const entries = await Entry.aggregate([
             {$lookup: {

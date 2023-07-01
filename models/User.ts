@@ -5,7 +5,7 @@ export interface IUser {
     name: string,
     username: string,
     email: string,
-    roles: string[],
+    isAdmin: boolean,
     image: string,
 }
 
@@ -19,9 +19,9 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
     },
-    roles: {
-        type: [String],
-    },
+    isAdmin: {
+        type: Boolean,
+    }
 }, {
     timestamps: true
 })

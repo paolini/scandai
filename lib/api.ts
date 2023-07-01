@@ -3,6 +3,7 @@ import useSWR from 'swr'
 import { IClass } from '@/models/Class'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
+import { IUser } from '@/models/User'
 
 // const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
 
@@ -31,4 +32,8 @@ export function useEntries() {
 
 export function useStats() {
     return useApi<IStats>('stats')
+}
+
+export function useUsers() {
+    return useApi<IUser[]>('users')
 }
