@@ -5,7 +5,9 @@ import authOptions from "./auth/[...nextauth]"
 
 async function getSessionUser(req, res) {
   const token = await getToken({req})
-  const session = await getServerSession(req, res, authOptions)
+  console.log(`getSessionUser ${JSON.stringify(token)}`)
+  // const session = await getServerSession(req, res, authOptions)
+  if (!token) return null
   return token.dbUser
 }
 
