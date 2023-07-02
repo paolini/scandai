@@ -14,7 +14,7 @@ async function fetcher(...args: [any]) {
     return json 
 }
 
-interface Data<T> {
+export interface Data<T> {
     data: T
 }
 

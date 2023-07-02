@@ -4,8 +4,11 @@ import { useUsers } from '@/lib/api'
 import Headers from '@/components/Header'
 import { IUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
+import { Data } from '@/lib/api'
+import useSessionUser from '@/lib/useSessionUser'
 
 export default function Users() {
+    const sessionUser = useSessionUser()
     const usersQuery = useUsers()
     const addMessage = useAddMessage()
     if (usersQuery.isLoading) return <div>Loading...</div>
@@ -15,7 +18,7 @@ export default function Users() {
     const setAdmin = async (user: IUser, isAdmin: boolean) => {
         if (user.isAdmin === isAdmin) return
         try {
-            const res = await fetch(`/api/users/${user._id}`, {
+            const res = await fetch(`/api/user/${user._id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -24,10 +27,11 @@ export default function Users() {
               })
 
             if (!res.ok) {
-            } else {
+                addMessage(`error updating user ${user._id}, ${res.status} ${res.statusText}`)
+                return
             }
-            
-            usersQuery.mutate(newData)
+            const newData: Data<IUser> = await res.json()
+            usersQuery.mutate()
         } catch(e) {
             console.error(e)
         }
@@ -49,6 +53,7 @@ export default function Users() {
                     <td>{user.email}</td>
                     <td>{user.name || user.username}</td>
                     <td><Switch
+                            disabled={user._id === sessionUser?._id}
                             checked={user.isAdmin}
                             onChange={(checked) => {setAdmin(user, checked)}} />
                     </td>
