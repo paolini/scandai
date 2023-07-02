@@ -59,7 +59,7 @@ export default function Report() {
 
 function CompetenceLegend() {
     const competences = questionsData.competences
-    return <p>
+    return <div>
         <b>Legenda</b>
         <br/>
         <i>abilità:</i>
@@ -67,7 +67,7 @@ function CompetenceLegend() {
             {competences.map(c =>
                 <li key={c.code}>{c.code}: {c.it}</li>)}                
         </ul>
-    </p>
+    </div>
 }
 
 function ListClasses({ stats }: {stats: IStats}) {

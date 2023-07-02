@@ -27,6 +27,7 @@
     "react-bootstrap": "^2.7.2",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
+    "react-switch": "^7.0.0",
     "swr": "^2.1.0",
     "typescript": "5.0.2"
   },

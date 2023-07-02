@@ -19,15 +19,13 @@ export default function Header() {
         <Nav className="me-auto">
           <Nav.Link href="/report">Report</Nav.Link>
           <Nav className="right">
-          {!session && <NavDropdown title="admin">
-            <NavDropdown.Item>
-              <Nav.Link
+          {!session && <NavDropdown title="user">
+            <NavDropdown.Item
                 href={`/api/auth/signin`}
                 onClick={(e) => {
                   e.preventDefault()
                   signIn()
-                }}
-                >login</Nav.Link>
+                }}>login
             </NavDropdown.Item>
           </NavDropdown>} 
           {session && session.user &&
@@ -44,21 +42,19 @@ export default function Header() {
                 <span className="me-2">{session.user.email}</span>
               </>}>
                 { session.dbUser?.isAdmin && 
-                  <NavDropdown.Item>
-                    <Nav.Link 
+                  <NavDropdown.Item
                       href="/users"
-                      onClick={(e) => {e.preventDefault(); router.push('/users')}}
-                      >users</Nav.Link>
+                      onClick={(e) => {e.preventDefault(); router.push('/users')}}>
+                        users
                   </NavDropdown.Item>
                 }
-                <NavDropdown.Item>
-                  <Nav.Link
+                <NavDropdown.Item
                     href={`/api/auth/signout`}
                     onClick={(e) => {
                       e.preventDefault()
                       signOut()
                     }}  
-                  >logout</Nav.Link>
+                  >logout
                 </NavDropdown.Item>
             </NavDropdown>}
          </Nav>

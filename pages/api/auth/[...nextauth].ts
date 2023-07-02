@@ -1,31 +1,31 @@
-import NextAuth, {DefaultSession} from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
 import clientPromise from "../../../lib/mongodb"
-import User, {IUser} from '@/models/User'
+import User, { IUser } from '@/models/User'
 
 // augment next-auth types
 declare module "next-auth" {
-  interface User {
-    isAdmin: boolean
-  }
+    interface User {
+        isAdmin: boolean
+    }
 
-  interface Session {
-    id: string
-    isAdmin?: boolean
-    dbUser?: IUser
-  }
+    interface Session {
+        id: string
+        isAdmin?: boolean
+        dbUser?: IUser
+    }
 }
 
 declare module "next-auth/jwt/types" {
     interface JWT {
-      uid: string;  
-      dbUser?: IUser
+        uid: string;
+        dbUser?: IUser
     }
-  }
+}
 
 let providers = []
 
@@ -85,7 +85,7 @@ export default NextAuth({
     callbacks: {
         async jwt({ token, account }) {
             // console.log('* jwt', token, account)
-            
+
             // account is present only the first time the user signs in
             // otherwise token already contains the user info
             if (!token.dbUser && token.sub) {
@@ -98,16 +98,16 @@ export default NextAuth({
             }
             return token
         },
-        
-        async session({session, token}) {
+
+        async session({ session, token }) {
             // console.log('* session', session, token)
-            
+
             if (token && token.dbUser) {
                 session.dbUser = token.dbUser
             }
             return session
         },
-    
+
 
         /**
         async signIn({user, account, profile, email, credentials}) {
