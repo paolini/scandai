@@ -74,7 +74,7 @@ function ListClasses({ stats }: {stats: IStats}) {
     return <div>
         <h2>Classi che hanno partecipato</h2>
         <ul>
-            { stats.classes.map(c => 
+            { stats.polls.map(c => 
                     <li key={c._id.toString()}>
                         {c.school} {c.class}
                     </li>

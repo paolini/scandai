@@ -27,7 +27,10 @@ export default async function handler(
             }
         } else {
             // anonymous user can only see public polls
-            filter['public'] = true
+            // or get a specific poll by secret
+            if (req.query.secret===undefined) {
+                filter['public'] = true
+            }
         }
         
         try {

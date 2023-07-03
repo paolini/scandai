@@ -24,15 +24,23 @@ export default function Poll({}) {
     // pollQuery.data is set if loading completes with no error
     // but you get pollQuery.data undefined if the query is disabled (secret===undefined)
     if (pollQuery.isLoading || secret===undefined) return <Loading />
+
+    let poll;
     if (!pollQuery.data) {
-        return <Error>{pollQuery.error.message}</Error>
+        return <Page>
+            <Error>Errore: {pollQuery.error.message}</Error>
+        </Page>
+    } else if (pollQuery.data.data.length !== 1) {
+        return <Page>
+            <Error>Errore: sondaggio non trovato</Error>
+        </Page>
+    } else {
+        poll = pollQuery.data.data[0]
     }
-
-    const [poll] = pollQuery.data.data
-
+    
     const myUrl = window.location.href
 
-    console.log(`state: ${value(state)}`)
+    console.log(`state: ${value(state)}, poll: ${JSON.stringify(poll)}`)
 
     switch(value(state)) {
         case 'init': return <Page>
@@ -44,23 +52,27 @@ export default function Poll({}) {
                     compila il questionario
                 </Button>
                 <Button className="flex m-4" onClick={() => {copyToClipboard(myUrl);addMessage('success', 'indirizzo (url) copiato')}}>
-                    <FaShareAlt /> copia l'indirizzo del questionario
+                    <FaShareAlt /> copia l&apos;indirizzo del questionario
                 </Button>
                 <QRCode className="flex m-4 w-100" value={myUrl} />
             </div>
         </Page>
         case 'started': return <Questions done={() => set(state, 'completed')} poll={poll} />
-        case 'completed': return <Card>
-            <Card.Body>
-                <Card.Title>Grazie!</Card.Title>
-                <Card.Text>
-                    <p>Grazie per aver compilato il questionario!</p>
-                    <p>Puoi chiudere questa pagina.</p>
-                </Card.Text>
-            </Card.Body>    
-            <Card.Footer>
-                <Button variant="danger" onClick={() => set(state, 'init')}>compila un altro questionario</Button>
-            </Card.Footer>
-        </Card>
+        case 'completed': return <Page>
+            <Card>
+                <Card.Body>
+                    <Card.Title>Grazie!</Card.Title>
+                    <Card.Text>
+                        <p>Grazie per aver compilato il questionario!</p>
+                        <p>Puoi chiudere questa pagina.</p>
+                    </Card.Text>
+                </Card.Body>    
+                <Card.Footer>
+                    <Button variant="danger" onClick={() => set(state, 'init')}>compila un altro questionario</Button>
+                </Card.Footer>
+            </Card>
+        </Page>
+        case 'error': return <Page>            
+        </Page>
     }
 }
