@@ -8,14 +8,14 @@ export type Answer = LanguageAnswer | MapLanguageToAgeAnswer | MapLanguageToComp
 
 export interface IEntry {
     _id: Types.ObjectId,
-    classId: Types.ObjectId,
+    pollId: Types.ObjectId,
     answers: {
         [key: QuestionCode]: Answer
     },
 }
 
 const EntrySchema = new mongoose.Schema({
-    classId: {
+    pollId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Poll',
         required: true,

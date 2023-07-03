@@ -40,6 +40,7 @@ export function Splash({}) {
   const sessionUser = useSessionUser()
 
   if (sessionUser === undefined) return <Loading />
+  
   if (sessionUser === null) return <>
     <h1>Fotografia linguistica</h1>
     <p>se vuoi somministrare il questionario ad una classe 
@@ -51,51 +52,10 @@ export function Splash({}) {
           }}>fare il login</a>.
     </p>
   </>
+
   return <>
     <h1>Fotografia linguistica</h1>
     <p>Benvenuto {sessionUser.name || sessionUser.username}!</p>
     <Polls />  
   </>
-}
-
-export function OldSplash({}) {
-  const [started, setStarted] = useState<boolean>(false)
-  const [myClass, setMyClass] = useState<IPoll>()
-  const [submitted, setSubmitted] = useState<boolean>(false)
-  const addMessage = useAddMessage()
-
-  async function submit(answers: IAnswers) {
-    const classId = myClass?myClass._id:''
-    try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          answers,
-          classId,
-        })
-      })
-      console.log(res)
-      if (res.status === 200) {
-        setSubmitted(true)
-      } else {
-        addMessage('error', res.statusText)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  return (
-    <>
-          { (!started) && <Welcome 
-                start={() => setStarted(true)}
-                myClass={myClass}
-                setMyClass={setMyClass}
-                /> }
-          { started && myClass && <Questions submit={submit} submitted={submitted} myClass={myClass} />}
-    </>
-  )
 }
