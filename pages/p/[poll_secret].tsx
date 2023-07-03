@@ -72,7 +72,5 @@ export default function Poll({}) {
                 </Card.Footer>
             </Card>
         </Page>
-        case 'error': return <Page>            
-        </Page>
     }
 }
