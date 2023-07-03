@@ -1,7 +1,5 @@
 import mongoose, {Types} from 'mongoose'
 
-import { LanguageCode } from '@/lib/questions'
-
 export type QuestionCode = string
 export type LanguageAnswer = string[]
 export type MapLanguageToCompetenceAnswer = {[key: string]: {[key: string]: string}}
@@ -19,7 +17,7 @@ export interface IEntry {
 const EntrySchema = new mongoose.Schema({
     classId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Poll',
         required: true,
     },
     answers: {

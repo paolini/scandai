@@ -7,7 +7,7 @@ import getSessionUser from '@/lib/getSessionUser'
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
-        const user = await getSessionUser(req, res)
+        const user = await getSessionUser(req)
         if (!user) {
             return res.status(401).json({error: 'not authenticated'})
         }
@@ -16,17 +16,25 @@ export default async function handler(
         }
         const user_id = req.query.user_id as string
 
-        const aUser = await User.find({_id: new ObjectId(user_id)})
+        const aUser = await User.findOne({_id: new ObjectId(user_id)})
 
         if (req.method === 'GET') {
             return res.json({data: aUser})
         }
 
         if (req.method === 'PATCH') {
-            if ('isAdmin' in req.body) {
-                aUser[0].isAdmin = req.body.isAdmin
-                await aUser[0].save()
-                return res.json({data: aUser})
+            let body
+            try {
+                body = JSON.parse(req.body)
+            } catch(error) {
+                return res.status(400).json({error: 'invalid json'})
             }
+            for (const key of ["isAdmin"]) {
+                if (Object.keys(body).includes(key)) {
+                    aUser[key] = body[key]
+                }
+            }
+            const out = await aUser.save()
+            return res.json({data: out})
         }
     }

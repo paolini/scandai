@@ -4,7 +4,7 @@ import { useUsers } from '@/lib/api'
 import Headers from '@/components/Header'
 import { IUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
-import { Data } from '@/lib/api'
+import { Data, patchUser } from '@/lib/api'
 import useSessionUser from '@/lib/useSessionUser'
 
 export default function Users() {
@@ -18,21 +18,10 @@ export default function Users() {
     const setAdmin = async (user: IUser, isAdmin: boolean) => {
         if (user.isAdmin === isAdmin) return
         try {
-            const res = await fetch(`/api/user/${user._id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({isAdmin})
-              })
-
-            if (!res.ok) {
-                addMessage(`error updating user ${user._id}, ${res.status} ${res.statusText}`)
-                return
-            }
-            const newData: Data<IUser> = await res.json()
+            const newData = patchUser({_id: user._id, isAdmin }) 
             usersQuery.mutate()
         } catch(e) {
+            addMessage('error', `error updating user: ${e}`)
             console.error(e)
         }
     }

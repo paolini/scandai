@@ -1,5 +1,5 @@
 import Entry, { IEntry } from '@/models/Entry'
-import { IClass } from '@/models/Class'
+import { IClass } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import data, { IQuestion, extractQuestions, extractLevels } from '../../lib/questions'
 import { assert } from '@/lib/assert'

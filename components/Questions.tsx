@@ -6,7 +6,7 @@ import questionsData, { extractQuestions, extractSubsections, extractExtraLangua
 import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
 import { AddMessageContext } from '@/components/Messages'
-import { IClass } from '@/models/Class'
+import { IClass } from '@/models/Poll'
 
 export default function Questions({submit, submitted, myClass } : {
     submit: (answers: IAnswers) => void, 

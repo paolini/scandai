@@ -2,7 +2,7 @@ import { Dispatch } from 'react'
 
 import { assert } from '@/lib/assert' 
 import { useClasses } from '@/lib/api'
-import { IClass } from '@/models/Class'
+import { IClass } from '@/models/Poll'
 
 export default function ClassSelector({myClass, setMyClass}: 
     {myClass: IClass|undefined, setMyClass: Dispatch<IClass|undefined>}) {

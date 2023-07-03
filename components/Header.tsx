@@ -3,12 +3,10 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
 import package_json from '../package.json'
-//import { name, version } from '../package.json'
 
 export default function Header() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const router = useRouter()
-  const loading = status === "loading"
 
   return <Navbar bg="light" expand="lg">
     { false && JSON.stringify(session) }

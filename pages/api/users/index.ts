@@ -6,7 +6,7 @@ import getSessionUser from '@/lib/getSessionUser'
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
-        const user = await getSessionUser(req, res)
+        const user = await getSessionUser(req)
         if (!user) {
             return res.status(401).json({error: 'not authenticated'})
         }

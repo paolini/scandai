@@ -1,12 +1,9 @@
 import { getToken } from 'next-auth/jwt'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 
-export default async function getSessionUser(
-    req: NextApiRequest,
-    res: NextApiResponse) {
+export default async function getSessionUser(req: NextApiRequest) {
     const token = await getToken({req})
     if (!token) return null
-    // const session = await getServerSession(req, res, authOptions)
     return token.dbUser
   }
   

@@ -1,12 +1,16 @@
 import { useState, useContext, Dispatch } from 'react'
 import { Button } from 'react-bootstrap'
+import { signIn } from 'next-auth/react'
 
-import {IClass} from '@/models/Class'
+import {IPoll} from '@/models/Poll'
 import Questions from '@/components/Questions'
 import ClassSelector from '@/components/ClassSelector'
 import { IAnswers } from '@/components/Question'
-import { AddMessageContext } from '@/components/Messages'
+import { useAddMessage } from '@/components/Messages'
 import Page from '@/components/Page'
+import useSessionUser from '@/lib/useSessionUser'
+import Loading from '@/components/Loading'
+import Polls from '../components/Polls'
 
 export default function Index({}) {
     return <Page>
@@ -16,8 +20,8 @@ export default function Index({}) {
 
 function Welcome({start, myClass, setMyClass}:{
   start: () => void,
-  myClass: IClass|undefined,
-  setMyClass: Dispatch<IClass|undefined>,
+  myClass: IPoll|undefined,
+  setMyClass: Dispatch<IPoll|undefined>,
 }) {
   return <div>
       <h1>Benvenuto</h1>
@@ -33,10 +37,32 @@ function Welcome({start, myClass, setMyClass}:{
 }
 
 export function Splash({}) {
+  const sessionUser = useSessionUser()
+
+  if (sessionUser === undefined) return <Loading />
+  if (sessionUser === null) return <>
+    <h1>Fotografia linguistica</h1>
+    <p>se vuoi somministrare il questionario ad una classe 
+    devi <a
+          href={`/api/auth/signin`}
+          onClick={(e) => {
+            e.preventDefault()
+            signIn()
+          }}>fare il login</a>.
+    </p>
+  </>
+  return <>
+    <h1>Fotografia linguistica</h1>
+    <p>Benvenuto {sessionUser.name || sessionUser.username}!</p>
+    <Polls />  
+  </>
+}
+
+export function OldSplash({}) {
   const [started, setStarted] = useState<boolean>(false)
-  const [myClass, setMyClass] = useState<IClass>()
+  const [myClass, setMyClass] = useState<IPoll>()
   const [submitted, setSubmitted] = useState<boolean>(false)
-  const addMessage = useContext(AddMessageContext)
+  const addMessage = useAddMessage()
 
   async function submit(answers: IAnswers) {
     const classId = myClass?myClass._id:''
@@ -55,7 +81,7 @@ export function Splash({}) {
       if (res.status === 200) {
         setSubmitted(true)
       } else {
-        addMessage(res.statusText)
+        addMessage('error', res.statusText)
       }
     } catch (e) {
       console.error(e)
