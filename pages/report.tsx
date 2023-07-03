@@ -59,7 +59,7 @@ export default function Report() {
 
 function CompetenceLegend() {
     const competences = questionsData.competences
-    return <p>
+    return <div>
         <b>Legenda</b>
         <br/>
         <i>abilità:</i>
@@ -67,14 +67,14 @@ function CompetenceLegend() {
             {competences.map(c =>
                 <li key={c.code}>{c.code}: {c.it}</li>)}                
         </ul>
-    </p>
+    </div>
 }
 
 function ListClasses({ stats }: {stats: IStats}) {
     return <div>
         <h2>Classi che hanno partecipato</h2>
         <ul>
-            { stats.classes.map(c => 
+            { stats.polls.map(c => 
                     <li key={c._id.toString()}>
                         {c.school} {c.class}
                     </li>

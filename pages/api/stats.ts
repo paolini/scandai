@@ -1,13 +1,12 @@
-import dbConnect from '../../lib/mongodb'
 import Entry, { IEntry } from '@/models/Entry'
-import { IClass } from '@/models/Class'
+import { IPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import data, { IQuestion, extractQuestions, extractLevels } from '../../lib/questions'
 import { assert } from '@/lib/assert'
 
 export interface IStats {
     questions: IQuestionStat[],
-    classes: IClass[],
+    polls: IPoll[],
     entriesCount: number,
 }
 
@@ -67,11 +66,11 @@ export interface IMapLanguageToAgeStat {
     }
 }
 
-export interface IEntryWithClass extends IEntry {
-    class: IClass,
+export interface IEntryWithPoll extends IEntry {
+    poll: IPoll,
 }
 
-function aggregate(entries: IEntryWithClass[]): IStats {
+function aggregate(entries: IEntryWithPoll[]): IStats {
     const questionsList = extractQuestions(data)
     const questionsMap = Object.fromEntries(questionsList.map(question => [question.code, question]))
     let allLanguages = Object.keys(data.languages)
@@ -210,22 +209,21 @@ function aggregate(entries: IEntryWithClass[]): IStats {
 
         return {question, type: 'error', error: 'unknown question type'}
     })
-    const classIds: string[] = []
-    const classes: IClass[] = []
+    const pollIds: string[] = []
+    const polls: IPoll[] = []
     for (const e of entries) {
-        if (!classIds.includes(e.class._id.toString())) {
-            classIds.push(e.class._id.toString())
-            classes.push(e.class)
-        }
-    }
+        if (!e.poll) continue
+        if (!pollIds.includes(e.poll._id.toString())) {
+            pollIds.push(e.poll._id.toString())
+            polls.push(e.poll)
+        }    }
     const entriesCount = entries.length
-    return { questions, classes, entriesCount}
+    return { questions, polls, entriesCount}
 }
 
 export default async function handler(
     req: NextApiRequest, 
     res: NextApiResponse) {
-    await dbConnect
     try {
         const entries = await Entry.aggregate([
             {$lookup: {

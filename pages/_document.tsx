@@ -5,8 +5,14 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body>
+      <main 
+        className="flex p-2 flex-col items-center justify-between p-24 mx-auto"
+        style={{maxWidth: '80rem'}}
+      >
         <Main />
-        <NextScript />
+      </main>
+        
+      <NextScript />  
       </body>
     </Html>
   )

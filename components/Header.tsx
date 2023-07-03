@@ -1,15 +1,15 @@
-import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 import package_json from '../package.json'
-//import { name, version } from '../package.json'
 
 export default function Header() {
-  const { data: session, status } = useSession()
-  const loading = status === "loading"
+  const { data: session } = useSession()
+  const router = useRouter()
 
   return <Navbar bg="light" expand="lg">
-    { /*JSON.stringify(session) */}
+    { false && JSON.stringify(session) }
     <Container>
       <Navbar.Brand href="/">{package_json.name}-{package_json.version}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -17,15 +17,13 @@ export default function Header() {
         <Nav className="me-auto">
           <Nav.Link href="/report">Report</Nav.Link>
           <Nav className="right">
-          {!session && <NavDropdown title="admin">
-            <NavDropdown.Item>
-              <Nav.Link
+          {!session && <NavDropdown title="user">
+            <NavDropdown.Item
                 href={`/api/auth/signin`}
                 onClick={(e) => {
                   e.preventDefault()
                   signIn()
-                }}
-                >login</Nav.Link>
+                }}>login
             </NavDropdown.Item>
           </NavDropdown>} 
           {session && session.user &&
@@ -41,14 +39,20 @@ export default function Header() {
                 />}
                 <span className="me-2">{session.user.email}</span>
               </>}>
-                <NavDropdown.Item>
-                  <Nav.Link
+                { session.dbUser?.isAdmin && 
+                  <NavDropdown.Item
+                      href="/users"
+                      onClick={(e) => {e.preventDefault(); router.push('/users')}}>
+                        users
+                  </NavDropdown.Item>
+                }
+                <NavDropdown.Item
                     href={`/api/auth/signout`}
                     onClick={(e) => {
                       e.preventDefault()
                       signOut()
                     }}  
-                  >logout</Nav.Link>
+                  >logout
                 </NavDropdown.Item>
             </NavDropdown>}
          </Nav>
