@@ -75,6 +75,10 @@ export default NextAuth({
     // Configure one or more authentication providers
     providers,
 
+    pages: {
+        error: '/error',
+    },
+
     adapter: MongoDBAdapter(clientPromise),
 
     session: {

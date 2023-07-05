@@ -9,7 +9,7 @@ import { get, value, array, remove, State } from '@/lib/State'
 export default function Page({header=true, title, children} : {
       header?: boolean
       title?: string,
-      children: React.ReactNode,
+      children?: React.ReactNode,
     }) {
     const messagesState = useMessagesState()
 

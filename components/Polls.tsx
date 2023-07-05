@@ -15,6 +15,7 @@ export default function Polls({}) {
     const pollsQuery = usePolls()
     const addPollState = useState<boolean>(false)
     const user = useSessionUser()
+    const addMessage = useAddMessage()
 
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
@@ -26,7 +27,7 @@ export default function Polls({}) {
             await deletePoll(poll)
             pollsQuery.mutate()
         } catch(err) {
-            useAddMessage()('error', `errore nella cancellazione del sondaggio: ${err}`)
+            addMessage('error', `errore nella cancellazione del sondaggio: ${err}`)
         }
     }
 

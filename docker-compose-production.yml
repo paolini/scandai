@@ -6,10 +6,14 @@ services:
     restart: unless-stopped
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/scandai
-      - GOOGLE_CLIENT_ID=xxxxxx
-      - GOOGLE_CLIENT_SECRET=yyyyyy
+      - GOOGLE_CLIENT_ID=xxxxx
+#      - GOOGLE_CLIENT_SECRET=xxxxx
+#      - NEXTAUTH_SECRET=xxxxx
+      - NEXTAUTH_URL=https://<your server>/api/auth
+#      - ADMIN_USERNAME=admin
+#      - ADMIN_PASSWORD= 
 #    ports:
-      - 3000:3000
+#      - 3000:3000
     networks:
       - backend
 

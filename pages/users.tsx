@@ -18,7 +18,7 @@ export default function Users() {
     const setAdmin = async (user: IUser, isAdmin: boolean) => {
         if (user.isAdmin === isAdmin) return
         try {
-            const newData = patchUser({_id: user._id, isAdmin }) 
+            const newData = await patchUser({_id: user._id, isAdmin }) 
             usersQuery.mutate()
         } catch(e) {
             addMessage('error', `error updating user: ${e}`)

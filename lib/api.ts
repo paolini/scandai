@@ -22,12 +22,8 @@ export interface Data<T> {
     data: T
 }
 
-export function index<T>(url: string, query?: any, enabled=true) {
-    if (enabled) {
-        return useSWR<Data<T>>([`/api/${url}`, query], fetcher)
-    } else {
-        return useSWR<Data<T>>(null, fetcher)
-    }
+export function useIndex<T>(url: string, query?: any, enabled=true) {
+    return useSWR<Data<T>>([enabled ? `/api/${url}` : null, query], fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
@@ -56,7 +52,7 @@ export async function patch(url: string, obj: WithId) {
 }
 
 export function usePolls(filter?: any, enabled=true) {
-    return index<IGetPoll[]>('polls', filter, enabled)
+    return useIndex<IGetPoll[]>('polls', filter, enabled)
 }
 
 export async function postPoll(poll: IPostPoll) {
@@ -68,15 +64,15 @@ export async function deletePoll(poll: IGetPoll) {
 }
 
 export function useEntries() {
-    return index<IEntry[]>('entries')
+    return useIndex<IEntry[]>('entries')
 }
 
 export function useStats() {
-    return index<IStats>('stats')
+    return useIndex<IStats>('stats')
 }
 
 export function useUsers() {
-    return index<IUser[]>('users')
+    return useIndex<IUser[]>('users')
 }
 
 export function patchUser(user: any) {
