@@ -9,7 +9,14 @@ export interface IPostPoll {
 export interface IGetPoll extends IPostPoll {
     _id: string,
     secret: string,
-    createdBy: string,
+    createdBy: {
+        _id: string,
+        name?: string,
+        email?: string,
+        image?: string,
+        username?: string,
+    },
+    entriesCount: number,
 }
 
 export interface IPoll extends IPostPoll {

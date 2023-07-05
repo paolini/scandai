@@ -8,11 +8,13 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { State, value, set, get } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
+import useSessionUser from '@/lib/useSessionUser'
 
 export default function Polls({}) {
 //    const sessionUser = useSessionUser()
     const pollsQuery = usePolls()
     const addPollState = useState<boolean>(false)
+    const user = useSessionUser()
     const addMessage = useAddMessage()
 
     if (pollsQuery.isLoading) return <Loading />
@@ -44,13 +46,17 @@ export default function Polls({}) {
             <table className="table">
                 <thead>
                     <tr>
+                        { user?.isAdmin && <th>utente</th> }
                         <th>scuola</th>
                         <th>classe</th>
+                        <th>n. rilevazioni</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {polls.map(poll => <tr key={poll._id.toString()}>
+                            { user?.isAdmin && <td>
+                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
                         <td>
                             {poll.school}
                         </td>
@@ -58,9 +64,12 @@ export default function Polls({}) {
                             {poll.class}
                         </td>
                         <td>
+                            {poll.entriesCount}
+                        </td>
+                        <td>
                             <ButtonGroup>
                             <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                apri
+                                {poll.createdBy._id === (user?._id)?.toString() ? 'somministra' : 'compila'}
                             </a>
                             <Button variant="danger" size="sm" onClick={() => remove(poll)}>
                                 <FaTrashCan />elimina
