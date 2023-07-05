@@ -8,11 +8,13 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { State, value, set, get } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
+import useSessionUser from '@/lib/useSessionUser'
 
 export default function Polls({}) {
 //    const sessionUser = useSessionUser()
     const pollsQuery = usePolls()
     const addPollState = useState<boolean>(false)
+    const user = useSessionUser()
 
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
@@ -43,6 +45,7 @@ export default function Polls({}) {
             <table className="table">
                 <thead>
                     <tr>
+                        { user?.isAdmin && <th>utente</th> }
                         <th>scuola</th>
                         <th>classe</th>
                         <th></th>
@@ -50,6 +53,8 @@ export default function Polls({}) {
                 </thead>
                 <tbody>
                     {polls.map(poll => <tr key={poll._id.toString()}>
+                            { user?.isAdmin && <td>
+                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
                         <td>
                             {poll.school}
                         </td>

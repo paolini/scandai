@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import randomstring from 'randomstring'
+import { ObjectId } from 'mongodb'
 
 import Poll from '@/models/Poll'
 import getSessionUser from '@/lib/getSessionUser'
@@ -23,15 +24,38 @@ export default async function handler(
         if (user) {
             if (!user.isAdmin) {
                 // non admin vede solo i suoi poll
-                filter['createdBy'] = user._id
+                filter['createdBy'] = new ObjectId(user._id)
             }
         } else {
             // anonymous user can only see public polls
             filter['public'] = true
         }
+
+        const pipeline = [
+            { $match: filter },
+            { $lookup: {
+                from: 'users',
+                localField: 'createdBy',
+                foreignField: '_id',
+                as: 'createdBy',
+                pipeline: [
+                    { $project: {
+                        _id: 1,
+                        name: 1,
+                        email: 1,
+                        image: 1,
+                        username: 1,
+                    }}
+                ]
+            }},
+            {
+                $unwind: '$createdBy'
+            },
+        ]
         
+        console.log('Poll pipeline', JSON.stringify(pipeline))
         try {
-            const data = await Poll.find(filter)
+            const data = await Poll.aggregate(pipeline)
             return res.status(200).json({ data, filter })
         } catch (error) {
             console.log(`database error: ${error}`)
