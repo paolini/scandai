@@ -16,6 +16,7 @@ export interface IGetPoll extends IPostPoll {
         image?: string,
         username?: string,
     },
+    entriesCount: number,
 }
 
 export interface IPoll extends IPostPoll {

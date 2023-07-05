@@ -49,6 +49,7 @@ export default function Polls({}) {
                         { user?.isAdmin && <th>utente</th> }
                         <th>scuola</th>
                         <th>classe</th>
+                        <th>n. rilevazioni</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -63,9 +64,12 @@ export default function Polls({}) {
                             {poll.class}
                         </td>
                         <td>
+                            {poll.entriesCount}
+                        </td>
+                        <td>
                             <ButtonGroup>
                             <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                apri
+                                {poll.createdBy._id === (user?._id)?.toString() ? 'somministra' : 'compila'}
                             </a>
                             <Button variant="danger" size="sm" onClick={() => remove(poll)}>
                                 <FaTrashCan />elimina
