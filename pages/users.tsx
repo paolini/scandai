@@ -2,9 +2,9 @@ import Switch from "react-switch"
 
 import { useUsers } from '@/lib/api'
 import Headers from '@/components/Header'
-import { IUser } from '@/models/User'
+import { IGetUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
-import { Data, patchUser } from '@/lib/api'
+import { patchUser } from '@/lib/api'
 import useSessionUser from '@/lib/useSessionUser'
 
 export default function Users() {
@@ -15,7 +15,7 @@ export default function Users() {
     if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
     const users = usersQuery.data.data
 
-    const setAdmin = async (user: IUser, isAdmin: boolean) => {
+    const setAdmin = async (user: IGetUser, isAdmin: boolean) => {
         if (user.isAdmin === isAdmin) return
         try {
             const newData = await patchUser({_id: user._id, isAdmin }) 

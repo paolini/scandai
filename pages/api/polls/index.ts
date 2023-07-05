@@ -30,6 +30,8 @@ export default async function handler(
             // anonymous user can only see public polls
             // or get a specific poll by secret
             if (req.query.secret===undefined) {
+                // attualmente "public" non è valorizzato
+                // quindi si otterrà sempre un array vuoto
                 filter['public'] = true
             }
         }

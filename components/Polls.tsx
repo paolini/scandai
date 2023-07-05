@@ -69,7 +69,7 @@ export default function Polls({}) {
                         <td>
                             <ButtonGroup>
                             <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                {poll.createdBy._id === (user?._id)?.toString() ? 'somministra' : 'compila'}
+                                {poll.createdBy._id === user?._id ? 'somministra' : 'compila'}
                             </a>
                             <Button variant="danger" size="sm" onClick={() => remove(poll)}>
                                 <FaTrashCan />elimina
