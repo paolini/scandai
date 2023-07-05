@@ -21,6 +21,12 @@ export default function Polls({}) {
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
 
     const polls = pollsQuery.data.data
+    let openPolls = polls
+        .filter(poll => poll.closedAt === null)
+        .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
+    let closedPolls = polls
+        .filter(poll => poll.closedAt !== null)
+        .sort((a,b) => a.closedAt > b.closedAt ? -1 : 1)
 
     async function remove(poll: IGetPoll) {
         try {
@@ -42,18 +48,19 @@ export default function Polls({}) {
                 nuovo questionario
             </Button>
         }
-        { polls.length > 0 && 
+        { openPolls.length > 0 && 
             <table className="table">
                 <thead>
                     <tr>
                         { user?.isAdmin && <th>utente</th> }
                         <th>scuola</th>
                         <th>classe</th>
+                        <th>n. rilevazioni</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {polls.map(poll => <tr key={poll._id.toString()}>
+                    {openPolls.map(poll => <tr key={poll._id.toString()}>
                             { user?.isAdmin && <td>
                                 {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
                         <td>
@@ -63,9 +70,46 @@ export default function Polls({}) {
                             {poll.class}
                         </td>
                         <td>
+                            {poll.entriesCount}
+                        </td>
+                        <td>
                             <ButtonGroup>
                             <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                apri
+                                {poll.createdBy._id === (user?._id)?.toString() ? 'somministra' : 'compila'}
+                            </a>
+                            <Button variant="danger" size="sm" onClick={() => remove(poll)}>
+                                <FaTrashCan />elimina
+                            </Button>
+                            </ButtonGroup>
+                        </td>
+                    </tr>)}
+                </tbody>
+            </table>
+        }
+        { closedPolls.length > 0 && 
+            <table className="table">
+                <thead>
+                    <tr>
+                        { user?.isAdmin && <th>utente</th> }
+                        <th>data</th>
+                        <th>scuola</th>
+                        <th>classe</th>
+                        <th>n. rilevazioni</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {closedPolls.map(poll => <tr key={poll._id.toString()}>
+                            { user?.isAdmin && <td>
+                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
+                        <td>{poll.closedAt.toLocaleDateString()}</td>
+                        <td>{poll.school}</td>
+                        <td>{poll.class}</td>
+                        <td>{poll.entriesCount}</td>
+                        <td>
+                            <ButtonGroup>
+                            <a className="btn btn-success" href={`/p/${poll.secret}`}>
+                                {poll.createdBy._id === user?._id ? 'somministra' : 'compila'}
                             </a>
                             <Button variant="danger" size="sm" onClick={() => remove(poll)}>
                                 <FaTrashCan />elimina

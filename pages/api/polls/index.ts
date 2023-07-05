@@ -54,6 +54,26 @@ export default async function handler(
             {
                 $unwind: '$createdBy'
             },
+            // count the number of entries
+            // related to the poll
+            {
+                $lookup: {
+                  from: "entries", // The name of the Entry collection
+                  localField: "_id", // The field in the Poll collection
+                  foreignField: "pollId", // The field in the Entry collection
+                  as: "entries" // The field to store the matched entries
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    school: 1,
+                    class: 1,
+                    secret: 1,
+                    createdBy: 1,
+                    entriesCount: { $size: "$entries" } // Calculate the size of the entryCount array
+                }
+            }            
         ]
         
         console.log('Poll pipeline', JSON.stringify(pipeline))
