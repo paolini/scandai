@@ -4,14 +4,14 @@ import mongoose, {Types} from 'mongoose'
 export interface IPostPoll {
     school: string,
     class: string,
-    closedAt: Date|null,
+    closed: boolean, 
 }
 
 export interface IGetPoll extends IPostPoll {
     _id: string,
     secret: string,
     entriesCount: number,
-    closedAt: Date,
+    date: string,
     createdBy: {
         _id: string,
         name?: string,
@@ -19,7 +19,7 @@ export interface IGetPoll extends IPostPoll {
         image?: string,
         username?: string,
     },
-    createdAt: Date,
+    createdAt: string,
 }
 
 export interface IPoll extends IPostPoll {
@@ -46,10 +46,14 @@ const PollSchema = new mongoose.Schema({
         ref: 'User',
         required: true,     
     },
-    closedAt: {
+    date: {
         type: Date,
         default: null,
     },
+    closed: {
+        type: Boolean,
+        default: false,
+    }
 }, {
     timestamps: true
 })

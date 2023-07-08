@@ -12,6 +12,7 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table } from 'react-bootstrap'
+import { useRouter } from 'next/router'
 
 import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
@@ -38,7 +39,8 @@ ChartJS.register(
 )
 
 export default function Report() {
-    const statsQuery = useStats()
+    const router = useRouter()
+    const statsQuery = useStats(router.query)
 
     if (statsQuery.isLoading) return <div>Loading...</div>
     if (!statsQuery.data) return <div>Failed to load</div>

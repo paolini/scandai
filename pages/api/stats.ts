@@ -4,6 +4,46 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import data, { IQuestion, extractQuestions, extractLevels } from '../../lib/questions'
 import { assert } from '@/lib/assert'
 
+import getSessionUser from '@/lib/getSessionUser'
+
+export default async function handler(
+    req: NextApiRequest, 
+    res: NextApiResponse) {
+        const user = await getSessionUser(req)
+
+        let pipeline: any = [
+            {$lookup: {
+                from: 'polls',
+                localField: 'pollId',
+                foreignField: '_id',
+                as: 'poll'
+            }}, 
+            {$unwind: '$poll'},
+        ]
+
+        if (!user) {
+            return res.status(401).json({error: 'not authenticated'})
+        }
+
+        if (!user.isAdmin) {
+            pipeline.push({$match: {'poll.createdBy': user._id}})
+        }
+
+        if (req.query.poll_id) {
+            pipeline.push({$match: {'poll._id': req.query.poll_id}})
+        }
+
+        try {
+            const entries = await Entry.aggregate(pipeline)
+            const data: IStats = aggregate(entries)
+            res.status(200).json({ data })
+        } catch (error) {
+            console.error(error)
+            console.log(`database error: ${error}`)
+            res.status(400).json({ error })
+        }
+}
+
 export interface IStats {
     questions: IQuestionStat[],
     polls: IPoll[],
@@ -221,24 +261,3 @@ function aggregate(entries: IEntryWithPoll[]): IStats {
     return { questions, polls, entriesCount}
 }
 
-export default async function handler(
-    req: NextApiRequest, 
-    res: NextApiResponse) {
-    try {
-        const entries = await Entry.aggregate([
-            {$lookup: {
-                from: 'classes',
-                localField: 'classId',
-                foreignField: '_id',
-                as: 'class'
-            }}, 
-            {$unwind: '$class'}
-        ])
-        const data: IStats = aggregate(entries)
-        res.status(200).json({ data })
-    } catch (error) {
-        console.error(error)
-        console.log(`database error: ${error}`)
-        res.status(400).json({ error })
-    }
-}
