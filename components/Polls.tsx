@@ -22,10 +22,10 @@ export default function Polls({}) {
 
     const polls = pollsQuery.data.data
     let openPolls = polls
-        .filter(poll => poll.closedAt === null)
+        .filter(poll => !poll.closedAt)
         .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
     let closedPolls = polls
-        .filter(poll => poll.closedAt !== null)
+        .filter(poll => poll.closedAt)
         .sort((a,b) => a.closedAt > b.closedAt ? -1 : 1)
 
     async function remove(poll: IGetPoll) {
