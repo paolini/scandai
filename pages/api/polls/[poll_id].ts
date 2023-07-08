@@ -28,4 +28,24 @@ export default async function handler(
             const out = await Poll.deleteOne({_id: poll._id})
             return res.status(200).json({ data: out })
         }
+
+        if (req.method === 'PATCH') {
+            let body
+            try {
+                body = JSON.parse(req.body)
+            } catch(error) {
+                return res.status(400).json({error: 'invalid json'})
+            }
+            if (body.closed !== undefined) {
+                if (body.closed && !poll.closed) {
+                    poll.date = new Date()
+                }
+                poll.closed = body.closed
+            }
+            console.log('patch poll', poll)
+            const out = await poll.save()
+            console.log('out', out)
+            return res.json({data: out})
+        }
+
     }

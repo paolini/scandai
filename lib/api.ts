@@ -26,6 +26,10 @@ export function useIndex<T>(url: string, query?: any, enabled=true) {
     return useSWR<Data<T>>([enabled ? `/api/${url}` : null, query], fetcher)
 }
 
+export function useGet<T>(url: string, id_: string) {
+    return useSWR<Data<T>>([`/api/${url}/${id_}`], fetcher)
+}
+
 export async function post<T>(url: string, data: T) {
     return await fetcher([`/api/${url}`], {
         method: 'POST',
@@ -59,6 +63,10 @@ export async function postPoll(poll: IPostPoll) {
     return await post<IPostPoll>('polls', poll)
 }
 
+export async function patchPoll(poll: any) {
+    return await patch('polls', poll)
+}
+
 export async function deletePoll(poll: IGetPoll) {
     await remove('polls', poll)
 }
@@ -67,8 +75,8 @@ export function useEntries() {
     return useIndex<IEntry[]>('entries')
 }
 
-export function useStats() {
-    return useIndex<IStats>('stats')
+export function useStats(query?: any) {
+    return useIndex<IStats>('stats', query)
 }
 
 export function useUsers() {

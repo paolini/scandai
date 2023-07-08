@@ -1,35 +1,35 @@
 import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card } from 'react-bootstrap'
+import { useRouter } from 'next/router'
 
-import { usePolls, postPoll, deletePoll } from '@/lib/api'
+import { usePolls, postPoll, patchPoll, deletePoll } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { State, value, set, get } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
 import useSessionUser from '@/lib/useSessionUser'
+import { IGetUser } from '@/models/User'
+import { formatDate } from '@/lib/utils'
 
 export default function Polls({}) {
-//    const sessionUser = useSessionUser()
     const pollsQuery = usePolls()
     const addPollState = useState<boolean>(false)
     const user = useSessionUser()
-    const addMessage = useAddMessage()
+    const router = useRouter()
 
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
 
     const polls = pollsQuery.data.data
-
-    async function remove(poll: IGetPoll) {
-        try {
-            await deletePoll(poll)
-            pollsQuery.mutate()
-        } catch(err) {
-            addMessage('error', `errore nella cancellazione del sondaggio: ${err}`)
-        }
-    }
+    console.log('polls', polls)
+    let openPolls = polls
+        .filter(poll => !poll.closed)
+        .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
+    let closedPolls = polls
+        .filter(poll => poll.closed)
+        .sort((a,b) => a.date  > b.date ? -1 : 1)
 
     return <>
         { value(addPollState) 
@@ -37,51 +37,81 @@ export default function Polls({}) {
                 set(addPollState, false)
                 pollsQuery.mutate()
             }}/>
-            : <Button variant="primary" size="lg" onClick={_ => set(addPollState,true)}>
+            : <Button className="my-2" variant="primary" size="lg" onClick={_ => set(addPollState,true)}>
                 <FaCirclePlus className="m-1 bg-blue-300" /> 
                 nuovo questionario
             </Button>
         }
-        { polls.length > 0 && 
-            <table className="table">
-                <thead>
-                    <tr>
-                        { user?.isAdmin && <th>utente</th> }
-                        <th>scuola</th>
-                        <th>classe</th>
-                        <th>n. rilevazioni</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {polls.map(poll => <tr key={poll._id.toString()}>
-                            { user?.isAdmin && <td>
-                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
-                        <td>
-                            {poll.school}
-                        </td>
-                        <td>
-                            {poll.class}
-                        </td>
-                        <td>
-                            {poll.entriesCount}
-                        </td>
-                        <td>
-                            <ButtonGroup>
-                            <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                {poll.createdBy._id === user?._id ? 'somministra' : 'compila'}
-                            </a>
-                            <Button variant="danger" size="sm" onClick={() => remove(poll)}>
-                                <FaTrashCan />elimina
-                            </Button>
-                            </ButtonGroup>
-                        </td>
-                    </tr>)}
-                </tbody>
-            </table>
+        { openPolls.length > 0 && <Card className="my-2">
+            <Card.Header>
+                <b>questionari aperti</b>
+            </Card.Header>
+            <Card.Body>
+                <PollsTable user={user} polls={openPolls} />
+            </Card.Body>
+        </Card>
+        }
+        { closedPolls.length > 0 && 
+            <Card className="my-2">
+                <Card.Header>
+                    <b>questionari chiusi</b>
+                </Card.Header>
+                <Card.Body>
+                    <PollsTable user={user} polls={closedPolls} />
+            </Card.Body>
+        </Card>
         }
     </>
 }
+
+function PollsTable({user, polls}:{
+    user?: IGetUser|null,
+    polls: IGetPoll[],
+}) {
+    function OpenButton({poll}:{
+        poll: IGetPoll
+    }) {
+        return <a className="btn btn-success" href={`/p/${poll.secret}`}>
+            vedi
+        </a>
+    }
+
+    return <table className="table">
+        <thead>
+            <tr>
+                { user?.isAdmin && <th>utente</th> }
+                <th>data</th>
+                <th>scuola</th>
+                <th>classe</th>
+                <th>conteggio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {polls.map(poll => 
+            <tr key={poll._id.toString()}>
+                    { user?.isAdmin && <td>
+                        {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
+                <td>
+                    {formatDate(poll.date)}
+                </td>
+                <td>
+                    {poll.school}
+                </td>
+                <td>
+                    {poll.class}
+                </td>
+                <td>
+                    {poll.entriesCount}
+                </td>
+                <td>
+                    <OpenButton poll={poll} />
+                </td>
+            </tr>)}
+        </tbody>
+    </table>    
+}            
+
 
 function Input({state, id, placeholder}:{
     state: State<string>,
@@ -101,7 +131,7 @@ function Input({state, id, placeholder}:{
 function NewPoll({ done }:{
     done?: () => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: ''})
+    const pollState = useState<IPostPoll>({school: '', class: '', closed: false})
     const addMessage = useAddMessage()
 
     function isValid() {

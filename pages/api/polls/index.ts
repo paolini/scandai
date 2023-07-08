@@ -73,6 +73,9 @@ export default async function handler(
                     class: 1,
                     secret: 1,
                     createdBy: 1,
+                    closedAt: 1,
+                    closed: 1,
+                    date: 1,
                     entriesCount: { $size: "$entries" } // Calculate the size of the entryCount array
                 }
             }            
@@ -92,12 +95,19 @@ export default async function handler(
             return res.status(401).json({ error: 'not authenticated' })
         }
         try {
+            let secret
+            for(;;) {
+                secret = randomstring.generate({length: 6, readable: true})
+                const duplicate = await Poll.findOne({secret})
+                if (duplicate === null) break
+            }
             const body = JSON.parse(req.body)
             const poll = new Poll({
                 school: body.school,
                 class: body.class,
-                secret: randomstring.generate({length: 6, readable: true}),
+                secret,
                 createdBy: user._id,
+                date: new Date(),
             })
             const out = await poll.save()
             return res.status(200).json({ data: out })
