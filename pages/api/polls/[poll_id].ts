@@ -20,7 +20,7 @@ export default async function handler(
         }
 
         // only admins and owners can access poll
-        if (!user.isAdmin && !user._id.equals(poll.createdBy)) {
+        if (!user.isAdmin && user._id !== poll.createdBy.toString()) {
             return res.status(403).json({error: 'not authorized'})
         }
 

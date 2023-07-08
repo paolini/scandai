@@ -141,7 +141,7 @@ function Input({state, id, placeholder}:{
 function NewPoll({ done }:{
     done?: () => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: ''})
+    const pollState = useState<IPostPoll>({school: '', class: '', closedAt: null})
     const addMessage = useAddMessage()
 
     function isValid() {
