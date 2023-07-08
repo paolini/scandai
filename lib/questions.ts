@@ -37,7 +37,6 @@ export interface ICompetenceValue extends LocalizedString {
 
 export interface IQuestions {
     version: string,
-    submitMessage: LocalizedString,
     languages: {
         [key: string]: LocalizedString,
     },
@@ -51,9 +50,6 @@ export interface IQuestions {
 
 const questions : IQuestions = {
   version: "0.1.0",
-  submitMessage: {
-    it: "Grazie per aver compilato il questionario!",
-  },
   languages: {
     it: {
       it: 'Italiano',

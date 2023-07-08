@@ -13,6 +13,16 @@ function AgeAnswerRow({ code, language, ages, answer, setAnswer }
     setAnswer: Dispatch<(a: Answer)=>void>
   }) {
   assert(!Array.isArray(answer),"answer is not an object: "+JSON.stringify(answer))
+
+  function change(value: string) {
+    setAnswer(a => ({
+      ...a,
+      [code]: value
+    }))
+  }
+
+  if (answer[code] === undefined) change(ages[0].code)
+
   return <tr key={code}>
     <td>{typeof(language)==='string'? language : language.it}</td>
     {ages.map(age => <td key={age.code}>
@@ -21,10 +31,7 @@ function AgeAnswerRow({ code, language, ages, answer, setAnswer }
         name={code} 
         value={age.code} 
         checked={answer[code] === age.code} 
-        onChange={() => setAnswer(a => ({
-            ...a, 
-            [code]: age.code
-          }))}
+        onChange={() => change(age.code)}
       />
     </td>)}
   </tr>

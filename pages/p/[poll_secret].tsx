@@ -48,10 +48,12 @@ export default function PollSecret({}) {
                         <p>Grazie per aver compilato il questionario!</p>
                         <p>Puoi chiudere questa pagina.</p>
                     </Card.Text>
-                </Card.Body>    
+                </Card.Body> 
+                {/*   
                 <Card.Footer>
                     <Button variant="danger" onClick={() => set(state, 'init')}>compila un altro questionario</Button>
                 </Card.Footer>
+                */}
             </Card>
         </Page>
     }
