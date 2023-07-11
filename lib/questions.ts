@@ -53,65 +53,80 @@ const questions : IQuestions = {
   languages: {
     it: {
       it: 'Italiano',
+      fu: 'Talian',
     },
     fu: {
       it: 'Friulano (o varianti)',
+      fu: 'Furlan (o variantis)',
     },
     de: {
       it: 'Tedesco',
+      fu: 'Todesc',
     },
     sl: {
       it: 'Sloveno',
+      fu: 'Sloven',
     },
   },
   ages: [
     { 
       code: '',
       it: 'Mai (non so la lingua)',
+      fu: 'Mai (no cognòs la lenghe)',
     },
     { 
       code: '0-3',
       it: '0-3 anni',
+      fu: '0-3 agns',
     },
     {
       code: '3-6',
       it: '3-6 anni',
+      fu: '3-6 agns',
     },
     {
       code: '6-9',
       it: '6-9 anni',
+      fu: '6-9 agns',
     },
     {
       code: '9-12',
       it: '9-12 anni',
+      fu: '9-12 agns',
     },
     {
       code: '12-15',
       it: '12-15 anni',
+      fu: '12-15 agns',
     },
   ],
   competences: [
     {
       code: "CO",
       it: "Comprensione orale",
+      fu: 'Comprension orâl',
     },	
     {
       code: "CS",
       it: "Comprensione scritta",
+      fu: 'Comprension scrite',
     },
     {
       code: "PO",
       it: "Produzione orale",
+      fu: 'Produzion orâl',
     },
     {
       code: "PS",
       it: "Produzione scritta",
+      fu: 'Produzion scrite',
     }
   ],
   competenceValues: {
     _: {
       level: '0',
       it: "Scegli...",
+      fu: 'Sielç',
     },
     _0: { 
       level: '0',
@@ -120,21 +135,33 @@ const questions : IQuestions = {
     },
     _1: {
       level: '0',
+      it: "Nessuna competenza",
+      fu: "Nissune competence",
     },
     _2: {
       level: '0'
+      it: "Nessuna competenza",
+      fu: "Nissune competence",
     },
     _3: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _4: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _5: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _6: {
       level: 'B',
+      it: "Intermedio",
+      fu: "Intermedi",
     },
     _7: {
       level: 'B',
@@ -148,6 +175,7 @@ const questions : IQuestions = {
     _10: {
       level: 'C',
       it: "Competenza avanzata",
+      fu: "Competence avanzade",
     },
   },
   sections : [
