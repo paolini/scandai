@@ -19,6 +19,7 @@ export default function LanguageToCompetenceAnswer({ lang, answer, setAnswer, co
             <div key={code}>
                 <b>{typeof(language)==='string' ? language : trans(language, lang)}</b><br />
                     <SingleLanguageToCompetence 
+                        lang={lang}
                         language={language} answer={answer[code] || {}} 
                         setAnswer={a => setAnswer(ans => ({...ans, [code]: a(ans[code])}))} competences={competences} competenceValues={competenceValues} /> 
                 <br />
@@ -27,8 +28,9 @@ export default function LanguageToCompetenceAnswer({ lang, answer, setAnswer, co
     </>
   }
 
-function SingleLanguageToCompetence({ language, answer, setAnswer, competences, competenceValues }
+function SingleLanguageToCompetence({ lang, language, answer, setAnswer, competences, competenceValues }
     :{
+        lang: string,
         language: string|LocalizedString,
         answer: {[key: string]: string},
         setAnswer: Dispatch<(a: {[key: string]: string})=>void>,
@@ -41,10 +43,10 @@ function SingleLanguageToCompetence({ language, answer, setAnswer, competences, 
           {competences.map(competence => 
             <tr key={competence.code}>
                 <td>
-                    {competence.it}
+                    {trans(competence,lang)}
                 </td>
                 <td>
-                    <CompetenceSelect competence={competence} answer={answer} setAnswer={setAnswer} competenceValues={competenceValues} />
+                    <CompetenceSelect lang={lang} competence={competence} answer={answer} setAnswer={setAnswer} competenceValues={competenceValues} />
                 </td>
             </tr>)}
         </tbody>
@@ -52,7 +54,8 @@ function SingleLanguageToCompetence({ language, answer, setAnswer, competences, 
   </>
 }
 
-function CompetenceSelect({competence, answer, setAnswer, competenceValues}:{
+function CompetenceSelect({lang, competence, answer, setAnswer, competenceValues}:{
+    lang: string,
     competence: LocalizedStringWithCode,
     answer: {[key: string]: string},
     setAnswer: Dispatch<(a: {[key: string]: string})=>void>,
@@ -76,7 +79,7 @@ function CompetenceSelect({competence, answer, setAnswer, competenceValues}:{
             .map(([code, info]):[string,LocalizedString] => [code.slice(1), info])
             .map(([code, info]) => 
             <option key={code} value={code}>
-                {info.it ? (code!='' ?`${code} = ${info.it}` : `${info.it}`) : `${code}`}
+                {info.it ? (code != '' ? `${code} = ${trans(info,lang)}` : `${trans(info,lang)}`) : `${code}`}
             </option>)}
     </select>
 }
