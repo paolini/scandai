@@ -213,35 +213,40 @@ const questions : IQuestions = {
         {
           code: "1.1.b",
           title: {
-            it: "In famiglia abitualmente io parlo..."
+            it: "In famiglia abitualmente io parlo...",
+            fu: "In famee pal solit jo o feveli ...",
           },
           questions: [
             {
               code: "1.1.b.1",
               type: "choose-language",
               question: {
-                it: "a mia mamma parlo in..."
+                it: "a mia mamma parlo in...",
+                fu: "cun mê mari o feveli par ...",
               }
             },
             {
               code: "1.1.b.2",
               type: "choose-language",
               question: {
-                it: "a mio papà parlo in..."
+                it: "a mio papà parlo in...",
+                fu: "cun mê mari o feveli par ...",
               }
             },
             {
               code: "1.1.b.3",
               type: "choose-language",
               question: {
-                it: "ai miei fratelli/sorelle parlo in..."
+                it: "ai miei fratelli/sorelle parlo in...",
+                fu: "cui miei fradis/ cu lis mês sûrs o feveli par ...",
               }
             },
             {
               code: "1.1.b.4",
               type: "choose-language",
               question: {
-                it: "ai miei nonni parlo in..."
+                it: "ai miei nonni parlo in...",
+                fu: "cui miei nonos o feveli par ...",
               }
             },
           ],
@@ -249,42 +254,48 @@ const questions : IQuestions = {
         {
           code: "1.1.c",
           title: {
-            it: "In famiglia abitualmente..."
+            it: "In famiglia abitualmente...",
+            fu: "In famee pal solit ...",
           },
           questions: [
             {
               code: "1.1.c.1",
               type: "choose-language",
               question: {
-                it: "i miei genitori tra di loro parlano..."
+                it: "i miei genitori tra di loro parlano...",
+                fu: "i miei gjenitôrs fra di lôr a feveli par ...",
               }
             },
             {
               code: "1.1.c.2",
               type: "choose-language",
               question: {
-                it: "mia madre a me parla in..."
+                it: "mia madre a me parla in...",
+                fu: "mê mari mi fevele par ...",
               }
             },
             {
               code: "1.1.c.3",
               type: "choose-language",
               question: {
-                it: "mio padre a me parla in..."
+                it: "mio padre a me parla in...",
+                fu: "gno pari mi fevele par ...",
               }
             },
             {
               code: "1.1.c.4",
               type: "choose-language",
               question: {
-                it: "i miei fratelli/sorelle a me parlano in..."
+                it: "i miei fratelli/sorelle a me parlano in...",
+                fu: "i miei fradis / lis mês sûrs mi feveli par ...",
               }
             },
             {
               code: "1.1.c.5",
               type: "choose-language",
               question: {
-                it: "i miei nonni a me parlano in..."
+                it: "i miei nonni a me parlano in...",
+                fu: "i miei nonos mi fevelin par ...",
               }
             },
           ],
