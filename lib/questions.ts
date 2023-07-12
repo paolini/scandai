@@ -17,24 +17,29 @@ const questions : IQuestions = {
     },
     title: {
       'it': 'Fotografia linguistica',
-      'fu': 'Fotografie lenghistiche',
+      'fu': 'Fotografie linguistiche',
       'en': 'Linguistic photography',
     },
     compileButton: {
       'it': 'Compila il questionario',
+      'fu': 'Compile il cuestionari',
+      
     },
     shareButton: {
       'it': 'Copia l\'indirizzo del questionario',
+      'fu': 'Copie il leam al cuestionari',
     },
     thanks: {
       'it': 'Grazie per aver compilato il questionario!',
+      'fu': 'Graciis par vê compilât il cuestionari',
     },
     isClosed: {
       'it': 'Il questionario è chiuso',
+      'fu': 'Il cuestionari al è sierât',
     },
     chooseLanguage: {
       'it': 'usa l\'italiano per compilare il questionario',
-      'fu': 'compile il questionari par furlan',
+      'fu': 'compile il cuestionari par furlan',
       'en': 'I prefer to fill the questionnaire in English',
     },
   },
@@ -42,7 +47,7 @@ const questions : IQuestions = {
   translations: {
     it: 'italiano',
     fu: 'furlan',
-    en: 'inglese',
+    en: 'english',
   },
 
   languages: {
@@ -161,12 +166,18 @@ const questions : IQuestions = {
     },
     _7: {
       level: 'B',
+      it: "Intermedio",
+      fu: "Intermedi",
     },
     _8: {
       level: 'C',
+      it: "Competenza avanzata",
+      fu: "Competence avanzade",
     },
     _9: {
       level: 'C',
+      it: "Competenza avanzata",
+      fu: "Competence avanzade",
     },
     _10: {
       level: 'C',
@@ -178,20 +189,23 @@ const questions : IQuestions = {
     {
       code: "1",
       title: {
-        it: "Lingue parlate e contesti comunicativi"
+        it: "Lingue parlate e contesti comunicativi",
+        fu: "lenghis feveladis e contescj comunicatîfs",
       },
       subsections: [
         {
           code: "1.1.a",
           title: {
-            it: "Abitualmente..."
+            it: "Abitualmente...",
+            fu: "Pal solit ...",
           },
           questions: [
             {
               code: "1.1.a.1",
               type: "choose-language",
               question: {
-                it: "nella mia famiglia si parla..."
+                it: "nella mia famiglia si parla ...",
+                fu: "inte mê famee si fevele ...",
               }
             },
           ],
