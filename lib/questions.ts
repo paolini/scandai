@@ -139,7 +139,7 @@ const questions : IQuestions = {
       fu: "Nissune competence",
     },
     _2: {
-      level: '0'
+      level: '0',
       it: "Nessuna competenza",
       fu: "Nissune competence",
     },
