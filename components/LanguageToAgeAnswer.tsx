@@ -3,9 +3,11 @@ import { Dispatch } from 'react'
 import { assert } from '@/lib/assert'
 import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questions"
 import { MapLanguageToAgeAnswer, Answer } from "@/models/Entry"
+import { trans } from "./Question"
 
-function AgeAnswerRow({ code, language, ages, answer, setAnswer }
+function AgeAnswerRow({ lang, code, language, ages, answer, setAnswer }
   :{
+    lang: string,
     code: string, 
     language: (string|LocalizedString),
     ages: LocalizedStringWithCode[],
@@ -24,7 +26,7 @@ function AgeAnswerRow({ code, language, ages, answer, setAnswer }
   if (answer[code] === undefined) change(ages[0].code)
 
   return <tr key={code}>
-    <td>{typeof(language)==='string'? language : language.it}</td>
+    <td>{typeof(language)==='string'? language : trans(language,lang)}</td>
     {ages.map(age => <td key={age.code}>
       <input 
         type="radio" 
@@ -37,8 +39,9 @@ function AgeAnswerRow({ code, language, ages, answer, setAnswer }
   </tr>
 }
 
-export default function LanguageToAgeAnswer({ answer, setAnswer, ages, languages, extraLanguages }
+export default function LanguageToAgeAnswer({ lang, answer, setAnswer, ages, languages, extraLanguages }
   :{
+    lang: string,
     answer: {[key:string]: string},
     setAnswer: Dispatch<(a: Answer)=>void>,
     ages: LocalizedStringWithCode[],
@@ -61,6 +64,7 @@ export default function LanguageToAgeAnswer({ answer, setAnswer, ages, languages
       <tbody>
       {languageEntries.map(([code, language]) => 
             <AgeAnswerRow
+            lang={lang}
             key={code}
             code={code}
             language={language}

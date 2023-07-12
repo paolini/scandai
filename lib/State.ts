@@ -44,3 +44,7 @@ export function array<T>([arr, setArr]: State<T[]>): State<T>[] {
 export function remove<T>([arr, setArr]: State<T[]>, item: T): void {
     setArr(oldArr => oldArr.filter((x: T) => x !== item))
 }
+
+export function onChange<T>(state: State<T>): (evt: any) => void {
+    return (evt: any) => set(state, evt.target.value)
+}

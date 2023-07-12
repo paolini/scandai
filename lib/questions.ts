@@ -1,55 +1,50 @@
 export const languageCodes = ['it','fu','sl','de']
 export type LanguageCode = typeof languageCodes[number]
 
-export interface LocalizedString {
-  [key: LanguageCode]: string
-}
-
-export type LocalizedLanguages = {
-  [key: LanguageCode]: LocalizedString
-}
-
-export interface LocalizedStringWithCode extends LocalizedString {
-    code: string,
-}
-
-export interface IQuestion {
-    code: string,
-    type: string,
-    question: LocalizedString,
-}
-
-export interface ISubsection {
-    code: string,
-    title?: LocalizedString,
-    questions: IQuestion[],
-}
-
-export interface ISection {
-    code: string,
-    title: LocalizedString,
-    subsections: ISubsection[],
-}
-
-export interface ICompetenceValue extends LocalizedString {
-  level: string,
-}
-
-export interface IQuestions {
-    version: string,
-    languages: {
-        [key: string]: LocalizedString,
-    },
-    ages: LocalizedStringWithCode[],
-    competences: LocalizedStringWithCode[],
-    competenceValues: {
-        [key: string]: ICompetenceValue,
-    },
-    sections: ISection[],    
-}
-
 const questions : IQuestions = {
   version: "0.1.0",
+
+  phrases: {
+    school: {
+      it: 'Scuola',
+      fu: 'Scuele',
+      en: 'School',
+    },
+    class: {
+      it: 'Classe',
+      fu: 'Classe',
+      en: 'Class',
+    },
+    title: {
+      'it': 'Fotografia linguistica',
+      'fu': 'Fotografie lenghistiche',
+      'en': 'Linguistic photography',
+    },
+    compileButton: {
+      'it': 'Compila il questionario',
+    },
+    shareButton: {
+      'it': 'Copia l\'indirizzo del questionario',
+    },
+    thanks: {
+      'it': 'Grazie per aver compilato il questionario!',
+    },
+    isClosed: {
+      'it': 'Il questionario è chiuso',
+    },
+    chooseLanguage: {
+      'it': 'usa l\'italiano per compilare il questionario',
+      'fu': 'compile il questionari par furlan',
+      'en': 'I prefer to fill the questionnaire in English',
+    },
+  },
+
+  translations: {
+    it: 'italiano',
+    fu: 'furlan',
+    en: 'inglese',
+  },
+
   languages: {
     it: {
       it: 'Italiano',
@@ -68,6 +63,7 @@ const questions : IQuestions = {
       fu: 'Sloven',
     },
   },
+
   ages: [
     { 
       code: '',
@@ -502,3 +498,66 @@ export function extractLevels(questions: IQuestions): string[] {
     (levels: string[], x) => ((levels.includes(x.level)) ? levels : [...levels, x.level]), 
     [])
 }
+
+export interface LocalizedString {
+  [key: LanguageCode]: string
+}
+
+export type LocalizedLanguages = {
+  [key: LanguageCode]: LocalizedString
+}
+
+export interface LocalizedStringWithCode extends LocalizedString {
+    code: string,
+}
+
+export interface IQuestion {
+    code: string,
+    type: string,
+    question: LocalizedString,
+}
+
+export interface ISubsection {
+    code: string,
+    title?: LocalizedString,
+    questions: IQuestion[],
+}
+
+export interface ISection {
+    code: string,
+    title: LocalizedString,
+    subsections: ISubsection[],
+}
+
+export interface ICompetenceValue extends LocalizedString {
+  level: string,
+}
+
+export interface IQuestions {
+    version: string,
+    phrases: {
+      school: LocalizedString,
+      class: LocalizedString,
+      title: LocalizedString,
+      compileButton: LocalizedString,
+      shareButton: LocalizedString,
+      thanks: LocalizedString,
+      isClosed: LocalizedString,
+      chooseLanguage: LocalizedString,
+    }
+    translations: {
+      'it': string,
+      'fu': string,
+      'en': string,
+    }
+    languages: {
+        [key: string]: LocalizedString,
+    },
+    ages: LocalizedStringWithCode[],
+    competences: LocalizedStringWithCode[],
+    competenceValues: {
+        [key: string]: ICompetenceValue,
+    },
+    sections: ISection[],    
+}
+
