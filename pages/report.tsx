@@ -84,6 +84,8 @@ function ListClasses({ stats }: {stats: IStats}) {
             }
         </ul>
         Totale questionari: {stats.entriesCount}
+        <br/>
+        Numero somministrazioni: {stats.polls.length}
     </div>
 }
 

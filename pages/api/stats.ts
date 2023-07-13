@@ -3,6 +3,7 @@ import { IPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import data, { IQuestion, extractQuestions, extractLevels } from '../../lib/questions'
 import { assert } from '@/lib/assert'
+import { ObjectId } from 'mongodb'
 
 import getSessionUser from '@/lib/getSessionUser'
 
@@ -26,13 +27,16 @@ export default async function handler(
         }
 
         if (!user.isAdmin) {
-            pipeline.push({$match: {'poll.createdBy': user._id}})
+            pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
         }
 
-        if (req.query.poll_id) {
-            pipeline.push({$match: {'poll._id': req.query.poll_id}})
+        if (req.query.poll) {
+            if (Array.isArray(req.query.poll)) {
+                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map(p => new ObjectId(p))}}})
+            } else {
+                pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
+            }
         }
-
         try {
             const entries = await Entry.aggregate(pipeline)
             const data: IStats = aggregate(entries)
