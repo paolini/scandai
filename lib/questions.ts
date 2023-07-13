@@ -2,7 +2,7 @@ export const languageCodes = ['it','fu','sl','de']
 export type LanguageCode = typeof languageCodes[number]
 
 const questions : IQuestions = {
-  version: "0.1.0",
+  version: "0.1.1",
 
   phrases: {
     school: {
@@ -490,7 +490,7 @@ const questions : IQuestions = {
           type: 'map-language-to-competence',
           question: {
             it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (0=Nessuna competenza; 10=competenza avanzata. Se non conosci la lingua indica competenza 0)",
-            it: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
+            fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
           }
         }],
       },
