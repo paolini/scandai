@@ -190,7 +190,7 @@ const questions : IQuestions = {
       code: "1",
       title: {
         it: "Lingue parlate e contesti comunicativi",
-        fu: "lenghis feveladis e contescj comunicatîfs",
+        fu: "Lenghis feveladis e contescj comunicatîfs",
       },
       subsections: [
         {
@@ -238,7 +238,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai miei fratelli/sorelle parlo in...",
-                fu: "cui miei fradis/ cu lis mês sûrs o feveli par ...",
+                fu: "cui miei fradis / cu lis mês sûrs o feveli par ...",
               }
             },
             {
@@ -303,77 +303,88 @@ const questions : IQuestions = {
         {
           code: "1.2.a",
           title: {
-            it: "Fuori casa abitualmente io parlo..."
+            it: "Fuori casa abitualmente io parlo...",
+            fu: "Fûr di cjase pal solit o feveli ...",
           },
           questions: [
             {
               code: "1.2.a.1",
               type: "choose-language",
               question: {
-                it: "ai miei amici parlo in..."
+                it: "ai miei amici parlo in...",
+                fu: "ai miei amîs i feveli par ...",
               }
             },
             {
               code: "1.2.a.2",
               type: "choose-language",
               question: {
-                it: "alle persone dei negoziparlo in..."
+                it: "alle persone dei negozi parlo in...",
+                fu: "aes personis dai negozis i feveli par ...",
               }
             },
             {
               code: "1.2.a.3",
               type: "choose-language",
               question: {
-                it: "agli adulti del miopaese/città/quartiere parlo in..."
+                it: "agli adulti del mio paese/città/quartiere parlo in...",
+                fu: "ai adults dal gno paîs/citât/borc i feveli par ...",
               }
             },
             {
               code: "1.2.a.4",
               type: "choose-language",
               question: {
-                it: "1.2.b. Fuori casa abitualmente..."
+                it: "1.2.b. Fuori casa abitualmente...",
+                fu: "1.2.b.  Fûr di cjase pal solit ...",
               }
             },
             {
               code: "1.2.a.5",
               type: "choose-language",
               question: {
-                it: "i miei amici a me parlano in..."
+                it: "i miei amici a me parlano in...",
+                fu: "i miei amîs mi fevelin par ...",
               }
             },
             {
               code: "1.2.a.6",
               type: "choose-language",
               question: {
-                it: "le persone dei negozi a me parlano in..."
+                it: "le persone dei negozi a me parlano in...",
+                fu: "lis personis dai negozis mi fevelin par ...",
               }
             },
             {
               code: "1.2.a.7",
               type: "choose-language",
               question: {
-                it: "gli adulti del mio paese/città/quartiere a me parlano in..."
+                it: "gli adulti del mio paese/città/quartiere a me parlano in...",
+                fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
               }
             },
             {
               code: "1.2.a.8",
               type: "choose-language",
               question: {
-                it: "1.3.a. A scuola abitualmente io parlo..."
+                it: "1.3.a. A scuola abitualmente io parlo...",
+                fu: "1.3.a. A scuele pal solit jo o feveli ...",
               }
             },
             {
               code: "1.2.a.9",
               type: "choose-language",
               question: {
-                it: "ai miei compagni di classe parlo in..."
+                it: "ai miei compagni di classe parlo in...",
+                fu: "ai miei compagns di classe i feveli par ...",
               }
             },
             {
               code: "1.2.a.10",
               type: "choose-language",
               question: {
-                it: "ai professori parlo in... (esclusi quelli di lingue)"
+                it: "ai professori parlo in... (esclusi quelli di lingue)",
+                fu: "ai professôrs i feveli par ... (gjavant chei di lenghis)",
               }
             },
           ],
@@ -381,21 +392,24 @@ const questions : IQuestions = {
         {
           code: "1.3.b",
           title: {
-            it: "A scuola abitualmente..."
+            it: "A scuola abitualmente...",
+            fu: "A scuel pal solit ...",
           },
           questions: [
             {
               code: "1.3.b.1",
               type: "choose-language",
               question: {
-                it: "i miei compagni di classe a me parlano in..."
+                it: "i miei compagni di classe a me parlano in...",
+                fu: "i miei compagns di classe mi fevelin par ...",
               }
             },
             {
               code: "1.3.b.2",
               type: "choose-language",
               question: {
-                it: "i professori a me parlano in... (esclusi quelli di lingue straniere)"
+                it: "i professori a me parlano in... (esclusi quelli di lingue straniere)",
+                fu: "i professôrs mi fevelin par ... (gjavant chei di lenghis)",
               }
             },
           ],
@@ -403,42 +417,48 @@ const questions : IQuestions = {
         {
           code: "1.4",
           title: {
-            it: "Abitualmente..."
+            it: "Abitualmente...",
+            fu: "Pal solit ...",
           },
           questions: [
             {
               code: "1.4.1",
               type: "choose-language",
               question: {
-                it: "quali lingue usi quando telefoni agli amici?"
+                it: "quali lingue usi quando telefoni agli amici?",
+                fu: "ce lenghis dopristu cuant che tu fevelis cui amîs?",
               }
             },
             {
               code: "1.4.2",
               type: "choose-language",
               question: {
-                it: "quali lingue usi nelle mail, sui social e nelle chat?"
+                it: "quali lingue usi nelle mail, sui social e nelle chat?",
+                fu: "ce lenghis dopristu intes mails, sui social e intes chats?",
               }
             },
             {
               code: "1.4.3",
               type: "choose-language",
               question: {
-                it: "quali lingue vengono usate nei programmi TV che guardi?"
+                it: "quali lingue vengono usate nei programmi TV che guardi?",
+                fu: "ce lenghis si doprìno intai programs TV che tu cjalis?",
               }
             },
             {
               code: "1.4.4",
               type: "choose-language",
               question: {
-                it: "quali lingue vengono usate nei siti internet che visiti?"
+                it: "quali lingue vengono usate nei siti internet che visiti?",
+                fu: "ce lenghis si doprìno tai sîts internet che tu visitis?",
               }
             },
             {
               code: "1.4.5",
               type: "choose-language",
               question: {
-                it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?"
+                it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?",
+                fu: "cuale ise la lenghe dai libris, des storiis e dai fumets che tu leis?",
               }
             },
           ]
@@ -448,7 +468,8 @@ const questions : IQuestions = {
     {
       code: "2",
       title: {
-        it: "Competenza linguistica orale e scritta"
+        it: "Competenza linguistica orale e scritta",
+        fu: "Competence linguistiche orâl e scrite",
       },
       subsections: [
         {
@@ -457,7 +478,8 @@ const questions : IQuestions = {
             code: "2.1.1",
             type: 'map-language-to-age',
             question: {
-              it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)"
+              it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
+              fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
             }
         }],
       },
@@ -468,6 +490,7 @@ const questions : IQuestions = {
           type: 'map-language-to-competence',
           question: {
             it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (0=Nessuna competenza; 10=competenza avanzata. Se non conosci la lingua indica competenza 0)",
+            it: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
           }
         }],
       },
