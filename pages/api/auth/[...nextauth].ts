@@ -5,7 +5,7 @@ import { compare } from "bcrypt"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
 import clientPromise from "../../../lib/mongodb"
-import User, { IUser } from '@/models/User'
+import User, { IGetUser } from '@/models/User'
 
 // augment next-auth types
 declare module "next-auth" {
@@ -16,14 +16,14 @@ declare module "next-auth" {
     interface Session {
         id: string
         isAdmin?: boolean
-        dbUser?: IUser
+        dbUser?: IGetUser
     }
 }
 
 declare module "next-auth/jwt/types" {
     interface JWT {
         uid: string;
-        dbUser?: IUser
+        dbUser?: IGetUser
     }
 }
 
@@ -57,9 +57,10 @@ providers.push(CredentialsProvider({
         if (user) {
             const isValid = await compare(credentials.password, user.password)
             if (isValid) return {
-                id: user._id,
-                name: user.username,
-                email: user.email || `${user.username}@local`,
+                id: user._id.toString(),
+                name: user?.name,
+                username: user?.username,
+                email: user?.email || `${user.username}@local`,
                 isAdmin: user.isAdmin,
             }
             console.error(`Password not valid for user ${credentials.username}`)
@@ -74,6 +75,10 @@ providers.push(CredentialsProvider({
 export default NextAuth({
     // Configure one or more authentication providers
     providers,
+
+    pages: {
+        error: '/error',
+    },
 
     adapter: MongoDBAdapter(clientPromise),
 
@@ -91,7 +96,14 @@ export default NextAuth({
             if (!token.dbUser && token.sub) {
                 const dbUser = await User.findById(token.sub)
                 if (dbUser) {
-                    token.dbUser = dbUser
+                    token.dbUser = {
+                        _id: dbUser._id.toString(),
+                        name: dbUser?.name,
+                        username: dbUser?.username,
+                        email: dbUser?.email,
+                        isAdmin: dbUser?.isAdmin,
+                        image: dbUser?.image,
+                    }
                 } else {
                     console.log(`User not found with id ${token.sub}`)
                 }

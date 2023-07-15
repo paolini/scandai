@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
-import { IUser } from '@/models/User'
+import { IGetUser } from '@/models/User'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (query) {
@@ -72,7 +72,7 @@ export function useStats() {
 }
 
 export function useUsers() {
-    return useIndex<IUser[]>('users')
+    return useIndex<IGetUser[]>('users')
 }
 
 export function patchUser(user: any) {

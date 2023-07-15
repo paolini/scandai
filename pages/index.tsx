@@ -10,7 +10,7 @@ export default function Index({}) {
 
   if (sessionUser === undefined) return <Loading />
   
-  if (sessionUser === null) return <>
+  if (sessionUser === null) return <Page>
     <h1>Fotografia linguistica</h1>
     <p>se vuoi somministrare il questionario ad una classe 
     devi <a
@@ -20,7 +20,7 @@ export default function Index({}) {
             signIn()
           }}>fare il login</a>.
     </p>
-  </>
+  </Page>
 
   return <Page>
     <h1>Fotografia linguistica</h1>

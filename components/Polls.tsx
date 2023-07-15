@@ -8,17 +8,25 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { State, value, set, get } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
+import useSessionUser from '@/lib/useSessionUser'
 
 export default function Polls({}) {
 //    const sessionUser = useSessionUser()
     const pollsQuery = usePolls()
     const addPollState = useState<boolean>(false)
+    const user = useSessionUser()
     const addMessage = useAddMessage()
 
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
 
     const polls = pollsQuery.data.data
+    let openPolls = polls
+        .filter(poll => !poll.closedAt)
+        .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
+    let closedPolls = polls
+        .filter(poll => poll.closedAt)
+        .sort((a,b) => a.closedAt > b.closedAt ? -1 : 1)
 
     async function remove(poll: IGetPoll) {
         try {
@@ -40,17 +48,21 @@ export default function Polls({}) {
                 nuovo questionario
             </Button>
         }
-        { polls.length > 0 && 
+        { openPolls.length > 0 && 
             <table className="table">
                 <thead>
                     <tr>
+                        { user?.isAdmin && <th>utente</th> }
                         <th>scuola</th>
                         <th>classe</th>
+                        <th>n. rilevazioni</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {polls.map(poll => <tr key={poll._id.toString()}>
+                    {openPolls.map(poll => <tr key={poll._id.toString()}>
+                            { user?.isAdmin && <td>
+                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
                         <td>
                             {poll.school}
                         </td>
@@ -58,9 +70,46 @@ export default function Polls({}) {
                             {poll.class}
                         </td>
                         <td>
+                            {poll.entriesCount}
+                        </td>
+                        <td>
                             <ButtonGroup>
                             <a className="btn btn-success" href={`/p/${poll.secret}`}>
-                                apri
+                                {poll.createdBy._id === (user?._id)?.toString() ? 'somministra' : 'compila'}
+                            </a>
+                            <Button variant="danger" size="sm" onClick={() => remove(poll)}>
+                                <FaTrashCan />elimina
+                            </Button>
+                            </ButtonGroup>
+                        </td>
+                    </tr>)}
+                </tbody>
+            </table>
+        }
+        { closedPolls.length > 0 && 
+            <table className="table">
+                <thead>
+                    <tr>
+                        { user?.isAdmin && <th>utente</th> }
+                        <th>data</th>
+                        <th>scuola</th>
+                        <th>classe</th>
+                        <th>n. rilevazioni</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {closedPolls.map(poll => <tr key={poll._id.toString()}>
+                            { user?.isAdmin && <td>
+                                {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
+                        <td>{poll.closedAt.toLocaleDateString()}</td>
+                        <td>{poll.school}</td>
+                        <td>{poll.class}</td>
+                        <td>{poll.entriesCount}</td>
+                        <td>
+                            <ButtonGroup>
+                            <a className="btn btn-success" href={`/p/${poll.secret}`}>
+                                {poll.createdBy._id === user?._id ? 'somministra' : 'compila'}
                             </a>
                             <Button variant="danger" size="sm" onClick={() => remove(poll)}>
                                 <FaTrashCan />elimina
@@ -92,7 +141,7 @@ function Input({state, id, placeholder}:{
 function NewPoll({ done }:{
     done?: () => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: ''})
+    const pollState = useState<IPostPoll>({school: '', class: '', closedAt: null})
     const addMessage = useAddMessage()
 
     function isValid() {
