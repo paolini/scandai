@@ -24,7 +24,6 @@ export default function Polls({}) {
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
 
     const polls = pollsQuery.data.data
-    console.log('polls', polls)
     let openPolls = polls
         .filter(poll => !poll.closed)
         .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
@@ -92,7 +91,9 @@ function PollsTable({user, polls}:{
             {polls.map(poll => 
             <tr key={poll._id.toString()}>
                     { user?.isAdmin && <td>
-                        {poll.createdBy?.name || poll.createdBy?.username || poll.createdBy?.email }</td>}
+                        { poll.createdBy?.name 
+                            || poll.createdBy?.username}
+                        {} &lt;{ poll.createdBy?.email }&gt;</td>}
                 <td>
                     {formatDate(poll.date)}
                 </td>
