@@ -6,7 +6,6 @@ import copyToClipboard from 'copy-to-clipboard'
 import { IGetPoll } from "@/models/Poll"
 import Page from "@/components/Page"
 import PollAdmin from "@/components/PollAdmin"
-import { set } from "@/lib/State"
 import { useAddMessage } from "@/components/Messages"
 import Error from "@/components/Error"
 
