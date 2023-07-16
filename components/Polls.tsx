@@ -12,6 +12,7 @@ import { IPostPoll, IGetPoll } from '@/models/Poll'
 import useSessionUser from '@/lib/useSessionUser'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
+import Input from '@/components/Input'
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
@@ -112,21 +113,6 @@ function PollsTable({user, polls}:{
     </table>    
 }            
 
-
-function Input({state, id, placeholder}:{
-    state: State<string>,
-    id?: string,
-    placeholder?: string,
-}) {
-    const valueState = useState<string>('')
-    return <input 
-        className="form-control" 
-        id={id} 
-        onChange={evt => set(state, evt.target.value)} 
-        value={value(state)} 
-        placeholder={placeholder} 
-    />
-}
 
 function NewPoll({ done }:{
     done?: () => void

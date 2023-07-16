@@ -26,7 +26,7 @@ export default function PollAdmin({poll, mutate}:{
             mutate()
         }, 1000 * 3)
         return () => clearInterval(interval)
-    }, [])
+    }, [isSupervisor, mutate])
 
     if (!isSupervisor) return null
 

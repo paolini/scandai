@@ -9,11 +9,14 @@ export interface IUser {
     image: string,
 }
 
-export interface IGetUser {
-    _id: string,
+export interface IPostUser {
     name: string,
     username: string,
     email: string,
+}
+
+export interface IGetUser extends IPostUser {
+    _id: string,
     isAdmin: boolean,
     image: string,
 }

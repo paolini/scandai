@@ -37,4 +37,15 @@ export default async function handler(
             const out = await aUser.save()
             return res.json({data: out})
         }
+
+        if (req.method === 'DELETE') {
+            try {
+                await User.deleteOne({_id: new ObjectId(user_id)})
+                return res.json({})
+            } catch(error) {
+                return res.status(400).json({error: 'invalid id'})
+            }
+        }
+
+        return res.status(405).json({error: 'method not allowed'})
     }
