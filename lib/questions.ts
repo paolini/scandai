@@ -1,207 +1,188 @@
 export const languageCodes = ['it','fu','sl','de']
 export type LanguageCode = typeof languageCodes[number]
 
-export interface LocalizedString {
-  [key: LanguageCode]: string
-}
-
-export type LocalizedLanguages = {
-  [key: LanguageCode]: LocalizedString
-}
-
-export interface LocalizedStringWithCode extends LocalizedString {
-    code: string,
-}
-
-export interface IQuestion {
-    code: string,
-    type: string,
-    question: LocalizedString,
-}
-
-export interface ISubsection {
-    code: string,
-    title?: LocalizedString,
-    questions: IQuestion[],
-}
-
-export interface ISection {
-    code: string,
-    title: LocalizedString,
-    subsections: ISubsection[],
-}
-
-export interface ICompetenceValue extends LocalizedString {
-  level: string,
-}
-
-export interface IQuestions {
-    version: string,
-    submitMessage: LocalizedString,
-    languages: {
-        [key: string]: LocalizedString,
-    },
-    ages: LocalizedStringWithCode[],
-    competences: LocalizedStringWithCode[],
-    competenceValues: {
-        [key: string]: ICompetenceValue,
-    },
-    sections: ISection[],    
-}
-
 const questions : IQuestions = {
-  version: "0.1.0",
-  submitMessage: {
-    it: "Grazie per aver compilato il questionario!",
+  version: "0.1.1",
+
+  phrases: {
+    school: {
+      it: 'Scuola',
+      fu: 'Scuele',
+      en: 'School',
+    },
+    class: {
+      it: 'Classe',
+      fu: 'Classe',
+      en: 'Class',
+    },
+    title: {
+      'it': 'Fotografia linguistica',
+      'fu': 'Fotografie linguistiche',
+      'en': 'Linguistic photography',
+    },
+    compileButton: {
+      'it': 'Compila il questionario',
+      'fu': 'Compile il cuestionari',
+      
+    },
+    shareButton: {
+      'it': 'Copia l\'indirizzo del questionario',
+      'fu': 'Copie il leam al cuestionari',
+    },
+    thanks: {
+      'it': 'Grazie per aver compilato il questionario!',
+      'fu': 'Graciis par vê compilât il cuestionari',
+    },
+    isClosed: {
+      'it': 'Il questionario è chiuso',
+      'fu': 'Il cuestionari al è sierât',
+    },
+    chooseLanguage: {
+      'it': 'usa l\'italiano per compilare il questionario',
+      'fu': 'compile il cuestionari par furlan',
+      'en': 'I prefer to fill the questionnaire in English',
+    },
   },
+
+  translations: {
+    it: 'italiano',
+    fu: 'furlan',
+    en: 'english',
+  },
+
   languages: {
     it: {
       it: 'Italiano',
-      fu: 'Talian-',
-      de: 'Italienisch-',
-      sl: 'Italijanščina-',
+      fu: 'Talian',
     },
     fu: {
-      it: 'Friulano',
-      fu: 'Furlan-',
-      de: 'Friaulisch-',
-      sl: 'Furlanščina-',
+      it: 'Friulano (o varianti)',
+      fu: 'Furlan (o variantis)',
     },
     de: {
       it: 'Tedesco',
-      fu: 'Tedesch-',
-      de: 'Deutsch-',
-      sl: 'Nemščina-',      
+      fu: 'Todesc',
     },
     sl: {
       it: 'Sloveno',
-      fu: 'Sloven-',
-      de: 'Slowenisch-',
-      sl: 'Slovenščina-',
+      fu: 'Sloven',
     },
   },
+
   ages: [
     { 
       code: '',
       it: 'Mai (non so la lingua)',
-      fu: 'Mai (no sai la lenghe)-',
-      de: 'Nie (ich kenne die Sprache nicht)-',
-      sl: 'Nikoli (ne poznam jezika)-',
+      fu: 'Mai (no cognòs la lenghe)',
     },
     { 
       code: '0-3',
       it: '0-3 anni',
-      fu: '0-3 agns-',
-      de: '0-3 Jahre-',
-      sl: '0-3 leta-',
+      fu: '0-3 agns',
     },
     {
       code: '3-6',
       it: '3-6 anni',
-      fu: '3-6 agns-',
-      de: '3-6 Jahre-',
-      sl: '3-6 leta-',
+      fu: '3-6 agns',
     },
     {
       code: '6-9',
       it: '6-9 anni',
-      fu: '6-9 agns-',
-      de: '6-9 Jahre-',
-      sl: '6-9 leta-',
+      fu: '6-9 agns',
     },
     {
       code: '9-12',
       it: '9-12 anni',
-      fu: '9-12 agns-',
-      de: '9-12 Jahre-',
-      sl: '9-12 leta-',      
+      fu: '9-12 agns',
     },
     {
       code: '12-15',
       it: '12-15 anni',
-      fu: '12-15 agns-',
-      de: '12-15 Jahre-',
-      sl: '12-15 leta-',
+      fu: '12-15 agns',
     },
   ],
   competences: [
     {
       code: "CO",
       it: "Comprensione orale",
-      fu: "Comprension orâl-",
-      de: "Hörverständnis-",
-      sl: "Sporazumevanje v živo-",
+      fu: 'Comprension orâl',
     },	
     {
       code: "CS",
       it: "Comprensione scritta",
-      fu: "Comprension scrite-",
-      de: "Leseverständnis-",
-      sl: "Sporazumevanje v pisni obliki-",
+      fu: 'Comprension scrite',
     },
     {
       code: "PO",
       it: "Produzione orale",
-      fu: "Produzion orâl-",
-      de: "Mündliche Produktion-",
-      sl: "Govorno sporazumevanje-",
+      fu: 'Produzion orâl',
     },
     {
       code: "PS",
       it: "Produzione scritta",
-      fu: "Produzion scrite-",
-      de: "Schriftliche Produktion-",
-      sl: "Pisno sporazumevanje-",
+      fu: 'Produzion scrite',
     }
   ],
   competenceValues: {
     _: {
       level: '0',
       it: "Scegli...",
-      fu: "Scei...-",
-      de: "Wähle...-",
-      sl: "Izberi...-",
+      fu: 'Sielç',
     },
     _0: { 
       level: '0',
       it: "Nessuna competenza",
-      fu: "Nissune competence-",
-      de: "Keine Kompetenz-",
-      sl: "Brez kompetenc-",
+      fu: "Nissune competence",
     },
     _1: {
       level: '0',
+      it: "Nessuna competenza",
+      fu: "Nissune competence",
     },
     _2: {
-      level: '0'
+      level: '0',
+      it: "Nessuna competenza",
+      fu: "Nissune competence",
     },
     _3: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _4: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _5: {
       level: 'A',
+      it: "Principiante",
+      fu: "Principiant",
     },
     _6: {
       level: 'B',
+      it: "Intermedio",
+      fu: "Intermedi",
     },
     _7: {
       level: 'B',
+      it: "Intermedio",
+      fu: "Intermedi",
     },
     _8: {
       level: 'C',
+      it: "Competenza avanzata",
+      fu: "Competence avanzade",
     },
     _9: {
       level: 'C',
+      it: "Competenza avanzata",
+      fu: "Competence avanzade",
     },
     _10: {
       level: 'C',
       it: "Competenza avanzata",
-      fu: "Competence avanzade-",
-      de: "Fortgeschrittene Kompetenz-",
-      sl: "Napredne kompetence-",
+      fu: "Competence avanzade",
     },
   },
   sections : [
@@ -209,28 +190,22 @@ const questions : IQuestions = {
       code: "1",
       title: {
         it: "Lingue parlate e contesti comunicativi",
-        fu: "Lenghis paradis e contestis comunicativs-",
-        de: "Gesprochene Sprachen und Kommunikationskontexte-",
-        sl: "Govorjene jezike in komunikacijske kontekste-",
+        fu: "Lenghis feveladis e contescj comunicatîfs",
       },
       subsections: [
         {
           code: "1.1.a",
           title: {
             it: "Abitualmente...",
-            fu: "Abitualment...-",
-            de: "Gewöhnlich...-",
-            sl: "Običajno...-",
+            fu: "Pal solit ...",
           },
           questions: [
             {
               code: "1.1.a.1",
               type: "choose-language",
               question: {
-                it: "nella mia famiglia si parla...",
-                fu: "intal mê fumìlie si parle...-",
-                de: "in meiner Familie spricht man...-",
-                sl: "v moji družini se govori...-",
+                it: "nella mia famiglia si parla ...",
+                fu: "inte mê famee si fevele ...",
               }
             },
           ],
@@ -239,9 +214,7 @@ const questions : IQuestions = {
           code: "1.1.b",
           title: {
             it: "In famiglia abitualmente io parlo...",
-            fu: "Intal mê fumìlie abitualment jo parle...-",
-            de: "In meiner Familie spreche ich gewöhnlich...-", 
-            sl: "V družini običajno govorim...-",
+            fu: "In famee pal solit jo o feveli ...",
           },
           questions: [
             {
@@ -249,9 +222,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "a mia mamma parlo in...",
-                fu: "a mê mame parle in...-",
-                de: "mit meiner Mutter spreche ich...-",
-                sl: "mami govorim v...-",
+                fu: "cun mê mari o feveli par ...",
               }
             },
             {
@@ -259,9 +230,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "a mio papà parlo in...",
-                fu: "a mê pari parle in...-",
-                de: "mit meinem Vater spreche ich...-",
-                sl: "očetu govorim v...-",
+                fu: "cun mê mari o feveli par ...",
               }
             },
             {
@@ -269,9 +238,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai miei fratelli/sorelle parlo in...",
-                fu: "ai mês fradis/sororis parle in...-",
-                de: "mit meinen Geschwistern spreche ich...-",
-                sl: "bratom/sestram govorim v...-",
+                fu: "cui miei fradis / cu lis mês sûrs o feveli par ...",
               }
             },
             {
@@ -279,9 +246,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai miei nonni parlo in...",
-                fu: "ai mês nonis parle in...-",
-                de: "mit meinen Großeltern spreche ich...-",
-                sl: "starkim staršem govorim v...-",
+                fu: "cui miei nonos o feveli par ...",
               }
             },
           ],
@@ -290,9 +255,7 @@ const questions : IQuestions = {
           code: "1.1.c",
           title: {
             it: "In famiglia abitualmente...",
-            fu: "Intal mê fumìlie abitualment...-",
-            de: "In meiner Familie sprechen wir gewöhnlich...-",
-            sl: "V družini običajno govorimo...-",
+            fu: "In famee pal solit ...",
           },
           questions: [
             {
@@ -300,9 +263,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i miei genitori tra di loro parlano...",
-                fu: "i mês genitôrs tra di lôr parle...-",
-                de: "meine Eltern sprechen untereinander...-",
-                sl: "moji starši med seboj govorita...-",
+                fu: "i miei gjenitôrs fra di lôr a feveli par ...",
               }
             },
             {
@@ -310,9 +271,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "mia madre a me parla in...",
-                fu: "mê mame a me parle in...-",
-                de: "meine Mutter spricht mit mir...-",
-                sl: "mama meni govori v...-",
+                fu: "mê mari mi fevele par ...",
               }
             },
             {
@@ -320,9 +279,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "mio padre a me parla in...",
-                fu: "mê pari a me parle in...-",
-                de: "mein Vater spricht mit mir...-",
-                sl: "oče meni govori v...-",
+                fu: "gno pari mi fevele par ...",
               }
             },
             {
@@ -330,9 +287,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i miei fratelli/sorelle a me parlano in...",
-                fu: "i mês fradis/sororis a me parle in...-",
-                de: "meine Geschwister sprechen mit mir...-",
-                sl: "bratje/sestre meni govorijo v...-",
+                fu: "i miei fradis / lis mês sûrs mi feveli par ...",
               }
             },
             {
@@ -340,9 +295,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i miei nonni a me parlano in...",
-                fu: "i mês nonis a me parle in...-",
-                de: "meine Großeltern sprechen mit mir...-",
-                sl: "starki starši meni govorijo v...-",
+                fu: "i miei nonos mi fevelin par ...",
               }
             },
           ],
@@ -351,9 +304,7 @@ const questions : IQuestions = {
           code: "1.2.a",
           title: {
             it: "Fuori casa abitualmente io parlo...",
-            fu: "Fûr di cjase abitualment jo parle...-",
-            de: "Außerhalb des Hauses spreche ich gewöhnlich...-",
-            sl: "Običajno govorim...-",
+            fu: "Fûr di cjase pal solit o feveli ...",
           },
           questions: [
             {
@@ -361,29 +312,23 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai miei amici parlo in...",
-                fu: "ai mês amis parle in...-",
-                de: "mit meinen Freunden spreche ich...-",
-                sl: "prijateljem govorim v...-",
+                fu: "ai miei amîs i feveli par ...",
               }
             },
             {
               code: "1.2.a.2",
               type: "choose-language",
               question: {
-                it: "alle persone dei negoziparlo in...",
-                fu: "a dutis lis personis dai negozis parle in...-",
-                de: "mit den Leuten in den Geschäften spreche ich...-",
-                sl: "osebam v trgovinah govorim v...-",
+                it: "alle persone dei negozi parlo in...",
+                fu: "aes personis dai negozis i feveli par ...",
               }
             },
             {
               code: "1.2.a.3",
               type: "choose-language",
               question: {
-                it: "agli adulti del miopaese/città/quartiere parlo in...",
-                fu: "a ducj i adulds dal mê paîs/citât/quartîr parle in...-",
-                de: "mit den Erwachsenen in meinem Dorf/Stadt/Viertel spreche ich...-",
-                sl: "odraslim v moji vasi/mestu/soseski govorim v...-",
+                it: "agli adulti del mio paese/città/quartiere parlo in...",
+                fu: "ai adults dal gno paîs/citât/borc i feveli par ...",
               }
             },
             {
@@ -391,9 +336,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "1.2.b. Fuori casa abitualmente...",
-                fu: "Fûr di cjase abitualment...-",
-                de: "Außerhalb des Hauses sprechen wir gewöhnlich...-",
-                sl: "Običajno govorimo...-",
+                fu: "1.2.b.  Fûr di cjase pal solit ...",
               }
             },
             {
@@ -401,9 +344,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i miei amici a me parlano in...",
-                fu: "i mês amis a me parle in...-",
-                de: "meine Freunde sprechen mit mir...-",
-                sl: "prijatelji meni govorijo v...-",
+                fu: "i miei amîs mi fevelin par ...",
               }
             },
             {
@@ -411,9 +352,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "le persone dei negozi a me parlano in...",
-                fu: "lis personis dai negozis a me parle in...-",
-                de: "die Leute in den Geschäften sprechen mit mir...-",
-                sl: "osebe v trgovinah meni govorijo v...-",
+                fu: "lis personis dai negozis mi fevelin par ...",
               }
             },
             {
@@ -421,9 +360,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "gli adulti del mio paese/città/quartiere a me parlano in...",
-                fu: "i adulds dal mê paîs/citât/quartîr a me parle in...-",
-                de: "die Erwachsenen in meinem Dorf/Stadt/Viertel sprechen mit mir...-",
-                sl: "-"
+                fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
               }
             },
             {
@@ -431,9 +368,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "1.3.a. A scuola abitualmente io parlo...",
-                fu: "A scuele abitualment jo parle...-",
-                de: "In der Schule spreche ich gewöhnlich...-",
-                sl: "V šoli običajno govorim...-",
+                fu: "1.3.a. A scuele pal solit jo o feveli ...",
               }
             },
             {
@@ -441,9 +376,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai miei compagni di classe parlo in...",
-                fu: "ai mês compagns di clâs parle in...-",
-                de: "mit meinen Mitschülern spreche ich...-",
-                sl: "sošolcem govorim v...-",
+                fu: "ai miei compagns di classe i feveli par ...",
               }
             },
             {
@@ -451,9 +384,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "ai professori parlo in... (esclusi quelli di lingue)",
-                fu: "ai profesôrs parle in... (esclusi chei di lenghis)-",
-                de: "mit den Lehrern spreche ich... (außer den Sprachlehrern)-",  
-                sl: "učiteljem govorim v... (razen učiteljev jezikov)-",
+                fu: "ai professôrs i feveli par ... (gjavant chei di lenghis)",
               }
             },
           ],
@@ -462,9 +393,7 @@ const questions : IQuestions = {
           code: "1.3.b",
           title: {
             it: "A scuola abitualmente...",
-            fu: "A scuele abitualment...-",
-            de: "In der Schule sprechen wir gewöhnlich...-",
-            sl: "V šoli običajno govorimo...-",
+            fu: "A scuel pal solit ...",
           },
           questions: [
             {
@@ -472,9 +401,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i miei compagni di classe a me parlano in...",
-                fu: "i mês compagns di clâs a me parle in...-",
-                de: "meine Mitschüler sprechen mit mir...-",
-                sl: "sošolci meni govorijo v...-",               
+                fu: "i miei compagns di classe mi fevelin par ...",
               }
             },
             {
@@ -482,9 +409,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "i professori a me parlano in... (esclusi quelli di lingue straniere)",
-                fu: "i profesôrs a me parle in... (esclusi chei di lenghis straniêrs)-",
-                de: "die Lehrer sprechen mit mir... (außer den Sprachlehrern)-",
-                sl: "učitelji meni govorijo v... (razen učiteljev jezikov)-",
+                fu: "i professôrs mi fevelin par ... (gjavant chei di lenghis)",
               }
             },
           ],
@@ -493,9 +418,7 @@ const questions : IQuestions = {
           code: "1.4",
           title: {
             it: "Abitualmente...",
-            fu: "Abitualment...-",
-            de: "Gewöhnlich...-",
-            sl: "Običajno...-",
+            fu: "Pal solit ...",
           },
           questions: [
             {
@@ -503,9 +426,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "quali lingue usi quando telefoni agli amici?",
-                fu: "qualis lenghis usis cuant che telefones a mês amis?-",
-                de: "welche Sprachen benutzt du, wenn du mit Freunden telefonierst?",
-                sl: "katere jezike uporabljaš, ko telefoniraš prijateljem?",
+                fu: "ce lenghis dopristu cuant che tu fevelis cui amîs?",
               }
             },
             {
@@ -513,9 +434,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "quali lingue usi nelle mail, sui social e nelle chat?",
-                fu: "qualis lenghis usis tes mails, sui social e tes chats?-",
-                de: "welche Sprachen benutzt du in E-Mails, auf Social Media und in Chats?",
-                sl: "katere jezike uporabljaš v e-pošti, na družbenih omrežjih in v klepetu?",
+                fu: "ce lenghis dopristu intes mails, sui social e intes chats?",
               }
             },
             {
@@ -523,9 +442,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "quali lingue vengono usate nei programmi TV che guardi?",
-                fu: "qualis lenghis vengonis usadis tes programs TV che tu viodis?-",
-                de: "welche Sprachen werden in den Fernsehsendungen benutzt, die du schaust?",
-                sl: "katere jezike uporabljajo v televizijskih oddajah, ki jih gledaš?",
+                fu: "ce lenghis si doprìno intai programs TV che tu cjalis?",
               }
             },
             {
@@ -533,9 +450,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "quali lingue vengono usate nei siti internet che visiti?",
-                fu: "qualis lenghis vengonis usadis tes sîts internet che tu visitis?-",
-                de: "welche Sprachen werden auf den Internetseiten benutzt, die du besuchst?",
-                sl: "katere jezike uporabljajo na spletnih straneh, ki jih obiskuješ?",
+                fu: "ce lenghis si doprìno tai sîts internet che tu visitis?",
               }
             },
             {
@@ -543,9 +458,7 @@ const questions : IQuestions = {
               type: "choose-language",
               question: {
                 it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?",
-                fu: "in qualis lenghis a son scrits i libris, lis stôris e i fumets che tu lis levis?-",
-                de: "in welchen Sprachen sind die Bücher, Geschichten und Comics geschrieben, die du liest?",
-                sl: "v katerih jezikih so napisane knjige, zgodbe in stripe, ki jih bereš?",
+                fu: "cuale ise la lenghe dai libris, des storiis e dai fumets che tu leis?",
               }
             },
           ]
@@ -556,9 +469,7 @@ const questions : IQuestions = {
       code: "2",
       title: {
         it: "Competenza linguistica orale e scritta",
-        fu: "Competence lenghistiche orâl e scrite-",
-        de: "Mündliche und schriftliche Sprachkompetenz-",
-        sl: "Govorne in pisne jezikovne kompetence-",
+        fu: "Competence linguistiche orâl e scrite",
       },
       subsections: [
         {
@@ -568,9 +479,7 @@ const questions : IQuestions = {
             type: 'map-language-to-age',
             question: {
               it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
-              fu: "A che etât tu âs comensât a parâ le lenghis che tu cognossis? (indiche une sole fascie d'etât par ducj i voçs)",
-              de: "In welchem Alter hast du angefangen, die Sprachen zu sprechen, die du kennst? (gib für jede Sprache nur eine Altersgruppe an)",
-              sl: "Pri kateri starosti si začel govoriti jezike, ki jih poznaš? (za vsak jezik navedi samo eno starostno skupino)",
+              fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
             }
         }],
       },
@@ -581,9 +490,7 @@ const questions : IQuestions = {
           type: 'map-language-to-competence',
           question: {
             it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (0=Nessuna competenza; 10=competenza avanzata. Se non conosci la lingua indica competenza 0)",
-            fu: "Esprimi une autovalutazion da 0 a 10 des tôs competencis lenghistiche compiland la taele che al è sot. (0=Nissune competence; 10=competence avanzade. Se no tu cognossis la lenghe indiche competence 0)",
-            de: "Gib eine Selbsteinschätzung deiner Sprachkompetenzen von 0 bis 10 an, indem du die folgende Tabelle ausfüllst. (0=Keine Kompetenz; 10=Fortgeschrittene Kompetenz. Wenn du die Sprache nicht kennst, gib 0 an)",
-            sl: "Izrazi samopodobo svojih jezikovnih kompetenc od 0 do 10 tako, da izpolniš spodnjo tabelo. (0=Brez kompetenc; 10=Napredne kompetence. Če jezika ne poznaš, navedi kompetenco 0)",            
+            fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
           }
         }],
       },
@@ -639,3 +546,66 @@ export function extractLevels(questions: IQuestions): string[] {
     (levels: string[], x) => ((levels.includes(x.level)) ? levels : [...levels, x.level]), 
     [])
 }
+
+export interface LocalizedString {
+  [key: LanguageCode]: string
+}
+
+export type LocalizedLanguages = {
+  [key: LanguageCode]: LocalizedString
+}
+
+export interface LocalizedStringWithCode extends LocalizedString {
+    code: string,
+}
+
+export interface IQuestion {
+    code: string,
+    type: string,
+    question: LocalizedString,
+}
+
+export interface ISubsection {
+    code: string,
+    title?: LocalizedString,
+    questions: IQuestion[],
+}
+
+export interface ISection {
+    code: string,
+    title: LocalizedString,
+    subsections: ISubsection[],
+}
+
+export interface ICompetenceValue extends LocalizedString {
+  level: string,
+}
+
+export interface IQuestions {
+    version: string,
+    phrases: {
+      school: LocalizedString,
+      class: LocalizedString,
+      title: LocalizedString,
+      compileButton: LocalizedString,
+      shareButton: LocalizedString,
+      thanks: LocalizedString,
+      isClosed: LocalizedString,
+      chooseLanguage: LocalizedString,
+    }
+    translations: {
+      'it': string,
+      'fu': string,
+      'en': string,
+    }
+    languages: {
+        [key: string]: LocalizedString,
+    },
+    ages: LocalizedStringWithCode[],
+    competences: LocalizedStringWithCode[],
+    competenceValues: {
+        [key: string]: ICompetenceValue,
+    },
+    sections: ISection[],    
+}
+

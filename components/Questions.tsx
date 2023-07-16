@@ -8,7 +8,8 @@ import { IAnswers } from './Question'
 import { useAddMessage } from '@/components/Messages'
 import { IGetPoll } from '@/models/Poll'
 
-export default function Questions({done, poll } : {
+export default function Questions({lang, done, poll } : {
+    lang: string,
     done?: () => void,
     poll?: IGetPoll}) {
 
@@ -70,6 +71,7 @@ export default function Questions({done, poll } : {
       <div style={{position: "relative",float: "right"}}>{poll?.school || ''} {poll?.class || ''} -- versione questionario: {questionsData.version}</div>
       <h3>{subsection.section.title.it}</h3>
       <QuestionsSubsection 
+        lang={lang}
         key={subsection.code} 
         subsection={subsection}
         answers={answers}

@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
 import { LocalizedString } from '@/lib/questions'
+import { trans } from './Question'
 
 function OtherLanguage({addLanguage}: {
     addLanguage: (language: string) => void
@@ -17,14 +18,15 @@ function OtherLanguage({addLanguage}: {
     </>
   }
   
-export default function LanguageAnswer({answer, setAnswer, languages }
+export default function LanguageAnswer({lang, answer, setAnswer, languages }
     : {
+      lang: string,
       answer: string[], 
       setAnswer: (f: ((a: string[]) => void)) => void, 
       languages: {[key: string]: string|LocalizedString}
     }) {
     return <>{[
-        ...Object.entries(languages).map(([code, data]:[string,string|LocalizedString]):[string,string] => [code, typeof(data) === 'string' ? data : data['it']]),
+        ...Object.entries(languages).map(([code, data]:[string,string|LocalizedString]):[string,string] => [code, typeof(data) === 'string' ? data : trans(data, lang)]),
         ].map(([code, language]:[string,string]) => 
             <LanguageCheckbox 
                 key={code}
