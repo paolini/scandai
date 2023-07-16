@@ -1,6 +1,7 @@
 import useSWR from 'swr'
 
-import { IGetPoll, IPostPoll } from '@/models/Poll'
+import { IGetPoll, IPoll, IPostPoll } from '@/models/Poll'
+import { IPostUser } from '@/models/User'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IGetUser } from '@/models/User'
@@ -42,7 +43,7 @@ interface WithId {
 }
 
 export async function remove(url: string, obj: WithId) {
-    await fetcher([`/api/${url}/${obj._id}`], {
+    return await fetcher([`/api/${url}/${obj._id}`], {
         method: 'DELETE',
     })
 }
@@ -85,4 +86,12 @@ export function useUsers() {
 
 export function patchUser(user: any) {
     return patch('users', user)
+}
+
+export async function postUser(user: IPostUser) {
+    return await post<IPostUser>('users', user)
+}
+
+export async function deleteUser(user: IGetUser) {
+    return await remove('users', user)
 }

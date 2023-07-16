@@ -19,9 +19,10 @@ export default async function handler(
             return res.json({data: users})
         }
         if (req.method === 'POST') {
-            const {name, username, email} = req.body
+            const {name, username, email} = JSON.parse(req.body)
             const password = randomstring.generate({length: 6, readable: true})
             const newUser = new User({name, username, email, password, isAdmin: false})
+            console.log(`creating new User: ${newUser}`)
             const out = await newUser.save()
             return res.json({data: out, password})
         }
