@@ -3,11 +3,13 @@ import { SetStateAction, Dispatch } from 'react'
 import { ISubsection, IQuestions } from '@/lib/questions'
 import Question, { IAnswers } from './Question'
 import { Answer } from '@/models/Entry'
+import { trans } from './Question'
+
 
 export default function QuestionsSubsection({ lang, subsection, answers, setAnswers, data, extraLanguages }
   :{ lang: string, subsection: ISubsection, answers: IAnswers, setAnswers: Dispatch<SetStateAction<IAnswers>>, data: IQuestions, extraLanguages: string[]}) {
   return <div key={subsection.code}>
-    { subsection.title  && <h4>{subsection.title.it}</h4> }
+    { subsection.title  && <h4>{trans(subsection.title, lang)}</h4> }
     {
       subsection.questions.map(q => 
         <Question 

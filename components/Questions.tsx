@@ -7,6 +7,7 @@ import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
 import { useAddMessage } from '@/components/Messages'
 import { IGetPoll } from '@/models/Poll'
+import { trans } from './Question'
 
 export default function Questions({lang, done, poll } : {
     lang: string,
@@ -69,7 +70,7 @@ export default function Questions({lang, done, poll } : {
   
   return <div>
       <div style={{position: "relative",float: "right"}}>{poll?.school || ''} {poll?.class || ''} -- versione questionario: {questionsData.version}</div>
-      <h3>{subsection.section.title.it}</h3>
+      <h3>{trans(subsection.section.title, lang)}</h3>
       <QuestionsSubsection 
         lang={lang}
         key={subsection.code} 
@@ -80,17 +81,17 @@ export default function Questions({lang, done, poll } : {
         extraLanguages={extraLanguages}
       />
       <br />
-      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>Indietro</Button>
+      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>{trans(questionsData.phrases.prevButton, lang)}</Button>
       <span> pagina {pageCount+1} di {subsections.length} </span>
       { pageCount < subsections.length-1 &&
-        <Button disabled={pageCount>=subsections.length-1} onClick={()=>setPageCount(p => p+1)}>Avanti</Button>
+        <Button disabled={pageCount>=subsections.length-1} onClick={()=>setPageCount(p => p+1)}>{trans(questionsData.phrases.nextButton, lang)}</Button>
       }
       {
         pageCount >= subsections.length-1 &&
-        <Button onClick={() => submit()}>Invia</Button>
+        <Button onClick={() => submit()}>{trans(questionsData.phrases.sendButton, lang)}</Button>
       }
       { pageCount < subsections.length 
-        && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>Fine</Button>
+        && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>{trans(questionsData.phrases.endButton,lang)}</Button>
       } 
   </div>
 }

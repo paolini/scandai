@@ -42,6 +42,22 @@ const questions : IQuestions = {
       'fu': 'compile il cuestionari par furlan',
       'en': 'I prefer to fill the questionnaire in English',
     },
+    prevButton: {
+      'it': 'Indietro',
+      'en': 'Previous',
+    },
+    nextButton: {
+      'it': 'Avanti',
+      'en': 'Next',
+    },
+    endButton: {
+      'it': 'Fine',
+      'en': 'End',
+    },
+    sendButton: {
+      'it': 'Invia',
+      'en': 'Send',
+    }
   },
 
   translations: {
@@ -592,6 +608,10 @@ export interface IQuestions {
       thanks: LocalizedString,
       isClosed: LocalizedString,
       chooseLanguage: LocalizedString,
+      nextButton: LocalizedString,
+      prevButton: LocalizedString,
+      endButton: LocalizedString,
+      sendButton: LocalizedString,
     }
     translations: {
       'it': string,
