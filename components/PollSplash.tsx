@@ -7,7 +7,7 @@ import { IGetPoll } from "@/models/Poll"
 import Page from "@/components/Page"
 import { useAddMessage } from "@/components/Messages"
 import Error from "@/components/Error"
-import questions, { getPhrase } from "@/lib/questions"
+import questions, { getPhrase } from "@/lib/questionary"
 import { value, State, onChange } from "@/lib/State"
 import useSessionUser from "@/lib/useSessionUser"
 

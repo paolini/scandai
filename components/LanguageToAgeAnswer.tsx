@@ -1,7 +1,7 @@
 import { Dispatch } from 'react'
 
 import { assert } from '@/lib/assert'
-import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questions"
+import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questionary"
 import { MapLanguageToAgeAnswer, Answer } from "@/models/Entry"
 import { trans } from "./Question"
 

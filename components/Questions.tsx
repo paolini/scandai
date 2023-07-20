@@ -2,7 +2,7 @@ import { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
 import { assert } from '@/lib/assert'
 
-import questionsData, { extractQuestions, extractSubsections, extractExtraLanguages } from '@/lib/questions'
+import questionary, { extractQuestionCodes, extractSubsections, extractExtraLanguages, getPhrase } from '@/lib/questionary'
 import QuestionsSubsection from './QuestionsSubsection'
 import { IAnswers } from './Question'
 import { useAddMessage } from '@/components/Messages'
@@ -18,10 +18,12 @@ export default function Questions({lang, done, poll } : {
   const [answers, setAnswers] = useState<IAnswers>({})
   const addMessage = useAddMessage()
 
-  const questions = extractQuestions(questionsData)
+  const questionCodes = extractQuestionCodes(questionary)
 
-  function empty_answer(question_type: string) {
-    switch(question_type) {
+  function empty_answer(code: string) {
+    const question = questionary.questions[code]
+    assert(question, `question not found with code ${code}`)
+    switch(question.type) {
       case 'map-language-to-competence':
         return {}
       case 'map-language-to-age':
@@ -29,17 +31,19 @@ export default function Questions({lang, done, poll } : {
       case 'choose-language':
         return []
       default:
-        assert(false, "unknown question type: "+question_type)
+        assert(false, "unknown question type: "+question.type)
     }
   }
 
   if (Object.keys(answers).length === 0) {
+    console.log(`initializing answers: ${JSON.stringify(questionCodes)}`)
     setAnswers(Object.fromEntries(
-      questions.map(q => [q.code, empty_answer(q.type)])))
+      questionCodes.map(code => [code, empty_answer(code)])))
     return <div>Loading...</div>
   }
-  const extraLanguages = extractExtraLanguages(questions, answers, questionsData.languages)
-  const subsections = extractSubsections(questionsData)
+
+  const extraLanguages = extractExtraLanguages(questionCodes, answers, questionary.languages)
+  const subsections = extractSubsections(questionary)
   const subsection = subsections[pageCount]
 
   async function submit() {
@@ -69,7 +73,7 @@ export default function Questions({lang, done, poll } : {
   }
   
   return <div>
-      <div style={{position: "relative",float: "right"}}>{poll?.school || ''} {poll?.class || ''} -- versione questionario: {questionsData.version}</div>
+      <div style={{position: "relative",float: "right"}}>{poll?.school || ''} {poll?.class || ''} -- versione questionario: {questionary.version}</div>
       <h3>{trans(subsection.section.title, lang)}</h3>
       <QuestionsSubsection 
         lang={lang}
@@ -77,21 +81,23 @@ export default function Questions({lang, done, poll } : {
         subsection={subsection}
         answers={answers}
         setAnswers={setAnswers}
-        data={questionsData}
+        questionary={questionary}
         extraLanguages={extraLanguages}
       />
       <br />
-      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>{trans(questionsData.phrases.prevButton, lang)}</Button>
-      <span> pagina {pageCount+1} di {subsections.length} </span>
+      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>
+        {getPhrase("prevButton", lang)}
+      </Button>
+      <span> {pageCount+1} / {subsections.length} </span>
       { pageCount < subsections.length-1 &&
-        <Button disabled={pageCount>=subsections.length-1} onClick={()=>setPageCount(p => p+1)}>{trans(questionsData.phrases.nextButton, lang)}</Button>
+        <Button disabled={pageCount>=subsections.length-1} onClick={()=>setPageCount(p => p+1)}>{getPhrase("nextButton", lang)}</Button>
       }
       {
         pageCount >= subsections.length-1 &&
-        <Button onClick={() => submit()}>{trans(questionsData.phrases.sendButton, lang)}</Button>
+        <Button onClick={() => submit()}>{getPhrase("sendButton", lang)}</Button>
       }
       { pageCount < subsections.length 
-        && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>{trans(questionsData.phrases.endButton,lang)}</Button>
+        && <Button className="m-2" disabled={pageCount>=subsections.length-1} onClick={() => setPageCount(subsections.length-1)}>{getPhrase("endButton", lang)}</Button>
       } 
   </div>
 }

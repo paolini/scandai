@@ -23,7 +23,7 @@ import {
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat
 } from '@/pages/api/stats'
-import questionsData, { extractLevels } from '@/lib/questions'
+import questionary, { extractLevels } from '@/lib/questionary'
 import Header from '@/components/Header'
 
 ChartJS.register(
@@ -49,18 +49,18 @@ export default function Report() {
 
     const questions: {[key:string]: IQuestionStat} 
         = Object.fromEntries(stats.questions.map(
-            q => [q.question.code, q]))
+            q => [q.code, q]))
 
     return <>
         <Header />
         <h1>Risultati aggregati</h1>
         <ListClasses stats={stats} />
-        { stats.questions.map(q => <ReportQuestion key={q.question.code} question={q} />) }
+        { stats.questions.map(q => <ReportQuestion key={q.code} question={q} />) }
     </>
 }
 
 function CompetenceLegend() {
-    const competences = questionsData.competences
+    const competences = questionary.competences
     return <div>
         <b>Legenda</b>
         <br/>
@@ -85,7 +85,7 @@ function ListClasses({ stats }: {stats: IStats}) {
         </ul>
         Totale questionari: {stats.entriesCount}
         <br/>
-        Numero somministrazioni: {stats.polls.length}
+        Numero sondaggi: {stats.polls.length}
     </div>
 }
 
@@ -136,7 +136,7 @@ function GraphQuestionCounts({question}
 
 function GraphChooseLanguageQuestion({stat}
     : {stat: IChooseLanguageQuestionStat}) {
-    const languages = questionsData.languages
+    const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
       
     return <Bar 
@@ -185,7 +185,7 @@ function GraphChooseLanguageQuestion({stat}
 
 function TableChooseLanguageQuestion({stat}
     : {stat: IChooseLanguageQuestionStat}) {
-    const languages = questionsData.languages
+    const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
       
     return <Table>
@@ -257,9 +257,9 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
         language: string,
         title?: string,
     }) {
-    const localizedLanguage = questionsData.languages[language].it || language
+    const localizedLanguage = questionary.languages[language].it || language
     const stats = stat.answers[language]
-    const levels = extractLevels(questionsData)
+    const levels = extractLevels(questionary)
     if (!stats) return <div>No stats for language {language}</div>
 
     function computeDataset(stat: {[key: string]: number}) {
@@ -316,8 +316,8 @@ function GraphMapLanguageToAgeQuestion({stat}
         stat: IMapLanguageToAgeQuestionStat,
     }) {
     const stats = stat.answers
-    const ages = questionsData.ages.map(x => x.code)
-    const languages = Object.keys(questionsData.languages)
+    const ages = questionary.ages.map(x => x.code)
+    const languages = Object.keys(questionary.languages)
     const title = "Età di apprendimento lingua"
 
     Object.keys(stat.answers).forEach(lang => {
@@ -332,8 +332,8 @@ function GraphMapLanguageToAgeQuestion({stat}
             label: age || 'mai',
         }))
 
-    const labels = languages.map(lang => (lang in questionsData.languages
-        ?questionsData.languages[lang]['it']:lang))
+    const labels = languages.map(lang => (lang in questionary.languages
+        ?questionary.languages[lang]['it']:lang))
 
     return <Bar 
         options={{
