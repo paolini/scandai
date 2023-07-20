@@ -8,7 +8,7 @@ import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set } from '@/lib/State'
-import Poll from '@/components/Poll'
+import PollSplash from '@/components/PollSplash'
 
 export default function PollSecret({}) {
     const router = useRouter()
@@ -39,7 +39,7 @@ export default function PollSecret({}) {
     const myUrl = window.location.href
 
     switch(value(state)) {
-        case 'init': return <Poll poll={poll} mutate={pollQuery.mutate} langState={langState} start={() => set(state,'started')} />
+        case 'init': return <PollSplash poll={poll} mutate={pollQuery.mutate} langState={langState} start={() => set(state,'started')} />
         case 'started': return <Questions 
             poll={poll} 
             lang={value(langState)}

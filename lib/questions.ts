@@ -629,3 +629,9 @@ export interface IQuestions {
     sections: ISection[],    
 }
 
+export function getPhrase(s: keyof typeof questions.phrases, lang: LanguageCode) {
+  return questions.phrases[s][lang] || `${lang}: ${questions.phrases[s]['it']}`
+}
+
+
+

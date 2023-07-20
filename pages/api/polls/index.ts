@@ -19,7 +19,9 @@ export default async function handler(
                 filter[key] = req.query[key]
             }
         }
-
+        if (req.query._id!==undefined) {
+            filter['_id'] = new ObjectId(req.query._id as string)
+        }
         // set filters from user authorization
         if (user) {
             if (!user.isAdmin) {

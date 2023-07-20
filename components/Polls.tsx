@@ -1,7 +1,7 @@
 import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
 import { useState } from 'react'
-import { Button, ButtonGroup, Card } from 'react-bootstrap'
-import { useRouter } from 'next/router'
+import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
+import { Router, useRouter } from 'next/router'
 
 import { usePolls, postPoll, patchPoll, deletePoll } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
@@ -68,15 +68,22 @@ function PollsTable({user, polls}:{
     user?: IGetUser|null,
     polls: IGetPoll[],
 }) {
-    function OpenButton({poll}:{
-        poll: IGetPoll
-    }) {
-        return <a className="btn btn-success" href={`/p/${poll.secret}`}>
+    const router = useRouter()
+
+    function OpenButton({poll}:{poll: IGetPoll}) {
+        return <a className="btn btn-success" href={`/poll/${poll._id}`}>
             vedi
         </a>
     }
 
-    return <table className="table">
+    function navigateToPoll(
+        evt: any, 
+        poll: IGetPoll) {
+        evt.preventDefault()
+        router.push(`/poll/${poll._id}`)
+    }
+
+    return <Table hover>
         <thead>
             <tr>
                 { user?.isAdmin && <th>utente</th> }
@@ -84,12 +91,12 @@ function PollsTable({user, polls}:{
                 <th>scuola</th>
                 <th>classe</th>
                 <th>conteggio</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             {polls.map(poll => 
-            <tr key={poll._id.toString()}>
+            <tr key={poll._id.toString()}
+                onClick={(e) => navigateToPoll(e, poll) }>
                     { user?.isAdmin && <td>
                         { poll.createdBy?.name 
                             || poll.createdBy?.username}
@@ -106,12 +113,12 @@ function PollsTable({user, polls}:{
                 <td>
                     {poll.entriesCount}
                 </td>
-                <td>
+{/*                <td>
                     <OpenButton poll={poll} />
-                </td>
+                        </td>*/}
             </tr>)}
         </tbody>
-    </table>    
+    </Table>    
 }            
 
 
