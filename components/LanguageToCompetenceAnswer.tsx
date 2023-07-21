@@ -1,6 +1,6 @@
 import { Dispatch } from 'react'
 
-import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questions"
+import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questionary"
 import { MapLanguageToCompetenceAnswer } from '@/models/Entry'
 import { trans } from "./Question"
 
