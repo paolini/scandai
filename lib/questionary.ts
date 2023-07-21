@@ -465,85 +465,109 @@ const questionary: IQuestionary = {
         Grazie per la collaborazione!
         `,
       },  
-      sections : [
-        {
-          code: "1",
+      elements: [
+        { 
+          element: "section",
           title: {
             it: "Lingue parlate e contesti comunicativi",
             fu: "Lenghis feveladis e contescj comunicatîfs",
           },
-          subsections: [
-            {
-              code: "1.1.a",
-              title: {
-                it: "Abitualmente...",
-                fu: "Pal solit ...",
-              },
-              questions: [ "1.1.a.1" ],
-            },
-            {
-              code: "1.1.b",
-              title: {
-                it: "In famiglia abitualmente io parlo...",
-                fu: "In famee pal solit jo o feveli ...",
-              },
-              questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
-            },
-            {
-              code: "1.1.c",
-              title: {
-                it: "In famiglia abitualmente...",
-                fu: "In famee pal solit ...",
-              },
-              questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
-            },
-            {
-              code: "1.2.a",
-              title: {
-                it: "Fuori casa abitualmente io parlo...",
-                fu: "Fûr di cjase pal solit o feveli ...",
-              },
-              questions: [
+        },
+        {
+          element: "title",
+          title: {
+            it: "Abitualmente...",
+            fu: "Pal solit ...",
+          },
+        },
+        {
+          element: "questions",
+          questions: [ "1.1.a.1" ],
+        },
+        {
+          element: "newpage",
+        },
+        {
+          element: "title",
+          title: {
+            it: "In famiglia abitualmente io parlo...",
+            fu: "In famee pal solit jo o feveli ...",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "In famiglia abitualmente...",
+            fu: "In famee pal solit ...",
+          },
+        },
+        {
+          element: "questions",
+          questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Fuori casa abitualmente io parlo...",
+            fu: "Fûr di cjase pal solit o feveli ...",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
                 "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
                 "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
               ],
-            },
-            {
-              code: "1.3.b",
-              title: {
-                it: "A scuola abitualmente...",
-                fu: "A scuel pal solit ...",
-              },
-              questions: [ "1.3.b.1", "1.3.b.2" ],
-            },
-            {
-              code: "1.4",
-              title: {
-                it: "Abitualmente...",
-                fu: "Pal solit ...",
-              },
-              questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ]
-            },
-          ]
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "A scuola abitualmente...",
+            fu: "A scuel pal solit ...",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "1.3.b.1", "1.3.b.2" ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Abitualmente...",
+            fu: "Pal solit ...",
+          },
         },
         {
-          code: "2",
+          element: "questions",
+          questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ],
+        },
+        { element: "newpage"},
+        {
+          element: "section",
           title: {
             it: "Competenza linguistica orale e scritta",
             fu: "Competence linguistiche orâl e scrite",
           },
-          subsections: [
-            {
-              code: "2.1",
-              questions: [ "2.1.1" ],
-            },
-            { 
-              code: "2.2",
-              questions: [ "2.2.1" ],
-            },
-        ]
-      }
-    ]},
+        },
+        {
+          element: "questions",
+          questions: [ "2.1.1" ],
+        },
+        { element: "newpage"},
+        {
+          element: "questions",  
+          questions: [ "2.2.1" ],
+        },
+      ]  
+    },
     short: {
       intro: {
         it: `Cara studentessa / Caro studente, 
@@ -555,28 +579,32 @@ const questionary: IQuestionary = {
         Grazie per la collaborazione!
         `,
       },
-      sections : [
-        {
-          code: "0",
+      elements : [
+        { 
+          element: "section",
           title: {
             it: "Istantanea linguistica"
           },
-          subsections: [
-            {
-              code: "1",
-              title: {
-                it: "Lingue parlate e contesti comunicativi",
-              },
-              questions: [ "family", "friends" ],
-            },
-            {
-              code: "2",
-              title: {
-                it: "Competenza linguistica orale e scritta",
-              },
-              questions: [ "competences" ],
-            }
-          ]
+        },
+        {
+          element: "title",
+          title: {
+            it: "Lingue parlate e contesti comunicativi",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "family", "friends" ],
+        },
+        {
+          element: "title",
+          title: {
+            it: "Competenza linguistica orale e scritta",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "competences" ],
         },
       ],
     }
@@ -585,13 +613,11 @@ const questionary: IQuestionary = {
 
 export default questionary
 
-export function extractQuestionCodes(questionary: IQuestionary) {
-  let codes = []
-  for (const s of questionary.forms.full.sections) {
-    for (const ss of s.subsections) {
-      for (const q of ss.questions) {
-        codes.push(q)
-      }
+export function extractQuestionCodes(form: string) {
+  let codes: string[] = []
+  for (const s of questionary.forms[form].elements) {
+    if (s.element === 'questions') {
+      codes = codes.concat(s.questions)
     }
   }
   return codes
@@ -650,57 +676,76 @@ export interface LocalizedStringWithCode extends LocalizedString {
     code: string,
 }
 
+export interface IQuestionary {
+  version: string,
+  phrases: {
+    [key: string]: LocalizedString,
+  }
+  translations: {
+    'it': string,
+    'fu': string,
+    'en': string,
+  }
+  languages: {
+      [key: string]: LocalizedString,
+  },
+  languagesExtended: {
+      [key: string]: LocalizedString,
+  },
+  ages: LocalizedStringWithCode[],
+  competences: LocalizedStringWithCode[],
+  competenceValues: {
+      [key: string]: ICompetenceValue,
+  },
+  questions: {[key: string] : IQuestion},
+  forms: {
+    [key: string]: IForm,
+  },
+}
+
+export interface IForm {
+  intro: LocalizedString,
+  elements: IFormElement[],
+}
+
+export type IFormElement = IFormSection | IFormTitle | IFormQuestions | IFormNewPage
+
+export type IFormSection = {
+  element: 'section',
+  title: LocalizedString,
+}
+
+export type IFormTitle = {
+  element: 'title',
+  title: LocalizedString,
+}
+
+export type IFormQuestions = {
+  element: 'questions',
+  questions: string[],
+}
+
+export type IFormNewPage = {
+  element: 'newpage',
+}
+
 export interface IQuestion {
     type: string,
     question: LocalizedString,
-}
-
-export interface ISubsection {
-    code: string,
-    title?: LocalizedString,
-    questions: string[],
-}
-
-export interface ISection {
-    code: string,
-    title: LocalizedString,
-    subsections: ISubsection[],
 }
 
 export interface ICompetenceValue extends LocalizedString {
   level: string,
 }
 
-export interface IForm {
-  intro: LocalizedString,
-  sections: ISection[],
+export interface IReport {
+  elements: IReportElement[],
 }
 
-export interface IQuestionary {
-    version: string,
-    phrases: {
-      [key: string]: LocalizedString,
-    }
-    translations: {
-      'it': string,
-      'fu': string,
-      'en': string,
-    }
-    languages: {
-        [key: string]: LocalizedString,
-    },
-    languagesExtended: {
-        [key: string]: LocalizedString,
-    },
-    ages: LocalizedStringWithCode[],
-    competences: LocalizedStringWithCode[],
-    competenceValues: {
-        [key: string]: ICompetenceValue,
-    },
-    questions: {[key: string] : IQuestion},
-    forms: {
-      [key: string]: IForm,
-    },
+export interface IReportElement {
+  type: string,
+  ref: string,
 }
+
 
 

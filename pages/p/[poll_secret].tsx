@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { Button, Card } from 'react-bootstrap'
 
 import Page from '@/components/Page'
-import Questions from '@/components/Questions'
+import Questionary from '@/components/Questionary'
 import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
@@ -41,8 +41,9 @@ export default function PollSecret({}) {
 
     switch(value(state)) {
         case 'init': return <PollSplash poll={poll} mutate={pollQuery.mutate} langState={langState} start={() => set(state,'started')} />
-        case 'started': return <Questions 
+        case 'started': return <Questionary 
             poll={poll} 
+            form="full"
             lang={value(langState)}
             done={() => set(state, 'completed')} 
             />

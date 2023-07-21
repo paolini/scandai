@@ -9,8 +9,9 @@ import { useAddMessage } from '@/components/Messages'
 import { IGetPoll } from '@/models/Poll'
 import { trans } from './Question'
 
-export default function Questions({lang, done, poll } : {
+export default function Questionary({lang, done, poll, form } : {
     lang: string,
+    form: string,
     done?: () => void,
     poll?: IGetPoll}) {
 
@@ -18,7 +19,7 @@ export default function Questions({lang, done, poll } : {
   const [answers, setAnswers] = useState<IAnswers>({})
   const addMessage = useAddMessage()
 
-  const questionCodes = extractQuestionCodes(questionary)
+  const questionCodes = extractQuestionCodes(form)
 
   function empty_answer(code: string) {
     const question = questionary.questions[code]
