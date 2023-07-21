@@ -1,7 +1,7 @@
 export const languageCodes = ['it','fu','sl','de']
 
 const questionary: IQuestionary = {
-  version: "0.1.1",
+  version: "0.2.0",
 
   phrases: {
     school: {
@@ -25,7 +25,7 @@ const questionary: IQuestionary = {
       
     },
     shareButton: {
-      'it': 'Copia l\'indirizzo del questionario',
+      'it': "Copia l'indirizzo del questionario",
       'fu': 'Copie il leam al cuestionari',
     },
     thanksTitle: {
@@ -43,7 +43,7 @@ const questionary: IQuestionary = {
       'fu': 'Il cuestionari al è sierât',
     },
     chooseLanguage: {
-      'it': 'usa l\'italiano per compilare il questionario',
+      'it': "usa l'italiano per compilare il questionario",
       'fu': 'compile il cuestionari par furlan',
       'en': 'fill the questionnaire in English',
     },
@@ -228,6 +228,26 @@ const questionary: IQuestionary = {
   },
 
   questions:{
+    "family": {
+      type: "choose-language",
+      question: {
+        it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)", 
+      },
+    },
+    "friends": {
+      type: "choose-language",
+      question: {
+        it: "Quali lingue vengono abitualmente utilizzate nel tuo gruppo di amici? (puoi indicare più di una risposta)",
+      },
+    },
+    "competences": {
+      type: "choose-competence",
+      question: {
+        it: `Dai una autovalutazione delle tue competenze linguistiche 
+          compilando la tabella seguente. I livelli di
+          competenza utilizzati sono: livello A (principiante), livello B (intermedio), livello C (avanzato)`,
+      },
+    },
     "1.1.a.1": {
       type: "choose-language",
       question: {
@@ -288,7 +308,7 @@ const questionary: IQuestionary = {
         type: "choose-language",
         question: {
           it: "i miei fratelli/sorelle a me parlano in...",
-          fu: "i miei fradis / lis mês sûrs mi feveli par ...",
+          fu: "i miei fradis / lis mês sûrs mi fevelin par ...",
         }
       },
       "1.1.c.5": {
@@ -433,92 +453,141 @@ const questionary: IQuestionary = {
     }
   },
 
-  sections : [
-    {
-      code: "1",
-      title: {
-        it: "Lingue parlate e contesti comunicativi",
-        fu: "Lenghis feveladis e contescj comunicatîfs",
+  forms: {
+    full: {
+      intro: {
+        it: `Cara studentessa / Caro studente, 
+        chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
+        relative alla tuaconoscenza delle lingue. 
+        Il questionario ci aiuterà a raccogliere informazioni 
+        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        Il questionario è anonimo: esprimiti con libertà e sincerità. 
+        Grazie per la collaborazione!
+        `,
+      },  
+      sections : [
+        {
+          code: "1",
+          title: {
+            it: "Lingue parlate e contesti comunicativi",
+            fu: "Lenghis feveladis e contescj comunicatîfs",
+          },
+          subsections: [
+            {
+              code: "1.1.a",
+              title: {
+                it: "Abitualmente...",
+                fu: "Pal solit ...",
+              },
+              questions: [ "1.1.a.1" ],
+            },
+            {
+              code: "1.1.b",
+              title: {
+                it: "In famiglia abitualmente io parlo...",
+                fu: "In famee pal solit jo o feveli ...",
+              },
+              questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
+            },
+            {
+              code: "1.1.c",
+              title: {
+                it: "In famiglia abitualmente...",
+                fu: "In famee pal solit ...",
+              },
+              questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
+            },
+            {
+              code: "1.2.a",
+              title: {
+                it: "Fuori casa abitualmente io parlo...",
+                fu: "Fûr di cjase pal solit o feveli ...",
+              },
+              questions: [
+                "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
+                "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
+              ],
+            },
+            {
+              code: "1.3.b",
+              title: {
+                it: "A scuola abitualmente...",
+                fu: "A scuel pal solit ...",
+              },
+              questions: [ "1.3.b.1", "1.3.b.2" ],
+            },
+            {
+              code: "1.4",
+              title: {
+                it: "Abitualmente...",
+                fu: "Pal solit ...",
+              },
+              questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ]
+            },
+          ]
+        },
+        {
+          code: "2",
+          title: {
+            it: "Competenza linguistica orale e scritta",
+            fu: "Competence linguistiche orâl e scrite",
+          },
+          subsections: [
+            {
+              code: "2.1",
+              questions: [ "2.1.1" ],
+            },
+            { 
+              code: "2.2",
+              questions: [ "2.2.1" ],
+            },
+        ]
+      }
+    ]},
+    short: {
+      intro: {
+        it: `Cara studentessa / Caro studente, 
+        chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
+        relative alla tuaconoscenza delle lingue. 
+        Il questionario ci aiuterà a raccogliere informazioni 
+        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        Il questionario è anonimo: esprimiti con libertà e sincerità. 
+        Grazie per la collaborazione!
+        `,
       },
-      subsections: [
+      sections : [
         {
-          code: "1.1.a",
+          code: "0",
           title: {
-            it: "Abitualmente...",
-            fu: "Pal solit ...",
+            it: "Istantanea linguistica"
           },
-          questions: [ "1.1.a.1" ],
+          subsections: [
+            {
+              code: "1",
+              title: {
+                it: "Lingue parlate e contesti comunicativi",
+              },
+              questions: [ "family", "friends" ],
+            },
+            {
+              code: "2",
+              title: {
+                it: "Competenza linguistica orale e scritta",
+              },
+              questions: [ "competences" ],
+            }
+          ]
         },
-        {
-          code: "1.1.b",
-          title: {
-            it: "In famiglia abitualmente io parlo...",
-            fu: "In famee pal solit jo o feveli ...",
-          },
-          questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
-        },
-        {
-          code: "1.1.c",
-          title: {
-            it: "In famiglia abitualmente...",
-            fu: "In famee pal solit ...",
-          },
-          questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
-        },
-        {
-          code: "1.2.a",
-          title: {
-            it: "Fuori casa abitualmente io parlo...",
-            fu: "Fûr di cjase pal solit o feveli ...",
-          },
-          questions: [
-            "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
-            "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
-          ],
-        },
-        {
-          code: "1.3.b",
-          title: {
-            it: "A scuola abitualmente...",
-            fu: "A scuel pal solit ...",
-          },
-          questions: [ "1.3.b.1", "1.3.b.2" ],
-        },
-        {
-          code: "1.4",
-          title: {
-            it: "Abitualmente...",
-            fu: "Pal solit ...",
-          },
-          questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ]
-        },
-      ]
-    },
-    {
-      code: "2",
-      title: {
-        it: "Competenza linguistica orale e scritta",
-        fu: "Competence linguistiche orâl e scrite",
-      },
-      subsections: [
-        {
-          code: "2.1",
-          questions: [ "2.1.1" ],
-        },
-        { 
-          code: "2.2",
-          questions: [ "2.2.1" ],
-        },
-    ]
+      ],
+    }
   }
-  ],
 }
 
 export default questionary
 
 export function extractQuestionCodes(questionary: IQuestionary) {
   let codes = []
-  for (const s of questionary.sections) {
+  for (const s of questionary.forms.full.sections) {
     for (const ss of s.subsections) {
       for (const q of ss.questions) {
         codes.push(q)
@@ -530,7 +599,7 @@ export function extractQuestionCodes(questionary: IQuestionary) {
 
 export function extractSubsections(questionary: IQuestionary) {
   let subsections = []
-  for (const s of questionary.sections) {
+  for (const s of questionary.forms.full.sections) {
     for (const ss of s.subsections) {
       subsections.push({
         ...ss,
@@ -602,6 +671,11 @@ export interface ICompetenceValue extends LocalizedString {
   level: string,
 }
 
+export interface IForm {
+  intro: LocalizedString,
+  sections: ISection[],
+}
+
 export interface IQuestionary {
     version: string,
     phrases: {
@@ -624,7 +698,9 @@ export interface IQuestionary {
         [key: string]: ICompetenceValue,
     },
     questions: {[key: string] : IQuestion},
-    sections: ISection[],    
+    forms: {
+      [key: string]: IForm,
+    },
 }
 
 
