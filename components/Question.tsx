@@ -15,7 +15,7 @@ function Answer({ lang, question, answer, setAnswer, questionary, extraLanguages
       lang={lang}
       answer={answer} 
       setAnswer={setAnswer} 
-      languages={{...questionary.languages,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}
+      languages={{...questionary.languagesExtended,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}
       />
   }
   if (question.type === 'map-language-to-age') {
@@ -23,7 +23,7 @@ function Answer({ lang, question, answer, setAnswer, questionary, extraLanguages
       lang={lang}
       answer={answer} 
       setAnswer={setAnswer} 
-      languages={questionary.languages} 
+      languages={questionary.languagesExtended} 
       ages={questionary.ages} 
       extraLanguages={extraLanguages} />
   }
@@ -32,7 +32,7 @@ function Answer({ lang, question, answer, setAnswer, questionary, extraLanguages
       lang={lang}
       answer={answer} 
       setAnswer={setAnswer} 
-      languages={questionary.languages} 
+      languages={questionary.languagesExtended} 
       competences={questionary.competences} 
       competenceValues={questionary.competenceValues} 
       extraLanguages={extraLanguages} />

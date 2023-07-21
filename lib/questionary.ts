@@ -1,4 +1,4 @@
-export const languageCodes = ['it','fu','sl','de','en']
+export const languageCodes = ['it','fu','sl','de']
 
 const questionary: IQuestionary = {
   version: "0.1.1",
@@ -28,9 +28,15 @@ const questionary: IQuestionary = {
       'it': 'Copia l\'indirizzo del questionario',
       'fu': 'Copie il leam al cuestionari',
     },
+    thanksTitle: {
+      'it': 'Grazie!',
+    },
     thanks: {
       'it': 'Grazie per aver compilato il questionario!',
       'fu': 'Graciis par vê compilât il cuestionari',
+    },
+    closeThisPage: {
+      'it': 'Puoi chiudere questa pagina', 
     },
     isClosed: {
       'it': 'Il questionario è chiuso',
@@ -39,7 +45,7 @@ const questionary: IQuestionary = {
     chooseLanguage: {
       'it': 'usa l\'italiano per compilare il questionario',
       'fu': 'compile il cuestionari par furlan',
-      'en': 'I prefer to fill the questionnaire in English',
+      'en': 'fill the questionnaire in English',
     },
     prevButton: {
       'it': 'Indietro',
@@ -84,7 +90,7 @@ const questionary: IQuestionary = {
     },
   },
 
-  languages_extended: {
+  languagesExtended: {
     it: {
       it: 'Italiano',
       fu: 'Talian',
@@ -609,7 +615,7 @@ export interface IQuestionary {
     languages: {
         [key: string]: LocalizedString,
     },
-    languages_extended: {
+    languagesExtended: {
         [key: string]: LocalizedString,
     },
     ages: LocalizedStringWithCode[],

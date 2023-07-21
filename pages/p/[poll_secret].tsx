@@ -9,6 +9,7 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set } from '@/lib/State'
 import PollSplash from '@/components/PollSplash'
+import { getPhrase } from '@/lib/questionary'
 
 export default function PollSecret({}) {
     const router = useRouter()
@@ -48,10 +49,10 @@ export default function PollSecret({}) {
         case 'completed': return <Page>
             <Card>
                 <Card.Body>
-                    <Card.Title>Grazie!</Card.Title>
+                    <Card.Title>{getPhrase('thanksTitle', value(langState))}</Card.Title>
                     <Card.Text>
-                        <p>Grazie per aver compilato il questionario!</p>
-                        <p>Puoi chiudere questa pagina.</p>
+                        <p>{getPhrase('thanks', value(langState))}</p>
+                        <p>{getPhrase('closeThisPage', value(langState))}</p>
                     </Card.Text>
                 </Card.Body> 
                 {/*   
