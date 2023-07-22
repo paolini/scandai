@@ -2,14 +2,18 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
+    RadialLinearScale,
     BarElement,
     ArcElement,
+    PointElement,
+    LineElement,
+    Filler,
     Title,
     Tooltip,
     Legend,
     Colors,
   } from 'chart.js';
-import { Bar, Doughnut } from "react-chartjs-2"
+import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
@@ -18,7 +22,6 @@ import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
 import { 
     IStats, 
-    IQuestionStat, 
     IChooseLanguageQuestionStat, 
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat,
@@ -30,8 +33,12 @@ import Error from '@/components/Error'
 ChartJS.register(
     CategoryScale,
     LinearScale,
+    RadialLinearScale,
     BarElement,
     ArcElement,
+    PointElement,
+    LineElement,
+    Filler,
     Title,
     Tooltip,
     Legend,
@@ -75,6 +82,8 @@ function ReportItem({ stats, item }: {
             return <ListClasses stats={stats} />
         case 'chart':
             return <ReportChart stats={stats} item={item} />
+        case 'table':
+            return <ReportTable stats={stats} item={item} />
     }
 }
 
@@ -115,7 +124,7 @@ function ReportChart({ stats, item }:{
     assert(item.element === 'chart')
     const question = stats.questions[item.question]
     if (!question) return <Error>
-        Nessuna risposta per la domanda "{item.question}"
+        Nessuna risposta per la domanda &lt;{item.question}&gt;
     </Error>
     switch(question.type) {
         case 'choose-language': 
@@ -154,7 +163,25 @@ function ReportChart({ stats, item }:{
         </>
         default: return <>not implemented {question.type}</>
     }
+}
 
+function ReportTable({ item, stats}: {
+    stats: IStats,
+    item: IReportElement
+}) {
+    assert(item.element === 'table')
+    const question = stats.questions[item.question]
+    switch(question.type) {
+        case 'map-language-to-competence':
+            return <div style={{maxWidth:1000}}>
+                <TableMapLanguageToCompetence stat={question} />
+            </div>
+        default:
+            return <Error>
+                invalid question type {question.type} 
+                for report item {item.element}
+            </Error>
+    }
 }
 
 function GraphChooseLanguageQuestion({item, stat}
@@ -345,6 +372,52 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                 })) 
         }}
     />
+}
+
+function TableMapLanguageToCompetence({stat}
+    : {
+        stat: IMapLanguageToCompetenceQuestionStat,
+    }) {
+    const languages = Object.keys(stat.answers)
+    const competences = questionary.competences.map(c => c.code)
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th></th>
+                    {competences.map(c => <th key={c}>{c}</th>)}
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    Object.entries(stat.sums).map(([lang, s]) => 
+                        <tr key={lang}>
+                            <th>{questionary.languages[lang]?.it||lang}</th>
+                            {Object.entries(s).map(([c,n])=>
+                                <td key={c}>{stat.count?n/stat.count:"n.a."}</td>)}
+                        </tr>
+                    )
+                }
+            </tbody>
+        </Table>
+        <Radar
+          data = {{
+            labels: questionary.competences.map(c => c.code),
+            datasets: Object.entries(stat.sums).map(([lang, s]) => 
+                ({
+                    label: lang,
+                    data: Object.entries(s).map(([c,n])=> (stat.count?n/stat.count:0)),
+                    fill: true,
+                }))
+            }}
+          options = {{
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }}} 
+        />
+    </>
 }
 
 function GraphMapLanguageToAgeQuestion({stat}

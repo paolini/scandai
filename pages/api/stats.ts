@@ -83,6 +83,9 @@ export interface IMapLanguageToCompetenceQuestionStat {
     type: 'map-language-to-competence',
     count: number,
     answers: IMapLanguageToCompetenceStat,
+    sums: {[key:string]: { // language
+        [key:string]: number // competence -> sum of numeric answers
+    }}
 }
 
 export interface IMapLanguageToCompetenceStat {
@@ -135,6 +138,8 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
         competence => [competence.code, 
             Object.fromEntries(
                 levels.map(l => [l,0])) ]))
+    const sumsZero = Object.fromEntries(questionary.competences.map(
+        competence => [competence.code, 0]))
     const ages = questionary.ages.map(age => age.code)
     const agesZero = Object.fromEntries(
         ages.map(age => [age, 0])
@@ -194,8 +199,11 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                         count: 0,
                         answers: Object.fromEntries(
                             baseLanguages.map(lang => [lang,
-                                {...competencesZero}]))
-                        }
+                                {...competencesZero}])),
+                        sums: Object.fromEntries(
+                            baseLanguages.map(lang => [lang,{...sumsZero}])
+                        )
+                    }
                     questions[code] = q
                 }
                 assert(q.type === question.type)
@@ -209,12 +217,14 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                 for (const [lang, langAns] of Object.entries(answer)) {
                     if (!(lang in q.answers)) {
                         q.answers[lang] = {...competencesZero}
+                        q.sums[lang] = {...sumsZero}
                     }
                     for (const [competence, value] of Object.entries(langAns)) {
                         if (!(competence in q.answers[lang])) {
                             console.error(`competence ${competence} not in answers`)
                             continue
                         }
+                        q.sums[lang][competence] += parseInt(`${value}`)
                         const valueKey = `_${value}`
                         if (questionary.competenceValues[valueKey]) {
                             const level = questionary.competenceValues[valueKey].level

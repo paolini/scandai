@@ -8,7 +8,7 @@ import { trans } from '@/lib/questionary'
 export default function QuestionaryPage({ lang, page, answers, setAnswers, questionary, extraLanguages }
   :{ lang: string, page: IFormElement[], answers: IAnswers, setAnswers: Dispatch<SetStateAction<IAnswers>>, questionary: IQuestionary, extraLanguages: string[]}) {
   return <div>
-    { page.map(item => <QuestionaryFormItem item={item} lang={lang} questionary={questionary} answers={answers} setAnswers={setAnswers} extraLanguages={extraLanguages}/>) }
+    { page.map((item,i) => <QuestionaryFormItem key={i} item={item} lang={lang} questionary={questionary} answers={answers} setAnswers={setAnswers} extraLanguages={extraLanguages}/>) }
   </div>
 }
 

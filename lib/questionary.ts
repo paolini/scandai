@@ -595,6 +595,10 @@ const questionary: IQuestionary = {
           question: "2.2.1",
         },
         {
+          element: "table",
+          question: "2.2.1",
+        },
+        {
           element: "chart",
           title: "A che età hai cominciato a parlare le lingue che conosci?",
           question: "2.1.1",
@@ -663,6 +667,10 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           title: "Competenze linguistiche autovalutate",
+          question: "competences",
+        },
+        {
+          element: "table",
           question: "competences",
         },
       ]
@@ -814,7 +822,11 @@ export interface ICompetenceValue extends LocalizedString {
   level: string,
 }
 
-export type IReportElement = IReportTitleElement | IReportInfoElement | IReportChartElement
+export type IReportElement = 
+  IReportTitleElement | 
+  IReportInfoElement | 
+  IReportChartElement |
+  IReportTableElement
 
 export type IReportTitleElement = {
   element: 'title',
@@ -830,4 +842,10 @@ export type IReportChartElement = {
   title?: string,
   question: string,
   variant?: 'chart'|'count',
+}
+
+export type IReportTableElement = {
+  element: 'table',
+  title?: string,
+  question: string,
 }
