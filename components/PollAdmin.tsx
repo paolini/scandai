@@ -72,7 +72,7 @@ export default function PollAdmin({poll, mutate}:{
                 <ButtonGroup>
                     <Link className="btn btn-primary" href="/">torna all&apos;elenco</Link>
                     { poll.closed && 
-                        <a href={`/report?poll=${poll._id}`} className="btn btn-success">vedi risultati</a>
+                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-success">vedi report</a>
                     }
                     { poll.closed 
                     ? <Button variant="warning" onClick={() => close(poll, false)}>riapri</Button>
@@ -84,6 +84,7 @@ export default function PollAdmin({poll, mutate}:{
                 </ButtonGroup>
             </Card.Footer>
         </Card>
+        { !poll.closed &&
         <div className="d-flex flex-column">
             <Button className="flex m-4" variant="success" size="lg" onClick={() => router.push(pollUrl)}>
                 compila il sondaggio
@@ -95,5 +96,6 @@ export default function PollAdmin({poll, mutate}:{
             </Button>
             <QRCode className="flex m-4 w-100" value={pollUrl} />
         </div>
+        }
     </>
 }

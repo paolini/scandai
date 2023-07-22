@@ -2,14 +2,18 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
+    RadialLinearScale,
     BarElement,
     ArcElement,
+    PointElement,
+    LineElement,
+    Filler,
     Title,
     Tooltip,
     Legend,
     Colors,
   } from 'chart.js';
-import { Bar, Doughnut } from "react-chartjs-2"
+import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
@@ -18,19 +22,23 @@ import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
 import { 
     IStats, 
-    IQuestionStat, 
     IChooseLanguageQuestionStat, 
     IMapLanguageToCompetenceQuestionStat, 
-    IMapLanguageToAgeQuestionStat
+    IMapLanguageToAgeQuestionStat,
 } from '@/pages/api/stats'
-import questionary, { extractLevels } from '@/lib/questionary'
-import Header from '@/components/Header'
+import questionary, { extractLevels, IReportElement } from '@/lib/questionary'
+import Page from '@/components/Page'
+import Error from '@/components/Error'
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
+    RadialLinearScale,
     BarElement,
     ArcElement,
+    PointElement,
+    LineElement,
+    Filler,
     Title,
     Tooltip,
     Legend,
@@ -38,25 +46,45 @@ ChartJS.register(
     Colors,
 )
 
+const titleFont = {
+    size: 24,
+    // style: 'italic',
+    // family: 'Helvetica Neue'
+}
+
 export default function Report() {
     const router = useRouter()
     const statsQuery = useStats(router.query)
+    const form = router.query.form || "full"
+    
+    if (Array.isArray(form)) return <Error>too many forms</Error>
 
     if (statsQuery.isLoading) return <div>Loading...</div>
     if (!statsQuery.data) return <div>Failed to load</div>
-
+    
     const stats = statsQuery.data.data
 
-    const questions: {[key:string]: IQuestionStat} 
-        = Object.fromEntries(stats.questions.map(
-            q => [q.code, q]))
+    return <Page>
+        { questionary.forms[form].report.map(
+            (item, i) => <ReportItem key={i} stats={stats} item={item} />
+        )}
+    </Page>
+}
 
-    return <>
-        <Header />
-        <h1>Risultati aggregati</h1>
-        <ListClasses stats={stats} />
-        { stats.questions.map(q => <ReportQuestion key={q.code} question={q} />) }
-    </>
+function ReportItem({ stats, item }: {
+    stats: IStats,
+    item: IReportElement,
+}) {
+    switch(item.element) {
+        case 'title':
+            return <h1>{item.title || `Risultati aggregati`}</h1>
+        case 'info':
+            return <ListClasses stats={stats} />
+        case 'chart':
+            return <ReportChart stats={stats} item={item} />
+        case 'table':
+            return <ReportTable stats={stats} item={item} />
+    }
 }
 
 function CompetenceLegend() {
@@ -89,57 +117,82 @@ function ListClasses({ stats }: {stats: IStats}) {
     </div>
 }
 
-function ReportQuestion({question}:{question: IQuestionStat}) {
-    if (question.type==='choose-language') {
-        return <>
-            <div style={{maxWidth:1000}}>
-                <GraphChooseLanguageQuestion stat={question} />
-            </div>            
-            <TableChooseLanguageQuestion stat={question} />
-            <GraphQuestionCounts question={question} />
-        </>
-    }
-    
-    if (question.type === 'map-language-to-competence') {
-        return <>
-            <CompetenceLegend />
-            <div style={{maxWidth:1000}}>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="it"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="fu"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="de"/>
-                <GraphMapLanguageToCompetenceQuestion stat={question} title="Competenze linguistiche autovalutate" language="sl"/>
-            </div>
-        </>
-    }
-
-    if (question.type === 'map-language-to-age') {
-        return <>
+function ReportChart({ stats, item }:{
+        stats: IStats,
+        item: IReportElement
+    }) {
+    assert(item.element === 'chart')
+    const question = stats.questions[item.question]
+    if (!question) return <Error>
+        Nessuna risposta per la domanda &lt;{item.question}&gt;
+    </Error>
+    switch(question.type) {
+        case 'choose-language': 
+            switch (item.variant) {
+                case undefined:
+                case 'chart':
+                    return <>
+                        <div style={{maxWidth:1000}}>
+                            <GraphChooseLanguageQuestion item={item} stat={question} />
+                        </div>            
+                        <TableChooseLanguageQuestion item={item} stat={question} />
+                    </>
+                case 'count':
+                    return <>
+                        <div style={{maxWidth:640}}>
+                            <GraphChooseLanguageQuestionCounts item={item} stat={question} />
+                        </div>
+                    </>
+            }
+        case 'map-language-to-competence': return <>
+                <CompetenceLegend />
+                <div style={{maxWidth:1000}}>
+                    { Object.keys(questionary.languages).map(lang => 
+                        <GraphMapLanguageToCompetenceQuestion 
+                            key={lang} 
+                            stat={question} 
+                            title="Competenze linguistiche autovalutate" 
+                            language={lang} />)
+                    }   
+                </div>
+            </>
+        case 'map-language-to-age': return <>
             <div style={{maxWidth:1000}}>
                 <GraphMapLanguageToAgeQuestion stat={question} />
             </div>
         </>
+        default: return <>not implemented {question.type}</>
     }
-
-    return <>not implemented {question.type}</>
 }
 
-function GraphQuestionCounts({question}
-    : {question: IQuestionStat}) {
-    const stat = question
-    if (stat.type == 'choose-language') {
-        return <div style={{maxWidth:640}}>
-            <GraphChooseLanguageQuestionCounts stat={stat} />
-        </div>
+function ReportTable({ item, stats}: {
+    stats: IStats,
+    item: IReportElement
+}) {
+    assert(item.element === 'table')
+    const question = stats.questions[item.question]
+    switch(question.type) {
+        case 'map-language-to-competence':
+            return <div style={{maxWidth:1000}}>
+                <TableMapLanguageToCompetence stat={question} />
+            </div>
+        default:
+            return <Error>
+                invalid question type {question.type} 
+                for report item {item.element}
+            </Error>
     }
-    return <div>Invalid question type: {stat.type}</div>
 }
 
-function GraphChooseLanguageQuestion({stat}
-    : {stat: IChooseLanguageQuestionStat}) {
+function GraphChooseLanguageQuestion({item, stat}
+    : {
+        item: IReportElement,
+        stat: IChooseLanguageQuestionStat}) {
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
-      
+    assert(item.element === 'chart')
     return <Bar 
+        className='my-2'
         options={{
             responsive: true,
             plugins: {
@@ -154,7 +207,8 @@ function GraphChooseLanguageQuestion({stat}
                 },
                 title: {
                     display: true,
-                    text: stat.question.question.it,
+                    text: item.title || stat.question.question.it,
+                    font: titleFont,
                 },
             },
             scales: {
@@ -175,7 +229,7 @@ function GraphChooseLanguageQuestion({stat}
             labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
             datasets: [
                 {
-                data: Object.entries(stat.answers).map(([key, val])=>val.fraction),
+                data: Object.entries(stat.answers).map(([key, val])=> (stat.count ? val / stat.count : 0) ),
                 // backgroundColor: 'orange',
                 },
             ],
@@ -183,12 +237,14 @@ function GraphChooseLanguageQuestion({stat}
     />
 }
 
-function TableChooseLanguageQuestion({stat}
-    : {stat: IChooseLanguageQuestionStat}) {
+function TableChooseLanguageQuestion({item,stat}
+    : {
+        item: IReportElement,
+        stat: IChooseLanguageQuestionStat}) {
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
       
-    return <Table>
+    return <Table className="my-2">
         <thead>
             <tr>
             {Object.keys(stat.answers).map(id => 
@@ -201,20 +257,23 @@ function TableChooseLanguageQuestion({stat}
             <tr>
             {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
-                    {val.count} ({Math.round(val.fraction*100)}%)
+                    {val} {stat.count && `(${Math.round(val*100/stat.count)}%)`}
                 </td>)}
             </tr>
         </tbody>
     </Table>
 }
 
-function GraphChooseLanguageQuestionCounts({stat}: {stat: IChooseLanguageQuestionStat}) {      
+function GraphChooseLanguageQuestionCounts({item,stat}: {
+        item: IReportElement,
+        stat: IChooseLanguageQuestionStat}) {      
     function nLanguages(count: number) {
         if (count===0) return 'Nessuna lingua'
         if (count===1) return 'Una lingua'
         return `${count} lingue`
     }
     assert(stat.counts)
+    assert(item.element === 'chart')
     const data = stat.counts
         .map((v,i)=>[v,i])
         .filter(([v,i])=>v>0)
@@ -222,6 +281,7 @@ function GraphChooseLanguageQuestionCounts({stat}: {stat: IChooseLanguageQuestio
     const total = data.reduce((acc, [v,i])=>acc+v, 0)
 
     return <Doughnut
+        className="my-2"
         options={{
             responsive: true,
             plugins: {
@@ -235,7 +295,8 @@ function GraphChooseLanguageQuestionCounts({stat}: {stat: IChooseLanguageQuestio
                 },
                 title: {
                     display: true,
-                    text: stat.question.question.it,
+                    text: item.title || stat.question.question.it,
+                    font: titleFont,
                 },
             },
         }} 
@@ -269,6 +330,7 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
     }
 
     return <Bar 
+        className="my-2"
         options={{
             responsive: true,
             plugins: {
@@ -284,6 +346,7 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                 title: {
                     display: true,
                     text: `${title || stat.question.question.it} - ${localizedLanguage}`,
+                    font: titleFont,
                 },
             },
             scales: {
@@ -311,6 +374,52 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
     />
 }
 
+function TableMapLanguageToCompetence({stat}
+    : {
+        stat: IMapLanguageToCompetenceQuestionStat,
+    }) {
+    const languages = Object.keys(stat.answers)
+    const competences = questionary.competences.map(c => c.code)
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th></th>
+                    {competences.map(c => <th key={c}>{c}</th>)}
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    Object.entries(stat.sums).map(([lang, s]) => 
+                        <tr key={lang}>
+                            <th>{questionary.languages[lang]?.it||lang}</th>
+                            {Object.entries(s).map(([c,n])=>
+                                <td key={c}>{stat.count?n/stat.count:"n.a."}</td>)}
+                        </tr>
+                    )
+                }
+            </tbody>
+        </Table>
+        <Radar
+          data = {{
+            labels: questionary.competences.map(c => c.code),
+            datasets: Object.entries(stat.sums).map(([lang, s]) => 
+                ({
+                    label: lang,
+                    data: Object.entries(s).map(([c,n])=> (stat.count?n/stat.count:0)),
+                    fill: true,
+                }))
+            }}
+          options = {{
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }}} 
+        />
+    </>
+}
+
 function GraphMapLanguageToAgeQuestion({stat}
     : {
         stat: IMapLanguageToAgeQuestionStat,
@@ -328,7 +437,7 @@ function GraphMapLanguageToAgeQuestion({stat}
 
     const datasets = ages.map(age => 
         ({
-            data: languages.map(lang => stats[lang]?.[age].fraction || 0),
+            data: languages.map(lang => (stat.count ? (stats[lang]?.[age] || 0)/stat.count:0)),
             label: age || 'mai',
         }))
 
@@ -351,6 +460,7 @@ function GraphMapLanguageToAgeQuestion({stat}
                 title: {
                     display: true,
                     text: `${title || stat.question.question.it}`,
+                    font: titleFont,
                 },
             },
             scales: {

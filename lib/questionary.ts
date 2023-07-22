@@ -1,7 +1,9 @@
+import assert from "assert"
+
 export const languageCodes = ['it','fu','sl','de']
 
 const questionary: IQuestionary = {
-  version: "0.1.1",
+  version: "0.2.0",
 
   phrases: {
     school: {
@@ -25,7 +27,7 @@ const questionary: IQuestionary = {
       
     },
     shareButton: {
-      'it': 'Copia l\'indirizzo del questionario',
+      'it': "Copia l'indirizzo del questionario",
       'fu': 'Copie il leam al cuestionari',
     },
     thanksTitle: {
@@ -43,7 +45,7 @@ const questionary: IQuestionary = {
       'fu': 'Il cuestionari al è sierât',
     },
     chooseLanguage: {
-      'it': 'usa l\'italiano per compilare il questionario',
+      'it': "usa l'italiano per compilare il questionario",
       'fu': 'compile il cuestionari par furlan',
       'en': 'fill the questionnaire in English',
     },
@@ -228,6 +230,26 @@ const questionary: IQuestionary = {
   },
 
   questions:{
+    "family": {
+      type: "choose-language",
+      question: {
+        it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)", 
+      },
+    },
+    "friends": {
+      type: "choose-language",
+      question: {
+        it: "Quali lingue vengono abitualmente utilizzate nel tuo gruppo di amici? (puoi indicare più di una risposta)",
+      },
+    },
+    "competences": {
+      type: "map-language-to-competence",
+      question: {
+        it: `Dai una autovalutazione delle tue competenze linguistiche 
+          compilando la tabella seguente. I livelli di
+          competenza utilizzati sono: livello A (principiante), livello B (intermedio), livello C (avanzato)`,
+      },
+    },
     "1.1.a.1": {
       type: "choose-language",
       question: {
@@ -288,7 +310,7 @@ const questionary: IQuestionary = {
         type: "choose-language",
         question: {
           it: "i miei fratelli/sorelle a me parlano in...",
-          fu: "i miei fradis / lis mês sûrs mi feveli par ...",
+          fu: "i miei fradis / lis mês sûrs mi fevelin par ...",
         }
       },
       "1.1.c.5": {
@@ -433,112 +455,263 @@ const questionary: IQuestionary = {
     }
   },
 
-  sections : [
-    {
-      code: "1",
-      title: {
-        it: "Lingue parlate e contesti comunicativi",
-        fu: "Lenghis feveladis e contescj comunicatîfs",
-      },
-      subsections: [
+  forms: {
+    full: {
+      name: 'completo',
+      intro: {
+        it: `Cara studentessa / Caro studente, 
+        chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
+        relative alla tuaconoscenza delle lingue. 
+        Il questionario ci aiuterà a raccogliere informazioni 
+        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        Il questionario è anonimo: esprimiti con libertà e sincerità. 
+        Grazie per la collaborazione!
+        `,
+      },  
+      elements: [
+        { 
+          element: "section",
+          title: {
+            it: "Lingue parlate e contesti comunicativi",
+            fu: "Lenghis feveladis e contescj comunicatîfs",
+          },
+        },
         {
-          code: "1.1.a",
+          element: "title",
           title: {
             it: "Abitualmente...",
             fu: "Pal solit ...",
           },
+        },
+        {
+          element: "questions",
           questions: [ "1.1.a.1" ],
         },
         {
-          code: "1.1.b",
+          element: "newpage",
+        },
+        {
+          element: "title",
           title: {
             it: "In famiglia abitualmente io parlo...",
             fu: "In famee pal solit jo o feveli ...",
           },
+        },
+        { 
+          element: "questions",
           questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
         },
+        { element: "newpage"},
         {
-          code: "1.1.c",
+          element: "title",
           title: {
             it: "In famiglia abitualmente...",
             fu: "In famee pal solit ...",
           },
-          questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
         },
         {
-          code: "1.2.a",
+          element: "questions",
+          questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
           title: {
             it: "Fuori casa abitualmente io parlo...",
             fu: "Fûr di cjase pal solit o feveli ...",
           },
-          questions: [
-            "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
-            "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
-          ],
         },
         {
-          code: "1.3.b",
+          element: "questions",
+          questions: [
+                "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
+                "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
+              ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
           title: {
             it: "A scuola abitualmente...",
             fu: "A scuel pal solit ...",
           },
+        },
+        { 
+          element: "questions",
           questions: [ "1.3.b.1", "1.3.b.2" ],
         },
+        { element: "newpage"},
         {
-          code: "1.4",
+          element: "title",
           title: {
             it: "Abitualmente...",
             fu: "Pal solit ...",
           },
-          questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ]
         },
-      ]
-    },
-    {
-      code: "2",
-      title: {
-        it: "Competenza linguistica orale e scritta",
-        fu: "Competence linguistiche orâl e scrite",
-      },
-      subsections: [
         {
-          code: "2.1",
+          element: "questions",
+          questions: [ "1.4.1", "1.4.2", "1.4.3", "1.4.4", "1.4.5" ],
+        },
+        { element: "newpage"},
+        {
+          element: "section",
+          title: {
+            it: "Competenza linguistica orale e scritta",
+            fu: "Competence linguistiche orâl e scrite",
+          },
+        },
+        {
+          element: "questions",
           questions: [ "2.1.1" ],
         },
-        { 
-          code: "2.2",
+        { element: "newpage"},
+        {
+          element: "questions",  
           questions: [ "2.2.1" ],
         },
-    ]
+      ],
+      report: [
+        {
+          element: "title",
+          title: "Risultati aggregati",
+        },
+        {
+          element: "info",
+        },
+        {
+          element: "chart",
+          question: "1.1.a.1", 
+          title: "Nella mia famiglia si parla abitualmente",
+        },
+        {
+          element: "chart",
+          variant: "count",
+          question: "1.1.a.1",
+          title: "Numero di lingue parlate in famiglia",
+        },
+        {
+          element: "chart",
+          title: "Competenze linguistiche autovalutate",
+          question: "2.2.1",
+        },
+        {
+          element: "table",
+          question: "2.2.1",
+        },
+        {
+          element: "chart",
+          title: "A che età hai cominciato a parlare le lingue che conosci?",
+          question: "2.1.1",
+        },
+      ],
+    },
+    short: {
+      name: "breve",
+      intro: {
+        it: `Cara studentessa / Caro studente, 
+        chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
+        relative alla tua conoscenza delle lingue. 
+        Il questionario ci aiuterà a raccogliere informazioni 
+        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        Il questionario è anonimo: esprimiti con libertà e sincerità. 
+        Grazie per la collaborazione!
+        `,
+      },
+      elements : [
+        { 
+          element: "section",
+          title: {
+            it: "Istantanea linguistica"
+          },
+        },
+        {
+          element: "title",
+          title: {
+            it: "Lingue parlate e contesti comunicativi",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "family", "friends" ],
+        },
+        { element: "newpage" },
+        {
+          element: "title",
+          title: {
+            it: "Competenza linguistica orale e scritta",
+          },
+        },
+        { 
+          element: "questions",
+          questions: [ "competences" ],
+        },
+      ],
+      report: [
+        {
+          element: "title",
+          title: "Istantanea linguistica",
+        },
+        {
+          element: "info",
+        },
+        {
+          element: "chart",
+          question: "family",
+          title: "Lingue parlate in famiglia",
+        },
+        {
+          element: "chart",
+          question: "friends",
+          title: "Lingue parlate con gli amici",
+        },
+        {
+          element: "chart",
+          title: "Competenze linguistiche autovalutate",
+          question: "competences",
+        },
+        {
+          element: "table",
+          question: "competences",
+        },
+      ]
+    }
   }
-  ],
 }
 
 export default questionary
 
-export function extractQuestionCodes(questionary: IQuestionary) {
-  let codes = []
-  for (const s of questionary.sections) {
-    for (const ss of s.subsections) {
-      for (const q of ss.questions) {
-        codes.push(q)
-      }
+export function extractQuestionCodes(form: string) {
+  let codes: string[] = []
+  assert(questionary.forms[form], `form "${form}" not found`)
+  for (const s of questionary.forms[form].elements) {
+    if (s.element === 'questions') {
+      codes = codes.concat(s.questions)
     }
   }
   return codes
 }
 
-export function extractSubsections(questionary: IQuestionary) {
-  let subsections = []
-  for (const s of questionary.sections) {
-    for (const ss of s.subsections) {
-      subsections.push({
-        ...ss,
-        section: s
-      })
+export function extractPages(form: string) {
+  let pages = []
+  let page = []
+  let lastSection = null
+  for (const item of questionary.forms[form].elements) {
+    if (item.element === 'newpage') {
+      pages.push(page)
+      page = []
+      if (lastSection) {
+        page.push(lastSection)
+      }
+    } else {
+      page.push(item)
     }
+  if (item.element === 'section') {
+    // repeat on every new page
+    lastSection = item
   }
-  return subsections
+}
+  pages.push(page)
+  return pages
 }
 
 export function extractExtraLanguages(questions: string[], answers: {[key:string]: any}, languages: {[key:string]: LocalizedString}) {
@@ -563,8 +736,12 @@ export function extractLevels(questionary: IQuestionary): string[] {
     [])
 }
 
+export function trans(s: {[key:string]: string}, lang: string) {
+  return s[lang] || `${lang}: ${s.it||'???'}`
+}
+
 export function getPhrase(s: keyof typeof questionary.phrases, lang: LanguageCode) {
-  return questionary.phrases[s][lang] || `${lang}: ${questionary.phrases[s]['it']}`
+  return trans(questionary.phrases[s], lang)
 }
 
 export type LanguageCode = typeof languageCodes[number]
@@ -581,50 +758,94 @@ export interface LocalizedStringWithCode extends LocalizedString {
     code: string,
 }
 
+export interface IQuestionary {
+  version: string,
+  phrases: {
+    [key: string]: LocalizedString,
+  }
+  translations: {
+    'it': string,
+    'fu': string,
+    'en': string,
+  }
+  languages: {
+      [key: string]: LocalizedString,
+  },
+  languagesExtended: {
+      [key: string]: LocalizedString,
+  },
+  ages: LocalizedStringWithCode[],
+  competences: LocalizedStringWithCode[],
+  competenceValues: {
+      [key: string]: ICompetenceValue,
+  },
+  questions: {[key: string] : IQuestion},
+  forms: {
+    [key: string]: IForm,
+  },
+}
+
+export interface IForm {
+  name: string,
+  intro: LocalizedString,
+  elements: IFormElement[],
+  report: IReportElement[],
+}
+
+export type IFormElement = IFormSection | IFormTitle | IFormQuestions | IFormNewPage
+
+export type IFormSection = {
+  element: 'section',
+  title: LocalizedString,
+}
+
+export type IFormTitle = {
+  element: 'title',
+  title: LocalizedString,
+}
+
+export type IFormQuestions = {
+  element: 'questions',
+  questions: string[],
+}
+
+export type IFormNewPage = {
+  element: 'newpage',
+}
+
 export interface IQuestion {
     type: string,
     question: LocalizedString,
-}
-
-export interface ISubsection {
-    code: string,
-    title?: LocalizedString,
-    questions: string[],
-}
-
-export interface ISection {
-    code: string,
-    title: LocalizedString,
-    subsections: ISubsection[],
 }
 
 export interface ICompetenceValue extends LocalizedString {
   level: string,
 }
 
-export interface IQuestionary {
-    version: string,
-    phrases: {
-      [key: string]: LocalizedString,
-    }
-    translations: {
-      'it': string,
-      'fu': string,
-      'en': string,
-    }
-    languages: {
-        [key: string]: LocalizedString,
-    },
-    languagesExtended: {
-        [key: string]: LocalizedString,
-    },
-    ages: LocalizedStringWithCode[],
-    competences: LocalizedStringWithCode[],
-    competenceValues: {
-        [key: string]: ICompetenceValue,
-    },
-    questions: {[key: string] : IQuestion},
-    sections: ISection[],    
+export type IReportElement = 
+  IReportTitleElement | 
+  IReportInfoElement | 
+  IReportChartElement |
+  IReportTableElement
+
+export type IReportTitleElement = {
+  element: 'title',
+  title: string,
 }
 
+export type IReportInfoElement = {
+  element: 'info',
+}
 
+export type IReportChartElement = {
+  element: 'chart',
+  title?: string,
+  question: string,
+  variant?: 'chart'|'count',
+}
+
+export type IReportTableElement = {
+  element: 'table',
+  title?: string,
+  question: string,
+}

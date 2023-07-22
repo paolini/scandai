@@ -4,6 +4,7 @@ import mongoose, {Types} from 'mongoose'
 export interface IPostPoll {
     school: string,
     class: string,
+    form: string,
     closed: boolean, 
 }
 
@@ -34,6 +35,10 @@ const PollSchema = new mongoose.Schema({
         required: true,
     },
     class: {
+        type: String,
+        required: true,
+    },
+    form: {
         type: String,
         required: true,
     },
