@@ -9,12 +9,19 @@ function OtherLanguage({addLanguage}: {
     addLanguage: (language: string) => void
 }) {
     const [other, setOther] = useState("")
-    return <>
-      Altra lingua: <input value={other} onChange={(evt)=>setOther(evt.target.value)}/>
-      {other && <Button onClick={()=>{
+    function commit() {
+      if (other) {
         addLanguage(other)
         setOther("")
-      }}>+</Button>}
+      }
+    }
+    return <>
+      Altra lingua: <input 
+          value={other} 
+          onChange={(evt)=>setOther(evt.target.value)}
+          onBlur={commit}
+        />
+      {other && <Button onClick={commit}>+</Button>}
     </>
   }
   

@@ -623,17 +623,27 @@ export function extractQuestionCodes(form: string) {
   return codes
 }
 
-export function extractSubsections(questionary: IQuestionary) {
-  let subsections = []
-  for (const s of questionary.forms.full.sections) {
-    for (const ss of s.subsections) {
-      subsections.push({
-        ...ss,
-        section: s
-      })
+export function extractPages(form: string) {
+  let pages = []
+  let page = []
+  let lastSection = null
+  for (const item of questionary.forms[form].elements) {
+    if (item.element === 'newpage') {
+      pages.push(page)
+      page = []
+      if (lastSection) {
+        page.push(lastSection)
+      }
+    } else {
+      page.push(item)
     }
+  if (item.element === 'section') {
+    // repeat on every new page
+    lastSection = item
   }
-  return subsections
+}
+  pages.push(page)
+  return pages
 }
 
 export function extractExtraLanguages(questions: string[], answers: {[key:string]: any}, languages: {[key:string]: LocalizedString}) {
