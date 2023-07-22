@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
-import { LocalizedString } from '@/lib/questionary'
-import { trans } from './Question'
+import { trans, LocalizedString } from '@/lib/questionary'
 
 function OtherLanguage({addLanguage}: {
     addLanguage: (language: string) => void

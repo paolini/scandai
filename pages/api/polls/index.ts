@@ -73,6 +73,7 @@ export default async function handler(
                     _id: 1,
                     school: 1,
                     class: 1,
+                    form: 1,
                     secret: 1,
                     createdBy: 1,
                     closedAt: 1,
@@ -107,11 +108,14 @@ export default async function handler(
             const poll = new Poll({
                 school: body.school,
                 class: body.class,
+                form: body.form,
                 secret,
                 createdBy: user._id,
                 date: new Date(),
             })
+            console.log(`poll: ${JSON.stringify(poll)}`)
             const out = await poll.save()
+            console.log(`created poll ${out._id}: ${JSON.stringify(out)} body was ${JSON.stringify(body)}`)
             return res.status(200).json({ data: out })
         } catch (error) {
             return res.status(400).json({ error })

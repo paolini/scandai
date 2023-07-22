@@ -1,3 +1,5 @@
+import assert from "assert"
+
 export const languageCodes = ['it','fu','sl','de']
 
 const questionary: IQuestionary = {
@@ -241,7 +243,7 @@ const questionary: IQuestionary = {
       },
     },
     "competences": {
-      type: "choose-competence",
+      type: "map-language-to-competence",
       question: {
         it: `Dai una autovalutazione delle tue competenze linguistiche 
           compilando la tabella seguente. I livelli di
@@ -455,6 +457,7 @@ const questionary: IQuestionary = {
 
   forms: {
     full: {
+      name: 'completo',
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
@@ -566,13 +569,44 @@ const questionary: IQuestionary = {
           element: "questions",  
           questions: [ "2.2.1" ],
         },
-      ]  
+      ],
+      report: [
+        {
+          element: "title",
+          title: "Risultati aggregati",
+        },
+        {
+          element: "info",
+        },
+        {
+          element: "chart",
+          question: "1.1.a.1", 
+          title: "Nella mia famiglia si parla abitualmente",
+        },
+        {
+          element: "chart",
+          variant: "count",
+          question: "1.1.a.1",
+          title: "Numero di lingue parlate in famiglia",
+        },
+        {
+          element: "chart",
+          title: "Competenze linguistiche autovalutate",
+          question: "2.2.1",
+        },
+        {
+          element: "chart",
+          title: "A che età hai cominciato a parlare le lingue che conosci?",
+          question: "2.1.1",
+        },
+      ],
     },
     short: {
+      name: "breve",
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
-        relative alla tuaconoscenza delle lingue. 
+        relative alla tua conoscenza delle lingue. 
         Il questionario ci aiuterà a raccogliere informazioni 
         per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
@@ -596,6 +630,7 @@ const questionary: IQuestionary = {
           element: "questions",
           questions: [ "family", "friends" ],
         },
+        { element: "newpage" },
         {
           element: "title",
           title: {
@@ -607,6 +642,30 @@ const questionary: IQuestionary = {
           questions: [ "competences" ],
         },
       ],
+      report: [
+        {
+          element: "title",
+          title: "Istantanea linguistica",
+        },
+        {
+          element: "info",
+        },
+        {
+          element: "chart",
+          question: "family",
+          title: "Lingue parlate in famiglia",
+        },
+        {
+          element: "chart",
+          question: "friends",
+          title: "Lingue parlate con gli amici",
+        },
+        {
+          element: "chart",
+          title: "Competenze linguistiche autovalutate",
+          question: "competences",
+        },
+      ]
     }
   }
 }
@@ -615,6 +674,7 @@ export default questionary
 
 export function extractQuestionCodes(form: string) {
   let codes: string[] = []
+  assert(questionary.forms[form], `form "${form}" not found`)
   for (const s of questionary.forms[form].elements) {
     if (s.element === 'questions') {
       codes = codes.concat(s.questions)
@@ -668,8 +728,12 @@ export function extractLevels(questionary: IQuestionary): string[] {
     [])
 }
 
+export function trans(s: {[key:string]: string}, lang: string) {
+  return s[lang] || `${lang}: ${s.it||'???'}`
+}
+
 export function getPhrase(s: keyof typeof questionary.phrases, lang: LanguageCode) {
-  return questionary.phrases[s][lang] || `${lang}: ${questionary.phrases[s]['it']}`
+  return trans(questionary.phrases[s], lang)
 }
 
 export type LanguageCode = typeof languageCodes[number]
@@ -714,8 +778,10 @@ export interface IQuestionary {
 }
 
 export interface IForm {
+  name: string,
   intro: LocalizedString,
   elements: IFormElement[],
+  report: IReportElement[],
 }
 
 export type IFormElement = IFormSection | IFormTitle | IFormQuestions | IFormNewPage
@@ -748,14 +814,20 @@ export interface ICompetenceValue extends LocalizedString {
   level: string,
 }
 
-export interface IReport {
-  elements: IReportElement[],
+export type IReportElement = IReportTitleElement | IReportInfoElement | IReportChartElement
+
+export type IReportTitleElement = {
+  element: 'title',
+  title: string,
 }
 
-export interface IReportElement {
-  type: string,
-  ref: string,
+export type IReportInfoElement = {
+  element: 'info',
 }
 
-
-
+export type IReportChartElement = {
+  element: 'chart',
+  title?: string,
+  question: string,
+  variant?: 'chart'|'count',
+}

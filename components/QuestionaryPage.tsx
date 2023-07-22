@@ -3,9 +3,7 @@ import { SetStateAction, Dispatch } from 'react'
 import { IFormElement, IQuestionary } from '@/lib/questionary'
 import Question, { IAnswers } from './Question'
 import { Answer } from '@/models/Entry'
-import { trans } from './Question'
-
-import questionData from '@/lib/questionary'
+import { trans } from '@/lib/questionary'
 
 export default function QuestionaryPage({ lang, page, answers, setAnswers, questionary, extraLanguages }
   :{ lang: string, page: IFormElement[], answers: IAnswers, setAnswers: Dispatch<SetStateAction<IAnswers>>, questionary: IQuestionary, extraLanguages: string[]}) {
@@ -28,7 +26,7 @@ function QuestionaryFormItem({ item, lang, questionary, answers, setAnswers, ext
       <Question 
         lang={lang}
         key={code} 
-        question={questionData.questions[code]}
+        question={questionary.questions[code]}
         answer={answers[code]}
         questionary={questionary}
         extraLanguages={extraLanguages}

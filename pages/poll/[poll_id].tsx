@@ -1,14 +1,9 @@
-import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { Button, Card } from 'react-bootstrap'
 
 import Page from '@/components/Page'
-import Questions from '@/components/Questions'
 import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
-import { value, set } from '@/lib/State'
-import Poll from '@/components/PollSplash'
 import PollAdmin from '@/components/PollAdmin'
 
 export default function PollId({}) {

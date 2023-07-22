@@ -1,7 +1,7 @@
 import Entry, { IEntry } from '@/models/Entry'
 import { IPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import questionary, { IQuestion, extractQuestionCodes, extractLevels } from '../../lib/questionary'
+import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
 import { assert } from '@/lib/assert'
 import { ObjectId } from 'mongodb'
 
@@ -49,7 +49,7 @@ export default async function handler(
 }
 
 export interface IStats {
-    questions: IQuestionStat[],
+    questions: {[key: string]: IQuestionStat},
     polls: IPoll[],
     entriesCount: number,
 }
@@ -61,31 +61,27 @@ export type IQuestionStat =
     IMapLanguageToAgeQuestionStat
 
 export interface IErrorQuestionStat {
-    code: string,
     question: IQuestion,
     error: string,
     type: 'error',
 }
 
 export interface IChooseLanguageQuestionStat {
-    code: string,
     question: IQuestion,
     type: 'choose-language',
+    count: number,
     answers: IChooseLanguageStat,
-    counts: number[],
+    counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
 }
 
 export interface IChooseLanguageStat {
-    [key: string]: {
-        fraction: number,
-        count: number,
-    }
+    [key: string]: number
 }
 
 export interface IMapLanguageToCompetenceQuestionStat {
-    code: string,
     question: IQuestion,
     type: 'map-language-to-competence',
+    count: number,
     answers: IMapLanguageToCompetenceStat,
 }
 
@@ -102,15 +98,13 @@ export interface IMapLanguageToAgeQuestionStat {
     code: string,
     question: IQuestion,
     type: 'map-language-to-age',
+    count: number,
     answers: IMapLanguageToAgeStat,
 }
 
 export interface IMapLanguageToAgeStat {
     [key: string]: { // language
-        [key: string]: { // age
-            fraction: number,
-            count: number,
-        }
+        [key: string]: number // age
     }
 }
 
@@ -118,12 +112,13 @@ export interface IEntryWithPoll extends IEntry {
     poll: IPoll,
 }
 
-function aggregate(entries: IEntryWithPoll[]): IStats {
-    const questionsCodes = extractQuestionCodes(questionary)
-    const questionsMap = Object.fromEntries(questionsCodes.map(code => [code, questionary.questions[code]]))
-    let allLanguages = Object.keys(questionary.languages)
+function aggregate(entries: IEntryWithPoll[], ): IStats {
+    const questionsMap = questionary.questions
+    let baseLanguages = Object.keys(questionary.languages)
 
+    /*
     // collect all languages used in all answers of all entries
+    // and all question codes
     for (const e of entries) {
         for (const [code, answer] of Object.entries(e.answers)) {
             if (!questionsMap[code]) continue
@@ -132,102 +127,132 @@ function aggregate(entries: IEntryWithPoll[]): IStats {
             allLanguages.push(...answer)
         }
     }
+    */
 
-    const questions: IQuestionStat[] = questionsCodes.map(code => {
-        const question = questionary.questions[code]
-        if (question.type === 'choose-language') {
-            const languagesZeroCount = Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, {fraction: 0, count: 0}])))
-            let answers: {[key: string]: {fraction: number, count: number}} = {...languagesZeroCount}
-            let languageCount = 0
-            let counts: number[] = []
-            for (const e of entries) {
-                const answer = e.answers[code]
-                assert(Array.isArray(answer),'answer is not an array')
-                const n = Math.min(answer.length,10)
-                while (counts.length<n+1) {
-                    counts.push(0)
-                }
-                counts[n] ++ 
-                for (const lang of answer) {
-                    if (lang in answers) answers[lang].count++
-                    else answers[lang] = {fraction: 0, count: 1}
-                    languageCount++
-                }
-            }
-            if (languageCount>0) {
-                for (const key of Object.keys(answers)) {
-                    answers[key].fraction = answers[key].count / languageCount
-                }
-            }
-            return {code, question, type: question.type, answers, counts}
-        } 
-        
-        if (question.type === 'map-language-to-competence') {
-            const levels = extractLevels(questionary)
+    const languagesZeroCount = Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, 0])))
+    const levels = extractLevels(questionary)
+    const competencesZero = Object.fromEntries(questionary.competences.map(
+        competence => [competence.code, 
+            Object.fromEntries(
+                levels.map(l => [l,0])) ]))
+    const ages = questionary.ages.map(age => age.code)
+    const agesZero = Object.fromEntries(
+        ages.map(age => [age, 0])
+    )
 
-            const answers: IMapLanguageToCompetenceStat = Object.fromEntries(
-                allLanguages.map(lang => [lang,
-                    Object.fromEntries(questionary.competences.map(
-                        competence => [competence.code, 
-                            Object.fromEntries(
-                                levels.map(l => [l,0])) ]
-                    ))
-                ]))
-
-            for (const e of entries) {
+    const pollIds: string[] = []
+    const polls: IPoll[] = []
+            
+    let questions: {[key: string]: IQuestionStat} = {}
+    // populate questions with all aggregate statistics
+    for (const e of entries) {
+        if (e.poll) {
+            const poll_id = e.poll._id.toString()
+            if (!pollIds.includes(poll_id)) {
+                pollIds.push(poll_id)
+                polls.push(e.poll)
+            }    
+        }
+        Object.entries(e.answers).forEach(([code, answer]) => {
+            const question = questionsMap[code]
+            if (!question) return
+            if (question.type === 'choose-language') {
+                let q = questions[code]
+                if (!q) {
+                    q = {
+                        question,
+                        type: question.type,
+                        count: 0,
+                        answers: {...languagesZeroCount},
+                        counts: [],
+                    }
+                    questions[code] = q
+                }
+                assert(q.type === question.type)
                 const answer = e.answers[code]
                 if (!answer) {
                     console.error(`cannot find answer for question ${code} in entry ${e._id}`)
-                    continue
+                    return
+                }
+                assert(Array.isArray(answer),'answer is not an array')
+                q.count ++
+                const n = Math.min(answer.length,10)
+                while (q.counts.length<n+1) {
+                    q.counts.push(0)
+                }
+                q.counts[n] ++ 
+                for (const lang of answer) {
+                    if (lang in q.answers) q.answers[lang]++
+                    else q.answers[lang] = 1
+                }
+            } else if (question.type === 'map-language-to-competence') {
+                let q = questions[code]
+                if (!q) {
+                    q= {
+                        question,
+                        type: question.type,
+                        count: 0,
+                        answers: Object.fromEntries(
+                            baseLanguages.map(lang => [lang,
+                                {...competencesZero}]))
+                        }
+                    questions[code] = q
+                }
+                assert(q.type === question.type)
+                const answer = e.answers[code]
+                if (!answer) {
+                    console.error(`cannot find answer for question ${code} in entry ${e._id}`)
+                    return
                 }
                 assert(!Array.isArray(answer))
+                q.count ++
                 for (const [lang, langAns] of Object.entries(answer)) {
-                    if (!(lang in answers)) {
-                        console.error(`lang ${lang} not in answers`)
-                        continue
+                    if (!(lang in q.answers)) {
+                        q.answers[lang] = {...competencesZero}
                     }
                     for (const [competence, value] of Object.entries(langAns)) {
-                        if (!(competence in answers[lang])) {
+                        if (!(competence in q.answers[lang])) {
                             console.error(`competence ${competence} not in answers`)
                             continue
                         }
                         const valueKey = `_${value}`
                         if (questionary.competenceValues[valueKey]) {
                             const level = questionary.competenceValues[valueKey].level
-                            if (!(level in answers[lang][competence])) {
+                            if (!(level in q.answers[lang][competence])) {
                                 console.error(`level ${level} not in answers`)
                                 continue
                             }
                             if (level) {
-                                answers[lang][competence][level]++
+                                q.answers[lang][competence][level]++
                             }
                         }
                     }
                 }
-            }
-            return {code, question, type: question.type, answers}
-        }
-
-        if (question.type === 'map-language-to-age') {
-            const ages = questionary.ages.map(age => age.code)
-            const answers: IMapLanguageToAgeStat = Object.fromEntries(
-                allLanguages.map(lang => [lang,
-                    Object.fromEntries(
-                        ages.map(age => [age, {fraction: 0, count: 0}])
-                    )
-                ]))
-
-            for (const e of entries) {
+            } else if (question.type === 'map-language-to-age') {
+                let q = questions[code]
+                if (!q) {
+                    q = {
+                        code,
+                        question,
+                        type: question.type,
+                        count: 0,
+                        answers: Object.fromEntries(
+                            baseLanguages.map(lang => [lang,{...agesZero}]))
+                    }
+                    questions[code] = q
+                }
+                assert(q.type === question.type)
                 const answer = e.answers[code]
                 if (!answer) {
                     console.error(`cannot find answer for question ${code} in entry ${e._id}`)
-                    continue
+                    return
                 }
-                if(Array.isArray(answer)) {
+                if (Array.isArray(answer)) {
                     console.error(`answer is an array: ${JSON.stringify(answer)} in entry ${e._id}`)
-                    continue
+                    return
                 }
-                console.log(`${e._id} answer: ${JSON.stringify(answer)}`)
+                q.count ++
+                // console.log(`${e._id} answer: ${JSON.stringify(answer)}`)
                 for (const [lang, age] of Object.entries(answer)) {
                     if (typeof(age) !== 'string') {
                         console.error(`answer for lang ${lang} is not a string: ${age}`)
@@ -237,35 +262,22 @@ function aggregate(entries: IEntryWithPoll[]): IStats {
                         console.error(`age ${age} not in ages ${JSON.stringify(ages)}}`)
                         continue
                     }
-                    if (!(lang in answers)) {
-                        console.error(`lang ${lang} not in answers`)
-                        continue
+                    if (!(lang in q.answers)) {
+                        q.answers[lang] = {...agesZero}
                     }
-                    answers[lang][age].count++
+                    q.answers[lang][age]++
                 }
+            } else {
+                console.error(`unknown question type ${question.type}`)
             }
-            for (const [lang, langAns] of Object.entries(answers)) {
-                for (const [age, value] of Object.entries(langAns)) {
-                    if (value.count>0) {
-                        value.fraction = value.count / entries.length
-                    }
-                }
-            }
-            console.log(`answers: ${JSON.stringify(answers)}`)
-            return {code, question, type: question.type, answers}
-        }
-
-        return {code, question, type: 'error', error: 'unknown question type'}
-    })
-    const pollIds: string[] = []
-    const polls: IPoll[] = []
-    for (const e of entries) {
-        if (!e.poll) continue
-        if (!pollIds.includes(e.poll._id.toString())) {
-            pollIds.push(e.poll._id.toString())
-            polls.push(e.poll)
-        }    }
+        })
+    }
+    
     const entriesCount = entries.length
-    return { questions, polls, entriesCount}
+    return { 
+        questions, 
+        polls, 
+        entriesCount
+    }
 }
 

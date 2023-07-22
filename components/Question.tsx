@@ -3,6 +3,7 @@ import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 import { IQuestion, IQuestionary } from '@/lib/questionary' 
 import { Answer, QuestionCode } from '@/models/Entry'
+import { trans } from '@/lib/questionary'
 
 export interface IAnswers {
   [key: QuestionCode]: Answer,
@@ -49,8 +50,4 @@ export default function Question({ lang, question, answer, setAnswer, questionar
     <Answer lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
     <br />
   </div>
-}
-
-export function trans(s: {[key:string]: string}, lang: string) {
-  return s[lang] || `${lang}: ${s.it||'???'}`
 }

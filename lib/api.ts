@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { IGetPoll, IPoll, IPostPoll } from '@/models/Poll'
+import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IPostUser } from '@/models/User'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'

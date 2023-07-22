@@ -1,18 +1,19 @@
 import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
-import { Router, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 
 import { usePolls, postPoll, patchPoll, deletePoll } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
-import { State, value, set, get } from '@/lib/State'
+import { value, set, get } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
 import useSessionUser from '@/lib/useSessionUser'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
+import questionary from '@/lib/questionary'
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
@@ -87,6 +88,7 @@ function PollsTable({user, polls}:{
         <thead>
             <tr>
                 { user?.isAdmin && <th>utente</th> }
+                <th>tipo</th>
                 <th>data</th>
                 <th>scuola</th>
                 <th>classe</th>
@@ -101,6 +103,9 @@ function PollsTable({user, polls}:{
                         { poll.createdBy?.name 
                             || poll.createdBy?.username}
                         {} &lt;{ poll.createdBy?.email }&gt;</td>}
+                <td>
+                    {questionary.forms[poll.form]?.name}
+                </td>
                 <td>
                     {formatDate(poll.date)}
                 </td>
@@ -125,7 +130,7 @@ function PollsTable({user, polls}:{
 function NewPoll({ done }:{
     done?: () => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: '', closed: false})
+    const pollState = useState<IPostPoll>({school: '', class: '', form: 'full', closed: false})
     const addMessage = useAddMessage()
 
     function isValid() {
@@ -149,6 +154,17 @@ function NewPoll({ done }:{
         </Card.Header>
         <Card.Body>
             <form>
+                <div className="form-group">
+                    <label htmlFor="form">
+                        tipo di questionario
+                    </label>
+                    <select id="form" className="form-control" value={value(pollState).form} onChange={evt => set(get(pollState, 'form'), evt.target.value)}>
+                        {
+                            Object.entries(questionary.forms).map(([key, value]) =>
+                                <option key={key} value={key}>{value.name}</option>)
+                        }
+                    </select>
+                </div>
                 <div className="form-grup">
                     <label htmlFor="school">
                         scuola 

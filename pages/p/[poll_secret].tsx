@@ -43,11 +43,11 @@ export default function PollSecret({}) {
         case 'init': return <PollSplash poll={poll} mutate={pollQuery.mutate} langState={langState} start={() => set(state,'started')} />
         case 'started': return <Questionary 
             poll={poll} 
-            form="full"
+            form={poll.form}
             lang={value(langState)}
             done={() => set(state, 'completed')} 
             />
-        case 'completed': return <Page>
+        case 'completed': return <Page header={false}>
             <Card>
                 <Card.Body>
                     <Card.Title>{getPhrase('thanksTitle', value(langState))}</Card.Title>
