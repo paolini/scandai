@@ -95,3 +95,7 @@ export async function postUser(user: IPostUser) {
 export async function deleteUser(user: IGetUser) {
     return await remove('users', user)
 }
+
+export function useDict() {
+    return useIndex<[string,string?][]>('dict')
+}    

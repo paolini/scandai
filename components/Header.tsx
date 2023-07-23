@@ -40,11 +40,18 @@ export default function Header() {
                 <span className="me-2">{session.user.email}</span>
               </>}>
                 { session.dbUser?.isAdmin && 
+                <>
                   <NavDropdown.Item
                       href="/users"
                       onClick={(e) => {e.preventDefault(); router.push('/users')}}>
                         users
                   </NavDropdown.Item>
+                  <NavDropdown.Item
+                    href="/dict"
+                    onClick={(e) => {e.preventDefault(); router.push('/dict')}}>
+                        mappature
+                  </NavDropdown.Item>
+                </>
                 }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
