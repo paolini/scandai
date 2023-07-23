@@ -814,7 +814,7 @@ export type IFormNewPage = {
 }
 
 export interface IQuestion {
-    type: string,
+    type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age',
     question: LocalizedString,
 }
 

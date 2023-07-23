@@ -5,6 +5,7 @@ import { IPostUser } from '@/models/User'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IGetUser } from '@/models/User'
+import { IPostDict } from '@/models/Dict'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (query) {
@@ -99,3 +100,7 @@ export async function deleteUser(user: IGetUser) {
 export function useDict() {
     return useIndex<[string,string?][]>('dict')
 }    
+
+export async function postDict(dict: IPostDict) {
+    return await post<IPostDict>('dict', dict)
+}

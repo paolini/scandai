@@ -229,7 +229,7 @@ function GraphChooseLanguageQuestion({item, stat}
             labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
             datasets: [
                 {
-                data: Object.entries(stat.answers).map(([key, val])=> (stat.count ? val / stat.count : 0) ),
+                data: Object.entries(stat.answers).map(([key, val])=> (stat.countAnswers ? val / stat.countAnswers : 0) ),
                 // backgroundColor: 'orange',
                 },
             ],
@@ -247,6 +247,7 @@ function TableChooseLanguageQuestion({item,stat}
     return <Table className="my-2">
         <thead>
             <tr>
+                <td></td>
             {Object.keys(stat.answers).map(id => 
                 <td key={id}>
                     {(id in languages?languages[id]['it']:id)}
@@ -255,9 +256,24 @@ function TableChooseLanguageQuestion({item,stat}
         </thead>
         <tbody>
             <tr>
+                <th>conteggio</th>
             {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
-                    {val} {stat.count && `(${Math.round(val*100/stat.count)}%)`}
+                    {val}
+                </td>)}
+            </tr>
+            <tr>
+                <th>per lingua</th>
+            {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    { stat.countAnswers && `${Math.round(val*100/stat.countAnswers)}%` }
+                </td>)}
+            </tr>
+            <tr>
+                <th>per persona</th>
+            {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    {stat.count && `${Math.round(val*100/stat.count)}%`}
                 </td>)}
             </tr>
         </tbody>
@@ -394,7 +410,7 @@ function TableMapLanguageToCompetence({stat}
                         <tr key={lang}>
                             <th>{questionary.languages[lang]?.it||lang}</th>
                             {Object.entries(s).map(([c,n])=>
-                                <td key={c}>{stat.count?n/stat.count:"n.a."}</td>)}
+                                <td key={c}>{stat.count?Math.round(100*n/stat.count)/100:"n.a."}</td>)}
                         </tr>
                     )
                 }

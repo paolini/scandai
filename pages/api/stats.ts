@@ -1,4 +1,5 @@
 import Entry, { IEntry } from '@/models/Entry'
+import Dict from '@/models/Dict'
 import { IPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
@@ -39,7 +40,7 @@ export default async function handler(
         }
         try {
             const entries = await Entry.aggregate(pipeline)
-            const data: IStats = aggregate(entries)
+            const data: IStats = await aggregate(entries)
             res.status(200).json({ data })
         } catch (error) {
             console.error(error)
@@ -69,13 +70,14 @@ export interface IErrorQuestionStat {
 export interface IChooseLanguageQuestionStat {
     question: IQuestion,
     type: 'choose-language',
-    count: number,
+    count: number, // numero di persone che hanno risposto
+    countAnswers: number, // numero di lingue che sono state scelte
     answers: IChooseLanguageStat,
     counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
 }
 
 export interface IChooseLanguageStat {
-    [key: string]: number
+    [key: string]: number // quanti hanno indicato questa lingua
 }
 
 export interface IMapLanguageToCompetenceQuestionStat {
@@ -115,7 +117,7 @@ export interface IEntryWithPoll extends IEntry {
     poll: IPoll,
 }
 
-function aggregate(entries: IEntryWithPoll[], ): IStats {
+async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     const questionsMap = questionary.questions
     let baseLanguages = Object.keys(questionary.languages)
 
@@ -147,7 +149,15 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
 
     const pollIds: string[] = []
     const polls: IPoll[] = []
-            
+
+    const dict = Object.fromEntries((await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]))
+    function langMap(lang: string) {
+        const m = dict[lang.toLowerCase()]
+        if (m===undefined) return lang // mantieni
+        return m // if m === '' va scartato
+    }        
+
+
     let questions: {[key: string]: IQuestionStat} = {}
     // populate questions with all aggregate statistics
     for (const e of entries) {
@@ -168,6 +178,7 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                         question,
                         type: question.type,
                         count: 0,
+                        countAnswers: 0,
                         answers: {...languagesZeroCount},
                         counts: [],
                     }
@@ -186,7 +197,10 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                     q.counts.push(0)
                 }
                 q.counts[n] ++ 
-                for (const lang of answer) {
+                for (const sourceLang of answer) {
+                    const lang = langMap(sourceLang)
+                    if (!lang) continue // language marked for discard
+                    q.countAnswers ++
                     if (lang in q.answers) q.answers[lang]++
                     else q.answers[lang] = 1
                 }
@@ -214,7 +228,9 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                 }
                 assert(!Array.isArray(answer))
                 q.count ++
-                for (const [lang, langAns] of Object.entries(answer)) {
+                for (const [sourceLang, langAns] of Object.entries(answer)) {
+                    const lang = langMap(sourceLang)
+                    if (!lang) continue // discard this language
                     if (!(lang in q.answers)) {
                         q.answers[lang] = {...competencesZero}
                         q.sums[lang] = {...sumsZero}
@@ -263,7 +279,9 @@ function aggregate(entries: IEntryWithPoll[], ): IStats {
                 }
                 q.count ++
                 // console.log(`${e._id} answer: ${JSON.stringify(answer)}`)
-                for (const [lang, age] of Object.entries(answer)) {
+                for (const [sourceLang, age] of Object.entries(answer)) {
+                    const lang = langMap(sourceLang)
+                    if (!lang) continue // language is marked for discard
                     if (typeof(age) !== 'string') {
                         console.error(`answer for lang ${lang} is not a string: ${age}`)
                         continue
