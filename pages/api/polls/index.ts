@@ -113,9 +113,7 @@ export default async function handler(
                 createdBy: user._id,
                 date: new Date(),
             })
-            console.log(`poll: ${JSON.stringify(poll)}`)
             const out = await poll.save()
-            console.log(`created poll ${out._id}: ${JSON.stringify(out)} body was ${JSON.stringify(body)}`)
             return res.status(200).json({ data: out })
         } catch (error) {
             return res.status(400).json({ error })
