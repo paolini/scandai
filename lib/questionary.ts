@@ -76,7 +76,12 @@ const questionary: IQuestionary = {
       'it': 'Invia',
       'fu': 'Mande',
       'en': 'Send',
-    }
+    },
+    otherLanguage: {
+      'it': 'Altra lingua:',
+      'fu': 'Altre lenghe:',
+      'en': 'Other language:',
+    },
   },
 
   translations: {

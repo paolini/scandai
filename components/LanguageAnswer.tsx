@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
-import { trans, LocalizedString } from '@/lib/questionary'
+import { trans, LocalizedString, getPhrase } from '@/lib/questionary'
 
-function OtherLanguage({addLanguage}: {
+function OtherLanguage({lang, addLanguage}: {
+    lang: string,
     addLanguage: (language: string) => void
 }) {
     const [other, setOther] = useState("")
@@ -15,7 +16,7 @@ function OtherLanguage({addLanguage}: {
       }
     }
     return <>
-      Altra lingua: <input 
+      {getPhrase("otherLanguage", lang)} <input 
           value={other} 
           onChange={(evt)=>setOther(evt.target.value)}
           onBlur={commit}
@@ -42,7 +43,9 @@ export default function LanguageAnswer({lang, answer, setAnswer, languages }
                 setAnswer={setAnswer}
                 />
             )} 
-        <OtherLanguage addLanguage={(language: string) => setAnswer((a: string[]) => [...a, language])}/> 
+        <OtherLanguage 
+          lang={lang}
+          addLanguage={(language: string) => setAnswer((a: string[]) => [...a, language])}/> 
     </>
 }
 
