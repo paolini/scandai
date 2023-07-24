@@ -19,7 +19,7 @@ const questionary: IQuestionary = {
     title: {
       'it': 'Fotografia linguistica',
       'fu': 'Fotografie linguistiche',
-      'en': 'Linguistic photography',
+      'en': 'Linguistic Photography',
     },
     compileButton: {
       'it': 'Compila il questionario',
@@ -32,6 +32,8 @@ const questionary: IQuestionary = {
     },
     thanksTitle: {
       'it': 'Grazie!',
+      'fu': 'Graciis!',
+      'en': 'Thank you!',
     },
     thanks: {
       'it': 'Grazie per aver compilato il questionario!',
@@ -39,6 +41,7 @@ const questionary: IQuestionary = {
     },
     closeThisPage: {
       'it': 'Puoi chiudere questa pagina', 
+      'fu': 'Tu puedis sierâ cheste pagjine',
     },
     isClosed: {
       'it': 'Il questionario è chiuso',
@@ -51,18 +54,22 @@ const questionary: IQuestionary = {
     },
     prevButton: {
       'it': 'Indietro',
+      'fu': 'Indaûr',
       'en': 'Previous',
     },
     nextButton: {
       'it': 'Avanti',
+      'fu': 'Indenant',
       'en': 'Next',
     },
     endButton: {
       'it': 'Fine',
+      'fu': 'Fin',
       'en': 'End',
     },
     sendButton: {
       'it': 'Invia',
+      'fu': 'Mande',
       'en': 'Send',
     }
   },
@@ -77,18 +84,22 @@ const questionary: IQuestionary = {
     it: {
       it: 'Italiano',
       fu: 'Talian',
+      en: 'Italian',
     },
     fu: {
       it: 'Friulano',
       fu: 'Furlan',
+      en: 'Friulian',
     },
     de: {
       it: 'Tedesco',
       fu: 'Todesc',
+      en: 'German',
     },
     sl: {
       it: 'Sloveno',
       fu: 'Sloven',
+      en: 'Slovenian',
     },
   },
 
@@ -469,12 +480,17 @@ const questionary: IQuestionary = {
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
         Grazie per la collaborazione!
         `,
-        fu: `Cjare studentesse / Cjar student, o domandìn la tô colaborazion par rispuindi 
+        fu: `Cjare studentesse / Cjâr student, o domandìn la tô colaborazion par rispuindi 
              a lis domandis di chest cuestionari sui ûs linguistics e sui contescj comunicatîfs che tu vivis 
              (in famee, cui amîs, a scuele...). Lis rispuestis a judaran i tiei insegnants a cjapâ sù informazions 
              par fâ miôr il lôr lavôr e par pensâ gnovis iniziativis di proponi ae tô classe e al to istitût. 
              Il cuestionari al è anonim: esprimiti cun libertât e scletece!
              Grazie pe colaborazion!
+        `,
+        en: `Dear student, please help us by answering the following questions about the languages used in different communication settings of your life 
+             (your family, your friend group, at school...). This survey lets us collect information to improve school activities and to assess possible activities 
+             to offer to your class and your school. The survey is anonymous: please share your thoughts in freedom and sincerity.
+             Thank you for your help!
         `,
       },  
       elements: [
@@ -483,6 +499,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Lingue parlate e contesti comunicativi",
             fu: "Lenghis feveladis e contescj comunicatîfs",
+            en: "Spoken languages and communication settings",
           },
         },
         {
@@ -490,6 +507,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Abitualmente...",
             fu: "Pal solit ...",
+            en: "Usually ...",
           },
         },
         {
@@ -504,6 +522,7 @@ const questionary: IQuestionary = {
           title: {
             it: "In famiglia abitualmente io parlo...",
             fu: "In famee pal solit jo o feveli ...",
+            en: "In my family we usually speak ...",
           },
         },
         { 
@@ -516,6 +535,7 @@ const questionary: IQuestionary = {
           title: {
             it: "In famiglia abitualmente...",
             fu: "In famee pal solit ...",
+            en: "In my family we usually ...",
           },
         },
         {
@@ -528,6 +548,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Fuori casa abitualmente io parlo...",
             fu: "Fûr di cjase pal solit o feveli ...",
+            en: "When I’m out I usually speak ...",
           },
         },
         {
@@ -542,7 +563,8 @@ const questionary: IQuestionary = {
           element: "title",
           title: {
             it: "A scuola abitualmente...",
-            fu: "A scuel pal solit ...",
+            fu: "A scuele pal solit ...",
+            en: "When I’m at school I usually speak ...",
           },
         },
         { 
@@ -555,6 +577,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Abitualmente...",
             fu: "Pal solit ...",
+            en: "Usually ...",
           },
         },
         {
@@ -567,6 +590,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Competenza linguistica orale e scritta",
             fu: "Competence linguistiche orâl e scrite",
+            en: "Oral and written language proficiency",
           },
         },
         {
