@@ -233,13 +233,15 @@ const questionary: IQuestionary = {
     "family": {
       type: "choose-language",
       question: {
-        it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)", 
+        it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)",
+        fu: "Cualis lenghis si doprìno in mût abituâl te tô famee? (tu puedis segnâ plui di une rispueste)", 
       },
     },
     "friends": {
       type: "choose-language",
       question: {
         it: "Quali lingue vengono abitualmente utilizzate nel tuo gruppo di amici? (puoi indicare più di una risposta)",
+        fu: "Cualis lenghis si doprìno in mût abituâl tal to grup di amîs? (tu puedis segnâ plui di une rispueste)", 
       },
     },
     "competences": {
@@ -467,6 +469,13 @@ const questionary: IQuestionary = {
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
         Grazie per la collaborazione!
         `,
+        fu: `Cjare studentesse / Cjar student, o domandìn la tô colaborazion par rispuindi 
+             a lis domandis di chest cuestionari sui ûs linguistics e sui contescj comunicatîfs che tu vivis 
+             (in famee, cui amîs, a scuele...). Lis rispuestis a judaran i tiei insegnants a cjapâ sù informazions 
+             par fâ miôr il lôr lavôr e par pensâ gnovis iniziativis di proponi ae tô classe e al to istitût. 
+             Il cuestionari al è anonim: esprimiti cun libertât e scletece!
+             Grazie pe colaborazion!
+        `,
       },  
       elements: [
         { 
@@ -610,24 +619,33 @@ const questionary: IQuestionary = {
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
-        relative alla tua conoscenza delle lingue. 
+        relative alla tuaconoscenza delle lingue. 
         Il questionario ci aiuterà a raccogliere informazioni 
         per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
         Grazie per la collaborazione!
+        `,
+        fu: `Cjare studentesse / Cjar student, o domandìn la tô colaborazion par rispuindi 
+             a lis domandis di chest cuestionari sui ûs linguistics e sui contescj comunicatîfs che tu vivis 
+             (in famee, cui amîs, a scuele...). Lis rispuestis a judaran i tiei insegnants a cjapâ sù informazions 
+             par fâ miôr il lôr lavôr e par pensâ gnovis iniziativis di proponi ae tô classe e al to istitût. 
+             Il cuestionari al è anonim: esprimiti cun libertât e scletece!
+             Grazie pe colaborazion!
         `,
       },
       elements : [
         { 
           element: "section",
           title: {
-            it: "Istantanea linguistica"
+            it: "Istantanea linguistica",
+            fu: "Istantanie linguistiche",
           },
         },
         {
           element: "title",
           title: {
             it: "Lingue parlate e contesti comunicativi",
+            fu: "Langhis feveladis e contescj comunicatîfs",
           },
         },
         { 
@@ -639,6 +657,7 @@ const questionary: IQuestionary = {
           element: "title",
           title: {
             it: "Competenza linguistica orale e scritta",
+            fu: "Competence linguistiche orâl e scrite",
           },
         },
         { 
