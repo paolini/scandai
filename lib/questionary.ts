@@ -24,11 +24,13 @@ const questionary: IQuestionary = {
     compileButton: {
       'it': 'Compila il questionario',
       'fu': 'Compile il cuestionari',
+      'en': 'Fill the Questionnarie'
       
     },
     shareButton: {
       'it': "Copia l'indirizzo del questionario",
       'fu': 'Copie il leam al cuestionari',
+      'en': 'Copy the link',
     },
     thanksTitle: {
       'it': 'Grazie!',
@@ -38,14 +40,17 @@ const questionary: IQuestionary = {
     thanks: {
       'it': 'Grazie per aver compilato il questionario!',
       'fu': 'Graciis par vê compilât il cuestionari',
+      'en': 'Thank you for filling the Questionnaire',
     },
     closeThisPage: {
       'it': 'Puoi chiudere questa pagina', 
       'fu': 'Tu puedis sierâ cheste pagjine',
+      'en': 'Close this page',
     },
     isClosed: {
       'it': 'Il questionario è chiuso',
       'fu': 'Il cuestionari al è sierât',
+      'en': 'The questionnaire is locked',
     },
     chooseLanguage: {
       'it': "usa l'italiano per compilare il questionario",
@@ -107,18 +112,22 @@ const questionary: IQuestionary = {
     it: {
       it: 'Italiano',
       fu: 'Talian',
+      en: 'Italian',
     },
     fu: {
       it: 'Friulano (o varianti)',
       fu: 'Furlan (o variantis)',
+      en: 'Friulian (any variety)',
     },
     de: {
       it: 'Tedesco',
       fu: 'Todesc',
+      en: 'German',
     },
     sl: {
       it: 'Sloveno',
       fu: 'Sloven',
+      en: 'Slovenian',
     },
   },
 
@@ -127,31 +136,37 @@ const questionary: IQuestionary = {
       code: '',
       it: 'Mai (non so la lingua)',
       fu: 'Mai (no cognòs la lenghe)',
+      en: ' Never (I don’t know the language)',
     },
     { 
       code: '0-3',
       it: '0-3 anni',
       fu: '0-3 agns',
+      en: '0-3 years old',
     },
     {
       code: '3-6',
       it: '3-6 anni',
       fu: '3-6 agns',
+      en: '3-6 years old',
     },
     {
       code: '6-9',
       it: '6-9 anni',
       fu: '6-9 agns',
+      en: '6-9 years old',
     },
     {
       code: '9-12',
       it: '9-12 anni',
       fu: '9-12 agns',
+      en: '9-12 years old',
     },
     {
       code: '12-15',
       it: '12-15 anni',
       fu: '12-15 agns',
+      en: '12-15 years old',
     },
   ],
 
@@ -160,83 +175,99 @@ const questionary: IQuestionary = {
       code: "CO",
       it: "Comprensione orale",
       fu: 'Comprension orâl',
+      en: 'Oral comprehension',
     },	
     {
       code: "CS",
       it: "Comprensione scritta",
       fu: 'Comprension scrite',
+      en: 'Written comprehension',
     },
     {
       code: "PO",
       it: "Produzione orale",
       fu: 'Produzion orâl',
+      en: 'Oral production',
     },
     {
       code: "PS",
       it: "Produzione scritta",
       fu: 'Produzion scrite',
+      en: 'Written production',
     }
   ],
   competenceValues: {
     _: {
       level: '0',
-      it: "Scegli...",
+      it: "Scegli",
       fu: 'Sielç',
+      en: 'Choose',
     },
     _0: { 
       level: '0',
       it: "Nessuna competenza",
       fu: "Nissune competence",
+      en: 'No proficiency',
     },
     _1: {
       level: '0',
       it: "Nessuna competenza",
       fu: "Nissune competence",
+      en: 'No proficiency',
     },
     _2: {
       level: '0',
       it: "Nessuna competenza",
       fu: "Nissune competence",
+      en: 'No proficiency',
     },
     _3: {
       level: 'A',
-      it: "Principiante",
-      fu: "Principiant",
+      it: "Competenza iniziale",
+      fu: "Competence iniziâl",
+      en: 'Initial proficiency',
     },
     _4: {
       level: 'A',
-      it: "Principiante",
-      fu: "Principiant",
+      it: "Competenza iniziale",
+      fu: "Competence iniziâl",
+      en: 'Initial proficiency',
     },
     _5: {
       level: 'A',
-      it: "Principiante",
-      fu: "Principiant",
+      it: "Competenza iniziale",
+      fu: "Competence iniziâl",
+      en: 'Initial proficiency',
     },
     _6: {
       level: 'B',
-      it: "Intermedio",
-      fu: "Intermedi",
+      it: "Competenza intermedia",
+      fu: "Competence intermedie",
+      en: 'Inermediate proficiency',
     },
     _7: {
       level: 'B',
-      it: "Intermedio",
-      fu: "Intermedi",
+      it: "Competenza intermedia",
+      fu: "Competence intermedie",
+      en: 'Inermediate proficiency',
     },
     _8: {
       level: 'C',
       it: "Competenza avanzata",
       fu: "Competence avanzade",
+      en: 'Advanced proficiency',
     },
     _9: {
       level: 'C',
       it: "Competenza avanzata",
       fu: "Competence avanzade",
+      en: 'Advanced proficiency',
     },
     _10: {
       level: 'C',
       it: "Competenza avanzata",
       fu: "Competence avanzade",
+      en: 'Advanced proficiency',
     },
   },
 
@@ -268,6 +299,7 @@ const questionary: IQuestionary = {
       question: {
         it: "nella mia famiglia si parla ...",
         fu: "inte mê famee si fevele ...",
+        en: "In my family we speak ...",
       }
     },
     "1.1.b.1": {
@@ -275,6 +307,7 @@ const questionary: IQuestionary = {
       question: {
         it: "a mia mamma parlo in...",
         fu: "cun mê mari o feveli par ...",
+        en: "With my mother I speak ...",
       }
     },
     "1.1.b.2": {
@@ -282,6 +315,7 @@ const questionary: IQuestionary = {
       question: {
         it: "a mio papà parlo in...",
         fu: "cun mê mari o feveli par ...",
+        en: "With my father I speak ...",
       }
     },
     "1.1.b.3": {
@@ -289,6 +323,7 @@ const questionary: IQuestionary = {
       question: {
         it: "ai miei fratelli/sorelle parlo in...",
         fu: "cui miei fradis / cu lis mês sûrs o feveli par ...",
+        en: "With my siblings I speak ...",
       }
     },
     "1.1.b.4": {
@@ -296,6 +331,7 @@ const questionary: IQuestionary = {
       question: {
         it: "ai miei nonni parlo in...",
         fu: "cui miei nonos o feveli par ...",
+        en: "With my grandparents I speak ...",
       }
     },
     "1.1.c.1": {
@@ -303,6 +339,7 @@ const questionary: IQuestionary = {
         question: {
           it: "i miei genitori tra di loro parlano...",
           fu: "i miei gjenitôrs fra di lôr a feveli par ...",
+          en: "My parents speak to each other in ...",
         }
       },
     "1.1.c.2": {
@@ -310,6 +347,7 @@ const questionary: IQuestionary = {
         question: {
           it: "mia madre a me parla in...",
           fu: "mê mari mi fevele par ...",
+          en: "My mother speaks to me in ...",
         }
       },
     "1.1.c.3": {
@@ -317,6 +355,7 @@ const questionary: IQuestionary = {
         question: {
           it: "mio padre a me parla in...",
           fu: "gno pari mi fevele par ...",
+          en: "My father speaks to me in ...",
         }
       },
       "1.1.c.4": {
@@ -324,6 +363,7 @@ const questionary: IQuestionary = {
         question: {
           it: "i miei fratelli/sorelle a me parlano in...",
           fu: "i miei fradis / lis mês sûrs mi fevelin par ...",
+          en: "My siblings speak to me in ...",
         }
       },
       "1.1.c.5": {
@@ -331,6 +371,7 @@ const questionary: IQuestionary = {
         question: {
           it: "i miei nonni a me parlano in...",
           fu: "i miei nonos mi fevelin par ...",
+          en: "My grandparents speak to me in ...",
         }
       },
     "1.2.a.1": {
