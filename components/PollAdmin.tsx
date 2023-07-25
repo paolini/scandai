@@ -21,6 +21,7 @@ export default function PollAdmin({poll, mutate}:{
     const isSupervisor = user && (user.isAdmin || user._id === poll.createdBy._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
+    const fullUrl = `${window.location.origin}${pollUrl}`
 
     useEffect(() => {
         console.log('poll admin effect', isSupervisor)
@@ -90,11 +91,11 @@ export default function PollAdmin({poll, mutate}:{
                 compila il sondaggio
             </Button>
             <Button className="flex m-4" size="lg" onClick={() => {
-                copyToClipboard(pollUrl);
+                copyToClipboard(fullUrl);
                 addMessage('success', 'indirizzo (url) copiato')}}>
                 <FaShareAlt /> copia il link (URL)
             </Button>
-            <QRCode className="flex m-4 w-100" value={pollUrl} />
+            <QRCode className="flex m-4 w-100" value={fullUrl} />
         </div>
         }
     </>
