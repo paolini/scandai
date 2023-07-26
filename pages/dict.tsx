@@ -43,9 +43,9 @@ export default function Dict() {
                 </tr>
             </thead>
             <tbody>
-                {data.map(([lang,to])=>
-                    <tr key={lang} onClick={()=>{setEditLang(lang);set(editState,to||'')}}>
-                        <td>{lang}</td>
+                {data.map(({lang, variants, map})=>
+                    <tr key={lang} onClick={()=>{setEditLang(lang);set(editState,map||'')}}>
+                        <td>{variants.join(", ")}</td>
                         <td>{lang===editLang 
                             ? <div className="d-flex">
                                 <Input state={editState}></Input>
@@ -55,7 +55,7 @@ export default function Dict() {
                                     <FaCirclePlus className="m-1 bg-blue-300"/>
                                 </Button>
                             </div>
-                            : (to===''?<b className="text-danger">scarta</b>:to===undefined?<b className="text-success">mantieni</b>:to)}
+                            : (map===''?<b className="text-danger">scarta</b>:map===undefined?<b className="text-success">mantieni</b>:map)}
                         </td>
                     </tr>
                 )}
