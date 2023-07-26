@@ -403,8 +403,8 @@ const questionary: IQuestionary = {
     "1.2.a.4": {
       type: "choose-language",
       question: {
-        it: "1.2.b. Fuori casa abitualmente...",
-        fu: "1.2.b.  Fûr di cjase pal solit ...",
+        it: "Fuori casa abitualmente...",
+        fu: "Fûr di cjase pal solit ...",
       }
     },
     "1.2.a.5": {
