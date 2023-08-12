@@ -45,6 +45,29 @@ export default function Questionary({lang, done, poll, form } : {
   const extraLanguages = extractExtraLanguages(questionCodes, answers, questionary.languages)
   const pages = extractPages(form)
   const page = pages[pageCount]
+  const pageCompleted = page.every(item => {
+    if (item.element === 'questions') {
+      return item.questions.every(code => {
+        const answer = answers[code]
+        const question = questionary.questions[code]
+        assert(question, `question not found with code ${code}`)
+        if (!question.compulsory) return true
+        switch(question.type) {
+          case 'map-language-to-competence':
+            return Object.keys(answer).length>0
+          case 'map-language-to-age':
+            return Object.keys(answer).length>0
+          case 'choose-language':
+            assert(Array.isArray(answer))
+            return answer.length>0
+          default:
+            assert(false, "unknown question type: "+question.type)
+        }
+      })
+    } else {  
+      return true
+    }
+  })
 
   async function submit() {
     const pollId = poll?._id || ''
@@ -84,16 +107,17 @@ export default function Questionary({lang, done, poll, form } : {
         extraLanguages={extraLanguages}
       />
       <br />
+      {!pageCompleted && <p>{getPhrase("compulsoryExplanation", lang)}</p>}
       <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>
         {getPhrase("prevButton", lang)}
       </Button>
       <span> {pageCount+1} / {pages.length} </span>
       { pageCount < pages.length-1 &&
-        <Button disabled={pageCount>=pages.length-1} onClick={()=>setPageCount(p => p+1)}>{getPhrase("nextButton", lang)}</Button>
+        <Button disabled={!pageCompleted || pageCount>=pages.length-1} onClick={()=>setPageCount(p => p+1)}>{getPhrase("nextButton", lang)}</Button>
       }
       {
         pageCount >= pages.length-1 &&
-        <Button onClick={() => submit()}>{getPhrase("sendButton", lang)}</Button>
+        <Button disabled={!pageCompleted} onClick={() => submit()}>{getPhrase("sendButton", lang)}</Button>
       }
       { pageCount < pages.length 
         && <Button className="m-2" disabled={pageCount>=pages.length-1} onClick={() => setPageCount(pages.length-1)}>{getPhrase("endButton", lang)}</Button>

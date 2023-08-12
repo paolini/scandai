@@ -82,6 +82,9 @@ const questionary: IQuestionary = {
       'fu': 'Altre lenghe:',
       'en': 'Other language:',
     },
+    compulsoryExplanation: {
+      'it': 'Le domande marcate con (*) sono a risposta obbligatoria',
+    }
   },
 
   translations: {
@@ -305,7 +308,8 @@ const questionary: IQuestionary = {
         it: "nella mia famiglia si parla ...",
         fu: "inte mê famee si fevele ...",
         en: "In my family we speak ...",
-      }
+      },
+      compulsory: true,
     },
     "1.1.b.1": {
       type: "choose-language",
@@ -905,6 +909,7 @@ export type IFormNewPage = {
 export interface IQuestion {
     type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age',
     question: LocalizedString,
+    compulsory?: boolean,
 }
 
 export interface ICompetenceValue extends LocalizedString {
