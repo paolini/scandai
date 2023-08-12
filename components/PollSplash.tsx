@@ -8,7 +8,7 @@ import Page from "@/components/Page"
 import { useAddMessage } from "@/components/Messages"
 import Error from "@/components/Error"
 import questions, { getPhrase } from "@/lib/questionary"
-import { value, State, onChange } from "@/lib/State"
+import { value, State, onChange, set, get } from "@/lib/State"
 import useSessionUser from "@/lib/useSessionUser"
 import questionary, { trans } from "@/lib/questionary"
 
@@ -56,9 +56,19 @@ function ChooseLanguage({langState}:{
     langState: State<string>
 }) {
     return <div className="flex my-4">
-        <Form.Select className="bg-warning" onChange={onChange(langState)}>
         {Object.entries(questions.phrases.chooseLanguage).map(([lang, message], i) => 
-            <option key={i} value={lang}>{message}</option>)}
-        </Form.Select>
+            <div className={value(langState)===lang?"bg-warning":""}>
+                <label>
+                    <input 
+                        type="radio" 
+                        name="lang" 
+                        checked={value(langState)===lang} 
+                        value={lang} 
+                        onClick={()=>set(langState,lang)}
+                    />
+                    {} {message}
+                </label>
+            </div>
+        )} 
     </div>
 }

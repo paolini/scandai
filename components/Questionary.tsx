@@ -81,6 +81,7 @@ export default function Questionary({lang, done, poll, form } : {
         body: JSON.stringify({
           answers,
           pollId,
+          lang,
         })
       })
       console.log(res)
