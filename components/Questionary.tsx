@@ -119,7 +119,7 @@ export default function Questionary({lang, done, poll, form } : {
         pageCount >= pages.length-1 &&
         <Button disabled={!pageCompleted} onClick={() => submit()}>{getPhrase("sendButton", lang)}</Button>
       }
-      { pageCount < pages.length 
+      { pageCount < pages.length && false
         && <Button className="m-2" disabled={pageCount>=pages.length-1} onClick={() => setPageCount(pages.length-1)}>{getPhrase("endButton", lang)}</Button>
       } 
   </div>
