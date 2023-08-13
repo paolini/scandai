@@ -57,7 +57,7 @@ function ChooseLanguage({langState}:{
 }) {
     return <div className="flex my-4">
         {Object.entries(questions.phrases.chooseLanguage).map(([lang, message], i) => 
-            <div className={value(langState)===lang?"bg-warning":""}>
+            <div className={value(langState)===lang?"bg-warning":""} key={lang}>
                 <label>
                     <input 
                         type="radio" 
