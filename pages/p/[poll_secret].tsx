@@ -34,12 +34,13 @@ export default function PollSecret({}) {
         poll = pollQuery.data.data[0]
     }
 
-    return <Questionary 
+    return <Page header={false}>
+        <Questionary 
             poll={poll} 
             form={poll.form}
             langState={langState}
             answersState={answersState}
             mutate={pollQuery.mutate}
             />
-}
+    </Page>}
 

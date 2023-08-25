@@ -1,3 +1,4 @@
+import { forwardRef, useRef } from "react"
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -15,8 +16,9 @@ import {
   } from 'chart.js';
 import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import ReactToPrint, { useReactToPrint } from 'react-to-print'
 
 import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
@@ -29,6 +31,9 @@ import {
 import questionary, { extractLevels, IReportElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
+
+const CHART_WIDTH = 400
+const CHART_WIDTH_SMALL = 320
 
 ChartJS.register(
     CategoryScale,
@@ -52,11 +57,24 @@ const titleFont = {
     // family: 'Helvetica Neue'
 }
 
+const marginTop="1cm"
+const marginRight="6cm"
+const marginBottom="1cm"
+const marginLeft="2cm"
+
+const getPageMargins = () => {
+  return `@page { margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important; }`;
+};
+
 export default function Report() {
     const router = useRouter()
     const statsQuery = useStats(router.query)
     const form = router.query.form || "full"
-    
+    const ref = useRef(null)
+    const print = useReactToPrint({
+        content: () => ref.current,
+    })
+
     if (Array.isArray(form)) return <Error>too many forms</Error>
 
     if (statsQuery.isLoading) return <div>Loading...</div>
@@ -65,9 +83,17 @@ export default function Report() {
     const stats = statsQuery.data.data
 
     return <Page>
+        <div className="container noPrint">
+            <Button onClick={print} style={{float:"right"}}>stampa</Button>
+        </div>
+        <div ref={ref}>
+            <style>
+                {getPageMargins()}
+            </style>
         { questionary.forms[form].report.map(
             (item, i) => <ReportItem key={i} stats={stats} item={item} />
         )}
+        </div>
     </Page>
 }
 
@@ -132,21 +158,21 @@ function ReportChart({ stats, item }:{
                 case undefined:
                 case 'chart':
                     return <>
-                        <div style={{maxWidth:1000}}>
+                        <div style={{maxWidth:CHART_WIDTH}}>
                             <GraphChooseLanguageQuestion item={item} stat={question} />
                         </div>            
                         <TableChooseLanguageQuestion item={item} stat={question} />
                     </>
                 case 'count':
                     return <>
-                        <div style={{maxWidth:640}}>
+                        <div style={{maxWidth:CHART_WIDTH_SMALL}}>
                             <GraphChooseLanguageQuestionCounts item={item} stat={question} />
                         </div>
                     </>
             }
         case 'map-language-to-competence': return <>
                 <CompetenceLegend />
-                <div style={{maxWidth:1000}}>
+                <div style={{maxWidth:CHART_WIDTH}}>
                     { Object.keys(questionary.languages).map(lang => 
                         <GraphMapLanguageToCompetenceQuestion 
                             key={lang} 
@@ -157,7 +183,7 @@ function ReportChart({ stats, item }:{
                 </div>
             </>
         case 'map-language-to-age': return <>
-            <div style={{maxWidth:1000}}>
+            <div style={{maxWidth:CHART_WIDTH}}>
                 <GraphMapLanguageToAgeQuestion stat={question} />
             </div>
         </>
@@ -173,7 +199,7 @@ function ReportTable({ item, stats}: {
     const question = stats.questions[item.question]
     switch(question.type) {
         case 'map-language-to-competence':
-            return <div style={{maxWidth:1000}}>
+            return <div style={{maxWidth:CHART_WIDTH}}>
                 <TableMapLanguageToCompetence stat={question} />
             </div>
         default:

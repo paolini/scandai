@@ -37,6 +37,7 @@
     "react-qr-code": "^2.0.11",
     "react-simple-line-icons": "^1.0.8",
     "react-switch": "^7.0.0",
+    "react-to-print": "^2.14.13",
     "swr": "^2.1.0",
     "typescript": "5.0.2"
   },

@@ -8,7 +8,7 @@ export default function Header() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  return <Navbar bg="light" expand="lg">
+  return <div className="noPrint"><Navbar bg="light" expand="lg">
     { false && JSON.stringify(session) }
     <Container>
       <Navbar.Brand href="/">{package_json.name}-{package_json.version}</Navbar.Brand>
@@ -65,5 +65,5 @@ export default function Header() {
         </Nav>
       </Navbar.Collapse>
     </Container>
-  </Navbar>
+  </Navbar></div>
 }

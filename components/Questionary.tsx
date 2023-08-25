@@ -123,14 +123,20 @@ export default function Questionary({langState, poll, form, answersState, mutate
       </Button>
       <span> {pageCount+1} / {pages.length} </span>
       { pageCount < pages.length-1 &&
-        <Button disabled={!pageCompleted || pageCount>=pages.length-1} onClick={()=>setPageCount(p => p+1)}>{getPhrase("nextButton", lang)}</Button>
+        <Button disabled={!pageCompleted || pageCount>=pages.length-1} onClick={()=>setPageCount(p => p+1)}>
+          {getPhrase("nextButton", lang)}
+        </Button>
       }
       {
         pageCount >= pages.length-1 &&
-        <Button disabled={!pageCompleted} onClick={() => submit()}>{getPhrase("sendButton", lang)}</Button>
+        <Button disabled={!pageCompleted} variant="danger" onClick={submit}>
+          {getPhrase("sendButton", lang)}
+        </Button>
       }
       { pageCount < pages.length && false
-        && <Button className="m-2" disabled={pageCount>=pages.length-1} onClick={() => setPageCount(pages.length-1)}>{getPhrase("endButton", lang)}</Button>
+        && <Button className="m-2" variant="warning" disabled={pageCount>=pages.length-1} onClick={() => setPageCount(pages.length-1)}>
+          {getPhrase("endButton", lang)}
+          </Button>
       } 
   </div>
 }
