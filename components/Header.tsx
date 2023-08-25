@@ -15,7 +15,7 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          <Nav.Link href="/report">Report</Nav.Link>
+          { /* <Nav.Link href="/report">Report</Nav.Link> */ }
           <Nav className="right">
           {!session && <NavDropdown title="user">
             <NavDropdown.Item
@@ -55,9 +55,11 @@ export default function Header() {
                 }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault()
-                      signOut()
+                      await signOut()
+                      // router.push('/') // non funziona!
+                      window.location.href = '/'
                     }}  
                   >logout
                 </NavDropdown.Item>
