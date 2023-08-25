@@ -529,6 +529,7 @@ const questionary: IQuestionary = {
           fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
           en: "How old were you when you started speaking the languages you know?",
         }
+      compulsory: true,
     },
     "2.2.1": {
       type: 'map-language-to-competence',
@@ -537,6 +538,7 @@ const questionary: IQuestionary = {
         fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
         en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (0 = no proficiency at all; 10 = advanced proficiency)",
       }
+      compulsory: true,
     }
   },
 
