@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from "react"
+import { useRef } from "react"
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -32,8 +32,8 @@ import questionary, { extractLevels, IReportElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
 
-const CHART_WIDTH = 400
-const CHART_WIDTH_SMALL = 320
+const CHART_WIDTH = 640
+const CHART_WIDTH_SMALL = 400
 
 ChartJS.register(
     CategoryScale,
@@ -81,6 +81,12 @@ export default function Report() {
     if (!statsQuery.data) return <div>Failed to load</div>
     
     const stats = statsQuery.data.data
+
+    if (stats.entriesCount === 0) return <Page>
+        <Error>
+        Impossibile fare il report: nessun questionario compilato
+        </Error>
+    </Page>
 
     return <Page>
         <div className="container noPrint">
