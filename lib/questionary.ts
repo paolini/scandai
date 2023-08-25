@@ -53,9 +53,9 @@ const questionary: IQuestionary = {
       'en': 'The questionnaire is locked',
     },
     chooseLanguage: {
-      'it': "usa l'italiano per compilare il questionario",
-      'fu': 'compile il cuestionari par furlan',
-      'en': 'fill the questionnaire in English',
+      'it': "Compila il questionario in italiano",
+      'fu': 'Compile il cuestionari par furlan',
+      'en': 'Fill the questionnaire in English',
     },
     prevButton: {
       'it': 'Indietro',
@@ -84,6 +84,8 @@ const questionary: IQuestionary = {
     },
     compulsoryExplanation: {
       'it': 'Le domande marcate con (*) sono a risposta obbligatoria',
+      'fu': 'Lis domandis marcadis cun (*) a son a rispueste obligatorie',
+      'en': 'The questions marked with (*) are mandatory to answer',
     }
   },
 
@@ -527,6 +529,7 @@ const questionary: IQuestionary = {
           fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
           en: "How old were you when you started speaking the languages you know?",
         }
+      compulsory: true,
     },
     "2.2.1": {
       type: 'map-language-to-competence',
@@ -535,6 +538,7 @@ const questionary: IQuestionary = {
         fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
         en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (0 = no proficiency at all; 10 = advanced proficiency)",
       }
+      compulsory: true,
     }
   },
 
@@ -673,6 +677,7 @@ const questionary: IQuestionary = {
           questions: [ "2.2.1" ],
         },
       ],
+      /* Report del questionario lungo */
       report: [
         {
           element: "title",
@@ -709,9 +714,134 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           //title: "Prova ...",
-          question: "2.1.3",
+          question: "1.1.b.1",
         },
-      ],
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.5",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.5",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.6",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.7",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.8",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.9",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.10",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.3.b.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.3.b.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.5",
+        },
+      ],    /* Fine Report del questionario lungo */
     },
 
     /* composizione del questionario breve e del suo report */
