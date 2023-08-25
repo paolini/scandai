@@ -53,9 +53,9 @@ const questionary: IQuestionary = {
       'en': 'The questionnaire is locked',
     },
     chooseLanguage: {
-      'it': "usa l'italiano per compilare il questionario",
-      'fu': 'compile il cuestionari par furlan',
-      'en': 'fill the questionnaire in English',
+      'it': "Compila il questionario in italiano",
+      'fu': 'Compile il cuestionari par furlan',
+      'en': 'Fill the questionnaire in English',
     },
     prevButton: {
       'it': 'Indietro',
