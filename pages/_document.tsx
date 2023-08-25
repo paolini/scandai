@@ -7,7 +7,7 @@ export default function Document() {
       <body>
       <main 
         className="flex p-2 flex-col items-center justify-between p-24 mx-auto"
-        style={{maxWidth: '80rem'}}
+        style={{maxWidth: '60rem'}}
       >
         <Main />
       </main>

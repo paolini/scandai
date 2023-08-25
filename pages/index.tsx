@@ -24,7 +24,7 @@ export default function Index({}) {
 
   return <Page>
     <h1>Fotografia linguistica</h1>
-    <p>Benvenuto {sessionUser.name || sessionUser.username}!</p>
+    <p>Benvenuto {sessionUser.name || sessionUser.username || sessionUser.email }!</p>
     <Polls />  
   </Page>
 }

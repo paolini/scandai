@@ -1,5 +1,5 @@
 import { Card, ButtonGroup, Button } from "react-bootstrap"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import QRCode from "react-qr-code"
@@ -16,6 +16,7 @@ export default function PollAdmin({poll, mutate}:{
     poll: IGetPoll,
     mutate: () => void,
 }) {
+    const [tick, setTick] = useState<number>(0)
     const user = useSessionUser()
     const addMessage = useAddMessage()
     const isSupervisor = user && (user.isAdmin || user._id === poll.createdBy._id)
@@ -27,9 +28,14 @@ export default function PollAdmin({poll, mutate}:{
         console.log('poll admin effect', isSupervisor)
         if (!isSupervisor) return
         const interval = setInterval(() => {
-            console.log("tick")
-            mutate()
-        }, 1000 * 3)
+            setTick(tick => {
+                if (tick % 6 === 0) {
+                    console.log("polling")
+                    mutate()
+                }
+                return tick+1
+            })
+        }, 1000 / 2)
         return () => clearInterval(interval)
     }, [isSupervisor, mutate])
 
@@ -64,39 +70,83 @@ export default function PollAdmin({poll, mutate}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user.isAdmin && <>Creato da <b>{poll.createdBy.name || poll.createdBy.username }</b> <i>{poll.createdBy.email}</i> il {formatDate(poll.createdAt)}<br /></>}
-                Il sondaggio è: <b>{poll.closed ? 'chiuso' : 'aperto'}</b><br/>
-                Questionari compilati: <b>{poll.entriesCount}</b>
+                { user.isAdmin && <>Creato da <b>{ poll.createdBy?.name || poll.createdBy?.username || '???' }</b> <i>{poll.createdBy?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
+                { !poll.closed && <>indirizzo: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
+                Questionari compilati: <b>{poll.entriesCount}</b> 
+                { !poll.closed && <Tick tick={tick} /> }
                 </Card.Text>
+                <QRCode value={fullUrl} onClick={share} style={{cursor:"copy"}}/>
             </Card.Body>                
             <Card.Footer>
                 <ButtonGroup>
-                    <Link className="btn btn-primary" href="/">torna all&apos;elenco</Link>
+                    { !poll.closed &&
+                        <Button variant="success" onClick={() => window.open(pollUrl,"_blank")}>
+                            compila
+                        </Button>
+                    }
+                    { !poll.closed && 
+                        <Button onClick={share}>
+                            <FaShareAlt /> condividi
+                        </Button>
+                    }
                     { poll.closed && 
-                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-success">vedi report</a>
+                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-success">report</a>
                     }
                     { poll.closed 
-                    ? <Button variant="warning" onClick={() => close(poll, false)}>riapri</Button>
-                    : <Button variant="warning" onClick={() => close(poll)}>chiudi sondaggio</Button>
+                    ? <Button variant="warning" onClick={() => close(poll, false)}>
+                        riapri
+                      </Button>
+                    : <Button variant="warning" onClick={() => close(poll)}>
+                        chiudi
+                      </Button>
                     }
+                    <Link className="btn btn-primary" href="/">elenco</Link>
                     { poll.closed &&
-                        <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>elimina</Button>
+                        <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>
+                            elimina
+                        </Button>
                     }
                 </ButtonGroup>
             </Card.Footer>
         </Card>
-        { !poll.closed &&
-        <div className="d-flex flex-column">
-            <Button className="flex m-4" variant="success" size="lg" onClick={() => router.push(pollUrl)}>
-                compila il sondaggio
-            </Button>
-            <Button className="flex m-4" size="lg" onClick={() => {
-                copyToClipboard(fullUrl);
-                addMessage('success', 'indirizzo (url) copiato')}}>
-                <FaShareAlt /> copia il link (URL)
-            </Button>
-            <QRCode className="flex m-4 w-100" value={fullUrl} />
-        </div>
-        }
+        <ul>
+                <li> 
+                    Devi condividere con gli studenti il <i>link (URL)</i> del sondaggio
+                    {} <a href={fullUrl}>{ fullUrl }</a>.
+                    Il link può essere copiato e condiviso oppure puoi 
+                    mostrare o stampare il <i>QR-code</i> che contiene il link codificato.
+                    Premendo il pulsante <i>compila</i>
+                    {} puoi vedere il sondaggio come lo vedono gli studenti
+                    (ma solo gli studenti devono inviare il sondaggio).
+                </li>
+                <li>
+                    Quando tutti gli studenti hanno compilato il questionario puoi chiudere il sondaggio.
+                    Chi ha iniziato a compilare il questionario prima della 
+                    chiusura potrà comunque concludere la compilazione.
+                </li>
+                <li>
+                    A sondaggio chiuso si potranno vedere i report.
+                    Puoi cancellare il sondaggio solo se non ci sono questionari compilati
+                    e dopo averlo chiuso.
+                </li>
+        </ul>
     </>
+
+    function share () {
+        copyToClipboard(fullUrl);
+        addMessage('success', `indirizzo (url) copiato: ${fullUrl}`)
+    }
+}
+
+function Tick({tick}:{tick:number}) {
+    let s = [
+        '\u2022\u00b7\u00b7',
+        '\u00b7\u00b7\u00b7',
+        '\u00b7\u2022\u00b7',
+        '\u00b7\u00b7\u00b7',
+        '\u00b7\u00b7\u2022',
+        '\u00b7\u00b7\u00b7',
+    ][tick % 6]
+    return <span className="mx-2" style={{fontFamily: 'monospace'}}>{s}</span>
 }

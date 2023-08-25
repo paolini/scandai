@@ -96,8 +96,8 @@ function PollsTable({user, polls}:{
                 onClick={(e) => navigateToPoll(e, poll) }>
                     { user?.isAdmin && <td>
                         { poll.createdBy?.name 
-                            || poll.createdBy?.username}
-                        {} &lt;{ poll.createdBy?.email }&gt;</td>}
+                            || poll.createdBy?.username || '???'}
+                        {} &lt;{ poll.createdBy?.email || '???' }&gt;</td>}
                 <td>
                     {questionary.forms[poll.form]?.name}
                 </td>
@@ -133,7 +133,7 @@ function NewPoll({ done }:{
     async function submit() {
         try {
             const {data: newPoll} = await postPoll(value(pollState))
-            addMessage('success', 'nuovo sondaggio creato')
+            // addMessage('success', 'nuovo sondaggio creato')
             if (done) done(newPoll)
         } catch(err) {
             addMessage('error', `errore nella creazione del sondaggio: ${err}`)
