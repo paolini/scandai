@@ -2,6 +2,14 @@ import assert from "assert"
 
 export const languageCodes = ['it','fu','sl','de']
 
+export const schoolNames = [
+  'Copernico',
+  'Malignani',
+  'Marinelli',
+  'Marinoni',
+  'Stellini',
+]
+
 const questionary: IQuestionary = {
   version: "0.2.0",
 

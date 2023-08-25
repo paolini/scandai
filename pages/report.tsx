@@ -129,13 +129,13 @@ function ReportItem({ stats, item }: {
 
 function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, JSX.Element|null] {
     const question = stats.questions[item.question]
-    if (!question) return [null, <Error>
+    if (!question) return [null, <Error key={item.question}>
         Domanda non trovata &lt;{item.question}&gt;
     </Error>]
-    if (question.type === 'error') return [null, <Error>
+    if (question.type === 'error') return [null, <Error key={item.question}>
         Errore: {question.error}
     </Error>]
-    if (question.count === 0) return [null, <Error>
+    if (question.count === 0) return [null, <Error key={item.question}>
         Nessuna risposta per la domanda
     </Error>]
     return [question, null]

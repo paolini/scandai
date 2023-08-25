@@ -11,6 +11,7 @@ import useSessionUser from "@/lib/useSessionUser"
 import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate } from "@/lib/utils"
+import questionary from "@/lib/questionary"
 
 export default function PollAdmin({poll, mutate}:{
     poll: IGetPoll,
@@ -41,36 +42,15 @@ export default function PollAdmin({poll, mutate}:{
 
     if (!isSupervisor) return null
 
-    async function close(poll: IGetPoll, close=true) {
-        try {
-            await patchPoll({
-                _id: poll._id, 
-                closed: !!close,   
-                })
-            mutate()
-        } catch(err) {
-            addMessage('error', `errore nella chiusura del sondaggio: ${err}`)
-        }
-    }
-
-    async function remove(poll: IGetPoll) {
-        try {
-            await deletePoll(poll)
-            mutate()
-            router.push('/')
-        } catch(err) {
-            addMessage('error', `errore nella cancellazione del sondaggio: ${err}`)
-        }
-    }
-
     return <>
         <Card className="my-2">
             <Card.Header>
-                <Card.Title>Sondaggio</Card.Title>
+                <Card.Title>Sondaggio {questionary.forms[poll.form].name}</Card.Title>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
                 { user.isAdmin && <>Creato da <b>{ poll.createdBy?.name || poll.createdBy?.username || '???' }</b> <i>{poll.createdBy?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                Scuola: <b>{poll.school}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
                 Questionari compilati: <b>{poll.entriesCount}</b> 
@@ -132,6 +112,28 @@ export default function PollAdmin({poll, mutate}:{
                 </li>
         </ul>
     </>
+
+    async function close(poll: IGetPoll, close=true) {
+        try {
+            await patchPoll({
+                _id: poll._id, 
+                closed: !!close,   
+                })
+            mutate()
+        } catch(err) {
+            addMessage('error', `errore nella chiusura del sondaggio: ${err}`)
+        }
+    }
+
+    async function remove(poll: IGetPoll) {
+        try {
+            await deletePoll(poll)
+            mutate()
+            router.push('/')
+        } catch(err) {
+            addMessage('error', `errore nella cancellazione del sondaggio: ${err}`)
+        }
+    }
 
     function share () {
         copyToClipboard(fullUrl);

@@ -7,20 +7,25 @@ import { usePolls, postPoll, patchPoll, deletePoll } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
-import { value, set, get } from '@/lib/State'
+import { value, set, get, onChange, State } from '@/lib/State'
 import { IPostPoll, IGetPoll, IPoll } from '@/models/Poll'
 import useSessionUser from '@/lib/useSessionUser'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
-import questionary from '@/lib/questionary'
+import questionary, {schoolNames} from '@/lib/questionary'
+
+const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
-    const addPollState = useState<boolean>(false)
     const user = useSessionUser()
     const router = useRouter()
+    const newForm = router.query.new || null  
 
+    if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
+        invalid form type: {JSON.stringify(newForm)}
+    </Error>
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
 
@@ -33,16 +38,12 @@ export default function Polls({}) {
         .sort((a,b) => a.date  > b.date ? -1 : 1)
 
     return <>
-        { value(addPollState) 
-            ? <NewPoll done={(poll) => {
-                set(addPollState, false)
+        { newForm !== null
+            ? <NewPoll form={newForm} done={(poll) => {
                 if (poll) router.push(`/poll/${poll._id}`)
-                // pollsQuery.mutate()
+                else router.push('/')
             }}/>
-            : <Button className="my-2" variant="primary" size="lg" onClick={_ => set(addPollState,true)}>
-                <FaCirclePlus className="m-1 bg-blue-300" /> 
-                nuovo questionario
-            </Button>
+            : <NewPollButtons form={newForm} />
         }
         { openPolls.length > 0 && <Card className="my-2">
             <Card.Header>
@@ -118,12 +119,61 @@ function PollsTable({user, polls}:{
     </Table>    
 }            
 
+function NewPollButtons({ form }:{
+    form?: string|null,
+}) {
+    const router = useRouter()
+    if (form) {
+        return MyButton(form)
+    } else {
+        return <>
+            {formTypes.map(f => MyButton(f))}
+        </>
+    }
+    
+    function MyButton (form: string) {
+        return <Button key={form} className="my-2 mx-2" variant="primary" size="lg" onClick={() => router.push(`?new=${form}`)}>
+            <FaCirclePlus className="m-1 bg-blue-300" /> 
+            nuovo questionario
+            {form && ` ${questionary.forms[form].name}`}
+        </Button>
+}
+}
 
-function NewPoll({ done }:{
+function NewPoll({ form, done }:{
+    form?: string|null,
     done?: (poll: IGetPoll|null) => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: '', form: 'full', closed: false})
+    const pollState = useState<IPostPoll>({school: '', class: '', form: (form || 'full'), closed: false})
     const addMessage = useAddMessage()
+
+    return <Card>
+        <Card.Header>
+            nuovo sondaggio {form && ` ${questionary.forms[form].name}`}
+        </Card.Header>
+        <Card.Body>
+            <form>
+                { !form && <SelectForm formState={get(pollState, 'form')} />}
+                <SelectSchool schoolState={get(pollState, 'school')} />
+                <div className="form-group">
+                    <label htmlFor="class">
+                        classe
+                    </label>
+                    <Input id="class" state={get(pollState, 'class')} placeholder="classe" />
+                </div>
+            </form>                                
+        </Card.Body>
+        <Card.Footer>
+            <ButtonGroup>
+                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>
+                    crea
+                </Button>
+                <Button variant="warning" size="lg" onClick={() => (done?done(null):null)}>
+                    annulla
+                </Button>
+            </ButtonGroup>
+        </Card.Footer>
+    </Card>
 
     function isValid() {
         const poll = value(pollState)
@@ -140,42 +190,39 @@ function NewPoll({ done }:{
         }
     }
 
-    return <Card>
-        <Card.Header>
-            nuovo sondaggio
-        </Card.Header>
-        <Card.Body>
-            <form>
-                <div className="form-group">
-                    <label htmlFor="form">
-                        tipo di questionario
-                    </label>
-                    <select id="form" className="form-control" value={value(pollState).form} onChange={evt => set(get(pollState, 'form'), evt.target.value)}>
-                        {
-                            Object.entries(questionary.forms).map(([key, value]) =>
-                                <option key={key} value={key}>{value.name}</option>)
-                        }
-                    </select>
-                </div>
-                <div className="form-grup">
-                    <label htmlFor="school">
-                        scuola 
-                    </label>
-                    <Input id="school" state={get(pollState, 'school')} placeholder="scuola" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="class">
-                        classe
-                    </label>
-                    <Input id="class" state={get(pollState, 'class')} placeholder="classe" />
-                </div>
-            </form>                                
-        </Card.Body>
-        <Card.Footer>
-            <ButtonGroup>
-                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>crea</Button>
-                <Button variant="warning" size="lg" onClick={() => (done?done(null):null)}>annulla</Button>
-            </ButtonGroup>
-        </Card.Footer>
-    </Card>
+
+}
+
+function SelectForm({ formState }: {
+    formState: State<string>
+}) {
+    return <div className="form-group">
+        <label htmlFor="form">
+        tipo di questionario
+        </label>
+        <select id="form" className="form-control" value={value(formState)} onChange={onChange(formState)}>
+            {
+                Object.entries(questionary.forms).map(([key, value]) =>
+                <option key={key} value={key}>{value.name}</option>)
+            }
+        </select>
+    </div>
+}
+
+function SelectSchool({ schoolState }: {
+    schoolState: State<string>
+}) {
+    return <div className="form-grup">
+        <label htmlFor="school">
+            scuola 
+        </label>
+        <select id="school" className="form-control" value={value(schoolState)} onChange={onChange(schoolState)}>
+            <option value="" disabled={true}>scegli</option>
+            {
+                schoolNames.map(school =>
+                    <option key={school} value={school}>{school}</option>)
+            }
+        </select>
+        { /*<Input id="school" state={get(pollState, 'school')} placeholder="scuola" /> */ }
+    </div>
 }
