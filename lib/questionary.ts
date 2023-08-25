@@ -319,7 +319,7 @@ const questionary: IQuestionary = {
         it: "a mia mamma parlo in...",
         fu: "cun mê mari o feveli par ...",
         en: "With my mother I speak ...",
-      }
+      },
     },
     "1.1.b.2": {
       type: "choose-language",
@@ -327,7 +327,7 @@ const questionary: IQuestionary = {
         it: "a mio papà parlo in...",
         fu: "cun mê mari o feveli par ...",
         en: "With my father I speak ...",
-      }
+      },
     },
     "1.1.b.3": {
       type: "choose-language",
@@ -335,7 +335,7 @@ const questionary: IQuestionary = {
         it: "ai miei fratelli/sorelle parlo in...",
         fu: "cui miei fradis / cu lis mês sûrs o feveli par ...",
         en: "With my siblings I speak ...",
-      }
+      },
     },
     "1.1.b.4": {
       type: "choose-language",
@@ -343,7 +343,7 @@ const questionary: IQuestionary = {
         it: "ai miei nonni parlo in...",
         fu: "cui miei nonos o feveli par ...",
         en: "With my grandparents I speak ...",
-      }
+      },
     },
     "1.1.c.1": {
         type: "choose-language",
@@ -351,7 +351,7 @@ const questionary: IQuestionary = {
           it: "i miei genitori tra di loro parlano...",
           fu: "i miei gjenitôrs fra di lôr a feveli par ...",
           en: "My parents speak to each other in ...",
-        }
+        },
       },
     "1.1.c.2": {
         type: "choose-language",
@@ -359,7 +359,7 @@ const questionary: IQuestionary = {
           it: "mia madre a me parla in...",
           fu: "mê mari mi fevele par ...",
           en: "My mother speaks to me in ...",
-        }
+        },
       },
     "1.1.c.3": {
         type: "choose-language",
@@ -367,7 +367,7 @@ const questionary: IQuestionary = {
           it: "mio padre a me parla in...",
           fu: "gno pari mi fevele par ...",
           en: "My father speaks to me in ...",
-        }
+        },
       },
       "1.1.c.4": {
         type: "choose-language",
@@ -375,7 +375,7 @@ const questionary: IQuestionary = {
           it: "i miei fratelli/sorelle a me parlano in...",
           fu: "i miei fradis / lis mês sûrs mi fevelin par ...",
           en: "My siblings speak to me in ...",
-        }
+        },
       },
       "1.1.c.5": {
         type: "choose-language",
@@ -383,7 +383,7 @@ const questionary: IQuestionary = {
           it: "i miei nonni a me parlano in...",
           fu: "i miei nonos mi fevelin par ...",
           en: "My grandparents speak to me in ...",
-        }
+        },
       },
     "1.2.a.1": {
       type: "choose-language",
@@ -391,7 +391,7 @@ const questionary: IQuestionary = {
         it: "ai miei amici parlo in...",
         fu: "ai miei amîs i feveli par ...",
         en: "with my friends I speak ...",
-      }
+      },
     },
     "1.2.a.2": {
       type: "choose-language",
@@ -399,7 +399,7 @@ const questionary: IQuestionary = {
         it: "alle persone dei negozi parlo in...",
         fu: "aes personis dai negozis i feveli par ...",
         en: "with people in shops I speak ...",
-      }
+      },
     },
     "1.2.a.3": {
       type: "choose-language",
@@ -407,7 +407,7 @@ const questionary: IQuestionary = {
         it: "agli adulti del mio paese/città/quartiere parlo in...",
         fu: "ai adults dal gno paîs/citât/borc i feveli par ...",
         en: "with adults in my town/city/area I speak ...",
-      }
+      },
     },
     "1.2.a.4": {
       type: "choose-language",
@@ -415,7 +415,7 @@ const questionary: IQuestionary = {
         it: "Fuori casa abitualmente...",
         fu: "Fûr di cjase pal solit ...",
         en: "When I’m out I usually speak ...",
-      }
+      },
     },
     "1.2.a.5": {
       type: "choose-language",
@@ -423,7 +423,7 @@ const questionary: IQuestionary = {
         it: "i miei amici a me parlano in...",
         fu: "i miei amîs mi fevelin par ...",
         en: "my friends speak to me in ...",
-      }
+      },
     },
     "1.2.a.6": {
       type: "choose-language",
@@ -431,7 +431,7 @@ const questionary: IQuestionary = {
         it: "le persone dei negozi a me parlano in...",
         fu: "lis personis dai negozis mi fevelin par ...",
         en: "people in shops speak to me in ...",
-      }
+      },
     },
     "1.2.a.7": {
       type: "choose-language",
@@ -439,8 +439,7 @@ const questionary: IQuestionary = {
         it: "gli adulti del mio paese/città/quartiere a me parlano in...",
         fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
         en: "Adults in my town/city/area speak to me in ...",
-        
-      }
+      },
     },
     "1.2.a.8": {
       type: "choose-language",
@@ -448,7 +447,7 @@ const questionary: IQuestionary = {
         it: "A scuola abitualmente io parlo...",
         fu: "A scuele pal solit jo o feveli ...",
         en: "When I’m at school I usually speak ...",
-      }
+      },
     },
     "1.2.a.9": {
       type: "choose-language",
@@ -456,7 +455,7 @@ const questionary: IQuestionary = {
         it: "ai miei compagni di classe parlo in...",
         fu: "ai miei compagns di classe i feveli par ...",
         en: "with my classmates I speak ...", 
-      }
+      },
     },
     "1.2.a.10": {
       type: "choose-language",
@@ -464,7 +463,7 @@ const questionary: IQuestionary = {
         it: "ai professori parlo in... (esclusi quelli di lingue)",
         fu: "ai professôrs i feveli par ... (gjavant chei di lenghis)",
         en: "with my teachers (not including language teachers) I speak ...",
-      }
+      },
     },
     "1.3.b.1": {
       type: "choose-language",
@@ -472,7 +471,7 @@ const questionary: IQuestionary = {
         it: "i miei compagni di classe a me parlano in...",
         fu: "i miei compagns di classe mi fevelin par ...",
         en: "my classmates speak to me in ...",
-      }
+      },
     },
     "1.3.b.2": {
       type: "choose-language",
@@ -480,7 +479,7 @@ const questionary: IQuestionary = {
         it: "i professori a me parlano in... (esclusi quelli di lingue straniere)",
         fu: "i professôrs mi fevelin par ... (gjavant chei di lenghis)",
         en: "my teachers (not including language teachers) speak to me in ...",
-      }
+      },
     },
     "1.4.1": {
       type: "choose-language",
@@ -488,7 +487,7 @@ const questionary: IQuestionary = {
         it: "quali lingue usi quando telefoni agli amici?",
         fu: "ce lenghis dopristu cuant che tu fevelis cui amîs?",
         en: "what languages do you use when speaking on the phone with your friends?",
-      }
+      },
     },
     "1.4.2": {
       type: "choose-language",
@@ -496,7 +495,7 @@ const questionary: IQuestionary = {
         it: "quali lingue usi nelle mail, sui social e nelle chat?",
         fu: "ce lenghis dopristu intes mails, sui social e intes chats?",
         en: "what languages do you use in e-mail, social-networks and chats?",
-      }
+      },
     },
     "1.4.3": {
       type: "choose-language",
@@ -504,7 +503,7 @@ const questionary: IQuestionary = {
         it: "quali lingue vengono usate nei programmi TV che guardi?",
         fu: "ce lenghis si doprìno intai programs TV che tu cjalis?",
         en: "what languages are used in the TV shows you watch?",
-      }
+      },
     },
     "1.4.4": {
       type: "choose-language",
@@ -512,7 +511,7 @@ const questionary: IQuestionary = {
         it: "quali lingue vengono usate nei siti internet che visiti?",
         fu: "ce lenghis si doprìno tai sîts internet che tu visitis?",
         en: "what languages are used in the Internet websites you use?",
-      }
+      },
     },
     "1.4.5": {
       type: "choose-language",
@@ -520,7 +519,7 @@ const questionary: IQuestionary = {
         it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?",
         fu: "cuale ise la lenghe dai libris, des storiis e dai fumets che tu leis?",
         en: "What languages are used in the books that you read?",
-      }
+      },
     },
     "2.1.1": {
         type: 'map-language-to-age',
@@ -528,7 +527,7 @@ const questionary: IQuestionary = {
           it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
           fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
           en: "How old were you when you started speaking the languages you know?",
-        }
+        },
       compulsory: true,
     },
     "2.2.1": {
@@ -537,7 +536,7 @@ const questionary: IQuestionary = {
         it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (0=Nessuna competenza; 10=competenza avanzata. Se non conosci la lingua indica competenza 0)",
         fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
         en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (0 = no proficiency at all; 10 = advanced proficiency)",
-      }
+      },
       compulsory: true,
     }
   },
