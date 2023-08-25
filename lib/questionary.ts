@@ -706,8 +706,15 @@ const questionary: IQuestionary = {
           title: "A che età hai cominciato a parlare le lingue che conosci?",
           question: "2.1.1",
         },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "2.1.3",
+        },
       ],
     },
+
+    /* composizione del questionario breve e del suo report */
     short: {
       name: "breve",
       intro: {
@@ -759,6 +766,7 @@ const questionary: IQuestionary = {
           questions: [ "competences" ],
         },
       ],
+      /* Report del questionario breve */
       report: [
         {
           element: "title",
@@ -787,7 +795,7 @@ const questionary: IQuestionary = {
           question: "competences",
         },
       ]
-    }
+    } /* Fine composizione del questionario breve */
   }
 }
 
