@@ -16,6 +16,17 @@ export default function Header() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
           { /* <Nav.Link href="/report">Report</Nav.Link> */ }
+          { session?.dbUser && <Nav.Link href="/">Questionari</Nav.Link> }
+          { session?.dbUser?.isAdmin && 
+                <>
+                  <Nav.Link href="/users">Utenti</Nav.Link>
+                  <Nav.Link href="/dict">Mappature</Nav.Link>
+                </>
+          }
+          { !(session?.dbUser) && 
+            <Nav.Link href="/api/auth/signin">Login</Nav.Link>
+          }
+          { session?.dbUser && 
           <Nav className="right">
           {!session && <NavDropdown title="user">
             <NavDropdown.Item
@@ -26,10 +37,10 @@ export default function Header() {
                 }}>login
             </NavDropdown.Item>
           </NavDropdown>} 
-          {session && session.user &&
+          {session && session?.dbUser &&
             /* user is authenticated */
             <NavDropdown title={<>
-                {session.user.image && 
+                {session.user?.image && 
                 <img
                   src={session.user.image}
                   className="rounded-circle"
@@ -37,22 +48,8 @@ export default function Header() {
                   alt="Avatar"
                   loading="lazy"
                 />}
-                <span className="me-2">{session.user.email}</span>
+                <span className="me-2">{session.dbUser.email || session.dbUser.username || '---'}</span>
               </>}>
-                { session.dbUser?.isAdmin && 
-                <>
-                  <NavDropdown.Item
-                      href="/users"
-                      onClick={(e) => {e.preventDefault(); router.push('/users')}}>
-                        users
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="/dict"
-                    onClick={(e) => {e.preventDefault(); router.push('/dict')}}>
-                        mappature
-                  </NavDropdown.Item>
-                </>
-                }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
                     onClick={async (e) => {
@@ -64,7 +61,7 @@ export default function Header() {
                   >logout
                 </NavDropdown.Item>
             </NavDropdown>}
-         </Nav>
+         </Nav>}
         </Nav>
       </Navbar.Collapse>
     </Container>
