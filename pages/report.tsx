@@ -18,17 +18,18 @@ import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table, Button } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import ReactToPrint, { useReactToPrint } from 'react-to-print'
+import { useReactToPrint } from 'react-to-print'
 
 import { assert } from '@/lib/assert'
 import { useStats } from '@/lib/api'
 import { 
     IStats, 
+    IQuestionStat,
     IChooseLanguageQuestionStat, 
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat,
 } from '@/pages/api/stats'
-import questionary, { extractLevels, IReportElement } from '@/lib/questionary'
+import questionary, { extractLevels, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
 
@@ -107,16 +108,37 @@ function ReportItem({ stats, item }: {
     stats: IStats,
     item: IReportElement,
 }) {
+    let question:IQuestionStat|null = null
     switch(item.element) {
+        case 'chart':
+        case 'table':
+            const [question, Error] = StatsQuestionOrError(stats, item) 
+            if (question === null) return Error
+            switch(item.element) {
+                case 'chart':
+                    return <ReportChart question={question} item={item} />
+                case 'table':
+                    return <ReportTable question={question} item={item} />    
+            }
         case 'title':
             return <h1>{item.title || `Risultati aggregati`}</h1>
         case 'info':
             return <ListClasses stats={stats} />
-        case 'chart':
-            return <ReportChart stats={stats} item={item} />
-        case 'table':
-            return <ReportTable stats={stats} item={item} />
     }
+}
+
+function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, JSX.Element|null] {
+    const question = stats.questions[item.question]
+    if (!question) return [null, <Error>
+        Domanda non trovata &lt;{item.question}&gt;
+    </Error>]
+    if (question.type === 'error') return [null, <Error>
+        Errore: {question.error}
+    </Error>]
+    if (question.count === 0) return [null, <Error>
+        Nessuna risposta per la domanda
+    </Error>]
+    return [question, null]
 }
 
 function CompetenceLegend() {
@@ -149,15 +171,11 @@ function ListClasses({ stats }: {stats: IStats}) {
     </div>
 }
 
-function ReportChart({ stats, item }:{
-        stats: IStats,
+function ReportChart({ question, item }:{
+        question: IQuestionStat,
         item: IReportElement
     }) {
     assert(item.element === 'chart')
-    const question = stats.questions[item.question]
-    if (!question) return <Error>
-        Nessuna risposta per la domanda &lt;{item.question}&gt;
-    </Error>
     switch(question.type) {
         case 'choose-language': 
             switch (item.variant) {
@@ -193,16 +211,18 @@ function ReportChart({ stats, item }:{
                 <GraphMapLanguageToAgeQuestion stat={question} />
             </div>
         </>
-        default: return <>not implemented {question.type}</>
+        default: return <Error>
+            invalid question type {question.type} 
+            for report item {item.element}
+        </Error>
     }
 }
 
-function ReportTable({ item, stats}: {
-    stats: IStats,
+function ReportTable({ question, item}: {
+    question: IQuestionStat,
     item: IReportElement
 }) {
     assert(item.element === 'table')
-    const question = stats.questions[item.question]
     switch(question.type) {
         case 'map-language-to-competence':
             return <div style={{maxWidth:CHART_WIDTH}}>

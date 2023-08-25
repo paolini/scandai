@@ -945,10 +945,16 @@ export interface ICompetenceValue extends LocalizedString {
 }
 
 export type IReportElement = 
-  IReportTitleElement | 
-  IReportInfoElement | 
+  IReportQuestionElement | 
+  IReportGlobalElement
+
+export type IReportQuestionElement =
   IReportChartElement |
   IReportTableElement
+
+export type IReportGlobalElement =
+  IReportTitleElement | 
+  IReportInfoElement
 
 export type IReportTitleElement = {
   element: 'title',
