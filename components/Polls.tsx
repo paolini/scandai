@@ -8,7 +8,7 @@ import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get } from '@/lib/State'
-import { IPostPoll, IGetPoll } from '@/models/Poll'
+import { IPostPoll, IGetPoll, IPoll } from '@/models/Poll'
 import useSessionUser from '@/lib/useSessionUser'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
@@ -34,9 +34,10 @@ export default function Polls({}) {
 
     return <>
         { value(addPollState) 
-            ? <NewPoll done={() => {
+            ? <NewPoll done={(poll) => {
                 set(addPollState, false)
-                pollsQuery.mutate()
+                if (poll) router.push(`/poll/${poll._id}`)
+                // pollsQuery.mutate()
             }}/>
             : <Button className="my-2" variant="primary" size="lg" onClick={_ => set(addPollState,true)}>
                 <FaCirclePlus className="m-1 bg-blue-300" /> 
@@ -70,12 +71,6 @@ function PollsTable({user, polls}:{
     polls: IGetPoll[],
 }) {
     const router = useRouter()
-
-    function OpenButton({poll}:{poll: IGetPoll}) {
-        return <a className="btn btn-success" href={`/poll/${poll._id}`}>
-            vedi
-        </a>
-    }
 
     function navigateToPoll(
         evt: any, 
@@ -118,9 +113,6 @@ function PollsTable({user, polls}:{
                 <td>
                     {poll.entriesCount}
                 </td>
-{/*                <td>
-                    <OpenButton poll={poll} />
-                        </td>*/}
             </tr>)}
         </tbody>
     </Table>    
@@ -128,7 +120,7 @@ function PollsTable({user, polls}:{
 
 
 function NewPoll({ done }:{
-    done?: () => void
+    done?: (poll: IGetPoll|null) => void
 }) {
     const pollState = useState<IPostPoll>({school: '', class: '', form: 'full', closed: false})
     const addMessage = useAddMessage()
@@ -140,9 +132,9 @@ function NewPoll({ done }:{
 
     async function submit() {
         try {
-            await postPoll(value(pollState))
+            const {data: newPoll} = await postPoll(value(pollState))
             addMessage('success', 'nuovo sondaggio creato')
-            if (done) done()
+            if (done) done(newPoll)
         } catch(err) {
             addMessage('error', `errore nella creazione del sondaggio: ${err}`)
         }
@@ -182,7 +174,7 @@ function NewPoll({ done }:{
         <Card.Footer>
             <ButtonGroup>
                 <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>crea</Button>
-                <Button variant="warning" size="lg" onClick={done}>annulla</Button>
+                <Button variant="warning" size="lg" onClick={() => (done?done(null):null)}>annulla</Button>
             </ButtonGroup>
         </Card.Footer>
     </Card>
