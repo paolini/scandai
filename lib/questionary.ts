@@ -84,6 +84,8 @@ const questionary: IQuestionary = {
     },
     compulsoryExplanation: {
       'it': 'Le domande marcate con (*) sono a risposta obbligatoria',
+      'fu': 'Lis domandis marcadis cun (*) a son a rispueste obligatorie',
+      'en': 'The questions marked with (*) are mandatory to answer',
     }
   },
 
@@ -673,6 +675,7 @@ const questionary: IQuestionary = {
           questions: [ "2.2.1" ],
         },
       ],
+      /* Report del questionario lungo */
       report: [
         {
           element: "title",
@@ -709,9 +712,134 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           //title: "Prova ...",
-          question: "2.1.3",
+          question: "1.1.b.1",
         },
-      ],
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.b.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.1.c.5",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.5",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.6",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.7",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.8",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.9",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.2.a.10",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.3.b.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.3.b.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.1",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.2",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.3",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.4",
+        },
+        {
+          element: "chart",
+          //title: "Prova ...",
+          question: "1.4.5",
+        },
+      ],    /* Fine Report del questionario lungo */
     },
 
     /* composizione del questionario breve e del suo report */
