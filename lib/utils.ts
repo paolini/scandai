@@ -1,7 +1,7 @@
-import moment from "moment"
+import dayjs from "dayjs"
 
 
 export function formatDate(date:string) {
-    return moment(date).format("d.M.Y")
+    return dayjs(date).format("D.M.YYYY")
 }
 
