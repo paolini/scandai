@@ -1,4 +1,4 @@
-import {Button, Form} from "react-bootstrap"
+import {Button} from "react-bootstrap"
 import { FaShareAlt } from "react-icons/fa"
 import QRCode from "react-qr-code"
 import copyToClipboard from 'copy-to-clipboard'
@@ -8,7 +8,7 @@ import Page from "@/components/Page"
 import { useAddMessage } from "@/components/Messages"
 import Error from "@/components/Error"
 import questions, { getPhrase } from "@/lib/questionary"
-import { value, State, onChange, set, get } from "@/lib/State"
+import { value, State, set } from "@/lib/State"
 import useSessionUser from "@/lib/useSessionUser"
 import questionary, { trans } from "@/lib/questionary"
 
@@ -18,7 +18,6 @@ export default function PollSplash({poll, langState, mutate, start}:{
     mutate: () => void,
     start: () => void,
 }) {
-    const user = useSessionUser()
     const myUrl = window.location.href
     const addMessage = useAddMessage()
 
@@ -31,7 +30,7 @@ export default function PollSplash({poll, langState, mutate, start}:{
             <div className="d-flex flex-column">
                 <div className="my-1"><b>{ phrase('school') }:</b> { poll.school }</div>
                 <div className="my-1"><b>{ phrase('class') } :</b> { poll.class }</div>
-                { user?.isAdmin && <a href={`/poll/${poll._id}`} className="my-4">[pagina amministrazione]</a> }
+                { /* user?.isAdmin && <a href={`/poll/${poll._id}`} className="my-4">[pagina amministrazione]</a> */}
                 <ChooseLanguage langState={langState}/>
                 { poll.closed 
                     ? <Error>{phrase('isClosed')}.</Error>

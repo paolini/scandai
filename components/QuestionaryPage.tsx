@@ -1,23 +1,25 @@
-import { SetStateAction, Dispatch } from 'react'
-
 import { IFormElement, IQuestionary } from '@/lib/questionary'
 import Question, { IAnswers } from './Question'
 import { Answer } from '@/models/Entry'
 import { trans } from '@/lib/questionary'
+import { State, value, update } from '@/lib/State'
 
-export default function QuestionaryPage({ lang, page, answers, setAnswers, questionary, extraLanguages }
-  :{ lang: string, page: IFormElement[], answers: IAnswers, setAnswers: Dispatch<SetStateAction<IAnswers>>, questionary: IQuestionary, extraLanguages: string[]}) {    
+export default function QuestionaryPage({ lang, page, answersState, questionary, extraLanguages }:{ 
+  lang: string, 
+  page: IFormElement[], 
+  answersState: State<IAnswers>,
+  questionary: IQuestionary, 
+  extraLanguages: string[]}) {    
   return <div>
-    { page.map((item,i) => <QuestionaryFormItem key={i} item={item} lang={lang} questionary={questionary} answers={answers} setAnswers={setAnswers} extraLanguages={extraLanguages}/>) }
+    { page.map((item,i) => <QuestionaryFormItem key={i} item={item} lang={lang} questionary={questionary} answersState={answersState} extraLanguages={extraLanguages}/>) }
   </div>
 }
 
-function QuestionaryFormItem({ item, lang, questionary, answers, setAnswers, extraLanguages } : { 
+function QuestionaryFormItem({ item, lang, questionary, answersState, extraLanguages } : { 
     item: IFormElement,
     lang: string, 
     questionary: IQuestionary,
-    answers: IAnswers,
-    setAnswers: Dispatch<SetStateAction<IAnswers>>,
+    answersState: State<IAnswers>,
     extraLanguages: string[],
   }) {
   switch (item.element) {
@@ -27,10 +29,10 @@ function QuestionaryFormItem({ item, lang, questionary, answers, setAnswers, ext
         lang={lang}
         key={code} 
         question={questionary.questions[code]}
-        answer={answers[code]}
+        answer={value(answersState)[code]}
         questionary={questionary}
         extraLanguages={extraLanguages}
-        setAnswer={(a: Answer|((_:Answer)=> Answer)) => setAnswers(
+        setAnswer={(a: Answer|((_:Answer)=> Answer)) => update(answersState,
           (answers: IAnswers) => ({
             ...answers, 
             [code]: typeof(a) === 'function' 

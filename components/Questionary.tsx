@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react'
-import { Button } from 'react-bootstrap'
+import { useState } from 'react'
+import { Button, Card } from 'react-bootstrap'
 import { assert } from '@/lib/assert'
 
 import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages, getPhrase } from '@/lib/questionary'
@@ -7,16 +7,25 @@ import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
 import { useAddMessage } from '@/components/Messages'
 import { IGetPoll } from '@/models/Poll'
+import PollSplash from '@/components/PollSplash'
+import { State, value, update, set } from '@/lib/State'
 
-export default function Questionary({lang, done, poll, form } : {
-    lang: string,
+export default function Questionary({langState, poll, form, answersState, mutate } : {
+    langState: State<string>,
     form: string,
-    done?: () => void,
-    poll?: IGetPoll}) {
+    poll: IGetPoll,
+    answersState: State<IAnswers>,
+    mutate: () => void,
+  }) {
 
-  const [pageCount, setPageCount] = useState(0)
-  const [answers, setAnswers] = useState<IAnswers>({})
+  const [pageCount, setPageCount] = useState(-1)
   const addMessage = useAddMessage()
+  const answers = answersState[0]
+  const lang = langState[0]
+
+  if (pageCount === -1) return <PollSplash poll={poll} mutate={mutate} langState={langState} start={() => setPageCount(0)} />
+  
+  if (pageCount === -2) return <Completed lang={value(langState)} />
 
   const questionCodes = extractQuestionCodes(form)
 
@@ -37,7 +46,7 @@ export default function Questionary({lang, done, poll, form } : {
 
   if (Object.keys(answers).length === 0) {
     console.log(`initializing answers: ${JSON.stringify(questionCodes)}`)
-    setAnswers(Object.fromEntries(
+    set(answersState, Object.fromEntries(
       questionCodes.map(code => [code, empty_answer(code)])))
     return <div>Loading...</div>
   }
@@ -90,7 +99,7 @@ export default function Questionary({lang, done, poll, form } : {
       addMessage('error', "Errore di rete")
     }
     if (res && res.status === 200) {
-      if (done) done()
+      setPageCount(-2)
     } else {
       addMessage('error', res?.statusText || 'errore') 
     }
@@ -102,14 +111,14 @@ export default function Questionary({lang, done, poll, form } : {
         lang={lang}
         key={pageCount} 
         page={page}
-        answers={answers}
-        setAnswers={setAnswers}
+        answersState={answersState}
         questionary={questionary}
         extraLanguages={extraLanguages}
       />
       <br />
       {!pageCompleted && <p>{getPhrase("compulsoryExplanation", lang)}</p>}
-      <Button disabled={pageCount<=0} onClick={()=>setPageCount(p => p-1)}>
+      
+      <Button disabled={false} onClick={()=>setPageCount(p => p-1)}>
         {getPhrase("prevButton", lang)}
       </Button>
       <span> {pageCount+1} / {pages.length} </span>
@@ -126,3 +135,21 @@ export default function Questionary({lang, done, poll, form } : {
   </div>
 }
 
+function Completed({lang}:{
+  lang: string,
+}) {
+  return <Card>
+      <Card.Body>
+          <Card.Title>{getPhrase('thanksTitle', lang)}</Card.Title>
+          <Card.Text>
+              <p>{getPhrase('thanks', lang)}</p>
+              <p>{getPhrase('closeThisPage', lang)}</p>
+          </Card.Text>
+      </Card.Body> 
+      {/*   
+      <Card.Footer>
+          <Button variant="danger" onClick={() => set(state, 'init')}>compila un altro questionario</Button>
+      </Card.Footer>
+      */}
+  </Card>
+}

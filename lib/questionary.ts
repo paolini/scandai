@@ -544,9 +544,9 @@ const questionary: IQuestionary = {
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
-        relative alla tuaconoscenza delle lingue. 
+        relative alla tua conoscenza delle lingue. 
         Il questionario ci aiuterà a raccogliere informazioni 
-        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        per valutare iniziative da proporre agli studenti della tua classe e dell'istituto. 
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
         Grazie per la collaborazione!
         `,
@@ -713,9 +713,9 @@ const questionary: IQuestionary = {
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
-        relative alla tuaconoscenza delle lingue. 
+        relative alla tua conoscenza delle lingue. 
         Il questionario ci aiuterà a raccogliere informazioni 
-        per valutare iniziative daproporre agli studenti della tua classe e dell'istituto. 
+        per valutare iniziative da proporre agli studenti della tua classe e dell'istituto. 
         Il questionario è anonimo: esprimiti con libertà e sincerità. 
         Grazie per la collaborazione!
         `,
