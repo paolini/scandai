@@ -60,7 +60,7 @@ providers.push(CredentialsProvider({
                 id: user._id.toString(),
                 name: user?.name,
                 username: user?.username,
-                email: user?.email || `${user.username}@local`,
+                email: user?.email,
                 isAdmin: user.isAdmin,
             }
             console.error(`Password not valid for user ${credentials.username}`)
