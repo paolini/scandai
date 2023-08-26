@@ -711,6 +711,7 @@ const questionary: IQuestionary = {
         },
         {
           element: "table",
+          title: "Valori medi delle competenze autovalutate",
           question: "2.2.1",
         },
         {
