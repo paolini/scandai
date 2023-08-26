@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, CSSProperties, ReactNode } from "react"
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -29,7 +29,7 @@ import {
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat,
 } from '@/pages/api/stats'
-import questionary, { extractLevels, IReportElement, IReportQuestionElement } from '@/lib/questionary'
+import questionary, { extractLevels, IReportChartElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
 
@@ -52,19 +52,32 @@ ChartJS.register(
     Colors,
 )
 
-const titleFont = {
-    size: 24,
+const chartTitle = {
+    display: true,
+    font: { 
+        size: 24,
     // style: 'italic',
-    // family: 'Helvetica Neue'
+    // family: 'Helvetica Neue'    
+    },
+    color: 'black',
 }
 
-const marginTop="1cm"
-const marginRight="6cm"
-const marginBottom="1cm"
-const marginLeft="2cm"
+const htmlTitleStyle: CSSProperties = {
+    fontSize: 24, 
+    textAlign: 'center',
+}
+
+const itemClass="my-4"
+
+const itemStyle={maxWidth:CHART_WIDTH}
 
 const getPageMargins = () => {
-  return `@page { margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important; }`;
+    const marginTop="1cm"
+    const marginRight="6cm"
+    const marginBottom="1cm"
+    const marginLeft="2cm"
+    
+    return `@page { margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important; }`;
 };
 
 export default function Report() {
@@ -108,7 +121,6 @@ function ReportItem({ stats, item }: {
     stats: IStats,
     item: IReportElement,
 }) {
-    let question:IQuestionStat|null = null
     switch(item.element) {
         case 'chart':
         case 'table':
@@ -123,7 +135,7 @@ function ReportItem({ stats, item }: {
         case 'title':
             return <h1>{item.title || `Risultati aggregati`}</h1>
         case 'info':
-            return <ListClasses stats={stats} />
+            return <ListClasses stats={stats} title={item.title}/>
     }
 }
 
@@ -154,9 +166,23 @@ function CompetenceLegend() {
     </div>
 }
 
-function ListClasses({ stats }: {stats: IStats}) {
-    return <div>
-        <h2>Classi che hanno partecipato</h2>
+function Item({title, small, children}: {
+    title?: string,
+    small?: boolean,
+    children: ReactNode,
+    }) {    
+    return <div className="my-4" style={{maxWidth: small ? 400 : 640}}>
+        { title && <h3 style={htmlTitleStyle}>{title}</h3> }
+        { children }
+    </div>
+}
+
+function ListClasses({ stats, title }: {
+    stats: IStats,
+    title?: string,
+}) {
+    return <Item>
+        Classi che hanno partecipato:
         <ul>
             { stats.polls.map(c => 
                     <li key={c._id.toString()}>
@@ -168,7 +194,7 @@ function ListClasses({ stats }: {stats: IStats}) {
         Totale questionari: {stats.entriesCount}
         <br/>
         Numero sondaggi: {stats.polls.length}
-    </div>
+    </Item>
 }
 
 function ReportChart({ question, item }:{
@@ -181,22 +207,17 @@ function ReportChart({ question, item }:{
             switch (item.variant) {
                 case undefined:
                 case 'chart':
-                    return <>
-                        <div style={{maxWidth:CHART_WIDTH}}>
-                            <GraphChooseLanguageQuestion item={item} stat={question} />
-                        </div>            
-                        <TableChooseLanguageQuestion item={item} stat={question} />
-                    </>
+                    return <Item>
+                        <GraphChooseLanguageQuestion item={item} stat={question} />
+                        <TableChooseLanguageQuestion stat={question} />
+                    </Item>
                 case 'count':
-                    return <>
-                        <div style={{maxWidth:CHART_WIDTH_SMALL}}>
+                    return <Item small={true}>
                             <GraphChooseLanguageQuestionCounts item={item} stat={question} />
-                        </div>
-                    </>
+                    </Item>
             }
-        case 'map-language-to-competence': return <>
+        case 'map-language-to-competence': return <Item>
                 <CompetenceLegend />
-                <div style={{maxWidth:CHART_WIDTH}}>
                     { Object.keys(questionary.languages).map(lang => 
                         <GraphMapLanguageToCompetenceQuestion 
                             key={lang} 
@@ -204,17 +225,16 @@ function ReportChart({ question, item }:{
                             title="Competenze linguistiche autovalutate" 
                             language={lang} />)
                     }   
-                </div>
-            </>
-        case 'map-language-to-age': return <>
-            <div style={{maxWidth:CHART_WIDTH}}>
+            </Item>
+        case 'map-language-to-age': return <Item>
                 <GraphMapLanguageToAgeQuestion stat={question} />
-            </div>
-        </>
-        default: return <Error>
+            </Item>
+        default: return <Item>
+            <Error>
             invalid question type {question.type} 
             for report item {item.element}
-        </Error>
+            </Error>
+        </Item>
     }
 }
 
@@ -224,15 +244,22 @@ function ReportTable({ question, item}: {
 }) {
     assert(item.element === 'table')
     switch(question.type) {
+        case 'choose-language': 
+            return <Item>
+                <TableChooseLanguageQuestion stat={question} />
+            </Item>
+
         case 'map-language-to-competence':
-            return <div style={{maxWidth:CHART_WIDTH}}>
-                <TableMapLanguageToCompetence stat={question} />
-            </div>
+            return <Item>
+                <TableMapLanguageToCompetence stat={question} item={item} />
+            </Item>
         default:
-            return <Error>
-                invalid question type {question.type} 
-                for report item {item.element}
-            </Error>
+            return <Item>
+                <Error>
+                    invalid question type {question.type} 
+                    for report item {item.element}
+                </Error>
+            </Item>
     }
 }
 
@@ -244,7 +271,6 @@ function GraphChooseLanguageQuestion({item, stat}
     if (!stat.answers) return <div>invalid answers</div>
     assert(item.element === 'chart')
     return <Bar 
-        className='my-2'
         options={{
             responsive: true,
             plugins: {
@@ -258,9 +284,8 @@ function GraphChooseLanguageQuestion({item, stat}
                     formatter: value => `${Math.round(value*100)}%`
                 },
                 title: {
-                    display: true,
+                    ...chartTitle,
                     text: item.title || stat.question.question.it,
-                    font: titleFont,
                 },
             },
             scales: {
@@ -289,14 +314,13 @@ function GraphChooseLanguageQuestion({item, stat}
     />
 }
 
-function TableChooseLanguageQuestion({item,stat}
+function TableChooseLanguageQuestion({stat}
     : {
-        item: IReportElement,
-        stat: IChooseLanguageQuestionStat}) {
+    stat: IChooseLanguageQuestionStat}) {
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
       
-    return <Table className="my-2">
+    return <Table>
         <thead>
             <tr>
                 <td></td>
@@ -349,7 +373,6 @@ function GraphChooseLanguageQuestionCounts({item,stat}: {
     const total = data.reduce((acc, [v,i])=>acc+v, 0)
 
     return <Doughnut
-        className="my-2"
         options={{
             responsive: true,
             plugins: {
@@ -362,9 +385,8 @@ function GraphChooseLanguageQuestionCounts({item,stat}: {
                     formatter: (value,context) => `${Math.round(value*100/total)}% ${nLanguages(data[context.dataIndex][1])}`,
                 },
                 title: {
-                    display: true,
+                    ...chartTitle,
                     text: item.title || stat.question.question.it,
-                    font: titleFont,
                 },
             },
         }} 
@@ -398,7 +420,6 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
     }
 
     return <Bar 
-        className="my-2"
         options={{
             responsive: true,
             plugins: {
@@ -412,9 +433,8 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                     formatter: value => (value>0?`${Math.round(value*100)}%`:null),
                 },
                 title: {
-                    display: true,
+                    ...chartTitle,
                     text: `${title || stat.question.question.it} - ${localizedLanguage}`,
-                    font: titleFont,
                 },
             },
             scales: {
@@ -442,13 +462,14 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
     />
 }
 
-function TableMapLanguageToCompetence({stat}
+function TableMapLanguageToCompetence({stat, item}
     : {
         stat: IMapLanguageToCompetenceQuestionStat,
+        item: IReportTableElement,
     }) {
-    const languages = Object.keys(stat.answers)
     const competences = questionary.competences.map(c => c.code)
-    return <>
+    return <Item>
+        { item.title && <h3 style={htmlTitleStyle}>{item.title}</h3> }
         <Table>
             <thead>
                 <tr>
@@ -485,7 +506,7 @@ function TableMapLanguageToCompetence({stat}
                 }
             }}} 
         />
-    </>
+    </Item>
 }
 
 function GraphMapLanguageToAgeQuestion({stat}
@@ -512,7 +533,7 @@ function GraphMapLanguageToAgeQuestion({stat}
     const labels = languages.map(lang => (lang in questionary.languages
         ?questionary.languages[lang]['it']:lang))
 
-    return <Bar 
+    return <Bar
         options={{
             responsive: true,
             plugins: {
@@ -526,9 +547,8 @@ function GraphMapLanguageToAgeQuestion({stat}
                     formatter: value => (value>0?`${Math.round(value*100)}%`:null),
                 },
                 title: {
-                    display: true,
+                    ...chartTitle,
                     text: `${title || stat.question.question.it}`,
-                    font: titleFont,
                 },
             },
             scales: {

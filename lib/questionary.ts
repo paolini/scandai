@@ -1101,6 +1101,7 @@ export type IReportTitleElement = {
 
 export type IReportInfoElement = {
   element: 'info',
+  title?: string,
 }
 
 export type IReportChartElement = {
