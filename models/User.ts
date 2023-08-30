@@ -7,12 +7,14 @@ export interface IUser {
     email: string,
     isAdmin: boolean,
     image: string,
+    verified: boolean,
 }
 
 export interface IPostUser {
     name: string,
     username: string,
     email: string,
+    password?: string,
 }
 
 export interface IGetUser extends IPostUser {
