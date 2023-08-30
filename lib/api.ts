@@ -33,10 +33,11 @@ export function useGet<T>(url: string, id_: string) {
 }
 
 export async function post<T>(url: string, data: T) {
-    return await fetcher([`/api/${url}`], {
+    const res = await fetcher([`/api/${url}`], {
         method: 'POST',
         body: JSON.stringify(data)
     })
+    return res
 }
 
 interface WithId {
@@ -61,7 +62,7 @@ export function usePolls(filter?: any, enabled=true) {
     return useIndex<IGetPoll[]>('polls', filter, enabled)
 }
 
-export async function postPoll(poll: IPostPoll) {
+export async function postPoll(poll: IPostPoll): Promise<{data: IGetPoll}> {
     return await post<IPostPoll>('polls', poll)
 }
 
@@ -89,7 +90,7 @@ export function patchUser(user: any) {
     return patch('users', user)
 }
 
-export async function postUser(user: IPostUser) {
+export async function postUser(user: IPostUser): Promise<{data: IGetUser, password: string}> {
     return await post<IPostUser>('users', user)
 }
 
@@ -101,6 +102,6 @@ export function useDict() {
     return useIndex<IDictElement[]>('dict')
 }    
 
-export async function postDict(dict: IPostDict) {
+export async function postDict(dict: IPostDict): Promise<{data: IDictElement}> {
     return await post<IPostDict>('dict', dict)
 }

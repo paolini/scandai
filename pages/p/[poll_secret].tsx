@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { Button, Card } from 'react-bootstrap'
 
 import Page from '@/components/Page'
 import Questionary from '@/components/Questionary'
 import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
-import { value, set } from '@/lib/State'
-import PollSplash from '@/components/PollSplash'
-import { getPhrase } from '@/lib/questionary'
+import { IAnswers } from '@/components/Question'
 
 export default function PollSecret({}) {
     const router = useRouter()
@@ -17,8 +14,8 @@ export default function PollSecret({}) {
 
     // secret can be undefined for a while: disable the query until it is set
     const pollQuery = usePolls({secret},secret!==undefined)
-    const state = useState<'init'|'started'|'completed'>('init')
     const langState = useState('it')
+    const answersState = useState<IAnswers>({})
 
     // pollQuery.data is set if loading completes with no error
     // but you get pollQuery.data undefined if the query is disabled (secret===undefined)
@@ -36,33 +33,14 @@ export default function PollSecret({}) {
     } else {
         poll = pollQuery.data.data[0]
     }
-    
-    const myUrl = window.location.href
 
-    switch(value(state)) {
-        case 'init': return <PollSplash poll={poll} mutate={pollQuery.mutate} langState={langState} start={() => set(state,'started')} />
-        case 'started': return <Questionary 
+    return <Page header={false}>
+        <Questionary 
             poll={poll} 
             form={poll.form}
-            lang={value(langState)}
-            done={() => set(state, 'completed')} 
+            langState={langState}
+            answersState={answersState}
+            mutate={pollQuery.mutate}
             />
-        case 'completed': return <Page header={false}>
-            <Card>
-                <Card.Body>
-                    <Card.Title>{getPhrase('thanksTitle', value(langState))}</Card.Title>
-                    <Card.Text>
-                        <p>{getPhrase('thanks', value(langState))}</p>
-                        <p>{getPhrase('closeThisPage', value(langState))}</p>
-                    </Card.Text>
-                </Card.Body> 
-                {/*   
-                <Card.Footer>
-                    <Button variant="danger" onClick={() => set(state, 'init')}>compila un altro questionario</Button>
-                </Card.Footer>
-                */}
-            </Card>
-        </Page>
-    }
-}
+    </Page>}
 

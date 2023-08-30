@@ -1,6 +1,6 @@
 {
   "name": "scandai",
-  "version": "0.9.5",
+  "version": "0.9.11",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -21,9 +21,9 @@
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "copy-to-clipboard": "^3.3.3",
+    "dayjs": "^1.11.9",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
-    "moment": "^2.29.4",
     "mongoose": "^7.0.2",
     "next": "13.2.4",
     "next-auth": "^4.22.1",
@@ -37,6 +37,7 @@
     "react-qr-code": "^2.0.11",
     "react-simple-line-icons": "^1.0.8",
     "react-switch": "^7.0.0",
+    "react-to-print": "^2.14.13",
     "swr": "^2.1.0",
     "typescript": "5.0.2"
   },

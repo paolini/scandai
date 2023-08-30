@@ -55,8 +55,12 @@ export default async function handler(
                     }}
                 ]
             }},
+            // createdBy could be null if 
+            // the user has been deleted
             {
-                $unwind: '$createdBy'
+                $addFields: {
+                    createdBy: { $arrayElemAt: [ '$createdBy', 0 ] }
+                }
             },
             // count the number of entries
             // related to the poll

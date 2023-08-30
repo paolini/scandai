@@ -12,6 +12,7 @@ import { value, set, get } from '@/lib/State'
 import { IPostUser } from '@/models/User'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
+import Loading from '@/components/Loading'
 
 export default function Users() {
     const sessionUser = useSessionUser()
@@ -19,7 +20,8 @@ export default function Users() {
     const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
-    if (usersQuery.isLoading) return <div>Loading...</div>
+
+    if (usersQuery.isLoading) return <Loading />
     if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
     const users = usersQuery.data.data
 
@@ -83,7 +85,7 @@ export default function Users() {
                     <td className="d-flex">
                         <Switch
                         disabled={user._id === sessionUser?._id}
-                        checked={user.isAdmin}
+                        checked={!!user.isAdmin}
                         onChange={(checked) => {setAdmin(user, checked)}} />
                     </td>
                     { value(showDeleteState) && <td>
