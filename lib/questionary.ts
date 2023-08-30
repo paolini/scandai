@@ -407,21 +407,21 @@ const questionary: IQuestionary = {
         fu: "Fûr di cjase pal solit ...",
       }
     },
-    "1.2.a.5": {
+    "1.2.b.1": {
       type: "choose-language",
       question: {
         it: "i miei amici a me parlano in...",
         fu: "i miei amîs mi fevelin par ...",
       }
     },
-    "1.2.a.6": {
+    "1.2.b.2": {
       type: "choose-language",
       question: {
         it: "le persone dei negozi a me parlano in...",
         fu: "lis personis dai negozis mi fevelin par ...",
       }
     },
-    "1.2.a.7": {
+    "1.2.b.3": {
       type: "choose-language",
       question: {
         it: "gli adulti del mio paese/città/quartiere a me parlano in...",
@@ -435,14 +435,14 @@ const questionary: IQuestionary = {
         fu: "1.3.a. A scuele pal solit jo o feveli ...",
       }
     },
-    "1.2.a.9": {
+    "1.3.a.1": {
       type: "choose-language",
       question: {
         it: "ai miei compagni di classe parlo in...",
         fu: "ai miei compagns di classe i feveli par ...",
       }
     },
-    "1.2.a.10": {
+    "1.3.a.2": {
       type: "choose-language",
       question: {
         it: "ai professori parlo in... (esclusi quelli di lingue)",
@@ -600,8 +600,37 @@ const questionary: IQuestionary = {
         {
           element: "questions",
           questions: [
-                "1.2.a.1", "1.2.a.2", "1.2.a.3", "1.2.a.4", "1.2.a.5", "1.2.a.6", 
-                "1.2.a.7", "1.2.a.8", "1.2.a.9", "1.2.a.10",
+                "1.2.a.1", "1.2.a.2", "1.2.a.3",
+              ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Fuori casa abitualmente...",
+            fu: "Fûr di cjase pal solit...",
+            en: "When I’m out I usually...",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "1.2.b.1", "1.2.b.2", "1.2.b.3", 
+              ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "A scuola abitualmente io parlo...",
+            fu: "A scuele pal solit jo o feveli ...",
+            en: "When I’m at school I usually speak ...",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "1.3.a.1", "1.3.a.2", "1.3.a.3",
               ],
         },
         { element: "newpage"},
