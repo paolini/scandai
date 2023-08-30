@@ -436,14 +436,6 @@ const questionary: IQuestionary = {
         en: "with adults in my town/city/area I speak ...",
       },
     },
-    "1.2.a.4": {
-      type: "choose-language",
-      question: {
-        it: "Fuori casa abitualmente...",
-        fu: "Fûr di cjase pal solit ...",
-        en: "When I’m out I usually speak ...",
-      },
-    },
     "1.2.b.1": {
       type: "choose-language",
       question: {
@@ -466,14 +458,6 @@ const questionary: IQuestionary = {
         it: "gli adulti del mio paese/città/quartiere a me parlano in...",
         fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
         en: "Adults in my town/city/area speak to me in ...",
-      },
-    },
-    "1.2.a.8": {
-      type: "choose-language",
-      question: {
-        it: "A scuola abitualmente io parlo...",
-        fu: "A scuele pal solit jo o feveli ...",
-        en: "When I’m at school I usually speak ...",
       },
     },
     "1.3.a.1": {
@@ -614,21 +598,6 @@ const questionary: IQuestionary = {
           element: "questions",
           questions: [ "1.1.a.1" ],
         },
-        {
-          element: "newpage",
-        },
-        {
-          element: "title",
-          title: {
-            it: "In famiglia abitualmente io parlo...",
-            fu: "In famee pal solit jo o feveli ...",
-            en: "In my family we usually speak ...",
-          },
-        },
-        { 
-          element: "questions",
-          questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4" ],
-        },
         { element: "newpage"},
         {
           element: "title",
@@ -638,24 +607,9 @@ const questionary: IQuestionary = {
             en: "In my family we usually ...",
           },
         },
-        {
+        { 
           element: "questions",
-          questions: ["1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
-        },
-        { element: "newpage"},
-        {
-          element: "title",
-          title: {
-            it: "Fuori casa abitualmente io parlo...",
-            fu: "Fûr di cjase pal solit o feveli ...",
-            en: "When I’m out I usually speak ...",
-          },
-        },
-        {
-          element: "questions",
-          questions: [
-                "1.2.a.1", "1.2.a.2", "1.2.a.3",
-              ],
+          questions: [ "1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4", "1.1.c.1", "1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5" ],
         },
         { element: "newpage"},
         {
@@ -669,22 +623,8 @@ const questionary: IQuestionary = {
         {
           element: "questions",
           questions: [
+                "1.2.a.1", "1.2.a.2", "1.2.a.3",
                 "1.2.b.1", "1.2.b.2", "1.2.b.3", 
-              ],
-        },
-        { element: "newpage"},
-        {
-          element: "title",
-          title: {
-            it: "A scuola abitualmente io parlo...",
-            fu: "A scuele pal solit jo o feveli ...",
-            en: "When I’m at school I usually speak ...",
-          },
-        },
-        {
-          element: "questions",
-          questions: [
-                "1.3.a.1", "1.3.a.2", "1.3.a.3",
               ],
         },
         { element: "newpage"},
@@ -696,9 +636,11 @@ const questionary: IQuestionary = {
             en: "When I’m at school I usually speak ...",
           },
         },
-        { 
+        {
           element: "questions",
-          questions: [ "1.3.b.1", "1.3.b.2" ],
+          questions: [
+                "1.3.a.1", "1.3.a.2",
+                "1.3.b.1", "1.3.b.2" ],
         },
         { element: "newpage"},
         {
@@ -830,37 +772,27 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           //title: "Prova ...",
-          question: "1.2.a.4",
+          question: "1.2.b.1",
         },
         {
           element: "chart",
           //title: "Prova ...",
-          question: "1.2.a.5",
+          question: "1.2.b.2",
         },
         {
           element: "chart",
           //title: "Prova ...",
-          question: "1.2.a.6",
+          question: "1.2.b.3",
         },
         {
           element: "chart",
           //title: "Prova ...",
-          question: "1.2.a.7",
+          question: "1.3.a.1",
         },
         {
           element: "chart",
           //title: "Prova ...",
-          question: "1.2.a.8",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.a.9",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.a.10",
+          question: "1.3.a.2",
         },
         {
           element: "chart",
