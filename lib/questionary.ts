@@ -3,11 +3,30 @@ import assert from "assert"
 export const languageCodes = ['it','fu','sl','de']
 
 export const schoolNames = [
-  'Copernico',
-  'Malignani',
-  'Marinelli',
-  'Marinoni',
-  'Stellini',
+  'ISIS PASCHINI/LINUSSIO - TOLMEZZO',
+  'ISIS MAGRINI/MARCHETTI - GEMONA',
+  'ISIS MANZINI - SAN DANIELE',
+  'IIS LINUSSIO - CODROIPO',
+  'LS  MARINELLI - UDINE',
+  'ITI BEARZI - UDINE',
+  'ISIS SOLARI - TOLMEZZO',
+  'ISIS D ARONCO - GEMONA',
+  'ISTITUTO BACHMANN - TOLMEZZO',
+  'ISIS MALIGNANI - UDINE',
+  'ISIS STRINGHER - UDINE',
+  'ISIS DEGANUTTI - UDINE',
+  'LC STELLINI - UDINE',
+  'LICEO PERCOTO - UDINE',
+  'ISTITUTO UCCELLIS - UDINE',
+  'LS/LSA COPERNICO - UDINE',
+  'IPSIA CECONI - UDINE',
+  'LICEO SELLO - UDINE',
+  'IT ZANON - UDINE',
+  'IT MARINONI - UDINE',
+  'CN P.DIACONO - CIVIDALE',
+  'LICEO PAOLINO D AQUILEIA - CIVIDALE',
+  'ISIS MATTEI - LATISANA',
+  'ISIS DELLA BASSA FRIULANA',
 ]
 
 const questionary: IQuestionary = {
