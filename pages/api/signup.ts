@@ -6,19 +6,49 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
     ) {
-    console.log('>>> signup:', JSON.stringify(req.body))
-    const username = req.body.username
-    const name = req.body.name
-    const email = req.body.email
-    const password = req.body.password
+    let body
+    try {
+        body = JSON.parse(req.body)
+    } catch (error) {
+        res.status(400).json({ error: `${error}` })
+        return
+    }
+    console.log('>>> signup:', JSON.stringify(body))
+    const { username, name, email, password } = body
+    const invalid = [] 
+    const messages = []
+    if (!username) {
+        invalid.push('username')
+        messages.push('username richiesto')
+    }
+    if (!name) {
+        invalid.push('name')
+        messages.push('nome richiesto')
+    }
+    if (email.indexOf('@')<0) {
+        invalid.push('email')
+        messages.push('email non valida')
+    }
+    if (password.length < 5) {
+        invalid.push('password')
+        messages.push('password troppo corta')
+    }
+    if (invalid.length > 0) {
+        res.status(400).json({ 
+            error: messages.join(', '),
+            invalid, 
+        })
+        return
+    }
     await dbConnect
     try {
-        const invalid = [] 
         const user1 = await User.find({username})
+        console.log(`user1: ${JSON.stringify(user1)}`)
         if (user1.length > 0) {
             invalid.push('username')
         }
         const user2 = await User.find({email})
+        console.log(`user2: ${JSON.stringify(user2)}`)
         if (user2.length > 0) {
             invalid.push('email')
         }
