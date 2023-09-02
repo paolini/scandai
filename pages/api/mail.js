@@ -38,12 +38,12 @@ function createTransporter() {
     auth = { user, pass }
   }
 
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth,
-  })
+  const tls = { rejectUnauthorized: false }
+  const config = { host, port, secure, auth, tls }
+
+  console.log("SMTP config:", JSON.stringify(config))
+
+  return nodemailer.createTransport(config)
 }
 
 const transporter = createTransporter()
@@ -51,13 +51,17 @@ const transporter = createTransporter()
 export default function handler(req, res) {
     console.log('>>> mail:', JSON.stringify(req.body))
 
+    const from = process.env.EMAIL_FROM || 'noreply@matb.it'
+
     const mailOptions = {
-      from: 'noreply@matb.it',
+      from,
       to: 'emanuele.paolini@gmail.com',
-      subject: 'TEST 7',
+      subject: 'TEST 8',
       text: 'That was easy!',
     }
     
+    console.log('mailOptions:', JSON.stringify(mailOptions))
+
     transporter.sendMail(mailOptions, function(error, info){
     if (error) {
         console.log(error);

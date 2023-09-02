@@ -12,8 +12,14 @@ services:
       - NEXTAUTH_URL=https://<your server>/api/auth
 #      - ADMIN_USERNAME=admin
 #      - ADMIN_PASSWORD= 
+#      - SMTP_HOST=xxxxx
+#      - SMTP_PORT=xxxxx
+#      - SMTP_USER=xxxxx
+#      - SMTP_PASSWORD=xxxxx
+#      - EMAIL_FROM=xxxxx
 #    ports:
 #      - 3000:3000
+
     networks:
       - backend
 
