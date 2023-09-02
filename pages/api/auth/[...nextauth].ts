@@ -1,6 +1,7 @@
 import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
+import EmailProvider from "next-auth/providers/email"
 import { compare } from "bcrypt"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
@@ -35,6 +36,22 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }))
+}
+
+if (process.env.SMTP_HOST) {
+    console.log('adding email provider')
+    providers.push(EmailProvider({
+        server: {
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            auth: {
+              user: process.env.SMTP_AUTH_USER,
+              pass: process.env.SMTP_AUTH_PASS,
+            }
+        },
+        from: process.env.EMAIL_FROM,
+        // maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
+      }))
 }
 
 providers.push(CredentialsProvider({
