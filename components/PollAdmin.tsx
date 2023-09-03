@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import QRCode from "react-qr-code"
-import { FaShareAlt } from "react-icons/fa"
+import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
 import { IGetPoll } from "@/models/Poll"
@@ -60,8 +60,8 @@ export default function PollAdmin({poll, mutate}:{
             </Card.Body>                
             <Card.Footer>
                 <ButtonGroup>
-                    { !poll.closed &&
-                        <Button variant="success" onClick={() => window.open(pollUrl,"_blank")}>
+                    { false && !poll.closed &&
+                        <Button onClick={() => window.open(pollUrl,"_blank")}>
                             compila
                         </Button>
                     }
@@ -71,17 +71,21 @@ export default function PollAdmin({poll, mutate}:{
                         </Button>
                     }
                     { poll.closed && 
-                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-success">report</a>
+                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-primary">
+                            report
+                        </a>
                     }
                     { poll.closed 
-                    ? <Button variant="warning" onClick={() => close(poll, false)}>
+                    ? <Button onClick={() => close(poll, false)}>
                         riapri
                       </Button>
-                    : <Button variant="warning" onClick={() => close(poll)}>
+                    : <Button onClick={() => close(poll)}>
                         chiudi
                       </Button>
                     }
-                    <Link className="btn btn-primary" href="/">elenco</Link>
+                    <Link className="btn btn-primary" href="/">
+                        elenco
+                    </Link>
                     { poll.closed &&
                         <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>
                             elimina
@@ -93,7 +97,7 @@ export default function PollAdmin({poll, mutate}:{
         <ul>
                 <li> 
                     Devi condividere con gli studenti il <i>link (URL)</i> del sondaggio
-                    {} <a href={fullUrl}>{ fullUrl }</a>.
+                    {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
                     Il link può essere copiato e condiviso oppure puoi 
                     mostrare o stampare il <i>QR-code</i> che contiene il link codificato.
                     Premendo il pulsante <i>compila</i>
