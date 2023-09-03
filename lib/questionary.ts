@@ -684,6 +684,10 @@ const questionary: IQuestionary = {
           element: "info",
         },
         {
+          element: "preferred",
+          title: "Lingua scelta per la compilazione",
+        },
+        {
           element: "chart",
           question: "1.1.a.1", 
           title: "Nella mia famiglia si parla abitualmente",
@@ -1072,7 +1076,8 @@ export type IReportQuestionElement =
 
 export type IReportGlobalElement =
   IReportTitleElement | 
-  IReportInfoElement
+  IReportInfoElement |
+  IReportPreferredElement
 
 export type IReportTitleElement = {
   element: 'title',
@@ -1081,6 +1086,11 @@ export type IReportTitleElement = {
 
 export type IReportInfoElement = {
   element: 'info',
+  title?: string,
+}
+
+export type IReportPreferredElement = {
+  element: 'preferred',
   title?: string,
 }
 

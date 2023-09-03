@@ -53,6 +53,12 @@ export interface IStats {
     questions: {[key: string]: IQuestionStat},
     polls: IPoll[],
     entriesCount: number,
+    preferredLanguageCount: IPreferredLanguageCount,
+}
+
+export type IPreferredLanguageCount = {
+    [key: string]: number,
+    _total: number
 }
 
 export type IQuestionStat = 
@@ -133,7 +139,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         }
     }
     */
-
+    const preferredLanguageCount: IPreferredLanguageCount = {_total: 0}
     const languagesZeroCount = () => Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, 0])))
     const levels = extractLevels(questionary)
     const competencesZero = () => Object.fromEntries(questionary.competences.map(
@@ -168,6 +174,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                 polls.push(e.poll)
             }    
         }
+        const preferredLanguage = e.lang
+        preferredLanguageCount._total ++
+        if (preferredLanguage) {
+            const count = preferredLanguageCount[preferredLanguage] || 0
+            preferredLanguageCount[preferredLanguage] = count + 1
+        }
+        
         Object.entries(e.answers).forEach(([code, answer]) => {
             const question = questionsMap[code]
             if (!question) return
@@ -305,7 +318,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     return { 
         questions, 
         polls, 
-        entriesCount
+        entriesCount,
+        preferredLanguageCount,
     }
 }
 
