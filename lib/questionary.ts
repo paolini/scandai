@@ -1099,10 +1099,12 @@ export type IReportChartElement = {
   title?: string,
   question: string,
   variant?: 'chart'|'count',
+  count?: "questions" | "answers",
 }
 
 export type IReportTableElement = {
   element: 'table',
   title?: string,
   question: string,
+  count?: "questions" | "answers",
 }

@@ -262,8 +262,8 @@ function ReportChart({ question, item } : {
                 case undefined:
                 case 'chart':
                     return <Item>
-                        <GraphChooseLanguageQuestion item={item} stat={question} />
-                        <TableChooseLanguageQuestion stat={question} />
+                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "questions" } />
+                        <TableChooseLanguageQuestion stat={question} count={item?.count || "questions" }/>
                     </Item>
                 case 'count':
                     return <Item small={true}>
@@ -300,7 +300,7 @@ function ReportTable({ question, item} : {
     switch(question.type) {
         case 'choose-language': 
             return <Item>
-                <TableChooseLanguageQuestion stat={question} />
+                <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} />
             </Item>
 
         case 'map-language-to-competence':
@@ -317,12 +317,15 @@ function ReportTable({ question, item} : {
     }
 }
 
-function GraphChooseLanguageQuestion({item, stat} : {
+function GraphChooseLanguageQuestion({item, stat, count } : {
         item: IReportElement,
-        stat: IChooseLanguageQuestionStat}) {
+        stat: IChooseLanguageQuestionStat,
+        count: "answers" | "questions",
+    }) {
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
     assert(item.element === 'chart')
+    const total = count === 'answers' ? stat.countAnswers : stat.count 
     return <Bar 
         options={{
             responsive: true,
@@ -359,7 +362,7 @@ function GraphChooseLanguageQuestion({item, stat} : {
             labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
             datasets: [
                 {
-                data: Object.entries(stat.answers).map(([key, val])=> (stat.countAnswers ? val / stat.countAnswers : 0) ),
+                data: Object.entries(stat.answers).map(([key, val])=> (total ? val / total : 0) ),
                 // backgroundColor: 'orange',
                 },
             ],
@@ -367,11 +370,13 @@ function GraphChooseLanguageQuestion({item, stat} : {
     />
 }
 
-function TableChooseLanguageQuestion({stat}: {
-    stat: IChooseLanguageQuestionStat}) {
+function TableChooseLanguageQuestion({stat, count}: {
+    stat: IChooseLanguageQuestionStat,
+    count: "answers" | "questions" | "both",
+}) {
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
-      
+
     return <Table>
         <thead>
             <tr>
@@ -390,20 +395,23 @@ function TableChooseLanguageQuestion({stat}: {
                     {val}
                 </td>)}
             </tr>
+            { (count === 'answers' || count === 'both' ) &&
             <tr>
-                <th>per lingua</th>
+                <th>{count === 'both' ? "per lingua" : "percentuale" }</th>
                     {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
                     { stat.countAnswers && `${Math.round(val*100/stat.countAnswers)}%` }
                 </td>)}
             </tr>
+            }
+            { (count === 'questions' || count === 'both') &&
             <tr>
-                <th>per persona</th>
+                <th>{count === 'both' ? "per persona" : "percentuale" }</th>
                     {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
                     {stat.count && `${Math.round(val*100/stat.count)}%`}
                 </td>)}
-            </tr>
+            </tr>}
         </tbody>
     </Table>
 }
