@@ -47,7 +47,10 @@ if (process.env.SMTP_HOST) {
             auth: {
               user: process.env.SMTP_AUTH_USER,
               pass: process.env.SMTP_AUTH_PASS,
-            }
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
         },
         from: process.env.EMAIL_FROM,
         // maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
