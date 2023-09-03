@@ -15,7 +15,7 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { /* <Nav.Link href="/report">Report</Nav.Link> */ }
+          { session?.dbUser?.isAdmin && <Nav.Link href="/report">Report</Nav.Link> }
           { session?.dbUser && <Nav.Link href="/">Questionari</Nav.Link> }
           { session?.dbUser?.isAdmin && 
                 <>

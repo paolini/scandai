@@ -230,7 +230,7 @@ function PreferredPie({ stats, title} : {
                     },
                     datalabels: {
                         anchor: 'center',
-                        formatter: (value,context) => `${Math.round(value*100/total)}% ${value}`,
+                        formatter: (value,context) => `${Math.round(value*100/total)}%`,
                     },
                     title: {
                         ...CHART_TITLE,
