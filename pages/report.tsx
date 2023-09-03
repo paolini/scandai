@@ -547,7 +547,8 @@ function TableMapLanguageToCompetence({stat, item} : {
                 ({
                     label: lang,
                     data: Object.entries(s).map(([c,n])=> (stat.count?n/stat.count:0)),
-                    fill: true,
+                    fill: false,
+                    pointRadius: 3,
                 }))
             }}
           options = {{
@@ -555,7 +556,13 @@ function TableMapLanguageToCompetence({stat, item} : {
                 line: {
                     borderWidth: 3
                 }
-            }}} 
+            },
+            plugins: {
+                  datalabels: {
+                      display: false
+                      },
+                  },
+            }}
         />
     </Item>
 }
