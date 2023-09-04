@@ -684,10 +684,6 @@ const questionary: IQuestionary = {
           element: "info",
         },
         {
-          element: "preferred",
-          title: "Lingua scelta per la compilazione",
-        },
-        {
           element: "chart",
           question: "1.1.a.1", 
           title: "Nella mia famiglia si parla abitualmente",
@@ -704,14 +700,14 @@ const questionary: IQuestionary = {
           question: "2.2.1",
         },
         {
-          element: "table",
-          title: "Valori medi delle competenze autovalutate",
-          question: "2.2.1",
-        },
-        {
           element: "chart",
           title: "A che età hai cominciato a parlare le lingue che conosci?",
           question: "2.1.1",
+        },
+        {
+          element: "table",
+          title: "Valori medi delle competenze autovalutate",
+          question: "2.2.1",
         },
         {
           element: "chart",
@@ -832,6 +828,10 @@ const questionary: IQuestionary = {
           element: "chart",
           //title: "Prova ...",
           question: "1.4.5",
+        },
+         {
+          element: "preferred",
+          title: "Lingua scelta per la compilazione",
         },
       ],    /* Fine Report del questionario lungo */
     },
