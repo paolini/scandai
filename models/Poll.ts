@@ -13,7 +13,7 @@ export interface IGetPoll extends IPostPoll {
     secret: string,
     entriesCount: number,
     date: string,
-    school: {
+    school?: {
         _id: Types.ObjectId,
         name: string,
         city: string,

@@ -106,7 +106,7 @@ function PollsTable({user, polls}:{
                     {formatDate(poll.date)}
                 </td>
                 <td>
-                    {poll.school.name} {poll.school.city && ` - ${poll.school.city}`}
+                    {poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}
                 </td>
                 <td>
                     {poll.class}

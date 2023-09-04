@@ -200,7 +200,7 @@ function ListClasses({ stats, title }: {
         <ul>
             { stats.polls.map(c => 
                     <li key={c._id.toString()}>
-                        {c.school.name} - {c.school.city} {c.class}
+                        {c?.school?.name} - {c?.school?.city} {c.class}
                     </li>
                 )
             }
