@@ -1,10 +1,10 @@
 import useSWR from 'swr'
 
 import { IGetPoll, IPostPoll } from '@/models/Poll'
-import { IPostUser } from '@/models/User'
+import { IPostUser, IGetUser } from '@/models/User'
+import { IPostSchool, IGetSchool } from '@/models/School'
 import { IEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
-import { IGetUser } from '@/models/User'
 import { IDictElement, IPostDict } from '@/models/Dict'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
@@ -96,6 +96,22 @@ export async function postUser(user: IPostUser): Promise<{data: IGetUser, passwo
 
 export async function deleteUser(user: IGetUser) {
     return await remove('users', user)
+}
+
+export function useSchools() {
+    return useIndex<IGetSchool[]>('schools')
+}
+
+export function patchSchool(school: any) {
+    return patch('schools', school)
+}
+
+export async function postSchool(school: IPostSchool): Promise<{data: IGetSchool}> {
+    return await post<IPostSchool>('schools', school)
+}
+
+export async function deleteSchool(school: IGetSchool) {
+    return await remove('schools', school)
 }
 
 export function useDict() {

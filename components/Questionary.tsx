@@ -106,7 +106,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
   }
   
   return <div>
-      <div style={{position: "relative",float: "right"}}>{poll?.school || ''} {poll?.class || ''} -- versione questionario: {questionary.version}</div>
+      <div style={{position: "relative",float: "right"}}>{poll?.school?.name || ''} {poll?.school?.city || ''} {poll?.class || ''} -- versione questionario: {questionary.version}</div>
       <QuestionaryPage 
         lang={lang}
         key={pageCount} 

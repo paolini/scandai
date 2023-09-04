@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 
-import { usePolls, postPoll, patchPoll, deletePoll } from '@/lib/api'
+import { usePolls, postPoll, patchPoll, deletePoll, useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
@@ -106,7 +106,7 @@ function PollsTable({user, polls}:{
                     {formatDate(poll.date)}
                 </td>
                 <td>
-                    {poll.school}
+                    {poll.school.name} {poll.school.city && ` - ${poll.school.city}`}
                 </td>
                 <td>
                     {poll.class}
@@ -144,7 +144,7 @@ function NewPoll({ form, done }:{
     form?: string|null,
     done?: (poll: IGetPoll|null) => void
 }) {
-    const pollState = useState<IPostPoll>({school: '', class: '', form: (form || 'full'), closed: false})
+    const pollState = useState<IPostPoll>({school_id: '', class: '', form: (form || 'full'), closed: false})
     const addMessage = useAddMessage()
 
     return <Card>
@@ -154,7 +154,7 @@ function NewPoll({ form, done }:{
         <Card.Body>
             <form>
                 { !form && <SelectForm formState={get(pollState, 'form')} />}
-                <SelectSchool schoolState={get(pollState, 'school')} />
+                <SelectSchool schoolState={get(pollState, 'school_id')} />
                 <div className="form-group">
                     <label htmlFor="class">
                         classe
@@ -177,7 +177,7 @@ function NewPoll({ form, done }:{
 
     function isValid() {
         const poll = value(pollState)
-        return poll && poll.school && poll.class
+        return poll && poll.school_id && poll.class
     }
 
     async function submit() {
@@ -212,6 +212,13 @@ function SelectForm({ formState }: {
 function SelectSchool({ schoolState }: {
     schoolState: State<string>
 }) {
+    const schoolsQuery = useSchools()
+
+    if (schoolsQuery.isLoading) return <Loading />
+    if (!schoolsQuery.data) return <Error>{schoolsQuery.error.message}</Error>
+
+    const schools = schoolsQuery.data.data
+
     return <div className="form-grup">
         <label htmlFor="school">
             scuola 
@@ -219,8 +226,8 @@ function SelectSchool({ schoolState }: {
         <select id="school" className="form-control" value={value(schoolState)} onChange={onChange(schoolState)}>
             <option value="" disabled={true}>scegli</option>
             {
-                schoolNames.map(school =>
-                    <option key={school} value={school}>{school}</option>)
+                schools.map(school =>
+                    <option key={school._id} value={school._id}>{school.name} - {school.city}</option>)
             }
         </select>
         { /*<Input id="school" state={get(pollState, 'school')} placeholder="scuola" /> */ }

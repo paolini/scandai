@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import randomstring from 'randomstring'
 import { ObjectId } from 'mongodb'
 
-import Poll from '@/models/Poll'
+import Poll, {POLL_PIPELINE} from '@/models/Poll'
+import School from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
 
 export default async function handler(
@@ -11,22 +12,22 @@ export default async function handler(
     const user = await getSessionUser(req)
     if (req.method === 'GET') {
         console.log(`GET query ${JSON.stringify(req.query)}`)
-        let filter: any = {}
+        let $match: any = {}
 
         // set filters from query parameters
         for (const key of ['school', 'class', 'secret']) {
             if (req.query[key]!==undefined) {
-                filter[key] = req.query[key]
+                $match[key] = req.query[key]
             }
         }
         if (req.query._id!==undefined) {
-            filter['_id'] = new ObjectId(req.query._id as string)
+            $match['_id'] = new ObjectId(req.query._id as string)
         }
         // set filters from user authorization
         if (user) {
             if (!user.isAdmin) {
                 // non admin vede solo i suoi poll
-                filter['createdBy'] = new ObjectId(user._id)
+                $match['createdBy'] = new ObjectId(user._id)
             }
         } else {
             // anonymous user can only see public polls
@@ -34,64 +35,19 @@ export default async function handler(
             if (req.query.secret===undefined) {
                 // attualmente "public" non è valorizzato
                 // quindi si otterrà sempre un array vuoto
-                filter['public'] = true
+                $match['public'] = true
             }
         }
 
         const pipeline = [
-            { $match: filter },
-            { $lookup: {
-                from: 'users',
-                localField: 'createdBy',
-                foreignField: '_id',
-                as: 'createdBy',
-                pipeline: [
-                    { $project: {
-                        _id: 1,
-                        name: 1,
-                        email: 1,
-                        image: 1,
-                        username: 1,
-                    }}
-                ]
-            }},
-            // createdBy could be null if 
-            // the user has been deleted
-            {
-                $addFields: {
-                    createdBy: { $arrayElemAt: [ '$createdBy', 0 ] }
-                }
-            },
-            // count the number of entries
-            // related to the poll
-            {
-                $lookup: {
-                  from: "entries", // The name of the Entry collection
-                  localField: "_id", // The field in the Poll collection
-                  foreignField: "pollId", // The field in the Entry collection
-                  as: "entries" // The field to store the matched entries
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    school: 1,
-                    class: 1,
-                    form: 1,
-                    secret: 1,
-                    createdBy: 1,
-                    closedAt: 1,
-                    closed: 1,
-                    date: 1,
-                    entriesCount: { $size: "$entries" } // Calculate the size of the entryCount array
-                }
-            }            
+            { $match },
+            ...POLL_PIPELINE,
         ]
         
-        console.log('Poll pipeline', JSON.stringify(pipeline))
+        // console.log('Poll pipeline', JSON.stringify(pipeline))
         try {
             const data = await Poll.aggregate(pipeline)
-            return res.status(200).json({ data, filter })
+            return res.status(200).json({ data, filter: $match })
         } catch (error) {
             console.log(`database error: ${error}`)
             return res.status(400).json({ error })
@@ -109,8 +65,10 @@ export default async function handler(
                 if (duplicate === null) break
             }
             const body = JSON.parse(req.body)
+            const school = await School.findOne({_id: new ObjectId(body.school_id)})
+            if (!school) return res.status(400).json({error: `school not found _id: ${body.school_id}`})
             const poll = new Poll({
-                school: body.school,
+                school_id: school._id,
                 class: body.class,
                 form: body.form,
                 secret,
@@ -120,6 +78,7 @@ export default async function handler(
             const out = await poll.save()
             return res.status(200).json({ data: out })
         } catch (error) {
+            console.error(error)
             return res.status(400).json({ error })
         }
     }
