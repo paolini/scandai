@@ -50,7 +50,7 @@ export default function PollAdmin({poll, mutate}:{
             <Card.Body>
                 <Card.Text>
                 { user.isAdmin && <>Creato da <b>{ poll.createdBy?.name || poll.createdBy?.username || '???' }</b> <i>{poll.createdBy?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
-                Scuola: <b>{poll.school.name} {poll.school.city && ` - ${poll.school.city}`}</b>, classe: <b>{poll.class}</b><br />
+                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
                 Questionari compilati: <b>{poll.entriesCount}</b> 

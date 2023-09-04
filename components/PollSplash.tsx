@@ -28,7 +28,7 @@ export default function PollSplash({poll, langState, mutate, start}:{
     return <Page header={false}>
             <h1>{phrase('title')}</h1>
             <div className="d-flex flex-column">
-                <div className="my-1"><b>{ phrase('school') }:</b> { poll.school.name } - {poll.school.city} </div>
+                <div className="my-1"><b>{ phrase('school') }:</b> { poll?.school?.name } - {poll?.school?.city} </div>
                 <div className="my-1"><b>{ phrase('class') } :</b> { poll.class }</div>
                 { /* user?.isAdmin && <a href={`/poll/${poll._id}`} className="my-4">[pagina amministrazione]</a> */}
                 <ChooseLanguage langState={langState}/>
