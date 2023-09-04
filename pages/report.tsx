@@ -1,4 +1,5 @@
 import { useRef, CSSProperties, ReactNode } from "react"
+import { useRouter } from 'next/router'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -17,7 +18,6 @@ import {
 import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table, Button } from 'react-bootstrap'
-import { useRouter } from 'next/router'
 import { useReactToPrint } from 'react-to-print'
 
 import { assert } from '@/lib/assert'
@@ -200,7 +200,7 @@ function ListClasses({ stats, title }: {
         <ul>
             { stats.polls.map(c => 
                     <li key={c._id.toString()}>
-                        {c.school} {c.class}
+                        {c.school.name} - {c.school.city} {c.class}
                     </li>
                 )
             }

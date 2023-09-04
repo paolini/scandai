@@ -1,6 +1,6 @@
 import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
-import { IPoll } from '@/models/Poll'
+import { IPoll, IGetPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
 import { assert } from '@/lib/assert'
@@ -33,7 +33,10 @@ export default async function handler(
 
         if (req.query.poll) {
             if (Array.isArray(req.query.poll)) {
-                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map(p => new ObjectId(p))}}})
+                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map((id:any) => {
+                    assert (typeof(id) === 'string', `id is not a string: ${id}`)
+                    return new ObjectId(id)
+                })}}})
             } else {
                 pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
             }
@@ -51,7 +54,7 @@ export default async function handler(
 
 export interface IStats {
     questions: {[key: string]: IQuestionStat},
-    polls: IPoll[],
+    polls: IGetPoll[],
     entriesCount: number,
     preferredLanguageCount: IPreferredLanguageCount,
 }
@@ -120,7 +123,7 @@ export interface IMapLanguageToAgeStat {
 }
 
 export interface IEntryWithPoll extends IEntry {
-    poll: IPoll,
+    poll: IGetPoll,
 }
 
 async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
@@ -154,7 +157,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     )
 
     const pollIds: string[] = []
-    const polls: IPoll[] = []
+    const polls: IGetPoll[] = []
 
     const dict = Object.fromEntries((await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]))
     function langMap(lang: string) {
