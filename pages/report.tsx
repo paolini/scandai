@@ -136,7 +136,7 @@ function ReportItem({ stats, item }: {
         case 'title':
             return <h1>{item.title || `Risultati aggregati`}</h1>
         case 'info':
-            return <ListClasses stats={stats} title={item.title}/>
+            return <ListClasses stats={stats} title={item?.title}/>
         case 'preferred':
             return <PreferredPie stats={stats.preferredLanguageCount} title={item.title}/>
         default:
@@ -195,7 +195,7 @@ function ListClasses({ stats, title }: {
     stats: IStats,
     title?: string,
 }) {
-    return <Item title="title">
+    return <Item title={title}>
         Classi che hanno partecipato:
         <ul>
             { stats.polls.map(c => 
