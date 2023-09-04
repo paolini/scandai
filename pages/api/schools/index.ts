@@ -10,9 +10,6 @@ export default async function handler(
         if (!user) {
             return res.status(401).json({error: 'not authenticated'})
         }
-        if (!user.isAdmin) {
-            return res.status(403).json({error: 'not authorized'})
-        }
         if (req.method === 'GET') {
             const schools = await School.aggregate([
                 { $lookup: { 
@@ -28,6 +25,10 @@ export default async function handler(
                 },
             ])
             return res.json({data: schools})
+        }
+        // non admin can only make GET requests
+        if (!user.isAdmin) {
+            return res.status(403).json({error: 'not authorized'})
         }
         if (req.method === 'POST') {
             const {name, city } = JSON.parse(req.body)
