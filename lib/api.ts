@@ -29,7 +29,7 @@ export function useIndex<T>(url: string, query?: any, enabled=true) {
 }
 
 export function useGet<T>(url: string, id_: string) {
-    return useSWR<Data<T>>([`/api/${url}/${id_}`], fetcher)
+    return useSWR<T>([`/api/${url}/${id_}`], fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
@@ -86,8 +86,16 @@ export function useUsers() {
     return useIndex<IGetUser[]>('users')
 }
 
-export function patchUser(user: any) {
-    return patch('users', user)
+export async function patchUser(user: any) {
+    return await patch('users', user)
+}
+
+export function useProfile() {
+    return useGet<IGetUser>('profile', '')
+}
+
+export async function patchProfile(user: any) {
+    return await patch('profile', {...user, _id: ''})
 }
 
 export async function postUser(user: IPostUser): Promise<{data: IGetUser, password: string}> {

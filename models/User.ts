@@ -17,14 +17,20 @@ export interface IPostUser {
     password?: string,
 }
 
-export interface IGetUser extends IPostUser {
+export interface IGetUser {
     _id: string,
+    name: string,
+    username: string,
+    email: string,
     isAdmin: boolean,
     image: string,
 }
 
 const UserSchema = new mongoose.Schema({
     username: {
+        type: String,
+    },
+    name: {
         type: String,
     },
     email: {
