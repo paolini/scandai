@@ -28,8 +28,9 @@ export function useIndex<T>(url: string, query?: any, enabled=true) {
     return useSWR<Data<T>>([enabled ? `/api/${url}` : null, query], fetcher)
 }
 
-export function useGet<T>(url: string, id_: string) {
-    return useSWR<T>([`/api/${url}/${id_}`], fetcher)
+export function useGet<T>(url: string, id_: string | null) {
+    // use id_=null to disable the query
+    return useSWR<T>(id_ !== null ? [`/api/${url}/${id_}`] : null, fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
@@ -110,8 +111,13 @@ export function useSchools() {
     return useIndex<IGetSchool[]>('schools')
 }
 
-export function patchSchool(school: any) {
-    return patch('schools', school)
+export function useSchool(id_: string | null) {
+    // use null to disable
+    return useGet<IGetSchool>('schools', id_)
+}
+
+export async function patchSchool(school: any) {
+    return await patch('schools', school)
 }
 
 export async function postSchool(school: IPostSchool): Promise<{data: IGetSchool}> {

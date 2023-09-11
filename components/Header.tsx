@@ -20,7 +20,7 @@ export default function Header() {
           { session?.dbUser?.isAdmin && 
                 <>
                   <Nav.Link href="/users">Utenti</Nav.Link>
-                  <Nav.Link href="/schools">Scuole</Nav.Link>
+                  <Nav.Link href="/school">Scuole</Nav.Link>
                   <Nav.Link href="/dict">Mappature</Nav.Link>
                 </>
           }

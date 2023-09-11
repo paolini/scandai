@@ -18,17 +18,28 @@ export default async function handler(
             return res.status(403).json({error: 'not authorized'})
         }
 
-        const school_id = req.query.school_id as string
+        const school_id = req.query.school_id
         
-        const school = await getSchoolById(school_id)
+        if (typeof school_id !== 'string') {
+            return res.status(400).json({error: 'invalid school_id'})
+        }
 
-        if (!school) {
-            return res.status(404).json({error: 'school not found'})
+        if (req.method === 'GET') {
+            try {
+                const school = await getSchoolById(school_id)
+
+                if (!school) {
+                    return res.status(404).json({error: 'school not found'})
+                }
+                return res.json(school)
+            } catch(err) {
+                return res.status(500).json({error: 'invalid school_id'})
+            }
         }
 
         if (req.method === 'DELETE') {
-            const out = await School.deleteOne({_id: school._id})
-            return res.status(200).json({ data: out })
+            const out = await School.deleteOne({_id: school_id})
+            return res.status(200).json({ ok: true })
         }
 
         if (req.method === 'PATCH') {
@@ -44,20 +55,26 @@ export default async function handler(
                 payload[field] = body[field]
             }
             console.log('patch school', payload)
-            const out = await School.updateOne({_id: school._id}, payload)
+            const out = await School.updateOne({_id: school_id}, payload)
             console.log('out', out)
             return res.json({data: out})
         }
 
+        return res.status(405).json({error: 'method not allowed'})
     }
 
 async function getSchoolById(id: string | ObjectId): Promise<IGetSchool|null> {
-    const schools = await School.aggregate([
-        { $match: {_id: new ObjectId(id)}},
-    ])
-    
-    if (schools.length === 0) return null
+    try {
+        const schools = await School.aggregate([
+            { $match: {_id: new ObjectId(id)}},
+        ])
+        
+        if (schools.length === 0) return null
 
-    assert (schools.length === 1, 'schools.length === 1')
-    return schools[0]
+        assert (schools.length === 1, 'schools.length === 1')
+        return schools[0]
+    } catch(e) {
+        console.error(e)
+        return null
+    }
 }
