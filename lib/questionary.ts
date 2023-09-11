@@ -829,9 +829,13 @@ const questionary: IQuestionary = {
           //title: "Prova ...",
           question: "1.4.5",
         },
-         {
+        {
           element: "preferred",
           title: "Lingua scelta per la compilazione",
+        },
+        {
+          element: "preferred",
+          table: true,          
         },
       ],    /* Fine Report del questionario lungo */
     },
@@ -1092,6 +1096,7 @@ export type IReportInfoElement = {
 export type IReportPreferredElement = {
   element: 'preferred',
   title?: string,
+  table?: boolean,
 }
 
 export type IReportChartElement = {

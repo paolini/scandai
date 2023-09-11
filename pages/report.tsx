@@ -138,7 +138,8 @@ function ReportItem({ stats, item }: {
         case 'info':
             return <ListClasses stats={stats} title={item?.title}/>
         case 'preferred':
-            return <PreferredPie stats={stats.preferredLanguageCount} title={item.title}/>
+            if (item.table) return <PreferredTable stats={stats.preferredLanguageCount} title={item.title}/>
+            else return <PreferredPie stats={stats.preferredLanguageCount} title={item.title}/>
         default:
             return <Error>invalid report item</Error>
     }
@@ -251,6 +252,36 @@ function PreferredPie({ stats, title} : {
     </Item>
 }
 
+function PreferredTable({ stats, title} : {
+    stats: IPreferredLanguageCount,
+    title?: string,
+}) {
+    const total = stats._total
+    let items = Object.entries(stats).filter(([k ,v]) => k!=='_total')
+    let sum = items.reduce((n, [k,v]) => n+v, 0)
+    if (sum < total) items.push(['', total-sum])
+    return <Item title={title}>
+        <Table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>conteggio</th>
+                    <th>percentuale</th>
+                </tr>
+            </thead>
+            <tbody>
+                {items.map(([k,v]) => 
+                    <tr key={k}>
+                        <th>{k || 'non specificato'}</th>
+                        <td>{v}</td>
+                        <td>{Math.round(v*100/total)}%</td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
+    </Item>
+}
+
 function ReportChart({ question, item } : {
         question: IQuestionStat,
         item: IReportElement
@@ -272,12 +303,17 @@ function ReportChart({ question, item } : {
             }
         case 'map-language-to-competence': return <Item>
                 <CompetenceLegend />
-                    { Object.keys(questionary.languages).map(lang => 
-                        <GraphMapLanguageToCompetenceQuestion 
-                            key={lang} 
-                            stat={question} 
-                            title="Competenze linguistiche autovalutate" 
-                            language={lang} />)
+                    { Object.keys(questionary.languages).map(lang => <>
+                            <GraphMapLanguageToCompetenceQuestion 
+                                key={lang} 
+                                stat={question} 
+                                title="Competenze linguistiche autovalutate" 
+                                language={lang} />
+                            <TableMapLanguageToCompetenceQuestion 
+                                key={lang} 
+                                stat={question} 
+                                language={lang} />
+                        </>)
                     }   
             </Item>
         case 'map-language-to-age': return <Item>
@@ -520,6 +556,44 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
                 })) 
         }}
     />
+}
+
+function TableMapLanguageToCompetenceQuestion({stat, title, language}
+    : {
+        stat: IMapLanguageToCompetenceQuestionStat,
+        language: string,
+        title?: string,
+    }) {
+    const localizedLanguage = questionary.languages[language].it || language
+    const stats = stat.answers[language]
+    const levels = extractLevels(questionary)
+    if (!stats) return <div>No stats for language {language}</div>
+
+    function computeDataset(stat: {[key: string]: number}) {
+        const total = Object.values(stat).reduce((sum,x) => sum+x,0)
+        if (total === 0) return levels.map(level => 0)
+        return levels.map(level => (stat[level] || 0) / total)
+    }
+
+    return <Table>
+        <thead>
+            <tr>
+                <th></th>
+                {levels.map(level => <th key={level}>{level}</th>)}
+            </tr>
+        </thead>
+        <tbody>
+            {
+                Object.entries(stats).map(([competence, x]) => 
+                    <tr key={competence}>
+                        <th>{competence}</th>
+                        {computeDataset(x).map((n,i)=>
+                            <td key={i}>{Math.round(n*100)}%</td>)}
+                    </tr>
+                )
+            }
+        </tbody>
+    </Table>
 }
 
 function TableMapLanguageToCompetence({stat, item} : {
