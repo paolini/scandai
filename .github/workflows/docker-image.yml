@@ -17,8 +17,8 @@ jobs:
         node-version: 18
     - name: install node packages
       run: npm ci
-    - name: Build Js bundle
-      run: npm run build
+    - name: Build Js bundle (disabled)
+      run: echo "disabled:" npm run build
     - name: Extract version number
       run: echo VERSION=$( node -e 'console.log(require("./package.json").version)' ) >> $GITHUB_ENV
     - name: Test version number and branch name

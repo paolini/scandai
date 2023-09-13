@@ -98,7 +98,7 @@ export default NextAuth({
 
     pages: {
         error: '/error',
-        //signIn: '/login',
+        signIn: '/login',
     },
 
     adapter: MongoDBAdapter(clientPromise),
