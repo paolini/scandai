@@ -9,6 +9,12 @@ export interface IDict extends IPostDict {
     _id: Types.ObjectId,
 }
 
+export interface IDictElement {
+    lang: string,
+    variants: string[],
+    map?: string,
+}
+
 const DictSchema = new mongoose.Schema({
     lang: {
         type: String,

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import Entry from '@/models/Entry'
-import Dict from '@/models/Dict'
+import Dict, {IDictElement} from '@/models/Dict'
 import getSessionUser from '@/lib/getSessionUser'
 import questionary from '@/lib/questionary'
 
@@ -37,27 +37,28 @@ export default async function handler(
             // unwind the values
             {$unwind: '$v' },
             // tolower
-            {$project: {v: {$toLower: '$v'}}},
+            {$project: {w: {$toLower: '$v'}, v: 1}},
             // remove base languages and other answers
-            {$match: {$expr: {$and: [{$eq: [{$type: '$v'},'string']},{$not: {$in:['$v',baseLangs]}}]}}},
+            {$match: {$expr: {$and: [{$eq: [{$type: '$w'},'string']},{$not: {$in:['$w',baseLangs]}}]}}},
             // remove duplicates
-            {$group:{_id:'$v'}},
+            {$group:{_id:'$w', list: {$addToSet: '$v'}}},
         ]
         
         try {
             const entries = await Entry.aggregate(pipeline)
             const dict = Object.fromEntries(await (await Dict.aggregate([{$project: {lang: 1, map: 1}}])).map(d => ([d.lang,d.map])))
-            const data:[string,string?][] = []
+            const data: IDictElement[] = []
             for (const entry of entries) {
                 const lang = entry._id
+                const variants = entry.list
                 const map = dict[lang]
                 if (map!==undefined) {
-                    data.push([lang, map])
+                    data.push({lang, variants, map})
                 } else {
-                    data.push([lang])
+                    data.push({lang, variants})
                 }
             }
-            data.sort((a:[string,string?], b:[string,string?]) => (a[0]<b[0]?-1:1))
+            data.sort((a: IDictElement, b:IDictElement) => (a.lang<b.lang?-1:1))
             res.status(200).json({ data })
         } catch (error) {
             console.error(error)

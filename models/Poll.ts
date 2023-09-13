@@ -2,7 +2,7 @@ import mongoose, {Types} from 'mongoose'
 
 // Interfaccia per la creazione di un nuovo poll
 export interface IPostPoll {
-    school: string,
+    school_id: string,
     class: string,
     form: string,
     closed: boolean, 
@@ -13,7 +13,13 @@ export interface IGetPoll extends IPostPoll {
     secret: string,
     entriesCount: number,
     date: string,
-    createdBy: {
+    school?: {
+        _id: string,
+        name: string,
+        city: string,
+    }
+    createdBy: string,
+    createdByUser: {
         _id: string,
         name?: string,
         email?: string,
@@ -23,15 +29,20 @@ export interface IGetPoll extends IPostPoll {
     createdAt: string,
 }
 
-export interface IPoll extends IPostPoll {
+export interface IPoll {
     _id: Types.ObjectId,
+    school_id: Types.ObjectId,
+    class: string,
+    form: string,
+    closed: boolean, 
     secret: string,
     createdBy: Types.ObjectId,
 }
 
 const PollSchema = new mongoose.Schema({
-    school: {
-        type: String,
+    school_id: {
+        type: Types.ObjectId,
+        ref: 'School',
         required: true,
     },
     class: {
@@ -47,7 +58,7 @@ const PollSchema = new mongoose.Schema({
         required: true,
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: 'User',
         required: true,     
     },
@@ -64,3 +75,68 @@ const PollSchema = new mongoose.Schema({
 })
 
 export default mongoose.models.Poll || mongoose.model<IPoll>('Poll', PollSchema)
+
+export const POLL_PIPELINE = [
+    { $lookup: {
+        from: 'users',
+        localField: 'createdBy',
+        foreignField: '_id',
+        as: 'createdByUser',
+        pipeline: [
+            { $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                image: 1,
+                username: 1,
+            }}
+        ]
+    }},
+    // createdByUser could be null if 
+    // the user has been deleted
+    {
+        $addFields: {
+            createdByUser: { $arrayElemAt: [ '$createdByUser', 0 ] }
+        }
+    },
+    // add school information
+    {
+        $lookup: {
+            from: "schools", // The name of the School collection
+            localField: "school_id", // The field in the Poll collection
+            foreignField: "_id", // The field in the School collection
+            as: "school" // The field to store the matched school
+        }
+    },
+    {
+        $addFields: {
+            school: { $arrayElemAt: [ "$school", 0 ] }
+        }
+    },
+    // count the number of entries
+    // related to the poll
+    {
+        $lookup: {
+          from: "entries", // The name of the Entry collection
+          localField: "_id", // The field in the Poll collection
+          foreignField: "pollId", // The field in the Entry collection
+          as: "entries" // The field to store the matched entries
+        }
+    },
+    {
+        $project: {
+            _id: 1,
+            school: 1,
+            class: 1,
+            form: 1,
+            secret: 1,
+            createdBy: 1,
+            createdByUser: 1,
+            closedAt: 1,
+            closed: 1,
+            date: 1,
+            entriesCount: { $size: "$entries" } // Calculate the size of the entryCount array
+        }
+    }            
+]
+

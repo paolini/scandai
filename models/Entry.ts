@@ -12,6 +12,7 @@ export interface IEntry {
     answers: {
         [key: QuestionCode]: Answer
     },
+    lang: string,
 }
 
 const EntrySchema = new mongoose.Schema({
@@ -24,6 +25,7 @@ const EntrySchema = new mongoose.Schema({
         type: Object,
         required: true
     },
+    lang: String,
 }, {
     timestamps: true
 })

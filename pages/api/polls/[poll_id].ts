@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
+import assert from 'assert'
 
-import Poll, {IPoll} from '@/models/Poll'
+import Poll, {IPoll, IGetPoll, POLL_PIPELINE} from '@/models/Poll'
 import getSessionUser from '@/lib/getSessionUser'
 
 export default async function handler(
@@ -13,12 +14,12 @@ export default async function handler(
         }
         const poll_id = req.query.poll_id as string
         
-        const poll = await Poll.findOne({_id: new ObjectId(poll_id)})
+        const poll = await getPollById(poll_id)
         
-        if (poll === null) {
+        if (!poll) {
             return res.status(404).json({error: 'poll not found'})
         }
-
+        
         // only admins and owners can access poll
         if (!user.isAdmin && user._id !== poll.createdBy.toString()) {
             return res.status(403).json({error: 'not authorized'})
@@ -36,16 +37,31 @@ export default async function handler(
             } catch(error) {
                 return res.status(400).json({error: 'invalid json'})
             }
+            let payload: any = {}
+            for (let field of  ['school_id', 'form', 'type', 'class']) {
+                if (body[field] === undefined) continue
+                payload[field] = body[field]
+            }
             if (body.closed !== undefined) {
                 if (body.closed && !poll.closed) {
-                    poll.date = new Date()
+                    payload.date = new Date()
                 }
-                poll.closed = body.closed
+                payload.closed = body.closed
             }
-            console.log('patch poll', poll)
-            const out = await poll.save()
-            console.log('out', out)
+            const out = await Poll.updateOne({_id: poll._id}, payload)
             return res.json({data: out})
         }
 
     }
+
+async function getPollById(id: string | ObjectId): Promise<IGetPoll|null> {
+    const polls = await Poll.aggregate([
+        { $match: {_id: new ObjectId(id)}},
+        ...POLL_PIPELINE,
+    ])
+    
+    if (polls.length === 0) return null
+
+    assert (polls.length === 1, 'polls.length === 1')
+    return polls[0]
+}

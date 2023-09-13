@@ -1,6 +1,6 @@
 import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
-import { IPoll } from '@/models/Poll'
+import { IPoll, IGetPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
 import { assert } from '@/lib/assert'
@@ -33,7 +33,10 @@ export default async function handler(
 
         if (req.query.poll) {
             if (Array.isArray(req.query.poll)) {
-                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map(p => new ObjectId(p))}}})
+                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map((id:any) => {
+                    assert (typeof(id) === 'string', `id is not a string: ${id}`)
+                    return new ObjectId(id)
+                })}}})
             } else {
                 pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
             }
@@ -51,8 +54,14 @@ export default async function handler(
 
 export interface IStats {
     questions: {[key: string]: IQuestionStat},
-    polls: IPoll[],
+    polls: IGetPoll[],
     entriesCount: number,
+    preferredLanguageCount: IPreferredLanguageCount,
+}
+
+export type IPreferredLanguageCount = {
+    [key: string]: number,
+    _total: number
 }
 
 export type IQuestionStat = 
@@ -114,7 +123,7 @@ export interface IMapLanguageToAgeStat {
 }
 
 export interface IEntryWithPoll extends IEntry {
-    poll: IPoll,
+    poll: IGetPoll,
 }
 
 async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
@@ -133,22 +142,22 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         }
     }
     */
-
-    const languagesZeroCount = Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, 0])))
+    const preferredLanguageCount: IPreferredLanguageCount = {_total: 0}
+    const languagesZeroCount = () => Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, 0])))
     const levels = extractLevels(questionary)
-    const competencesZero = Object.fromEntries(questionary.competences.map(
+    const competencesZero = () => Object.fromEntries(questionary.competences.map(
         competence => [competence.code, 
             Object.fromEntries(
                 levels.map(l => [l,0])) ]))
-    const sumsZero = Object.fromEntries(questionary.competences.map(
+    const sumsZero = () => Object.fromEntries(questionary.competences.map(
         competence => [competence.code, 0]))
     const ages = questionary.ages.map(age => age.code)
-    const agesZero = Object.fromEntries(
+    const agesZero = () => Object.fromEntries(
         ages.map(age => [age, 0])
     )
 
     const pollIds: string[] = []
-    const polls: IPoll[] = []
+    const polls: IGetPoll[] = []
 
     const dict = Object.fromEntries((await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]))
     function langMap(lang: string) {
@@ -168,6 +177,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                 polls.push(e.poll)
             }    
         }
+        const preferredLanguage = e.lang
+        preferredLanguageCount._total ++
+        if (preferredLanguage) {
+            const count = preferredLanguageCount[preferredLanguage] || 0
+            preferredLanguageCount[preferredLanguage] = count + 1
+        }
+        
         Object.entries(e.answers).forEach(([code, answer]) => {
             const question = questionsMap[code]
             if (!question) return
@@ -179,7 +195,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         type: question.type,
                         count: 0,
                         countAnswers: 0,
-                        answers: {...languagesZeroCount},
+                        answers: languagesZeroCount(),
                         counts: [],
                     }
                     questions[code] = q
@@ -213,9 +229,9 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         count: 0,
                         answers: Object.fromEntries(
                             baseLanguages.map(lang => [lang,
-                                {...competencesZero}])),
+                                competencesZero()])),
                         sums: Object.fromEntries(
-                            baseLanguages.map(lang => [lang,{...sumsZero}])
+                            baseLanguages.map(lang => [lang,sumsZero()])
                         )
                     }
                     questions[code] = q
@@ -232,8 +248,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                     const lang = langMap(sourceLang)
                     if (!lang) continue // discard this language
                     if (!(lang in q.answers)) {
-                        q.answers[lang] = {...competencesZero}
-                        q.sums[lang] = {...sumsZero}
+                        q.answers[lang] = competencesZero()
+                        q.sums[lang] = sumsZero()
                     }
                     for (const [competence, value] of Object.entries(langAns)) {
                         if (!(competence in q.answers[lang])) {
@@ -263,7 +279,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         type: question.type,
                         count: 0,
                         answers: Object.fromEntries(
-                            baseLanguages.map(lang => [lang,{...agesZero}]))
+                            baseLanguages.map(lang => [lang,agesZero()]))
                     }
                     questions[code] = q
                 }
@@ -291,7 +307,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         continue
                     }
                     if (!(lang in q.answers)) {
-                        q.answers[lang] = {...agesZero}
+                        q.answers[lang] = agesZero()
                     }
                     q.answers[lang][age]++
                 }
@@ -305,7 +321,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     return { 
         questions, 
         polls, 
-        entriesCount
+        entriesCount,
+        preferredLanguageCount,
     }
 }
 

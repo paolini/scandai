@@ -58,19 +58,19 @@ export default function LanguageToAgeAnswer({ lang, answer, setAnswer, ages, lan
       <thead>
         <tr>
           <th></th>
-          {ages.map(age => <th key={age.code}>{age.it}</th>)}
+          {ages.map(age => <th key={age.code}>{age[lang]}</th>)}
         </tr>
       </thead>
       <tbody>
       {languageEntries.map(([code, language]) => 
             <AgeAnswerRow
-            lang={lang}
-            key={code}
-            code={code}
-            language={language}
-            answer={answer}
-            ages={ages}
-            setAnswer={setAnswer}
+              lang={lang}
+              key={code}
+              code={code}
+              language={language}
+              answer={answer}
+              ages={ages}
+              setAnswer={setAnswer}
             />
             )} 
       </tbody>

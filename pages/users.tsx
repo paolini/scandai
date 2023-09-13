@@ -3,15 +3,14 @@ import { Button, ButtonGroup, Card } from "react-bootstrap"
 import { FaCirclePlus, FaTrash } from "react-icons/fa6"
 import { useState } from "react"
 
-import { useUsers, postUser, deleteUser } from '@/lib/api'
-import { IGetUser } from '@/models/User'
+import { useUsers, postUser, deleteUser, patchUser } from '@/lib/api'
+import { IGetUser, IPostUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
-import { patchUser } from '@/lib/api'
 import useSessionUser from '@/lib/useSessionUser'
 import { value, set, get } from '@/lib/State'
-import { IPostUser } from '@/models/User'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
+import Loading from '@/components/Loading'
 
 export default function Users() {
     const sessionUser = useSessionUser()
@@ -19,7 +18,8 @@ export default function Users() {
     const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
-    if (usersQuery.isLoading) return <div>Loading...</div>
+
+    if (usersQuery.isLoading) return <Loading />
     if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
     const users = usersQuery.data.data
 
@@ -32,21 +32,6 @@ export default function Users() {
             addMessage('error', `error updating user: ${e}`)
             console.error(e)
         }
-    }
-
-    async function clickDeleteUser(user: IGetUser) {
-        try {
-            deleteUser(user) 
-            usersQuery.mutate()
-        } catch(e) {
-            addMessage('error', `error deleting user: ${e}`)
-            console.error(e)
-        }
-    }
-
-    function newUserDone() {
-        set(newUserState, false)
-        usersQuery.mutate()
     }
 
     return <Page>
@@ -83,7 +68,7 @@ export default function Users() {
                     <td className="d-flex">
                         <Switch
                         disabled={user._id === sessionUser?._id}
-                        checked={user.isAdmin}
+                        checked={!!user.isAdmin}
                         onChange={(checked) => {setAdmin(user, checked)}} />
                     </td>
                     { value(showDeleteState) && <td>
@@ -94,6 +79,21 @@ export default function Users() {
             </tbody>
         </table>
     </Page>
+
+    async function clickDeleteUser(user: IGetUser) {
+        try {
+            deleteUser(user) 
+            usersQuery.mutate()
+        } catch(e) {
+            addMessage('error', `error deleting user: ${e}`)
+            console.error(e)
+        }
+    }
+
+    function newUserDone() {
+        set(newUserState, false)
+        usersQuery.mutate()
+    }    
 }
 
 function NewUser({done }:{
