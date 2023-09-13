@@ -3,6 +3,7 @@ import { ClientSafeProvider, getProviders, signIn, getCsrfToken } from "next-aut
 import { getServerSession } from "next-auth/next"
 import authOptions from "./api/auth/[...nextauth]"
 import { useSearchParams } from "next/navigation"
+import { Button, Card } from "react-bootstrap"
 
 import Error from '@/components/Error'
 
@@ -11,16 +12,19 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
   const callbackUrl = searchParams.get('callbackUrl') ?? undefined
   const error = searchParams.get('error')
 
-  return (
-    <>
-      {error && <Error>{ error }</Error>}
-      {Object.values(providers).map((provider) => (
-        <div key={provider.name}>
-            <ProviderSection provider={provider} csrfToken={csrfToken} callbackUrl={callbackUrl}/>
-        </div>
-      ))}
-    </>
-  )
+  return <Card>
+      <Card.Header>
+        <Card.Title>Fotografia linguistica</Card.Title>
+      </Card.Header>
+      <Card.Body>
+        {error && <Error>{ error }</Error>}
+        {Object.values(providers).map((provider) => (
+          <div key={provider.name}>
+              <ProviderSection provider={provider} csrfToken={csrfToken} callbackUrl={callbackUrl}/>
+          </div>
+        ))}
+      </Card.Body>
+    </Card>
 }
 
 function ProviderSection({ provider, csrfToken, callbackUrl }: { 
@@ -32,32 +36,36 @@ function ProviderSection({ provider, csrfToken, callbackUrl }: {
     // take the callback url from the query string
     switch(provider.type) {
         case 'oauth':
-            return <>
-              <button onClick={() => signIn(provider.id,{callbackUrl})}>
-                Sign in with {provider.name}
-              </button>
-            </>
+            return <div className="py-5">
+              <Button onClick={() => signIn(provider.id,{callbackUrl})}>
+                Entra con {provider.name}
+              </Button>
+            </div>
         case 'email':
             return <form method="post" action={`/api/auth/signin/email${querystring}`}>
                 <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
                 <label>
-                    Email address
-                    <input type="email" id="email" name="email" />
+                    Inserisci il tuo indirizzo email
+                    {} <input type="email" id="email" name="email" />
                 </label>
-                <button type="submit">Sign in with Email</button>
+                {} <Button type="submit">Inviami Email</Button>
+                <br />
+                Ti invieremo un messaggio per entrare nel sito.
             </form>
         case 'credentials':
             return <form method="post" action={`/api/auth/callback/credentials${querystring}`}>
                 <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
                 <label>
                 Username
-                <input name="username" type="text" />
+                {} <input name="username" type="text" />
                 </label>
+                <br />
                 <label>
                 Password
-                <input name="password" type="password" />
+                {} <input name="password" type="password" />
                 </label>
-                <button type="submit">Sign in</button>
+                <br/>
+                <Button type="submit">Entra</Button>
             </form>
         default:
             return <>invalid provider {provider.name} {provider.type}</>

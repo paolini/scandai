@@ -30,19 +30,12 @@ declare module "next-auth/jwt/types" {
 
 let providers = []
 
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    console.log(`adding google provider`)
-    providers.push(GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }))
-}
-
 if (process.env.SMTP_HOST) {
     console.log('adding email provider')
     const portString = process.env.SMTP_PORT || undefined
     const port = portString ? parseInt(portString) : undefined
     providers.push(EmailProvider({
+        name: 'email',
         server: {
             host: process.env.SMTP_HOST,
             port,
@@ -60,8 +53,17 @@ if (process.env.SMTP_HOST) {
       }))
 }
 
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    console.log(`adding google provider`)
+    providers.push(GoogleProvider({
+        name: 'google',
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }))
+}
+
 providers.push(CredentialsProvider({
-    name: 'Credentials',
+    name: 'credentials',
     credentials: {
         username: { label: "Username", type: "text", placeholder: "username" },
         password: { label: "Password", type: "password" }
