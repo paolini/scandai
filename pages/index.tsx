@@ -32,6 +32,5 @@ function UserIndex() {
     {profile.name==='' && <SetUserName profile={profile} mutate={profileRequest.mutate}/>}
     <p>Benvenuto {profile.name || profile.username || profile.email }!</p>
     <Polls />  
-    <Loading />
   </Page>
 }

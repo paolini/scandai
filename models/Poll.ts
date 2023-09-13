@@ -14,11 +14,12 @@ export interface IGetPoll extends IPostPoll {
     entriesCount: number,
     date: string,
     school?: {
-        _id: Types.ObjectId,
+        _id: string,
         name: string,
         city: string,
     }
-    createdBy: {
+    createdBy: string,
+    createdByUser: {
         _id: string,
         name?: string,
         email?: string,
@@ -80,7 +81,7 @@ export const POLL_PIPELINE = [
         from: 'users',
         localField: 'createdBy',
         foreignField: '_id',
-        as: 'createdBy',
+        as: 'createdByUser',
         pipeline: [
             { $project: {
                 _id: 1,
@@ -91,11 +92,11 @@ export const POLL_PIPELINE = [
             }}
         ]
     }},
-    // createdBy could be null if 
+    // createdByUser could be null if 
     // the user has been deleted
     {
         $addFields: {
-            createdBy: { $arrayElemAt: [ '$createdBy', 0 ] }
+            createdByUser: { $arrayElemAt: [ '$createdByUser', 0 ] }
         }
     },
     // add school information
@@ -130,6 +131,7 @@ export const POLL_PIPELINE = [
             form: 1,
             secret: 1,
             createdBy: 1,
+            createdByUser: 1,
             closedAt: 1,
             closed: 1,
             date: 1,

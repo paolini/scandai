@@ -96,9 +96,9 @@ function PollsTable({user, polls}:{
             <tr key={poll._id.toString()}
                 onClick={(e) => navigateToPoll(e, poll) }>
                     { user?.isAdmin && <td>
-                        { poll.createdBy?.name 
-                            || poll.createdBy?.username || '???'}
-                        {} &lt;{ poll.createdBy?.email || '???' }&gt;</td>}
+                        { poll.createdByUser?.name 
+                            || poll.createdByUser?.username || '???'}
+                        {} &lt;{ poll.createdByUser?.email || '???' }&gt;</td>}
                 <td>
                     {questionary.forms[poll.form]?.name}
                 </td>

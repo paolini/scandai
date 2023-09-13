@@ -20,7 +20,7 @@ export default function PollAdmin({poll, mutate}:{
     const [tick, setTick] = useState<number>(0)
     const user = useSessionUser()
     const addMessage = useAddMessage()
-    const isSupervisor = user && (user.isAdmin || user._id === poll.createdBy._id)
+    const isSupervisor = user && (user.isAdmin || user._id === poll.createdByUser._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
@@ -49,7 +49,7 @@ export default function PollAdmin({poll, mutate}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user.isAdmin && <>Creato da <b>{ poll.createdBy?.name || poll.createdBy?.username || '???' }</b> <i>{poll.createdBy?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                { user.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
                 Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }

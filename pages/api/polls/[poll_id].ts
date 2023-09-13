@@ -15,11 +15,11 @@ export default async function handler(
         const poll_id = req.query.poll_id as string
         
         const poll = await getPollById(poll_id)
-
+        
         if (!poll) {
             return res.status(404).json({error: 'poll not found'})
         }
-
+        
         // only admins and owners can access poll
         if (!user.isAdmin && user._id !== poll.createdBy.toString()) {
             return res.status(403).json({error: 'not authorized'})
@@ -48,10 +48,7 @@ export default async function handler(
                 }
                 payload.closed = body.closed
             }
-            console.log('patch poll', payload)
             const out = await Poll.updateOne({_id: poll._id}, payload)
-            //const out = await poll.save()
-            console.log('out', out)
             return res.json({data: out})
         }
 
