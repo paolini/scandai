@@ -13,9 +13,10 @@ import { useAddMessage } from "@/components/Messages"
 import { formatDate } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 
-export default function PollAdmin({poll, mutate}:{
+export default function PollAdmin({poll, mutate, sharedBySecret}:{
     poll: IGetPoll,
     mutate: () => void,
+    sharedBySecret: boolean,
 }) {
     const [tick, setTick] = useState<number>(0)
     const user = useSessionUser()
@@ -24,10 +25,11 @@ export default function PollAdmin({poll, mutate}:{
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
+    const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
 
     useEffect(() => {
-        console.log('poll admin effect', isSupervisor)
-        if (!isSupervisor) return
+        console.log('poll admin effect', isSupervisor, sharedBySecret)
+        if (!isSupervisor && !sharedBySecret) return
         const interval = setInterval(() => {
             setTick(tick => {
                 if (tick % 6 === 0) {
@@ -40,7 +42,7 @@ export default function PollAdmin({poll, mutate}:{
         return () => clearInterval(interval)
     }, [isSupervisor, mutate])
 
-    if (!isSupervisor) return null
+    if (!isSupervisor && !sharedBySecret) return null
 
     return <>
         <Card className="my-2">
@@ -49,25 +51,22 @@ export default function PollAdmin({poll, mutate}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
                 Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
-                { !poll.closed && <>indirizzo: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
+                { !poll.closed && <>indirizzo compilazione: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
+                { user?.isAdmin && poll.adminSecret && <>indirizzo somministrazione: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
                 Questionari compilati: <b>{poll.entriesCount}</b> 
-                { !poll.closed && <Tick tick={tick} /> }
+                { !poll.closed && <Tick tick={tick} /> } <br />
+                { user?.isAdmin && !poll.adminSecret && <Button onClick={createAdminSecret}><FaShareAlt />crea link di somministrazione</Button> }<br />
                 </Card.Text>
                 <QRCode value={fullUrl} onClick={share} style={{cursor:"copy"}}/>
             </Card.Body>                
             <Card.Footer>
                 <ButtonGroup>
-                    { false && !poll.closed &&
-                        <Button onClick={() => window.open(pollUrl,"_blank")}>
-                            compila
-                        </Button>
-                    }
                     { !poll.closed && 
                         <Button onClick={share}>
-                            <FaShareAlt /> condividi
+                            <FaShareAlt />compilazione
                         </Button>
                     }
                     { poll.closed && 
@@ -96,7 +95,7 @@ export default function PollAdmin({poll, mutate}:{
         </Card>
         <ul>
                 <li> 
-                    Devi condividere con gli studenti il <i>link (URL)</i> del sondaggio
+                    Devi condividere con gli studenti il <i>link (URL)</i> di compilazione del sondaggio
                     {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
                     Il link può essere copiato e condiviso oppure puoi 
                     mostrare o stampare il <i>QR-code</i> che contiene il link codificato.
@@ -141,7 +140,35 @@ export default function PollAdmin({poll, mutate}:{
 
     function share () {
         copyToClipboard(fullUrl);
-        addMessage('success', `indirizzo (url) copiato: ${fullUrl}`)
+        addMessage('success', `indirizzo compilazione (url) copiato: ${fullUrl}`)
+    }
+
+    function shareAdmin () {
+        if (!fullAdminUrl) {
+            addMessage('error', `impossibile copiare l'indirizzo di somministrazione`)
+            return
+        }
+        copyToClipboard(fullAdminUrl)
+        addMessage('success', `indirizzo somministrazione (url) copiato: ${fullAdminUrl}`)
+    }
+
+    function composeAdminFullUrl(adminSecret: string) {
+        return `${window.location}?secret=${adminSecret}`
+    }
+
+    async function createAdminSecret () {
+        try {
+            const res = await patchPoll({ 
+                _id: poll._id, 
+                adminSecret: 1
+            })
+            const adminSecret = res.data.adminSecret
+            const adminFullUrl = composeAdminFullUrl(adminSecret)
+            copyToClipboard(adminFullUrl)
+            addMessage('success', `admin secret copiato: ${adminFullUrl}`)
+        } catch(err) {
+            addMessage('error', `errore nella creazione del link di somministrazione: ${err}`)
+        }
     }
 }
 

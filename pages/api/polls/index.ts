@@ -15,7 +15,7 @@ export default async function handler(
         let $match: any = {}
 
         // set filters from query parameters
-        for (const key of ['school', 'class', 'secret']) {
+        for (const key of ['school', 'class', 'secret', 'adminSecret']) {
             if (req.query[key]!==undefined) {
                 $match[key] = req.query[key]
             }
@@ -32,10 +32,12 @@ export default async function handler(
         } else {
             // anonymous user can only see public polls
             // or get a specific poll by secret
-            if (req.query.secret===undefined) {
+            if (!$match.secret && !$match.adminSecret) {
                 // attualmente "public" non è valorizzato
                 // quindi si otterrà sempre un array vuoto
                 $match['public'] = true
+            } else {
+                // otterrò solamente i poll con il secret o l'adminSecret specificato
             }
         }
 

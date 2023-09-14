@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
 import assert from 'assert'
+import randomstring from 'randomstring'
 
 import Poll, {IPoll, IGetPoll, POLL_PIPELINE} from '@/models/Poll'
 import getSessionUser from '@/lib/getSessionUser'
@@ -41,6 +42,9 @@ export default async function handler(
             for (let field of  ['school_id', 'form', 'type', 'class']) {
                 if (body[field] === undefined) continue
                 payload[field] = body[field]
+            }
+            if (body['adminSecret'] !== undefined) {
+                payload['adminSecret'] = randomstring.generate({length: 6, readable: true})
             }
             if (body.closed !== undefined) {
                 if (body.closed && !poll.closed) {

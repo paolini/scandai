@@ -11,6 +11,7 @@ export interface IPostPoll {
 export interface IGetPoll extends IPostPoll {
     _id: string,
     secret: string,
+    adminSecret?: string,
     entriesCount: number,
     date: string,
     school?: {
@@ -36,6 +37,7 @@ export interface IPoll {
     form: string,
     closed: boolean, 
     secret: string,
+    adminSecret?: string,
     createdBy: Types.ObjectId,
 }
 
@@ -56,6 +58,10 @@ const PollSchema = new mongoose.Schema({
     secret: {
         type: String,
         required: true,
+    },
+    adminSecret: {
+        type: String,
+        required: false,
     },
     createdBy: {
         type: Types.ObjectId,
@@ -130,6 +136,7 @@ export const POLL_PIPELINE = [
             class: 1,
             form: 1,
             secret: 1,
+            adminSecret: 1,
             createdBy: 1,
             createdByUser: 1,
             closedAt: 1,

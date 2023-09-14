@@ -15,8 +15,8 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 18
-    - name: install node packages (disabled)
-      run: echo "disabled:" npm ci
+    - name: install node packages
+      run: npm ci
     - name: Build Js bundle (disabled)
       run: echo "disabled:" npm run build
     - name: Extract version number
