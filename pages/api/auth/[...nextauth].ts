@@ -102,7 +102,8 @@ export default NextAuth({
     providers,
 
     pages: {
-        error: '/error',
+        // error: '/error',
+        error: '/login',
         signIn: '/login',
         verifyRequest: '/verify-request',
     },
