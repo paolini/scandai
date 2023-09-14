@@ -11,10 +11,13 @@ export default function PollId({}) {
     const router = useRouter()
     const poll_id = router.query.poll_id as string
     const searchParams = useSearchParams()
-    const adminSecret = searchParams.get('secret')
+    const adminSecret = searchParams.get('secret') || undefined
 
     // secret can be undefined for a while: disable the query until it is set
-    const pollQuery = usePolls({_id: poll_id, adminSecret}, !!poll_id)
+    const pollQuery = usePolls(adminSecret
+            ?{_id: poll_id, adminSecret}
+            :{_id: poll_id}, 
+        !!poll_id)
 
     console.log('poll_id', poll_id, 'adminSecret', adminSecret, 'pollQuery', pollQuery)
 

@@ -28,7 +28,6 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
 
     useEffect(() => {
-        console.log('poll admin effect', isSupervisor, sharedBySecret)
         if (!isSupervisor && !sharedBySecret) return
         const interval = setInterval(() => {
             setTick(tick => {
@@ -51,7 +50,7 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || poll.createdByUser?.email || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
                 Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo compilazione: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
