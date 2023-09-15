@@ -3,65 +3,88 @@ import { ClientSafeProvider, getProviders, signIn, getCsrfToken } from "next-aut
 import { getServerSession } from "next-auth/next"
 import authOptions from "./api/auth/[...nextauth]"
 import { useSearchParams } from "next/navigation"
+import { Button, Card } from "react-bootstrap"
+import { useState } from "react"
 
 import Error from '@/components/Error'
+import Email from "next-auth/providers/email";
 
 export default function SignIn({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? undefined
   const error = searchParams.get('error')
+  const invalidCredentials = error === 'Invalid username or password'
+  const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
+  const google = Object.values(providers).find((provider) => provider.name === 'google')
+  const [expanded, setExpanded] = useState(invalidCredentials)
 
-  return (
-    <>
-      {error && <Error>{ error }</Error>}
-      {Object.values(providers).map((provider) => (
-        <div key={provider.name}>
-            <ProviderSection provider={provider} csrfToken={csrfToken} callbackUrl={callbackUrl}/>
-        </div>
-      ))}
-    </>
-  )
+  return <Card>
+      <Card.Header>
+        <Card.Title>Fotografia linguistica: autenticazione</Card.Title>
+      </Card.Header>
+      <Card.Body>
+        {error && !invalidCredentials && <Error>{ error }</Error>}
+        <EmailLogin csrfToken={csrfToken} querystring={querystring} />
+        {expanded ? <>
+          <hr />
+          {google && <GoogleLogin provider={google} callbackUrl={callbackUrl}/>}
+          <hr />
+          { invalidCredentials && <Error>Username o password errati</Error>}
+          <CredentialsLogin querystring={querystring} callbackUrl={callbackUrl} csrfToken={csrfToken}/>
+        </> : <>
+          <br className="py-2"/>
+          <p><a href="#" onClick={() => setExpanded(true)}>[accedi tramite credenziali]</a></p>
+        </>}
+      </Card.Body>
+    </Card>
 }
 
-function ProviderSection({ provider, csrfToken, callbackUrl }: { 
-    provider: ClientSafeProvider,
-    csrfToken: string|undefined, 
-    callbackUrl: string|undefined,
+function EmailLogin({querystring, csrfToken}: {
+  querystring: string,
+  csrfToken: string|undefined,
 }) {
-    const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
-    // take the callback url from the query string
-    switch(provider.type) {
-        case 'oauth':
-            return <>
-              <button onClick={() => signIn(provider.id,{callbackUrl})}>
-                Sign in with {provider.name}
-              </button>
-            </>
-        case 'email':
-            return <form method="post" action={`/api/auth/signin/email${querystring}`}>
-                <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-                <label>
-                    Email address
-                    <input type="email" id="email" name="email" />
-                </label>
-                <button type="submit">Sign in with Email</button>
-            </form>
-        case 'credentials':
-            return <form method="post" action={`/api/auth/callback/credentials${querystring}`}>
-                <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-                <label>
-                Username
-                <input name="username" type="text" />
-                </label>
-                <label>
-                Password
-                <input name="password" type="password" />
-                </label>
-                <button type="submit">Sign in</button>
-            </form>
-        default:
-            return <>invalid provider {provider.name} {provider.type}</>
-    }
+  return <form method="post" action={`/api/auth/signin/email${querystring}`}>
+    <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+    <label>
+        Inserisci il tuo indirizzo email
+        {} <input type="email" id="email" name="email" />
+    </label>
+    {} <Button type="submit">Inviami Email</Button>
+    <br />
+    Ti invieremo un messaggio per entrare nel sito.
+  </form>
+}
+
+function GoogleLogin({provider, callbackUrl}: {
+  provider: ClientSafeProvider,
+  callbackUrl: string|undefined,
+}) {
+  return <div className="py-2">
+    <Button onClick={() => signIn(provider.id,{callbackUrl})}>
+      Entra con un account google
+    </Button>
+  </div>
+}
+
+function CredentialsLogin({querystring,callbackUrl,csrfToken} : {
+    querystring: string,
+    callbackUrl: string|undefined,
+    csrfToken: string|undefined,
+  }) {
+  return <form method="post" action={`/api/auth/callback/credentials${querystring}`}>
+    <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+    <label>
+    Username
+    {} <input name="username" type="text" />
+    </label>
+    <br />
+    <label>
+    Password
+    {} <input name="password" type="password" />
+    </label>
+    <br/>
+    <Button type="submit">Entra</Button>
+  </form>
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

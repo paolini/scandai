@@ -51,8 +51,8 @@ export async function remove(url: string, obj: WithId) {
     })
 }
 
-export async function patch(url: string, obj: WithId) {
-    const res = await fetcher([`/api/${url}/${obj._id}`], {
+export async function patch(url: string, obj: WithId, querystring: string = '') {
+    const res = await fetcher([`/api/${url}/${obj._id}?${querystring}`], {
         method: 'PATCH',
         body: JSON.stringify(obj)
     })
@@ -67,8 +67,8 @@ export async function postPoll(poll: IPostPoll): Promise<{data: IGetPoll}> {
     return await post<IPostPoll>('polls', poll)
 }
 
-export async function patchPoll(poll: any) {
-    return await patch('polls', poll)
+export async function patchPoll(poll: any, adminSecret:string='') {
+    return await patch('polls', poll, adminSecret ? `secret=${adminSecret}` : '')
 }
 
 export async function deletePoll(poll: IGetPoll) {

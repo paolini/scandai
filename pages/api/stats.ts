@@ -16,19 +16,41 @@ export default async function handler(
         let pipeline: any = [
             {$lookup: {
                 from: 'polls',
-                localField: 'pollId',
-                foreignField: '_id',
-                as: 'poll'
+                // localField: 'pollId',
+                // foreignField: '_id',
+                as: 'poll',
+                let: {pollId: '$pollId'},
+                pipeline: [
+                    {$match: {$expr: {$eq: ['$_id', '$$pollId']}}},
+                    // add school information
+                    {$lookup: {
+                        from: 'schools',
+                        as: 'school',
+                        let: {schoolId: '$school_id'},
+                        pipeline: [
+                            {$match: {$expr: {$eq: ['$_id', '$$schoolId']}}},
+                        ]
+                    }},
+                    {$unwind: {
+                        path: '$school',
+                        preserveNullAndEmptyArrays: true
+                    }},
+                ],
             }}, 
             {$unwind: '$poll'},
         ]
 
-        if (!user) {
-            return res.status(401).json({error: 'not authenticated'})
-        }
-
-        if (!user.isAdmin) {
-            pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
+        if (req.query.adminSecret) {
+            // se fornisce l'adminSecret anche un utente anonimo
+            // può vedere le statistiche di quel sondaggio
+            pipeline.push({$match: {'poll.adminSecret': req.query.adminSecret}})
+        } else {
+            if (!user) {
+                return res.status(401).json({error: 'not authenticated'})
+            }
+            if (!user.isAdmin) {
+                pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
+            }
         }
 
         if (req.query.poll) {

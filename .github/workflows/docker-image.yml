@@ -1,9 +1,10 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches:
-      - main
+ push:
+   branches:
+     - main
+     - develop
 
 jobs:
   build:
@@ -16,12 +17,12 @@ jobs:
         node-version: 18
     - name: install node packages
       run: npm ci
-    - name: Build Js bundle
-      run: npm run build
+    - name: Build Js bundle (disabled)
+      run: echo "disabled:" npm run build
     - name: Extract version number
       run: echo VERSION=$( node -e 'console.log(require("./package.json").version)' ) >> $GITHUB_ENV
-    - name: Test version number
-      run: echo ${{ env.VERSION }}
+    - name: Test version number and branch name
+      run: echo version ${{ env.VERSION }} ref_name ${{ github.ref_name }} 
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v4
@@ -43,6 +44,6 @@ jobs:
       with:
         push: true
         context: .
-        tags: paolini/scandai:${{ env.VERSION }} , paolini/scandai:latest
+        tags: paolini/scandai:latest , paolini/scandai:${{ github.ref_name }} , paolini/scandai:${{ github.ref_name }}_${{ env.VERSION }} 
 #        tags: ${{ steps.meta.outputs.tags }}
 #        labels: ${{ steps.meta.outputs.labels }}

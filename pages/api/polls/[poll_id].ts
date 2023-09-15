@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
 import assert from 'assert'
+import randomstring from 'randomstring'
 
 import Poll, {IPoll, IGetPoll, POLL_PIPELINE} from '@/models/Poll'
 import getSessionUser from '@/lib/getSessionUser'
@@ -9,23 +10,27 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
         const user = await getSessionUser(req)
-        if (!user) {
-            return res.status(401).json({error: 'not authenticated'})
-        }
-        const poll_id = req.query.poll_id as string
-        
+        const adminSecret = req.query.secret
+        const poll_id = req.query.poll_id
+
+        if (typeof poll_id !== 'string') return res.status(400).json({error: 'invalid poll_id'})  
+        if (Array.isArray(adminSecret)) return res.status(400).json({error: 'invalid secret'})
+
         const poll = await getPollById(poll_id)
-        
+
         if (!poll) {
             return res.status(404).json({error: 'poll not found'})
         }
-        
-        // only admins and owners can access poll
-        if (!user.isAdmin && user._id !== poll.createdBy.toString()) {
-            return res.status(403).json({error: 'not authorized'})
+
+        const userKnowsSecret = (poll.adminSecret && poll.adminSecret === adminSecret)
+        const userIsOwnerOrAdmin = user && (user.isAdmin || user._id == poll.createdBy.toString()) 
+
+        if (!userKnowsSecret && !userIsOwnerOrAdmin) {
+            return res.status(401).json({error: 'not authorized'})
         }
 
         if (req.method === 'DELETE') {
+            if (!userIsOwnerOrAdmin) return res.status(401).json({error: 'not authorized'})
             const out = await Poll.deleteOne({_id: poll._id})
             return res.status(200).json({ data: out })
         }
@@ -38,10 +43,16 @@ export default async function handler(
                 return res.status(400).json({error: 'invalid json'})
             }
             let payload: any = {}
-            for (let field of  ['school_id', 'form', 'type', 'class']) {
-                if (body[field] === undefined) continue
-                payload[field] = body[field]
+            if (userIsOwnerOrAdmin) {
+                for (let field of  ['school_id', 'form', 'type', 'class']) {
+                    if (body[field] === undefined) continue
+                    payload[field] = body[field]
+                }
+                if (body['adminSecret'] !== undefined) {
+                    payload['adminSecret'] = randomstring.generate({length: 6, readable: true})
+                }
             }
+            
             if (body.closed !== undefined) {
                 if (body.closed && !poll.closed) {
                     payload.date = new Date()
