@@ -59,7 +59,9 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 { !poll.closed && <Tick tick={tick} /> } <br />
                 { user?.isAdmin && !poll.adminSecret && <Button onClick={createAdminSecret}><FaShareAlt />crea link di somministrazione</Button> }<br />
                 </Card.Text>
+                {
                 <QRCode value={fullUrl} onClick={share} style={{cursor:"copy"}}/>
+                }
             </Card.Body>                
             <Card.Footer>
                 <ButtonGroup>
@@ -95,6 +97,17 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             </Card.Footer>
         </Card>
         <ul>
+                {
+                    !adminSecret && poll.adminSecret && 
+                    <li>
+                    Se condividi il link di somministrazione
+                    {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
+                    chi lo riceve potrà vedere questa pagina e potrà 
+                    chiudere il sondaggio e vedere il report.
+                    Non potrà eliminare il sondaggio o vedere altri sondaggi 
+                    diversi da questo.
+                    </li>
+                }
                 <li> 
                     Devi condividere con gli studenti il <i>link (URL)</i> di compilazione del sondaggio
                     {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
