@@ -19,8 +19,9 @@ import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
-
 import { assert } from '@/lib/assert'
+
+import useSessionUser from '@/lib/useSessionUser'
 import { useStats } from '@/lib/api'
 import { 
     IStats, 
@@ -33,6 +34,7 @@ import {
 import questionary, { extractLevels, IReportChartElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
+import Loading from "@/components/Loading";
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -82,6 +84,7 @@ const getPageMargins = () => {
 };
 
 export default function Report() {
+    const user = useSessionUser()
     const router = useRouter()
     const statsQuery = useStats(router.query)
     const form = router.query.form || "full"
@@ -90,20 +93,20 @@ export default function Report() {
         content: () => ref.current,
     })
 
-    if (Array.isArray(form)) return <Error>too many forms</Error>
+    if (Array.isArray(form)) return <Error>richiesta non valida</Error>
 
-    if (statsQuery.isLoading) return <div>Loading...</div>
-    if (!statsQuery.data) return <div>Failed to load</div>
+    if (statsQuery.isLoading) return <Loading />
+    if (!statsQuery.data) return <Error>Errore caricamento ({`${statsQuery.error}`})</Error>
     
     const stats = statsQuery.data.data
 
-    if (stats.entriesCount === 0) return <Page>
+    if (stats.entriesCount === 0) return <Page header={!!user}>
         <Error>
         Impossibile fare il report: nessun questionario compilato
         </Error>
     </Page>
 
-    return <Page>
+    return <Page header={!!user}>
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>stampa</Button>
         </div>

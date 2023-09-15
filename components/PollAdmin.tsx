@@ -13,10 +13,10 @@ import { useAddMessage } from "@/components/Messages"
 import { formatDate } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 
-export default function PollAdmin({poll, mutate, sharedBySecret}:{
+export default function PollAdmin({poll, mutate, adminSecret}:{
     poll: IGetPoll,
     mutate: () => void,
-    sharedBySecret: boolean,
+    adminSecret: string|null,
 }) {
     const [tick, setTick] = useState<number>(0)
     const user = useSessionUser()
@@ -28,7 +28,7 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
 
     useEffect(() => {
-        if (!isSupervisor && !sharedBySecret) return
+        if (!isSupervisor && !adminSecret) return
         const interval = setInterval(() => {
             setTick(tick => {
                 if (tick % 6 === 0) {
@@ -41,7 +41,7 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
         return () => clearInterval(interval)
     }, [isSupervisor, mutate])
 
-    if (!isSupervisor && !sharedBySecret) return null
+    if (!isSupervisor && !adminSecret) return null
 
     return <>
         <Card className="my-2">
@@ -50,7 +50,7 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || poll.createdByUser?.email || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
                 Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo compilazione: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
@@ -69,7 +69,7 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
                         </Button>
                     }
                     { poll.closed && 
-                        <a href={`/report?poll=${poll._id}&form=${poll.form}`} className="btn btn-primary">
+                        <a href={`/report?poll=${poll._id}&form=${poll.form}&adminSecret=${adminSecret}`} className="btn btn-primary">
                             report
                         </a>
                     }
@@ -81,10 +81,12 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
                         chiudi
                       </Button>
                     }
+                    { !adminSecret &&
                     <Link className="btn btn-primary" href="/">
                         elenco
                     </Link>
-                    { poll.closed &&
+                    }
+                    { !adminSecret && poll.closed &&
                         <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>
                             elimina
                         </Button>
@@ -98,9 +100,6 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
                     {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
                     Il link può essere copiato e condiviso oppure puoi 
                     mostrare o stampare il <i>QR-code</i> che contiene il link codificato.
-                    Premendo il pulsante <i>compila</i>
-                    {} puoi vedere il sondaggio come lo vedono gli studenti
-                    (ma solo gli studenti devono inviare il sondaggio).
                 </li>
                 <li>
                     Quando tutti gli studenti hanno compilato il questionario puoi chiudere il sondaggio.
@@ -119,8 +118,8 @@ export default function PollAdmin({poll, mutate, sharedBySecret}:{
         try {
             await patchPoll({
                 _id: poll._id, 
-                closed: !!close,   
-                })
+                closed: !!close,
+                }, adminSecret || undefined)
             mutate()
         } catch(err) {
             addMessage('error', `errore nella chiusura del sondaggio: ${err}`)
