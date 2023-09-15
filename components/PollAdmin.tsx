@@ -98,7 +98,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
         </Card>
         <ul>
                 {
-                    !adminSecret && poll.adminSecret && 
+                    !adminSecret && fullAdminUrl && 
                     <li>
                     Se condividi il link di somministrazione
                     {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
