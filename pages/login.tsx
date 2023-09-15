@@ -45,9 +45,9 @@ function EmailLogin({querystring, csrfToken}: {
 }) {
   return <form method="post" action={`/api/auth/signin/email${querystring}`}>
     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-    <label>
-        Inserisci il tuo indirizzo email
-        {} <input type="email" id="email" name="email" />
+    <label htmlFor="email">
+        Inserisci il tuo indirizzo email<br/>
+        <input type="email" id="email" name="email" />
     </label>
     {} <Button type="submit">Inviami Email</Button>
     <br />
@@ -73,14 +73,14 @@ function CredentialsLogin({querystring,callbackUrl,csrfToken} : {
   }) {
   return <form method="post" action={`/api/auth/callback/credentials${querystring}`}>
     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-    <label>
-    Username
-    {} <input name="username" type="text" />
+    <label className="my-2" htmlFor="username">
+    Username <br/>
+    <input name="username" type="text" />
     </label>
-    <br />
-    <label>
-    Password
-    {} <input name="password" type="password" />
+    <br/>
+    <label className="my-2" htmlFor="password">
+    Password <br/>
+    <input name="password" type="password" />
     </label>
     <br/>
     <Button type="submit">Entra</Button>

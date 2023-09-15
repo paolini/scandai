@@ -45,7 +45,7 @@ export default function Polls({}) {
             }}/>
             : <NewPollButtons form={newForm} />
         }
-        { openPolls.length > 0 && <Card className="my-2">
+        { openPolls.length > 0 && <Card className="my-2 table-responsive">
             <Card.Header>
                 <b>questionari aperti</b>
             </Card.Header>
@@ -55,7 +55,7 @@ export default function Polls({}) {
         </Card>
         }
         { closedPolls.length > 0 && 
-            <Card className="my-2">
+            <Card className="my-2 table-responsive">
                 <Card.Header>
                     <b>questionari chiusi</b>
                 </Card.Header>
