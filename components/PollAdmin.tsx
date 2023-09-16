@@ -39,7 +39,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             })
         }, 1000 / 2)
         return () => clearInterval(interval)
-    }, [isSupervisor, mutate])
+    }, [isSupervisor, adminSecret, mutate])
 
     if (!isSupervisor && !adminSecret) return null
 

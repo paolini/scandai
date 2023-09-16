@@ -29,7 +29,7 @@ function UserIndex() {
 
   return <Page>
     <h1>Fotografia linguistica</h1>
-    {profile.name==='' && <SetUserName profile={profile} mutate={profileRequest.mutate}/>}
+    {!profile.name && <SetUserName profile={profile} mutate={profileRequest.mutate}/>}
     <p>Benvenuto {profile.name || profile.username || profile.email }!</p>
     <Polls />  
   </Page>

@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
 import { IPostSchool, IGetSchool } from '@/models/School'
-import { IEntry } from '@/models/Entry'
+import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 
@@ -75,8 +75,8 @@ export async function deletePoll(poll: IGetPoll) {
     await remove('polls', poll)
 }
 
-export function useEntries() {
-    return useIndex<IEntry[]>('entries')
+export function useEntries(query?: any) {
+    return useIndex<IGetEntry[]>('entries', query)
 }
 
 export function useStats(query?: any) {
