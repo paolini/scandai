@@ -86,7 +86,8 @@ providers.push(CredentialsProvider({
                 name: user?.name,
                 username: user?.username,
                 email: user?.email,
-                isAdmin: user.isAdmin,
+                isAdmin: user?.isAdmin,
+                isSuper: user?.isSuper,
             }
             console.error(`Password not valid for user ${credentials.username}`)
         } else {
@@ -130,6 +131,7 @@ export default NextAuth({
                         username: dbUser?.username,
                         email: dbUser?.email,
                         isAdmin: dbUser?.isAdmin,
+                        isSuper: dbUser?.isSuper,
                         image: dbUser?.image,
                     }
                 } else {

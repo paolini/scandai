@@ -13,6 +13,7 @@ export default async function handler(
         if (!entry_id) return res.status(400).json({error: 'missing entry_id'})
 
         if (!user?.isAdmin) return res.status(401).json({ error: 'not authorized' })
+        if (!user?.isSuper) return res.status(401).json({ error: 'not authorized' })
 
         if (req.method === 'DELETE') {
             try {
