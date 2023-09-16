@@ -1,5 +1,6 @@
 import { useRouter } from "next/router"
 import { Card, Table } from "react-bootstrap"
+import Link from "next/link"
 
 import { useEntries } from "@/lib/api"
 import Loading from "@/components/Loading"
@@ -15,7 +16,7 @@ export default function Entry({}) {
     if (!entryQuery.data) return <Error>{entryQuery.error.message}</Error>
     const entry = entryQuery.data.data[0]
     return <Page>
-        <a href="/entries">indietro</a>
+        <Link href="/entries">indietro</Link>
         <Table>
             <tbody>
                 <tr>
