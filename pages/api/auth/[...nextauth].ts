@@ -174,6 +174,7 @@ export default NextAuth({
 })
 
 import { createTransport } from "nodemailer"
+import { SITE_TITLE } from "@/lib/config"
 
 async function sendVerificationRequest(params: SendVerificationRequestParams) {
   const { identifier, url, provider, theme } = params
@@ -183,7 +184,7 @@ async function sendVerificationRequest(params: SendVerificationRequestParams) {
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
-    subject: `login fotografia linguistica`,
+    subject: `login ${SITE_TITLE}`,
     text: email_text({ url, host }),
     html: email_html({ url, host }),
   })
@@ -223,7 +224,7 @@ function email_html(params: { url: string; host: string }) {
     <tr>
       <td align="center"
         style="padding: 10px 0px; font-size: 22px; font-family: Helvetica, Arial, sans-serif; color: ${color.text};">
-        Entra nel sito <strong>fotografia linguistica</strong>
+        Entra nel sito <strong>${SITE_TITLE}</strong>
       </td>
     </tr>
     <tr>
@@ -250,5 +251,5 @@ function email_html(params: { url: string; host: string }) {
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
 function email_text({ url, host }: { url: string; host: string }) {
-  return `Entra nel sito della fotografia linguistica:\n${url}\n\n`
+  return `Entra nel sito ${SITE_TITLE}:\n${url}\n\n`
 }
