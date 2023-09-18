@@ -82,8 +82,8 @@ export default function Users() {
 
     async function clickDeleteUser(user: IGetUser) {
         try {
-            deleteUser(user) 
-            usersQuery.mutate()
+            await deleteUser(user) 
+            await usersQuery.mutate()
         } catch(e) {
             addMessage('error', `error deleting user: ${e}`)
             console.error(e)
