@@ -25,6 +25,7 @@ export default async function handler(
                 username: user.username,
                 email: user.email,
                 isAdmin: user.isAdmin,
+                isSuper: user.isSuper,
                 image: user.image,
             }   
             return res.json(profile)
@@ -32,9 +33,7 @@ export default async function handler(
 
         if (req.method === 'PATCH') {
             const { name } = JSON.parse(req.body)
-            console.log('PATCH profile', name, sessionUser._id)
             const out = await User.findOneAndUpdate({_id: sessionUser._id}, {name})
-            console.log('PATCH profile out', out)
             if (!out) {
                 return res.status(404).json({error: 'not found'})
             }

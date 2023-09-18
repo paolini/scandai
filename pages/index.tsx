@@ -7,6 +7,7 @@ import Loading from '@/components/Loading'
 import Polls from '@/components/Polls'
 import SetUserName from '@/components/SetUserName'
 import { useProfile } from '@/lib/api'
+import { SITE_TITLE } from '@/lib/config'
 
 export default function Index({}) {
   const router = useRouter()
@@ -34,7 +35,7 @@ function UserIndex() {
   }
 
   return <Page>
-    <h1>Fotografia linguistica</h1>
+    <h1>{SITE_TITLE}</h1>
     {!profile.name && <SetUserName profile={profile} mutate={profileRequest.mutate}/>}
     <p>Benvenuto {profile.name || profile.username || profile.email }!</p>
     <Polls />  

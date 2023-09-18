@@ -1,22 +1,25 @@
 import { useRouter } from "next/router"
-import { Card, Table } from "react-bootstrap"
-import Link from "next/link"
+import { ButtonGroup, Button, Table } from "react-bootstrap"
 
-import { useEntries } from "@/lib/api"
+import { useEntries, deleteEntry } from "@/lib/api"
 import Loading from "@/components/Loading"
-import Error from "@/components/Error"
+import ErrorElement from "@/components/Error"
 import Page from "@/components/Page"
 import { formatDate, formatTime } from "@/lib/utils"
+import { useAddMessage } from "@/components/Messages"
 
 export default function Entry({}) {
     const router = useRouter()
     const entryId = router.query.entry_id
     const entryQuery = useEntries({_id: entryId})
+    const addMessage = useAddMessage()
+
+    if (!entryId || Array.isArray(entryId)) return <ErrorElement>id non valido</ErrorElement>
+
     if (entryQuery.isLoading) return <Loading />
-    if (!entryQuery.data) return <Error>{entryQuery.error.message}</Error>
+    if (!entryQuery.data) return <ErrorElement>{entryQuery.error.message}</ErrorElement>
     const entry = entryQuery.data.data[0]
     return <Page>
-        <Link href="/entries">indietro</Link>
         <Table>
             <tbody>
                 <tr>
@@ -49,6 +52,10 @@ export default function Entry({}) {
                 </tr>
             </tbody>
         </Table>
+        <ButtonGroup>
+            <Button onClick={() => router.push('/entries')}>elenco</Button>
+            <Button variant="danger" onClick={trash}>elimina</Button>
+        </ButtonGroup>
         <Table>
             <thead>
                 <tr>
@@ -76,5 +83,15 @@ export default function Entry({}) {
         if (val==='') return ''
         if (typeof val === 'string') return val
         return `{${Object.entries(val).map(([key, val]) => `${key}: ${val}`).join(', ')}}`
+    }
+
+    async function trash() {
+        try {
+            await deleteEntry(entry)
+            router.push('/entries')
+            addMessage('success', 'eliminato')
+        } catch (error) {
+            addMessage('warning', `errore: ${error}`)
+        }
     }
 }

@@ -11,6 +11,7 @@ export default async function handler(
 
     if (!user) return res.status(401).json({ error: 'not authenticated' })
     if (!user.isAdmin) return res.status(401).json({ error: 'not authorized' })
+    if (!user.isSuper) return res.status(401).json({ error: 'not authorized' })
 
     if (req.method === 'GET') {
         console.log(`GET query ${JSON.stringify(req.query)}`)

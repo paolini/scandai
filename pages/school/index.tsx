@@ -25,7 +25,7 @@ export default function Schools() {
 
     return <Page>
         <h2>Scuole</h2>
-        <Button onClick={() => router.push('/school/new')}>
+        <Button onClick={() => router.push('/school/__new__')}>
             <FaCirclePlus className="m-1 bg-blue-300"/>
             aggiungi scuola
         </Button>

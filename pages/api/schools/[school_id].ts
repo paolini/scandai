@@ -4,6 +4,7 @@ import assert from 'assert'
 
 import School, {ISchool, IGetSchool} from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
+import { trashDocument } from '@/lib/mongodb'
 
 export default async function handler(
     req: NextApiRequest,
@@ -26,7 +27,9 @@ export default async function handler(
 
         if (req.method === 'GET') {
             try {
-                const school = await getSchoolById(school_id)
+                const school = school_id === '__new__' 
+                    ? {_id: '__new__', name: '', city: ''}
+                    : await getSchoolById(school_id)
 
                 if (!school) {
                     return res.status(404).json({error: 'school not found'})
@@ -38,7 +41,11 @@ export default async function handler(
         }
 
         if (req.method === 'DELETE') {
-            const out = await School.deleteOne({_id: school_id})
+            try {
+                await trashDocument('schools', school_id)
+            } catch (error) {
+                return res.status(400).json({ error: `${error}` })
+            }
             return res.status(200).json({ ok: true })
         }
 
