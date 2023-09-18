@@ -21,7 +21,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     const [tick, setTick] = useState<number>(0)
     const user = useSessionUser()
     const addMessage = useAddMessage()
-    const isSupervisor = user && (user.isAdmin || user._id === poll.createdByUser._id)
+    const isSupervisor = user && (user.isAdmin || user._id === poll.createdByUser?._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
