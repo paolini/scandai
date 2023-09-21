@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 answers: req.body.answers,
                 pollId: req.body.pollId,
                 lang: req.body.lang,
-                timestamp: req.body.timestamp,
+                clientTimestamp: req.body.timestamp,
                 IP,
             })
         res.status(200).json({ data: 'ok' })
