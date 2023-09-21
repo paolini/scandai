@@ -47,6 +47,8 @@ const EntrySchema = new mongoose.Schema({
         required: true
     },
     lang: String,
+    IP: String,
+    clientTimestamp: Number,
 }, {
     timestamps: true
 })

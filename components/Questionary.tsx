@@ -10,12 +10,13 @@ import { IGetPoll } from '@/models/Poll'
 import PollSplash from '@/components/PollSplash'
 import { State, value, update, set } from '@/lib/State'
 
-export default function Questionary({langState, poll, form, answersState, mutate } : {
+export default function Questionary({langState, poll, form, answersState, mutate, timestamp } : {
     langState: State<string>,
     form: string,
     poll: IGetPoll,
     answersState: State<IAnswers>,
     mutate: () => void,
+    timestamp: number,
   }) {
 
   const [pageCount, setPageCount] = useState(-1)
@@ -91,6 +92,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
           answers,
           pollId,
           lang,
+          timestamp,
         })
       })
       console.log(res)

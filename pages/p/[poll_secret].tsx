@@ -16,6 +16,7 @@ export default function PollSecret({}) {
     const pollQuery = usePolls({secret},secret!==undefined)
     const langState = useState('it')
     const answersState = useState<IAnswers>({})
+    const [timestamp, setTimestamp] = useState(Date.now())
 
     // pollQuery.data is set if loading completes with no error
     // but you get pollQuery.data undefined if the query is disabled (secret===undefined)
@@ -41,6 +42,7 @@ export default function PollSecret({}) {
             langState={langState}
             answersState={answersState}
             mutate={pollQuery.mutate}
+            timestamp={timestamp}
             />
     </Page>}
 
