@@ -6,6 +6,7 @@ export interface IUser {
     username: string,
     email: string,
     isAdmin: boolean,
+    isSuper: boolean,
     image: string,
     verified: boolean,
 }
@@ -23,6 +24,7 @@ export interface IGetUser {
     username: string,
     email: string,
     isAdmin: boolean,
+    isSuper: boolean,
     image: string,
 }
 
@@ -40,6 +42,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
     },
     isAdmin: {
+        type: Boolean,
+    },
+    isSuper: {
         type: Boolean,
     }
 }, {

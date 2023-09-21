@@ -71,7 +71,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                         </Button>
                     }
                     { poll.closed && 
-                        <a href={`/report?poll=${poll._id}&form=${poll.form}&adminSecret=${adminSecret}`} className="btn btn-primary">
+                        <a href={`/report?poll=${poll._id}&form=${poll.form}${adminSecret?"&adminSecret="+adminSecret:""}`} className="btn btn-primary">
                             report
                         </a>
                     }

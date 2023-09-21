@@ -59,6 +59,10 @@ export async function patch(url: string, obj: WithId, querystring: string = '') 
     return res
 }
 
+export async function deleteEntry(obj: WithId) {
+    return remove('entries', obj)
+}
+
 export function usePolls(filter?: any, enabled=true) {
     return useIndex<IGetPoll[]>('polls', filter, enabled)
 }

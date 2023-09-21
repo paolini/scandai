@@ -26,12 +26,15 @@ export default async function createAdminUser(db: Connection) {
                 { $set: {password: encryptedPassword }})
             console.log(`admin user "${username}" password updated to match ADMIN_PASSWORD env variable.`)
         }
-        if (user.isAdmin) {
+        if (user.isAdmin && user.isSuper) {
             console.log(`admin user "${username}" already has admin role.`)
         } else {
             await users.updateOne(
                 { _id: user._id }, 
-                { $set: {isAdmin: true }})
+                { $set: {
+                    isAdmin: true,
+                    isSuper: true,
+                }})
             console.log(`set admin role to admin user "${username}".`)
         }
     } else {
@@ -40,6 +43,7 @@ export default async function createAdminUser(db: Connection) {
             username,
             password: encryptedPassword,
             isAdmin: true,
+            isSuper: true,
         }
         await users.insertOne(user)
         console.log(`admin user ${username} created.`)

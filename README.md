@@ -45,6 +45,7 @@ set these variables in the environment:
     GOOGLE_CLIENT_SECRET=client_secret
     ADMIN_USERNAME=admin
     ADMIN_PASSWORD=your_secret_password
+    NEXT_PUBLIC_SITE_TITLE="Fotografia linguistica"
 ```
 
 ## links

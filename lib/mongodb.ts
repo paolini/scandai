@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import {Types} from 'mongoose'
 
 import migrate from './migrations'
 import createAdminUser from './createAdminUser'
@@ -26,3 +27,15 @@ async function init() {
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
 export default init()
+
+export async function trashDocument(collectionName: string, documentId: string) {
+  const db = mongoose.connection
+
+  const collection = db.collection(collectionName)
+  const document = await collection.findOne({ _id: new Types.ObjectId(documentId) })
+  if (!document) throw new Error(`document ${documentId} not found in collection ${collectionName}`)
+  // save document to "trash" collection
+  const trashCollection = db.collection(`${collectionName}_trash`)
+  await trashCollection.findOneAndUpdate({ _id: document._id }, { $set: document }, { upsert: true })
+  await collection.deleteOne({ _id: document._id })
+}

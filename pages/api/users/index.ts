@@ -15,15 +15,18 @@ export default async function handler(
             return res.status(403).json({error: 'not authorized'})
         }
         if (req.method === 'GET') {
-            const users = await User.find({})
+            const users = await User.aggregate([
+                {$project: {
+                    password: 0,
+                }},
+            ])
             return res.json({data: users})
         }
         if (req.method === 'POST') {
             const {name, username, email} = JSON.parse(req.body)
-            const password = randomstring.generate({length: 6, readable: true})
-            const newUser = new User({name, username, email, password, isAdmin: false})
+            const newUser = new User({name, username, email, isAdmin: false})
             console.log(`creating new User: ${newUser}`)
             const out = await newUser.save()
-            return res.json({data: out, password})
+            return res.json(out)
         }
     }

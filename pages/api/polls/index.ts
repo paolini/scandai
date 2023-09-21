@@ -23,21 +23,21 @@ export default async function handler(
         if (req.query._id!==undefined) {
             $match['_id'] = new ObjectId(req.query._id as string)
         }
-        // set filters from user authorization
-        if (user) {
-            if (!user.isAdmin) {
-                // non admin vede solo i suoi poll
-                $match['createdBy'] = new ObjectId(user._id)
-            }
-        } else {
-            // anonymous user can only see public polls
-            // or get a specific poll by secret
-            if (!$match.secret && !$match.adminSecret) {
-                // attualmente "public" non è valorizzato
-                // quindi si otterrà sempre un array vuoto
-                $match['public'] = true
+
+        // se ho specificato un secret o un adminSecret
+        // posso vedere solo quella poll 
+        // ma non ho bisogno di essere autenticato            
+        if (!$match.secret && !$match.adminSecret) {
+            // set filters from user authorization
+            if (user) {
+                if (!user.isAdmin) {
+                    // non admin vede solo i suoi poll                
+                    $match['createdBy'] = new ObjectId(user._id)
+                }
             } else {
-                // otterrò solamente i poll con il secret o l'adminSecret specificato
+                // anonymous user can only see public polls
+                // or get a specific poll by secret
+                $match['public'] = true
             }
         }
 

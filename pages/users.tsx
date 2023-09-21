@@ -114,7 +114,7 @@ function NewUser({done }:{
                 username: value(userState).email,
             }
             const out = await postUser(newUser)
-            addMessage('success', `nuovo utente creato password: ${out.password}`)
+            addMessage('success', `nuovo utente creato`)
             if (done) done()
         } catch(err) {
             addMessage('error', `errore nella creazione del sondaggio: ${err}`)

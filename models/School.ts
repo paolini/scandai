@@ -19,10 +19,12 @@ const SchoolSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        default: '',
     },
     city: {
         type: String,
-        required: false,
+        required: true,
+        default: '',
     },
 }, {
     timestamps: true

@@ -5,6 +5,7 @@ import authOptions from "./api/auth/[...nextauth]"
 import { useSearchParams } from "next/navigation"
 import { Button, Card } from "react-bootstrap"
 import { useState } from "react"
+import { SITE_TITLE } from "@/lib/config"
 
 import Error from '@/components/Error'
 import Email from "next-auth/providers/email";
@@ -17,10 +18,11 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
   const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
   const google = Object.values(providers).find((provider) => provider.name === 'google')
   const [expanded, setExpanded] = useState(invalidCredentials)
+  
 
   return <Card>
       <Card.Header>
-        <Card.Title>Fotografia linguistica: autenticazione</Card.Title>
+        <Card.Title>{SITE_TITLE}: autenticazione</Card.Title>
       </Card.Header>
       <Card.Body>
         {error && !invalidCredentials && <Error>{ error }</Error>}
