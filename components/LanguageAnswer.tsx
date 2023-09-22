@@ -11,7 +11,7 @@ function OtherLanguage({lang, addLanguage}: {
     const [other, setOther] = useState("")
     function commit() {
       if (other) {
-        addLanguage(other)
+        addLanguage(other.trim())
         setOther("")
       }
     }
