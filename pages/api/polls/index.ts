@@ -11,7 +11,7 @@ export default async function handler(
     res: NextApiResponse) {
     const user = await getSessionUser(req)
     if (req.method === 'GET') {
-        console.log(`GET query ${JSON.stringify(req.query)}`)
+        console.log(`GET query ${new Date().toISOString()} ${JSON.stringify(req.query)}`)
         let $match: any = {}
 
         // set filters from query parameters

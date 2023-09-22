@@ -13,6 +13,8 @@ export interface IEntry {
         [key: QuestionCode]: Answer
     },
     lang: string,
+    IP: string,
+    clientTimestamp: number,
 }
 
 export interface IGetEntry {
@@ -33,6 +35,8 @@ export interface IGetEntry {
         [key: QuestionCode]: Answer
     },
     lang: string,
+    IP: string,
+    clientTimestamp: number,
     createdAt: string,
 }
 
@@ -47,6 +51,8 @@ const EntrySchema = new mongoose.Schema({
         required: true
     },
     lang: String,
+    IP: String,
+    clientTimestamp: Number,
 }, {
     timestamps: true
 })

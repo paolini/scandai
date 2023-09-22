@@ -94,7 +94,6 @@ providers.push(CredentialsProvider({
             console.error(`User not found with username ${credentials.username}`)
         }
         throw new Error('Invalid username or password')
-        return null
     }
 }))
 

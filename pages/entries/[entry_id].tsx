@@ -1,5 +1,6 @@
 import { useRouter } from "next/router"
 import { ButtonGroup, Button, Table } from "react-bootstrap"
+import dayjs from "dayjs"
 
 import { useEntries, deleteEntry } from "@/lib/api"
 import Loading from "@/components/Loading"
@@ -28,7 +29,10 @@ export default function Entry({}) {
                 </tr>
                 <tr>
                     <th>ora</th>
-                    <td>{formatTime(entry.createdAt)}</td>
+                    <td>{ entry.createdAt
+                        ? dayjs(entry.createdAt).format("HH:mm:ss")
+                        : '---' }
+                    </td>
                 </tr>
                 <tr>
                     <th>tipo</th>
@@ -49,6 +53,14 @@ export default function Entry({}) {
                 <tr>
                     <th>lingua</th>
                     <td>{entry?.lang}</td>
+                </tr>
+                <tr>
+                    <th>ip</th>
+                    <td>{entry?.IP}</td>
+                </tr>
+                <tr>
+                    <th>timestamp</th>
+                    <td>{entry?.clientTimestamp}</td>
                 </tr>
             </tbody>
         </Table>

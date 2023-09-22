@@ -10,16 +10,18 @@ import { IGetPoll } from '@/models/Poll'
 import PollSplash from '@/components/PollSplash'
 import { State, value, update, set } from '@/lib/State'
 
-export default function Questionary({langState, poll, form, answersState, mutate } : {
+export default function Questionary({langState, poll, form, answersState, mutate, timestamp } : {
     langState: State<string>,
     form: string,
     poll: IGetPoll,
     answersState: State<IAnswers>,
     mutate: () => void,
+    timestamp: number,
   }) {
 
   const [pageCount, setPageCount] = useState(-1)
   const addMessage = useAddMessage()
+  const [submitting, setSubmitting] = useState(false)
   const answers = answersState[0]
   const lang = langState[0]
 
@@ -81,6 +83,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
   async function submit() {
     const pollId = poll?._id || ''
     let res
+    setSubmitting(true)
     try {
       res = await fetch('/api/submit', {
         method: 'POST',
@@ -91,6 +94,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
           answers,
           pollId,
           lang,
+          timestamp,
         })
       })
       console.log(res)
@@ -103,6 +107,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
     } else {
       addMessage('error', res?.statusText || 'errore') 
     }
+    setSubmitting(false)
   }
   
   return <div>
@@ -129,7 +134,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
       }
       {
         pageCount >= pages.length-1 &&
-        <Button disabled={!pageCompleted} variant="danger" onClick={submit}>
+        <Button disabled={!pageCompleted || submitting} variant="danger" onClick={submit}>
           {getPhrase("sendButton", lang)}
         </Button>
       }
@@ -159,3 +164,5 @@ function Completed({lang}:{
       */}
   </Card>
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
