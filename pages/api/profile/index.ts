@@ -14,7 +14,10 @@ export default async function handler(
         if (req.method === 'GET') {
             const user = await User.findOne({_id: sessionUser._id})
             if (!user) {
-                return res.status(404).json({error: 'not found'})
+                return res.json({
+                    _id: null,
+                    notLoggedIn: true,
+                })
             }
             const profile: IGetUser = {
                 _id: user._id,

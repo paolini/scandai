@@ -1,4 +1,4 @@
-import { signIn } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
 import Page from '@/components/Page'
@@ -24,9 +24,15 @@ export default function Index({}) {
 }
 
 function UserIndex() {
+  const router = useRouter()
   const profileRequest = useProfile()
   const profile = profileRequest.data
-  if (!profile) return <Loading />
+  if (!profile) return <Loading/>
+  if (!profile._id) {
+    /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
+    signOut()
+    return <Loading />
+  }
 
   return <Page>
     <h1>{SITE_TITLE}</h1>
