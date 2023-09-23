@@ -22,7 +22,7 @@ export default function PollSplash({poll, langState, mutate, start}:{
     const addMessage = useAddMessage()
 
     function phrase(s: keyof typeof questions.phrases) {
-        return getPhrase(s, value(langState))
+        return getPhrase(s, value(langState) || 'it')
     }
 
     return <Page header={false}>
@@ -32,7 +32,7 @@ export default function PollSplash({poll, langState, mutate, start}:{
                 <div className="my-1"><b>{ phrase('class') } :</b> { poll.class }</div>
                 { /* user?.isAdmin && <a href={`/poll/${poll._id}`} className="my-4">[pagina amministrazione]</a> */}
                 <ChooseLanguage langState={langState}/>
-                { poll.closed 
+                { value(langState) && (poll.closed 
                     ? <Error>{phrase('isClosed')}.</Error>
                     : <>
                         <div className="flex my-4">
@@ -45,7 +45,7 @@ export default function PollSplash({poll, langState, mutate, start}:{
                             <FaShareAlt /> {phrase('shareButton')}
                         </Button>
                         <QRCode className="flex my-4 w-100" value={myUrl} />
-                    </>
+                    </>)
                 }
             </div>
         </Page>

@@ -14,7 +14,7 @@ export default function PollSecret({}) {
 
     // secret can be undefined for a while: disable the query until it is set
     const pollQuery = usePolls({secret},secret!==undefined)
-    const langState = useState('it')
+    const langState = useState('')
     const answersState = useState<IAnswers>({})
     const [timestamp, setTimestamp] = useState(Date.now())
 
