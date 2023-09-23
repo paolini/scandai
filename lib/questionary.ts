@@ -544,9 +544,9 @@ const questionary: IQuestionary = {
     "2.2.1": {
       type: 'map-language-to-competence',
       question: {
-        it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (0=Nessuna competenza; 10=competenza avanzata. Se non conosci la lingua indica competenza 0)",
-        fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (0=Nissune competence; 10=Competence complete. Se no tu cognossis la lenghe segne competence 0)",
-        en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (0 = no proficiency at all; 10 = advanced proficiency)",
+        it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (Se non conosci la lingua indica competenza 0)",
+        fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (Se no tu cognossis la lenghe segne competence 0)",
+        en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (If you don't know the language, choose the value 0)",
       },
       compulsory: true,
     }
