@@ -1,6 +1,6 @@
 import assert from "assert"
 
-export const languageCodes = ['it','fu','sl','de']
+export const languageCodes = ['it','fu','sl','de','en']
 
 export const schoolNames = [
   'ISIS PASCHINI/LINUSSIO - TOLMEZZO',
@@ -143,6 +143,11 @@ const questionary: IQuestionary = {
       fu: 'Sloven',
       en: 'Slovenian',
     },
+    en: {
+      it: 'Inglese',
+      fu: 'Inglês',
+      en: 'English',
+    }
   },
 
   languagesExtended: {
@@ -166,6 +171,11 @@ const questionary: IQuestionary = {
       fu: 'Sloven',
       en: 'Slovenian',
     },
+    en: {
+      it: 'Inglese',
+      fu: 'Inglês',
+      en: 'English',
+    }
   },
 
   ages: [
