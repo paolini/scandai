@@ -12,6 +12,9 @@
 
 FROM node:16-alpine AS base
 
+# Install mongodump
+RUN apk add --no-cache mongodb-tools
+
 # Install dependencies only when needed
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
