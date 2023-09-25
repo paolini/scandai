@@ -45,13 +45,16 @@ export default async function handler(
                 return res.status(400).json({error: 'invalid json'})
             }
             let payload: any = {}
+            console.log(`PATCH ${poll_id} ${JSON.stringify(body)}`)
             if (userIsOwnerOrAdmin) {
                 for (let field of  ['school_id', 'form', 'type', 'class']) {
                     if (body[field] === undefined) continue
                     payload[field] = body[field]
                 }
-                if (body['adminSecret'] !== undefined) {
-                    payload['adminSecret'] = randomstring.generate({length: 6, readable: true})
+                if (body.adminSecret !== undefined) {
+                    payload['adminSecret'] = body.adminSecret 
+                        ? randomstring.generate({length: 6, readable: true})
+                        : ''
                 }
             }
             

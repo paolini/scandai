@@ -57,7 +57,15 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 { user?.isAdmin && poll.adminSecret && <>indirizzo somministrazione: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
                 Questionari compilati: <b>{poll.entriesCount}</b> 
                 { !poll.closed && <Tick tick={tick} /> } <br />
-                { user?.isAdmin && !poll.adminSecret && <Button onClick={createAdminSecret}><FaShareAlt />crea link di somministrazione</Button> }<br />
+                { user?.isAdmin && !poll.adminSecret && 
+                    <Button onClick={createAdminSecret}>
+                        <FaShareAlt />crea link di somministrazione
+                    </Button> }
+                { user?.isAdmin && poll.adminSecret &&
+                    <Button onClick={createAdminSecret} variant="danger">
+                        elimina link di somministrazione
+                    </Button> }
+                <br />
                 </Card.Text>
                 {
                 <QRCode value={fullUrl} onClick={share} style={{cursor:"copy"}}/>
@@ -171,12 +179,9 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
         try {
             const res = await patchPoll({ 
                 _id: poll._id, 
-                adminSecret: 1
+                adminSecret: poll.adminSecret ? 0 : 1
             })
-            const adminSecret = res.data.adminSecret
-            const adminFullUrl = composeAdminFullUrl(adminSecret)
-            copyToClipboard(adminFullUrl)
-            addMessage('success', `admin secret copiato: ${adminFullUrl}`)
+            await mutate()
         } catch(err) {
             addMessage('error', `errore nella creazione del link di somministrazione: ${err}`)
         }

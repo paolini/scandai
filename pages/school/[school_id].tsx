@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { Card, Button, ButtonGroup } from 'react-bootstrap'
+import copyToClipboard from 'copy-to-clipboard'
+import { FaShareAlt } from "react-icons/fa"
 
 import Page from '@/components/Page'
 import { useSchool, patchSchool, postSchool, deleteSchool } from '@/lib/api'
@@ -11,6 +13,8 @@ import { value } from '@/lib/State'
 import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
 import questionary from '@/lib/questionary'
+import useSessionUser from '@/lib/useSessionUser'
+
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -38,21 +42,38 @@ function School({ school, mutate } : {
     const nameState = useState<string>(school.name)
     const cityState = useState<string>(school.city)
     const [edit, setEdit] = useState<boolean>(createNew)
-    const modified = value(nameState) !== school.name ||  value(cityState) !== school.city
+    const modified = value(nameState) !== school.name || value(cityState) !== school.city
     const router = useRouter()
     const addMessage = useAddMessage()
+    const user = useSessionUser()
 
     return <Card>
         <Card.Header>
             <h2>Scuola</h2>
         </Card.Header>
         <Card.Body>
-            <p><b>Nome:</b> {}                 
-                { edit ? <Input state={nameState} /> : school.name }
+            <p>Nome: {}                 
+                { edit ? <Input state={nameState} /> : <b>{school.name}</b> }
             </p>
-            <p><b>Città:</b> {}
-                { edit ? <Input state={cityState} /> : school.city }
+            <p>Città: {}
+                { edit ? <Input state={cityState} /> : <b>{school.city}</b> }
             </p>
+            { school.reportSecret &&
+             Object.keys(questionary.forms).map(form =>
+                <p>indirizzo condivisione report {form}: {}
+                <b onClick={shareReport(form)} style={{cursor:"copy"}}>{reportAbsoluteUrl(form)}</b>
+                </p>)
+            }
+            { school.reportSecret &&
+                <Button onClick={createReportSecret} variant="danger">
+                    cancella indirizzo condivisione report "full"
+                </Button>
+            }
+            { !school.reportSecret &&
+                <Button onClick={createReportSecret}>
+                            <FaShareAlt /> crea indirizzo condivisione report "full"
+                </Button>
+            }
         </Card.Body>
         <Card.Footer>
             <ButtonGroup>
@@ -60,7 +81,7 @@ function School({ school, mutate } : {
                     {createNew?"Annulla":"Elenco"}
                 </Button>
                 { Object.keys(questionary.forms).map(form => 
-                    <Button key={form} onClick={() => router.push(`/report?form=${form}&school_id=${school._id}`)}>
+                    <Button key={form} onClick={() => router.push(reportUrl(form))}>
                     report {form}
                     </Button>)}
                 { !edit && <Button onClick={() => setEdit(true)} variant="danger">
@@ -102,5 +123,39 @@ function School({ school, mutate } : {
         await mutate()
         router.push('/school')
     }
+
+    function reportUrl(form: string) {
+        return `/report?form=${form}&school_id=${school._id}`
+    }
+
+    function reportAbsoluteUrl(form: string) {
+        const secretPart = school.reportSecret ? `&schoolSecret=${school.reportSecret}` : ''
+        return `${window.location.origin}${reportUrl(form)}${secretPart}`
+    }
+
+    function shareReport(form: string) {
+        return () => {
+            if (!school.reportSecret) {
+                addMessage('error', `impossibile copiare l'indirizzo di condivisione report`)
+                return
+            }
+            const absoluteUrl = reportAbsoluteUrl(form)
+            copyToClipboard(absoluteUrl)
+            addMessage('success', `indirizzo somministrazione (url) copiato: ${absoluteUrl}`)
+        }
+    }
+
+    async function createReportSecret () {
+        try {
+            const res = await patchSchool({ 
+                _id: school._id, 
+                reportSecret: school.reportSecret ? '0' : '1',
+            })
+            await mutate()
+        } catch(err) {
+            addMessage('error', `errore nella creazione/rimozione del link di condivisione report: ${err}`)
+        }
+    }
+
 
 }
