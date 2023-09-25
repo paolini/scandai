@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
 import assert from 'assert'
+import randomstring from 'randomstring'
 
 import School, {ISchool, IGetSchool} from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
@@ -60,6 +61,11 @@ export default async function handler(
             for (let field of  ['name', 'city']) {
                 if (body[field] === undefined) continue
                 payload[field] = body[field]
+            }
+            if (body['reportSecret'] !== undefined) {
+                payload['reportSecret'] = body.reportSecret === '1'  
+                    ? randomstring.generate({length: 6, readable: true})
+                    : ''
             }
             console.log('patch school', payload)
             const out = await School.updateOne({_id: school_id}, payload)

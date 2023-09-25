@@ -4,6 +4,7 @@ import mongoose, {Types} from 'mongoose'
 export interface IPostSchool {
     name: string,
     city: string,
+    reportSecret?: string,
 }
 
 export interface IGetSchool extends IPostSchool {
@@ -24,6 +25,11 @@ const SchoolSchema = new mongoose.Schema({
     city: {
         type: String,
         required: true,
+        default: '',
+    },
+    reportSecret: {
+        type: String,
+        required: false,
         default: '',
     },
 }, {

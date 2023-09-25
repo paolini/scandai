@@ -44,6 +44,8 @@ export default async function handler(
             // se fornisce l'adminSecret anche un utente anonimo
             // può vedere le statistiche di quel sondaggio
             pipeline.push({$match: {'poll.adminSecret': req.query.adminSecret}})
+        } else if (req.query.schoolSecret) {
+            pipeline.push({$match: {'poll.school.reportSecret': req.query.schoolSecret}})
         } else {
             if (!user) {
                 return res.status(401).json({error: 'not authenticated'})
