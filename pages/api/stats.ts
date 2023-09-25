@@ -178,15 +178,16 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         ages.map(age => [age, 0])
     )
 
-    const pollIds: string[] = []
-    const polls: IGetPoll[] = []
+//    const pollIds: string[] = []
+//    const polls: IGetPoll[] = []
+    const pollDict: {[key: string]: IGetPoll} = {}
 
     const dict = Object.fromEntries((await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]))
     function langMap(lang: string) {
         const m = dict[lang.toLowerCase()]
         if (m===undefined) return lang // mantieni
         return m // if m === '' va scartato
-    }        
+    }
 
 
     let questions: {[key: string]: IQuestionStat} = {}
@@ -194,10 +195,12 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     for (const e of entries) {
         if (e.poll) {
             const poll_id = e.poll._id.toString()
-            if (!pollIds.includes(poll_id)) {
-                pollIds.push(poll_id)
-                polls.push(e.poll)
-            }    
+            if (!pollDict[poll_id]) {
+                pollDict[poll_id] = {
+                    ...e.poll,
+                    entriesCount: 1,
+                }
+            } else pollDict[poll_id].entriesCount ++
         }
         const preferredLanguage = e.lang
         preferredLanguageCount._total ++
@@ -341,8 +344,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     
     const entriesCount = entries.length
     return { 
-        questions, 
-        polls, 
+        questions,
+        polls: Object.values(pollDict),
         entriesCount,
         preferredLanguageCount,
     }

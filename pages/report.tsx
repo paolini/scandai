@@ -139,7 +139,7 @@ function ReportItem({ stats, item }: {
         case 'title':
             return <h1>{item.title || `Risultati aggregati`}</h1>
         case 'info':
-            return <ListClasses stats={stats} title={item?.title}/>
+            return <ListClasses stats={stats} title={item?.title || "Partecipanti"}/>
         case 'preferred':
             if (item.table) return <PreferredTable stats={stats.preferredLanguageCount} title={item.title}/>
             else return <PreferredPie stats={stats.preferredLanguageCount} title={item.title}/>
@@ -200,18 +200,42 @@ function ListClasses({ stats, title }: {
     title?: string,
 }) {
     return <Item title={title}>
-        Classi che hanno partecipato:
-        <ul>
-            { stats.polls.map(c => 
-                    <li key={c._id.toString()}>
-                        {c?.school?.name} - {c?.school?.city} {c.class}
-                    </li>
-                )
-            }
-        </ul>
-        Totale questionari: {stats.entriesCount}
-        <br/>
-        Numero sondaggi: {stats.polls.length}
+        <Table className="table">
+            <thead>
+                <tr>
+                    <th>scuola</th>
+                    <th>città</th>
+                    <th>classe</th>
+                    <th>partecipanti</th>
+                </tr>
+            </thead>
+            <tbody>
+        { 
+            stats.polls.map(c => 
+            <tr key={c._id.toString()}>
+                <td>
+                    {c?.school?.name} 
+                </td>
+                <td>
+                    {c?.school?.city}
+                </td>
+                <td>
+                     {c.class}
+                </td>
+                <td>
+                {c?.entriesCount}
+                </td>
+            </tr>)
+        }   
+        {   stats.polls.length > 1 &&
+            <tr>
+                <th colSpan={2}>totale</th>
+                <th>{stats.polls.length}</th>
+                <th>{stats.entriesCount}</th>
+            </tr>
+        }
+        </tbody>
+        </Table>
     </Item>
 }
 
