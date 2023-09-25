@@ -88,6 +88,7 @@ export default function Report() {
     const router = useRouter()
     const statsQuery = useStats(router.query)
     const form = router.query.form || "full"
+    const school_id = router.query.school_id
     const ref = useRef(null)
     const print = useReactToPrint({
         content: () => ref.current,
@@ -330,17 +331,15 @@ function ReportChart({ question, item } : {
             }
         case 'map-language-to-competence': return <Item>
                 <CompetenceLegend />
-                    { Object.keys(questionary.languages).map(lang => <>
+                    { Object.keys(questionary.languages).map(lang => <div key={lang}>
                             <GraphMapLanguageToCompetenceQuestion 
-                                key={lang} 
                                 stat={question} 
                                 title="Competenze linguistiche autovalutate" 
                                 language={lang} />
                             <TableMapLanguageToCompetenceQuestion 
-                                key={lang} 
                                 stat={question} 
                                 language={lang} />
-                        </>)
+                        </div>)
                     }   
             </Item>
         case 'map-language-to-age': return <Item>

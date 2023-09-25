@@ -55,14 +55,39 @@ export default async function handler(
 
         if (req.query.poll) {
             if (Array.isArray(req.query.poll)) {
-                pipeline.push({$match: {'poll._id': {$in: req.query.poll.map((id:any) => {
-                    assert (typeof(id) === 'string', `id is not a string: ${id}`)
-                    return new ObjectId(id)
-                })}}})
+                let pollIds: ObjectId[]
+                try {
+                    pollIds = req.query.poll.map((id:any) => new ObjectId(id))
+                } catch(error) {
+                    return res.status(400).json({error: 'invalid poll id'})
+                }   
+                pipeline.push({$match: {'poll._id': {$in: pollIds }}})
             } else {
+                let pollId: ObjectId
+                try {   
+                    pollId = new ObjectId(req.query.poll)
+                } catch(error) {    
+                    return res.status(400).json({error: 'invalid poll id'})
+                }
                 pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
             }
         }
+        if (req.query.school_id) {
+            console.log(`school_id: ${req.query.school_id}`)
+            if (Array.isArray(req.query.school_id)) {
+                return res.status(400).json({error: 'school_id cannot be an array (not implemented)'})
+            } else {
+                let school_id: ObjectId
+                try {
+                    school_id = new ObjectId(req.query.school_id)
+                } catch(error) {
+                    return res.status(400).json({error: 'invalid school_id'})
+                }
+                pipeline.push({$match: {'poll.school_id': school_id}})
+            }
+        }
+
+
         try {
             const entries = await Entry.aggregate(pipeline)
             const data: IStats = await aggregate(entries)

@@ -10,6 +10,7 @@ import Input from '@/components/Input'
 import { value } from '@/lib/State'
 import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
+import questionary from '@/lib/questionary'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -58,6 +59,10 @@ function School({ school, mutate } : {
                 <Button onClick={() => router.push('/school')}>
                     {createNew?"Annulla":"Elenco"}
                 </Button>
+                { Object.keys(questionary.forms).map(form => 
+                    <Button key={form} onClick={() => router.push(`/report?form=${form}&school_id=${school._id}`)}>
+                    report {form}
+                    </Button>)}
                 { !edit && <Button onClick={() => setEdit(true)} variant="danger">
                     Modifica
                 </Button>}
