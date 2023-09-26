@@ -56,6 +56,10 @@ export default function Header() {
                 />}
                 <span className="me-2">{session.dbUser.email || session.dbUser.username || '---'}</span>
               </>}>
+                { user?.isSuper && <NavDropdown.Item
+                    href={`/api/backup`
+                    }>download backup</NavDropdown.Item>
+                }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
                     onClick={async (e) => {
