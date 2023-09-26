@@ -39,6 +39,7 @@ export interface IPoll {
     secret: string,
     adminSecret?: string,
     createdBy: Types.ObjectId,
+    createdAt: string,
 }
 
 const PollSchema = new mongoose.Schema({
@@ -137,6 +138,7 @@ export const POLL_PIPELINE = [
             form: 1,
             secret: 1,
             adminSecret: 1,
+            createdAt: 1,
             createdBy: 1,
             createdByUser: 1,
             closedAt: 1,
