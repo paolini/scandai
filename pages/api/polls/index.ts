@@ -15,15 +15,19 @@ export default async function handler(
         let $match: any = {}
 
         // set filters from query parameters
-        for (const key of ['school', 'class', 'secret', 'adminSecret']) {
-            if (req.query[key]!==undefined) {
-                $match[key] = req.query[key]
+        for (const key of ['school', 'class', 'secret', 'adminSecret', '_id', 'school_id']) {
+            const value = req.query[key]
+            if (value!==undefined) {
+                if (Array.isArray(value)) return res.status(400).json({error: `invalid multiple param ${key}`})
+                if (key.endsWith('_id')) {
+                    try {
+                        $match[key] = new ObjectId(value)
+                    } catch(err) {
+                        return res.status(400).json({error: `${err}`})
+                    }
+                } else $match[key] = value
             }
         }
-        if (req.query._id!==undefined) {
-            $match['_id'] = new ObjectId(req.query._id as string)
-        }
-
         // se ho specificato un secret o un adminSecret
         // posso vedere solo quella poll 
         // ma non ho bisogno di essere autenticato            

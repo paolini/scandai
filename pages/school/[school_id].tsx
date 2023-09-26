@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { Card, Button, ButtonGroup } from 'react-bootstrap'
+import { Card, Button, ButtonGroup, Table } from 'react-bootstrap'
 import copyToClipboard from 'copy-to-clipboard'
 import { FaShareAlt } from "react-icons/fa"
 
 import Page from '@/components/Page'
-import { useSchool, patchSchool, postSchool, deleteSchool } from '@/lib/api'
+import { useSchool, patchSchool, postSchool, deleteSchool, usePolls } from '@/lib/api'
 import { IGetSchool } from '@/models/School'
 import Loading from '@/components/Loading'
 import Input from '@/components/Input'
@@ -14,7 +14,7 @@ import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
 import questionary from '@/lib/questionary'
 import useSessionUser from '@/lib/useSessionUser'
-
+import { formatDate, formatTime } from '@/lib/utils'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -47,7 +47,7 @@ function School({ school, mutate } : {
     const addMessage = useAddMessage()
     const user = useSessionUser()
 
-    return <Card>
+    return <><Card>
         <Card.Header>
             <h2>Scuola</h2>
         </Card.Header>
@@ -96,6 +96,10 @@ function School({ school, mutate } : {
             </ButtonGroup>
         </Card.Footer>
     </Card>
+    { !createNew &&
+        <SchoolPolls school={school}/>
+    }
+    </>
 
     async function save() {
         if (createNew) {
@@ -156,6 +160,44 @@ function School({ school, mutate } : {
             addMessage('error', `errore nella creazione/rimozione del link di condivisione report: ${err}`)
         }
     }
+}
 
-
+function SchoolPolls({school}: {school: IGetSchool}) {
+    const router = useRouter()
+    const pollsQuery = usePolls({school_id: school._id})
+    if (pollsQuery.isLoading) return <Loading />
+    if (!pollsQuery.data) return <Error>{pollsQuery.error}</Error>
+    const polls = pollsQuery.data.data
+    if (polls.length === 0) return <p>Nessun questionario</p>
+    return <Card className="my-2 table-responsive">
+        <Card.Header>
+            <h2>questionari</h2>
+        </Card.Header>
+        <Card.Body>
+        <Table hover>
+            <thead>
+                <th></th>
+                <th>tipo</th>
+                <th>data</th>
+                <th>ora</th>
+                <th>classe</th>
+                <th>conteggio</th>
+                <th>report</th>
+            </thead>
+            <tbody>
+                {polls.map(poll =>
+                    <tr key={poll._id} onClick={()=>router.push(`/poll/${poll._id}`)}>
+                        <td>{poll.closed?'':'•'}</td>
+                        <td>{poll.form}</td>
+                        <td>{formatDate(poll.date)}</td>
+                        <td>{formatTime(poll.date)}</td>
+                        <td>{poll.class}</td>
+                        <td>{poll.entriesCount}</td>
+                        <td>{poll.closed && <Button onClick={() => router.push(`/report?form=${poll.form}&poll=${poll._id}`)}>report</Button>}</td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
+        </Card.Body>
+    </Card>
 }
