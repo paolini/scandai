@@ -60,18 +60,18 @@ function School({ school, mutate } : {
             </p>
             { school.reportSecret &&
              Object.keys(questionary.forms).map(form =>
-                <p>indirizzo condivisione report {form}: {}
+                <p key={form}>indirizzo condivisione report {form}: {}
                 <b onClick={shareReport(form)} style={{cursor:"copy"}}>{reportAbsoluteUrl(form)}</b>
                 </p>)
             }
             { school.reportSecret &&
                 <Button onClick={createReportSecret} variant="danger">
-                    cancella indirizzo condivisione report "full"
+                    cancella indirizzo condivisione report
                 </Button>
             }
             { !school.reportSecret &&
                 <Button onClick={createReportSecret}>
-                            <FaShareAlt /> crea indirizzo condivisione report "full"
+                            <FaShareAlt /> crea indirizzo condivisione report
                 </Button>
             }
         </Card.Body>
