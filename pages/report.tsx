@@ -204,7 +204,7 @@ function ListClasses({ stats, title }: {
     const router = useRouter()
     const searchParams = useSearchParams()
     return <Item title={title}>
-        <Table className="table">
+        <Table className="table" hover>
             <thead>
                 <tr>
                     <th>scuola</th>
@@ -216,7 +216,7 @@ function ListClasses({ stats, title }: {
             <tbody>
         { 
             stats.polls.map(c => 
-            <tr key={c._id.toString()}>
+            <tr key={c._id.toString()} onClick={() => router.push(composeURL(c._id))}>
                 <td>
                     {c?.school?.name} 
                 </td>
@@ -244,13 +244,11 @@ function ListClasses({ stats, title }: {
         </Table>
     </Item>
 
-/*
     function composeURL(poll: string) {
         const query = new URLSearchParams(searchParams.toString())
         query.set('poll', poll)
         return `${window.location.origin}${window.location.pathname}?${query.toString()}`
     }
-*/
 }
 
 function PreferredPie({ stats, title} : {
