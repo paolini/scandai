@@ -7,6 +7,7 @@ import { assert } from '@/lib/assert'
 import { ObjectId } from 'mongodb'
 
 import getSessionUser from '@/lib/getSessionUser'
+import { count } from 'console'
 
 export default async function handler(
     req: NextApiRequest, 
@@ -369,6 +370,27 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         })
     }
     
+    // sort counts by numbers
+    // reduce counts to 10
+    // aggregating all counts > 10 in the last one
+    for (const q of Object.values(questions)) {
+        if (q.type === 'choose-language') {
+            const entries = Object.entries(q.answers).sort((a,b) => b[1]-a[1])
+            if (entries.length > 10) {
+                const other = entries.slice(9).reduce((acc, [lang, count]) => acc + count, 0)
+                entries.splice(9)
+                entries.push(['altri', other])
+            }
+            q.answers = Object.fromEntries(entries)
+        } 
+        if (q.type === 'map-language-to-age') {
+            const myCount = (a: {[key:string]:number}) => Object.values(a).reduce((acc, v) => acc + v, 0)
+            const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
+            if (entries.length > 10) entries.splice(10)
+            q.answers = Object.fromEntries(entries)
+        }
+    }
+
     const entriesCount = entries.length
     return { 
         questions,

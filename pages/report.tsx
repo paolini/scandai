@@ -720,8 +720,9 @@ function GraphMapLanguageToAgeQuestion({stat} : {
                     position: 'top' as const,
                 },
                 datalabels: {
-                    anchor: 'end',
-                    align: 'start',
+                    display: false,
+                    anchor: 'center',
+                    align: 'top',
                     formatter: value => (value>0?`${Math.round(value*100)}%`:null),
                 },
                 title: {
