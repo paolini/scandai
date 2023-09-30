@@ -379,7 +379,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
             if (entries.length > 10) {
                 const other = entries.slice(9).reduce((acc, [lang, count]) => acc + count, 0)
                 entries.splice(9)
-                entries.push(['altri', other])
+                entries.push(['altre', other])
             }
             q.answers = Object.fromEntries(entries)
         } 
