@@ -9,7 +9,7 @@ import { useSchool, patchSchool, postSchool, deleteSchool, usePolls } from '@/li
 import { IGetSchool } from '@/models/School'
 import Loading from '@/components/Loading'
 import Input from '@/components/Input'
-import { value } from '@/lib/State'
+import { value, set } from '@/lib/State'
 import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
 import questionary from '@/lib/questionary'
@@ -46,57 +46,82 @@ function School({ school, mutate } : {
     const router = useRouter()
     const addMessage = useAddMessage()
     const user = useSessionUser()
+    const [share, setShare] = useState<boolean>(false)
 
-    return <><Card>
-        <Card.Header>
-            <h2>Scuola</h2>
-        </Card.Header>
-        <Card.Body>
-            <p>Nome: {}                 
-                { edit ? <Input state={nameState} /> : <b>{school.name}</b> }
-            </p>
-            <p>Città: {}
-                { edit ? <Input state={cityState} /> : <b>{school.city}</b> }
-            </p>
-            { school.reportSecret &&
-             Object.keys(questionary.forms).map(form =>
-                <p key={form}>indirizzo condivisione report {form}: {}
-                <b onClick={shareReport(form)} style={{cursor:"copy"}}>{reportAbsoluteUrl(form)}</b>
-                </p>)
-            }
-            { school.reportSecret &&
-                <Button onClick={createReportSecret} variant="danger">
-                    cancella indirizzo condivisione report
-                </Button>
-            }
-            { !school.reportSecret &&
-                <Button onClick={createReportSecret}>
-                            <FaShareAlt /> crea indirizzo condivisione report
-                </Button>
-            }
-        </Card.Body>
-        <Card.Footer>
-            <ButtonGroup>
-                <Button onClick={() => router.push('/school')}>
-                    {createNew?"Annulla":"Elenco"}
-                </Button>
-                { Object.keys(questionary.forms).map(form => 
-                    <Button key={form} onClick={() => router.push(reportUrl(form))}>
-                    report {form}
-                    </Button>)}
-                { !edit && <Button onClick={() => setEdit(true)} variant="danger">
+    return <>
+        <Card className="my-4">
+            <Card.Header>
+                <h2>Pagina amministrazione scuola</h2>
+            </Card.Header>
+            <Card.Body>
+                <p>Nome: {}                 
+                    { edit ? <Input state={nameState} /> : <b>{school.name}</b> }
+                </p>
+                <p>Città: {}
+                    { edit ? <Input state={cityState} /> : <b>{school.city}</b> }
+                </p>
+            </Card.Body>
+            <Card.Footer>
+                { !edit && 
+                <Button className="mx-2" onClick={() => setEdit(true)} variant="danger">
                     Modifica
                 </Button>}
-                { edit && <Button onClick={save} disabled={!modified}>
+                { edit && 
+                <Button className="mx-2" onClick={save} disabled={!modified}>
                     {createNew?"Crea nuovo":"Salva modifiche"}
                 </Button> }
-                { edit && !createNew && <Button variant="danger" onClick={remove}>
-                    Elimina
-                </Button> }
-            </ButtonGroup>
-        </Card.Footer>
-    </Card>
-    { !createNew &&
+                { edit && 
+                <Button className="mx-2" onClick={cancel}>
+                        Annulla modifiche
+                </Button>
+                }
+            </Card.Footer>
+        </Card>
+
+        <Card className="my-4">
+            <Card.Header>
+                <h2>Visualizza i questionari compilati</h2>
+            </Card.Header>
+            <Card.Body>
+                <Card.Text>
+                    Visualizza i report di ogni classe e i dati aggregati della scuola.
+                </Card.Text>
+            </Card.Body>
+            <Card.Footer>
+                <Button onClick={() => router.push(reportUrl("full"))}>
+                    visualizza
+                </Button> 
+            </Card.Footer>
+        </Card>
+
+        <Card className="my-4">
+            <Card.Header>
+                <h2>Condividi i questionari compilati</h2>
+            </Card.Header>
+            <Card.Body>
+                <Card.Text>
+                    Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.
+                </Card.Text>
+                { school.reportSecret &&
+                <p>
+                    <b onClick={shareReport("full")} style={{cursor:"copy"}}>{reportAbsoluteUrl("full")}</b>
+                </p>
+                }
+            </Card.Body>
+            <Card.Footer>
+                { !school.reportSecret &&
+                <Button onClick={createReportSecret}>
+                    <FaShareAlt /> crea indirizzo condivisione report
+                </Button>
+                }
+                { school.reportSecret &&
+                <Button onClick={createReportSecret} variant="danger">
+                    cancella indirizzo
+                </Button>
+                }            
+            </Card.Footer>
+        </Card>
+    { !createNew && false &&
         <SchoolPolls school={school}/>
     }
     </>
@@ -119,6 +144,12 @@ function School({ school, mutate } : {
         if (createNew) {
             router.push('/school')
         }
+    }
+
+    async function cancel() {
+        setEdit(false)
+        set(nameState, school.name)
+        set(cityState, school.city)
     }
 
     async function remove() {
