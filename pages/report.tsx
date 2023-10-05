@@ -639,6 +639,7 @@ function TableMapLanguageToCompetence({stat, item} : {
         item: IReportTableElement,
     }) {
     const competences = questionary.competences.map(c => c.code)
+    const entries = Object.entries(stat.answers).slice(0,10)
     return <Item>
         { item.title && <h3 style={htmlTitleStyle}>{item.title}</h3> }
         <p>Media delle competenze autovalutate sul campione che non dichiara competenze nulle</p>
@@ -666,7 +667,7 @@ function TableMapLanguageToCompetence({stat, item} : {
         <Radar
           data = {{
             labels: questionary.competences.map(c => c.code),
-            datasets: Object.entries(stat.answers).map(([lang, s]) => 
+            datasets: entries.map(([lang, s]) => 
                 ({
                     label: lang,
                     data: Object.entries(s.competence).map(([c,n])=> (stat.count?n.sum/stat.count:0)),

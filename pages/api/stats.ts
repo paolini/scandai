@@ -401,6 +401,12 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
             if (entries.length > 10) entries.splice(10)
             q.answers = Object.fromEntries(entries)
         }
+        if (q.type === 'map-language-to-competence') {
+            const myCount = (a: ILanguageCompetenceStat) => a.countValid
+            const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
+            // if (entries.length > 10) entries.splice(10)
+            q.answers = Object.fromEntries(entries)
+        }
     }
 
     const entriesCount = entries.length
