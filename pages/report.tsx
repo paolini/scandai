@@ -696,14 +696,8 @@ function GraphMapLanguageToAgeQuestion({stat} : {
     }) {
     const stats = stat.answers
     const ages = questionary.ages.map(x => x.code)
-    const languages = Object.keys(questionary.languages)
     const title = "Età di apprendimento lingua"
-
-    Object.keys(stat.answers).forEach(lang => {
-        if (!(languages.includes(lang))) {
-            languages.push(lang)
-        }
-    })
+    const languages = Object.keys(stat.answers)
 
     const datasets = ages.map(age => 
         ({
