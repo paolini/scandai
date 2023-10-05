@@ -9,7 +9,7 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get, onChange, State } from '@/lib/State'
 import { IPostPoll, IGetPoll, IPoll } from '@/models/Poll'
-import useSessionUser from '@/lib/useSessionUser'
+import { useProfile } from '@/lib/api'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
@@ -19,7 +19,7 @@ const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
-    const user = useSessionUser()
+    const { data: profile } = useProfile()
     const router = useRouter()
     const newForm = router.query.new || null  
 
@@ -50,7 +50,7 @@ export default function Polls({}) {
                 <b>questionari aperti</b>
             </Card.Header>
             <Card.Body>
-                <PollsTable user={user} polls={openPolls} />
+                <PollsTable user={profile} polls={openPolls} />
             </Card.Body>
         </Card>
         }
@@ -60,7 +60,7 @@ export default function Polls({}) {
                     <b>questionari chiusi</b>
                 </Card.Header>
                 <Card.Body>
-                    <PollsTable user={user} polls={closedPolls} />
+                    <PollsTable user={profile} polls={closedPolls} />
             </Card.Body>
         </Card>
         }
