@@ -603,7 +603,7 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
         title?: string,
     }) {
     const localizedLanguage = questionary.languages[language].it || language
-    const stats = stat.answers[language]
+    const stats = stat.answers[localizedLanguage]
     const levels = extractLevels(questionary)
     if (!stats) return <div>No stats for language {language}</div>
 
