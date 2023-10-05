@@ -541,9 +541,9 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
         language: string,
         title?: string,
     }) {
-    console.log(`GraphMapLanguageToCompetenceQuestion: ${JSON.stringify({stat, language})}`)
+    // console.log(`GraphMapLanguageToCompetenceQuestion: ${JSON.stringify({stat, language})}`)
     const localizedLanguage = questionary.languages[language].it || language
-    const stats = stat.answers[language]
+    const stats = stat.answers[localizedLanguage]
     const levels = extractLevels(questionary)
     if (!stats) return <div>No stats for language {language}</div>
 

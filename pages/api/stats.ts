@@ -1,13 +1,12 @@
 import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
-import { IPoll, IGetPoll } from '@/models/Poll'
+import { IGetPoll } from '@/models/Poll'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
 import { assert } from '@/lib/assert'
 import { ObjectId } from 'mongodb'
 
 import getSessionUser from '@/lib/getSessionUser'
-import { count } from 'console'
 
 export default async function handler(
     req: NextApiRequest, 
@@ -210,8 +209,6 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                 }])),
             countValid: 0,
         })
-    const sumsZero = () => Object.fromEntries(questionary.competences.map(
-        competence => [competence.code, 0]))
     const ages = questionary.ages.map(age => age.code)
     const agesZero = () => Object.fromEntries(
         ages.map(age => [age, 0])
@@ -221,7 +218,11 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
 //    const polls: IGetPoll[] = []
     const pollDict: {[key: string]: IGetPoll} = {}
 
-    const dict = Object.fromEntries((await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]))
+    const dict = Object.fromEntries([
+        ...Object.entries(questionary.languages).map(([lang, x]) => [lang, x.it]),
+        ...(await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]),
+    ])
+
     function langMap(lang: string) {
         const m = dict[lang.toLowerCase()]
         if (m===undefined) return lang // mantieni
@@ -291,9 +292,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         question,
                         type: question.type,
                         count: 0,
-                        answers: Object.fromEntries(
-                            baseLanguages.map(lang => [lang,
-                                competencesZero()])),
+                        answers: {},
                     }
                     questions[code] = q
                 }
