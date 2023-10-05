@@ -144,18 +144,24 @@ export interface IMapLanguageToCompetenceQuestionStat {
     type: 'map-language-to-competence',
     count: number,
     answers: IMapLanguageToCompetenceStat,
-    sums: {[key:string]: { // language
-        [key:string]: number // competence -> sum of numeric answers
-    }}
 }
 
 export interface IMapLanguageToCompetenceStat {
-    [key: string]: { // language
-        [key: string]: { // competence 
-            [key: string]: // level
-                number
+    [key: string]:  // language
+        ILanguageCompetenceStat
+}
+
+export interface ILanguageCompetenceStat {
+    competence: {
+        [key: string]: {// competence 
+            level: {
+                [key: string]: // level
+                    number
+            },
+            sum: number,
         }
-    }
+    },
+    countValid: number,
 }
 
 export interface IMapLanguageToAgeQuestionStat {
@@ -195,10 +201,15 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     const preferredLanguageCount: IPreferredLanguageCount = {_total: 0}
     const languagesZeroCount = () => Object.fromEntries(Object.keys(questionary.languages).map(language => ([language, 0])))
     const levels = extractLevels(questionary)
-    const competencesZero = () => Object.fromEntries(questionary.competences.map(
-        competence => [competence.code, 
-            Object.fromEntries(
-                levels.map(l => [l,0])) ]))
+    const competencesZero = (): ILanguageCompetenceStat => ({
+            competence: Object.fromEntries(questionary.competences.map(
+                competence => [competence.code, {
+                    level: Object.fromEntries(
+                        levels.map(l => [l,0])),
+                    sum: 0,
+                }])),
+            countValid: 0,
+        })
     const sumsZero = () => Object.fromEntries(questionary.competences.map(
         competence => [competence.code, 0]))
     const ages = questionary.ages.map(age => age.code)
@@ -276,16 +287,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
             } else if (question.type === 'map-language-to-competence') {
                 let q = questions[code]
                 if (!q) {
-                    q= {
+                    q = {
                         question,
                         type: question.type,
                         count: 0,
                         answers: Object.fromEntries(
                             baseLanguages.map(lang => [lang,
                                 competencesZero()])),
-                        sums: Object.fromEntries(
-                            baseLanguages.map(lang => [lang,sumsZero()])
-                        )
                     }
                     questions[code] = q
                 }
@@ -302,27 +310,31 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                     if (!lang) continue // discard this language
                     if (!(lang in q.answers)) {
                         q.answers[lang] = competencesZero()
-                        q.sums[lang] = sumsZero()
                     }
+                    let isValid = false
                     for (const [competence, value] of Object.entries(langAns)) {
-                        if (!(competence in q.answers[lang])) {
-                            console.error(`competence ${competence} not in answers`)
+                        if (!(competence in q.answers[lang].competence)) {
+                            console.error(`competence ${competence} not in answerss`)
                             continue
                         }
-                        q.sums[lang][competence] += parseInt(`${value}`)
+                        const valueInt = parseInt(`${value}`)
+                        if (valueInt>0) isValid = true
+                        q.answers[lang].competence[competence].sum += valueInt
                         const valueKey = `_${value}`
                         if (questionary.competenceValues[valueKey]) {
                             const level = questionary.competenceValues[valueKey].level
-                            if (!(level in q.answers[lang][competence])) {
+                            if (!(level in q.answers[lang].competence[competence].level)) {
                                 console.error(`level ${level} not in answers`)
                                 continue
                             }
                             if (level) {
-                                q.answers[lang][competence][level]++
+                                q.answers[lang].competence[competence].level[level]++
                             }
                         }
                     }
+                    if (isValid) q.answers[lang].countValid++
                 }
+                //console.log(JSON.stringify(q,null,2))
             } else if (question.type === 'map-language-to-age') {
                 let q = questions[code]
                 if (!q) {
