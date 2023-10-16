@@ -47,7 +47,7 @@ export default async function handler(
             let payload: any = {}
             console.log(`PATCH ${poll_id} ${JSON.stringify(body)}`)
             if (userIsOwnerOrAdmin) {
-                for (let field of  ['school_id', 'form', 'type', 'class']) {
+                for (let field of  ['school_id', 'form', 'type', 'class', 'year']) {
                     if (body[field] === undefined) continue
                     payload[field] = body[field]
                 }

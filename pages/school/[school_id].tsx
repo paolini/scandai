@@ -222,7 +222,7 @@ function SchoolPolls({school}: {school: IGetSchool}) {
                         <td>{poll.form}</td>
                         <td>{formatDate(poll.date)}</td>
                         <td>{formatTime(poll.date)}</td>
-                        <td>{poll.class}</td>
+                        <td>{poll?.year}&nbsp;{poll.class}</td>
                         <td>{poll.entriesCount}</td>
                         <td>{poll.closed && <Button onClick={() => router.push(`/report?form=${poll.form}&poll=${poll._id}`)}>report</Button>}</td>
                     </tr>

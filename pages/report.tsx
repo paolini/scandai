@@ -224,7 +224,7 @@ function ListClasses({ stats, title }: {
                     {c?.school?.city}
                 </td>
                 <td>
-                     {c.class}
+                     {c?.year}&nbsp;{c.class}
                 </td>
                 <td>
                 {c?.entriesCount}

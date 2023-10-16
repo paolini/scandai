@@ -22,7 +22,7 @@ export default function Entries({}) {
                     <th>tipo</th>
                     <th>scuola</th>
                     <th>città</th>
-                    <th>sezione</th>
+                    <th>classe</th>
                     <th>lingua</th>
                     <th>risposte</th>
                 </tr>
@@ -35,7 +35,7 @@ export default function Entries({}) {
                         <td>{entry?.poll?.form}</td>
                         <td>{entry?.poll?.school?.name}</td>
                         <td>{entry?.poll?.school?.city}</td>
-                        <td>{entry?.poll?.class}</td>
+                        <td>{entry?.poll?.year}&nbsp;{entry?.poll?.class}</td>
                         <td>{entry?.lang}</td>
                         <td>{count(entry.answers)}</td>
                     </tr>

@@ -15,7 +15,7 @@ export default async function handler(
         let $match: any = {}
 
         // set filters from query parameters
-        for (const key of ['school', 'class', 'secret', 'adminSecret', '_id', 'school_id']) {
+        for (const key of ['school', 'class', 'year', 'secret', 'adminSecret', '_id', 'school_id']) {
             const value = req.query[key]
             if (value!==undefined) {
                 if (Array.isArray(value)) return res.status(400).json({error: `invalid multiple param ${key}`})
@@ -71,17 +71,23 @@ export default async function handler(
                 if (duplicate === null) break
             }
             const body = JSON.parse(req.body)
+            console.log("POST", JSON.stringify({body}))
             const school = await School.findOne({_id: new ObjectId(body.school_id)})
             if (!school) return res.status(400).json({error: `school not found _id: ${body.school_id}`})
             const poll = new Poll({
                 school_id: school._id,
                 class: body.class,
+                year: body.year,
                 form: body.form,
                 secret,
                 createdBy: user._id,
                 date: new Date(),
             })
             const out = await poll.save()
+            console.log(JSON.stringify({
+                out,
+                'year': poll.year,
+            }))
             return res.status(200).json({ data: out })
         } catch (error) {
             console.error(error)

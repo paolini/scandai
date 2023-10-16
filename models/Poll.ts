@@ -4,6 +4,7 @@ import mongoose, {Types} from 'mongoose'
 export interface IPostPoll {
     school_id: string,
     class: string,
+    year: string,
     form: string,
     closed: boolean, 
 }
@@ -34,6 +35,7 @@ export interface IPoll {
     _id: Types.ObjectId,
     school_id: Types.ObjectId,
     class: string,
+    year: string,
     form: string,
     closed: boolean, 
     secret: string,
@@ -51,6 +53,12 @@ const PollSchema = new mongoose.Schema({
     class: {
         type: String,
         required: true,
+    },
+    year: {
+        type: String,
+        required: true,
+        choices: ["", "1", "2", "3", "4", "5"],
+        default: "",
     },
     form: {
         type: String,
@@ -135,6 +143,7 @@ export const POLL_PIPELINE = [
             _id: 1,
             school: 1,
             class: 1,
+            year: 1,
             form: 1,
             secret: 1,
             adminSecret: 1,

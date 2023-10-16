@@ -47,8 +47,8 @@ export default function Entry({}) {
                     <td>{entry?.poll?.school?.city}</td>
                 </tr>
                 <tr>
-                    <th>sezione</th>
-                    <td>{entry?.poll?.class}</td>
+                    <th>classe</th>
+                    <td>{entry?.poll?.year}&nbsp;{entry?.poll?.class}</td>
                 </tr>
                 <tr>
                     <th>lingua</th>

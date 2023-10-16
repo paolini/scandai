@@ -30,6 +30,7 @@ export interface IGetEntry {
         }
         form: string,
         class: string,
+        year: string,
     }
     answers: {
         [key: QuestionCode]: Answer

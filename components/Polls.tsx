@@ -109,7 +109,7 @@ function PollsTable({user, polls}:{
                     {poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}
                 </td>
                 <td>
-                    {poll.class}
+                    {poll?.year}&nbsp;{poll.class}
                 </td>
                 <td>
                     {poll.entriesCount}
@@ -144,7 +144,7 @@ function NewPoll({ form, done }:{
     form?: string|null,
     done?: (poll: IGetPoll|null) => void
 }) {
-    const pollState = useState<IPostPoll>({school_id: '', class: '', form: (form || 'full'), closed: false})
+    const pollState = useState<IPostPoll>({school_id: '', class: '', year: '', form: (form || 'full'), closed: false})
     const addMessage = useAddMessage()
 
     return <Card>
@@ -156,10 +156,29 @@ function NewPoll({ form, done }:{
                 { !form && <SelectForm formState={get(pollState, 'form')} />}
                 <SelectSchool schoolState={get(pollState, 'school_id')} />
                 <div className="form-group">
-                    <label htmlFor="class">
+                    <label htmlFor="year">
                         classe
                     </label>
-                    <Input id="class" state={get(pollState, 'class')} placeholder="classe" />
+                    <select className="form-control" id="year" value={value(pollState).year} 
+                        onChange={evt => {
+                            set(get(pollState, 'year'), evt.target.value)
+                        }}>
+                        <option value="" disabled={true}>scegli</option>
+                        {
+                            [   ["1","prima"],
+                                ["2","seconda"],
+                                ["3","terza"],
+                                ["4","quarta"],
+                                ["5","quinta"]].map(([year,label]) =>
+                                    <option key={year} value={year}>{label}</option>)
+                        }
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="class">
+                        sezione
+                    </label>
+                    <Input id="class" state={get(pollState, 'class')} placeholder="sezione" />
                 </div>
             </form>                                
         </Card.Body>
