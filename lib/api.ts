@@ -95,8 +95,17 @@ export async function patchUser(user: any) {
     return await patch('users', user)
 }
 
-export function useProfile() {
+export function useProfileQuery() {
     return useGet<IGetUser>('profile', '')
+}
+
+/**
+ * @returns {IGetUser} the current user if logged in
+ * @returns {null} if not logged in
+ * @returns {undefined} if loading
+ */
+export function useProfile() {
+    return useProfileQuery().data
 }
 
 export async function patchProfile(user: any) {

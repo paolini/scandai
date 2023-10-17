@@ -19,7 +19,7 @@ const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
-    const { data: profile } = useProfile()
+    const profile = useProfile()
     const router = useRouter()
     const newForm = router.query.new || null  
 

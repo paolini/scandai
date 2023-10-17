@@ -19,7 +19,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     adminSecret: string|null,
 }) {
     const [tick, setTick] = useState<number>(0)
-    const { data: profile } = useProfile()
+    const profile = useProfile()
     const addMessage = useAddMessage()
     const isAdmin = profile?.isAdmin
     const isSupervisor = profile && (isAdmin || profile._id === poll.createdByUser?._id)
@@ -130,8 +130,10 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 </li>
                 <li>
                     A sondaggio chiuso si potranno vedere i report.
-                    Puoi cancellare il sondaggio solo se non ci sono questionari compilati
-                    e dopo averlo chiuso.
+                    { isSupervisor && !adminSecret && <>
+                        Puoi cancellare il sondaggio solo se non ci sono questionari compilati
+                        e dopo averlo chiuso.
+                    </>}
                 </li>
         </ul>
     </>

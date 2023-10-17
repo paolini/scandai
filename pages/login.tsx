@@ -8,7 +8,6 @@ import { useState } from "react"
 import { SITE_TITLE } from "@/lib/config"
 
 import Error from '@/components/Error'
-import Email from "next-auth/providers/email";
 
 export default function SignIn({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()

@@ -45,12 +45,12 @@ export default function Users() {
         <table className="table">
             <thead>
                 <tr>
-                    <td>email</td>
-                    <td>name</td>
-                    <td>viewer</td>
-                    <td>admin</td>
-                    { isSuper && <td>super</td>}
-                    { value(showDeleteState) && <td>elimina</td> }
+                    <th>email</th>
+                    <th>name</th>
+                    <th>viewer</th>
+                    <th>admin</th>
+                    { isSuper && <th>super</th>}
+                    { value(showDeleteState) && <th>elimina</th> }
                 </tr>
             </thead>
             <tbody>

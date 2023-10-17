@@ -5,8 +5,7 @@ import package_json from '../package.json'
 import { useProfile } from '@/lib/api'
 
 export default function Header() {
-  const profileQuery = useProfile()
-  const profile = profileQuery.data
+  const profile = useProfile()
   const { data: session } = useSession()
   const isAdmin = profile?.isAdmin
   const isViewer = profile?.isViewer
