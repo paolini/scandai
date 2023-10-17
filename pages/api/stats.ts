@@ -50,7 +50,7 @@ export default async function handler(
             if (!user) {
                 return res.status(401).json({error: 'not authenticated'})
             }
-            if (!user.isAdmin) {
+            if (!(user.isAdmin||user.isViewer)) {
                 pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
             }
         }

@@ -12,13 +12,20 @@ import { SITE_TITLE } from '@/lib/config'
 export default function Index({}) {
   const router = useRouter()
   const sessionUser = useSessionUser()
+  const profile = useProfile().data
 
-  if (sessionUser === undefined) return <Loading />
+  if (profile === undefined) return <Loading />
   
-  if (sessionUser === null) {
+  if (profile === null) {
     router.push('/api/auth/signin')
     return <Loading />
   }
+
+  if (profile.isViewer) {
+    router.push('/report')
+    return <Loading />
+  }
+
   return <UserIndex />
 
 }

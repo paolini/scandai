@@ -1,18 +1,15 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
 
 import package_json from '../package.json'
-import useSessionUser from '@/lib/useSessionUser'
 import { useProfile } from '@/lib/api'
 
 export default function Header() {
-  //const user = useSessionUser()
   const profileQuery = useProfile()
   const profile = profileQuery.data
   const { data: session } = useSession()
-  const router = useRouter()
   const isAdmin = profile?.isAdmin
+  const isViewer = profile?.isViewer
   const isSuper = profile?.isSuper
   const isAuthenticated = !!profile
 
@@ -24,7 +21,7 @@ export default function Header() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
           { isAdmin && <Nav.Link href="/report">Report</Nav.Link> }
-          { isAuthenticated && <Nav.Link href="/">Questionari</Nav.Link> }
+          { (isAuthenticated && !isViewer) && <Nav.Link href="/">Questionari</Nav.Link> }
           { isAdmin && 
                 <>
                   <Nav.Link href="/users">Utenti</Nav.Link>

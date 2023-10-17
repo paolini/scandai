@@ -26,6 +26,7 @@ export default async function handler(
                 email: user.email,
                 isAdmin: user.isAdmin,
                 isSuper: user.isSuper,
+                isViewer: user.isViewer,
                 image: user.image,
             }   
             return res.json(profile)

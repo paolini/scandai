@@ -129,6 +129,7 @@ export default NextAuth({
                         name: dbUser?.name,
                         username: dbUser?.username,
                         email: dbUser?.email,
+                        isViewer: dbUser?.isViewer,
                         isAdmin: dbUser?.isAdmin,
                         isSuper: dbUser?.isSuper,
                         image: dbUser?.image,

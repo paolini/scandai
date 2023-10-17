@@ -11,6 +11,13 @@ Se si modifica il testo del questionario è opportuno incrementare il numero
 di versione, nello stesso file. Questo numero viene visualizzato in alto a destra sul questionario e quindi è utile per verificare che effettivamente 
 il server si sia aggiornato.
 
+## backup
+
+Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da riga di comando sul server. Per il restore si dà un comando del tipo:
+```bash
+    docker exec -i ${MONGODB_CONTAINER_NAME} mongorestore --archive --drop < ${BACKUP_FILENAME}
+```
+
 ## Development
 
 First, run the development server:
