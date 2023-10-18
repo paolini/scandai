@@ -14,17 +14,18 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
   const callbackUrl = searchParams.get('callbackUrl') ?? undefined
   const error = searchParams.get('error')
   const invalidCredentials = error === 'Invalid username or password'
+  const oAuthAccountNotLinkedError = error === 'OAuthAccountNotLinked'
   const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
   const google = Object.values(providers).find((provider) => provider.name === 'google')
   const [expanded, setExpanded] = useState(invalidCredentials)
   
-
   return <Card>
       <Card.Header>
         <Card.Title>{SITE_TITLE}: autenticazione</Card.Title>
       </Card.Header>
       <Card.Body>
         {error && !invalidCredentials && <Error>{ error }</Error>}
+        {oAuthAccountNotLinkedError && <Error>Il tuo account non è collegato a nessun account locale. Chiedi l&aps;intervento di un amministratore.</Error>}
         <EmailLogin csrfToken={csrfToken} querystring={querystring} />
         {expanded ? <>
           <hr />
