@@ -541,8 +541,9 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
         language: string,
         title?: string,
     }) {
+    // console.log(`GraphMapLanguageToCompetenceQuestion: ${JSON.stringify({stat, language})}`)
     const localizedLanguage = questionary.languages[language].it || language
-    const stats = stat.answers[language]
+    const stats = stat.answers[localizedLanguage]
     const levels = extractLevels(questionary)
     if (!stats) return <div>No stats for language {language}</div>
 
@@ -586,9 +587,9 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
         }} 
         data={{
             labels: levels,
-            datasets: Object.entries(stats).map(([competence, x]) => 
+            datasets: Object.entries(stats.competence).map(([competence, x]) => 
                 ({
-                    data: computeDataset(x),
+                    data: computeDataset(x.level),
                     label: competence,
                 })) 
         }}
@@ -602,7 +603,7 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
         title?: string,
     }) {
     const localizedLanguage = questionary.languages[language].it || language
-    const stats = stat.answers[language]
+    const stats = stat.answers[localizedLanguage]
     const levels = extractLevels(questionary)
     if (!stats) return <div>No stats for language {language}</div>
 
@@ -621,10 +622,10 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
         </thead>
         <tbody>
             {
-                Object.entries(stats).map(([competence, x]) => 
+                Object.entries(stats.competence).map(([competence, x]) => 
                     <tr key={competence}>
                         <th>{competence}</th>
-                        {computeDataset(x).map((n,i)=>
+                        {computeDataset(x.level).map((n,i)=>
                             <td key={i}>{Math.round(n*100)}%</td>)}
                     </tr>
                 )
@@ -638,22 +639,26 @@ function TableMapLanguageToCompetence({stat, item} : {
         item: IReportTableElement,
     }) {
     const competences = questionary.competences.map(c => c.code)
+    const entries = Object.entries(stat.answers).slice(0,10)
     return <Item>
         { item.title && <h3 style={htmlTitleStyle}>{item.title}</h3> }
+        <p>Media delle competenze autovalutate sul campione che non dichiara competenze nulle</p>
         <Table>
             <thead>
                 <tr>
                     <th></th>
+                    <th>campione</th>
                     {competences.map(c => <th key={c}>{c}</th>)}
                 </tr>
             </thead>
             <tbody>
                 {
-                    Object.entries(stat.sums).map(([lang, s]) => 
+                    Object.entries(stat.answers).map(([lang, s]) => 
                         <tr key={lang}>
                             <th>{questionary.languages[lang]?.it||lang}</th>
-                            {Object.entries(s).map(([c,n])=>
-                                <td key={c}>{stat.count?Math.round(100*n/stat.count)/100:"n.a."}</td>)}
+                            <td>{stat.count ? Math.round(100*s.countValid / stat.count) : "??"}%</td>
+                            {Object.entries(s.competence).map(([c,cstat])=>
+                                <td key={c}>{s.countValid?Math.round(100*cstat.sum/s.countValid)/100:"n.a."}</td>)}
                         </tr>
                     )
                 }
@@ -662,10 +667,10 @@ function TableMapLanguageToCompetence({stat, item} : {
         <Radar
           data = {{
             labels: questionary.competences.map(c => c.code),
-            datasets: Object.entries(stat.sums).map(([lang, s]) => 
+            datasets: entries.map(([lang, s]) => 
                 ({
                     label: lang,
-                    data: Object.entries(s).map(([c,n])=> (stat.count?n/stat.count:0)),
+                    data: Object.entries(s.competence).map(([c,n])=> (stat.count?n.sum/stat.count:0)),
                     fill: false,
                     pointRadius: 3,
                 }))
@@ -691,14 +696,8 @@ function GraphMapLanguageToAgeQuestion({stat} : {
     }) {
     const stats = stat.answers
     const ages = questionary.ages.map(x => x.code)
-    const languages = Object.keys(questionary.languages)
     const title = "Età di apprendimento lingua"
-
-    Object.keys(stat.answers).forEach(lang => {
-        if (!(languages.includes(lang))) {
-            languages.push(lang)
-        }
-    })
+    const languages = Object.keys(stat.answers)
 
     const datasets = ages.map(age => 
         ({
