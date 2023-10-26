@@ -47,6 +47,7 @@ export default function Users() {
                 <tr>
                     <th>email</th>
                     <th>name</th>
+                    <th>accounts</th>
                     <th>viewer</th>
                     <th>admin</th>
                     { isSuper && <th>super</th>}
@@ -57,6 +58,7 @@ export default function Users() {
                 { users.map((user) => <tr key={user._id.toString()}>
                     <td>{user.email}</td>
                     <td>{user.name || user.username}</td>
+                    <td>{user.accounts.map(a => a.provider).join(" ")}</td>
                     <td>
                         <Switch
                         checked={!!user.isViewer}

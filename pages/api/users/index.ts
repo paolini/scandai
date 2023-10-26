@@ -19,6 +19,17 @@ export default async function handler(
                 {$project: {
                     password: 0,
                 }},
+                {$lookup: { 
+                    from: "accounts", 
+                    as: "accounts", 
+                    localField: "_id", 
+                    foreignField: "userId",
+                    pipeline:[{
+                        $project:{
+                            provider:1,
+                            _id:0
+                    }}]
+                }}
             ])
             return res.json({data: users})
         }

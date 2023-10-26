@@ -24,6 +24,7 @@ export interface IGetUser {
     name: string,
     username: string,
     email: string,
+    accounts: {provider: string}[],
     isAdmin: boolean,
     isSuper: boolean,
     isViewer: boolean,
