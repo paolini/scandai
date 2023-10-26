@@ -17,7 +17,7 @@
     },
     "Questionari": {
         "en": "Questionnaires",
-        "fu": "Questionaris"
+        "fu": "Cuestionaris"
     },
     "Utenti": {
         "en": "Users",
@@ -29,7 +29,7 @@
     },
     "Mappature": {
         "en": "Mappings",
-        "fu": "Mappaturis"
+        "fu": "Mapaduris"
     },
     "Entries": {
         "en": "Entries",
@@ -57,39 +57,39 @@
     },
     "richiesta non valida": {
       "en": "richiesta non valida",
-      "fu": "richiesta non valida"
+      "fu": "Domande no valide"
     },
     "Errore caricamento": {
       "en": "Errore caricamento",
-      "fu": "Errore caricamento"
+      "fu": "Erôr di cjariament"
     },
     "Impossibile fare il report: nessun questionario compilato": {
       "en": "Impossibile fare il report: nessun questionario compilato",
-      "fu": "Impossibile fare il report: nessun questionario compilato"
+      "fu": "Impussibil fâ il report: nissun custionari compilât"
     },
     "stampa": {
       "en": "stampa",
-      "fu": "stampa"
+      "fu": "stampe"
     },
     "Risultati aggregati": {
       "en": "Risultati aggregati (en)",
-      "fu": "Risultati aggregati (fu)"
+      "fu": "Risultâts agregâts (fu)"
     },
     "Partecipanti": {
       "en": "Partecipanti",
-      "fu": "Partecipanti"
+      "fu": "Partecipants"
     },
     "Domanda non trovata": {
       "en": "Domanda non trovata",
-      "fu": "Domanda non trovata"
+      "fu": "Domande no cjatade"
     },
     "Errore:": {
       "en": "Errore:",
-      "fu": "Errore:"
+      "fu": "Erôr:"
     },
     "Nessuna risposta per la domanda": {
       "en": "Nessuna risposta per la domanda",
-      "fu": "Nessuna risposta per la domanda"
+      "fu": "Nissune rispueste pe domande"
     },
     "Legenda": {
       "en": "Legenda",
@@ -97,15 +97,15 @@
     },
     "abilità": {
       "en": "abilità",
-      "fu": "abilità"
+      "fu": "abilitâts"
     },
     "scuola": {
       "en": "scuola",
-      "fu": "scuola"
+      "fu": "scuele"
     },
     "città": {
       "en": "città",
-      "fu": "città"
+      "fu": "citât"
     },
     "classe": {
       "en": "classe",
@@ -113,51 +113,51 @@
     },
     "partecipanti": {
       "en": "partecipanti",
-      "fu": "partecipanti"
+      "fu": "partecipants"
     },
     "totale": {
       "en": "totale",
-      "fu": "totale"
+      "fu": "totâl"
     },
     "conteggio": {
       "en": "conteggio",
-      "fu": "conteggio"
+      "fu": "conte"
     },
     "percentuale": {
       "en": "percentuale",
-      "fu": "percentuale"
+      "fu": "percentuâl"
     },
     "non specificato": {
       "en": "non specificato",
-      "fu": "non specificato"
+      "fu": "no specificât"
     },
     "Competenze linguistiche autovalutate": {
       "en": "Competenze linguistiche autovalutate",
-      "fu": "Competenze linguistiche autovalutate"
+      "fu": "Competencis linguistichis autovalutadis"
     },
     "per lingua": {
       "en": "per lingua",
-      "fu": "per lingua"
+      "fu": "par lenghe"
     },
     "per persona": {
       "en": "per persona",
-      "fu": "per persona"
+      "fu": "par persone"
     },
     "Nessuna lingua": {
       "en": "Nessuna lingua",
-      "fu": "Nessuna lingua"
+      "fu": "Nissune lenghe"
     },
     "Una lingua": {
       "en": "Una lingua",
-      "fu": "Una lingua"
+      "fu": "Une lenghe"
     },
     "Media delle competenze autovalutate sul campione che non dichiara competenze nulle": {
       "en": "Media delle competenze autovalutate sul campione che non dichiara competenze nulle",
-      "fu": "Media delle competenze autovalutate sul campione che non dichiara competenze nulle"
+      "fu": "Medie des competencis autovalutadis sul campion che no declare competencis nulis"
     },
     "campione": {
       "en": "campione",
-      "fu": "campione"
+      "fu": "campion"
     },
     "n.a.": {
       "en": "n.a.",
@@ -165,7 +165,7 @@
     },
     "Età di apprendimento lingua": {
       "en": "Età di apprendimento lingua",
-      "fu": "Età di apprendimento lingua"
+      "fu": "Etât di aprendiment de lenghe"
     },
     "mai": {
       "en": "mai",
