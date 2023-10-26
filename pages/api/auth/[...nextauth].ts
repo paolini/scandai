@@ -133,6 +133,7 @@ export default NextAuth({
                         isAdmin: dbUser?.isAdmin,
                         isSuper: dbUser?.isSuper,
                         image: dbUser?.image,
+                        accounts: dbUser?.accounts,
                     }
                 } else {
                     console.log(`User not found with id ${token.sub}`)

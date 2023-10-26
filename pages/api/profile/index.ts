@@ -29,6 +29,7 @@ export default async function handler(
                 isSuper: user.isSuper,
                 isViewer: user.isViewer,
                 image: user.image,
+                accounts: user.accounts,
             }   
             return res.json(profile)
         }

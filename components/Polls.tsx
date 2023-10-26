@@ -13,7 +13,7 @@ import { useProfile } from '@/lib/api'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
-import questionary, {schoolNames} from '@/lib/questionary'
+import questionary from '@/lib/questionary'
 
 const formTypes = Object.keys(questionary.forms)
 
