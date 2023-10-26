@@ -1,16 +1,24 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import assert from 'assert'
 
 import package_json from '../package.json'
 import { useProfile } from '@/lib/api'
+import { useTrans } from '@/lib/trans'
 
 export default function Header() {
   const profile = useProfile()
+  const router = useRouter()
   const { data: session } = useSession()
   const isAdmin = profile?.isAdmin
   const isViewer = profile?.isViewer
   const isSuper = profile?.isSuper
   const isAuthenticated = !!profile
+  const locale = router.locale || 'it'
+  const _ = useTrans()
+
+  assert (locale === 'it' || locale === 'en' || locale === 'fu', 'locale non supportata')
 
   return <div className="noPrint"><Navbar bg="light" expand="lg">
     { false && JSON.stringify(profile) }
@@ -19,21 +27,38 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { isAdmin && <Nav.Link href="/report">Report</Nav.Link> }
-          { (isAuthenticated && !isViewer) && <Nav.Link href="/">Questionari</Nav.Link> }
+          { isAdmin && <Nav.Link href="/report">
+              {_("Report")}
+            </Nav.Link> }
+          { (isAuthenticated && !isViewer) && <Nav.Link href="/">
+              {_("Questionari")}
+            </Nav.Link> }
           { isAdmin && 
                 <>
-                  <Nav.Link href="/users">Utenti</Nav.Link>
-                  <Nav.Link href="/school">Scuole</Nav.Link>
-                  <Nav.Link href="/dict">Mappature</Nav.Link>
+                  <Nav.Link href="/users">{_("Utenti")}</Nav.Link>
+                  <Nav.Link href="/school">{_("Scuole")}</Nav.Link>
+                  <Nav.Link href="/dict">{_("Mappature")}</Nav.Link>
                 </>
           }
           { isSuper &&
-              <Nav.Link href="/entries">Entries</Nav.Link>
+              <Nav.Link href="/entries">{_("Entries")}</Nav.Link>
           }
           { !isAuthenticated && 
-            <Nav.Link href="/api/auth/signin">Login</Nav.Link>
+            <Nav.Link href="/api/auth/signin">{_("Login")}</Nav.Link>
           }
+          <Nav className="right">
+            <NavDropdown title={_({it: 'italiano', en: 'inglese', fu: 'friulano'}[locale])}>
+              <NavDropdown.Item onClick={() => changeLocale('fu')}>
+                {_("friulano")}
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => changeLocale('it')}>
+                {_("italiano")}
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => changeLocale('en')}>
+                {_("inglese")}
+              </NavDropdown.Item>
+            </NavDropdown>  
+          </Nav>
           { isAuthenticated && 
           <Nav className="right">
           {!session && <NavDropdown title="user">
@@ -42,7 +67,7 @@ export default function Header() {
                 onClick={(e) => {
                   e.preventDefault()
                   signIn()
-                }}>login
+                }}>{_("login")}
             </NavDropdown.Item>
           </NavDropdown>} 
           {profile && 
@@ -60,7 +85,7 @@ export default function Header() {
               </>}>
                 { isSuper && <NavDropdown.Item
                     href={`/api/backup`
-                    }>download backup</NavDropdown.Item>
+                    }>{_("download backup")}</NavDropdown.Item>
                 }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
@@ -70,7 +95,7 @@ export default function Header() {
                       // router.push('/') // non funziona!
                       window.location.href = '/'
                     }}  
-                  >logout
+                  >{_("logout")}
                 </NavDropdown.Item>
             </NavDropdown>}
          </Nav>}
@@ -78,4 +103,8 @@ export default function Header() {
       </Navbar.Collapse>
     </Container>
   </Navbar></div>
+
+  function changeLocale(locale: 'it' | 'en' | 'fu') {
+    router.push(router.asPath, undefined, { locale })
+  }
 }

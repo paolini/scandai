@@ -6,9 +6,10 @@ import Loading from '@/components/Loading'
 import Polls from '@/components/Polls'
 import SetUserName from '@/components/SetUserName'
 import { useProfile, useProfileQuery } from '@/lib/api'
-import { SITE_TITLE } from '@/lib/config'
 
-export default function Index({}) {
+import { useTrans } from '@/lib/trans'
+
+export default function Index() {
   const router = useRouter()
   const profile = useProfile()
 
@@ -24,12 +25,13 @@ export default function Index({}) {
     return <Loading />
   }
 
-  return <Home />
+  return <Home/>
 }
 
 function Home() {
   const profileQuery = useProfileQuery()
   const profile = profileQuery.data
+  const _ = useTrans()
 
   if (profile===undefined) return <Loading/>
 
@@ -40,9 +42,9 @@ function Home() {
   }
 
   return <Page>
-    <h1>{SITE_TITLE}</h1>
+    <h1>{(globalThis as any).SITE_TITLE}</h1>
     {!profile.name && <SetUserName profile={profile} mutate={profileQuery.mutate}/>}
-    <p>Benvenuto {profile.name || profile.username || profile.email }!</p>
+    <p>{_('Benvenuto %!', profile.name || profile.username || profile.email)}</p>
     <Polls />  
   </Page>
 }

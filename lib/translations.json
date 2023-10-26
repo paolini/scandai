@@ -1,0 +1,174 @@
+{
+    "italiano": {
+        "en": "italian",
+        "fu": "talian"
+    },
+    "inglese": {
+        "en": "english",
+        "fu": "ingles"
+    },
+    "friulano": {
+        "en": "friulian",
+        "fu": "furlan"
+    },
+    "Report": {
+        "en": "Report",
+        "fu": "Report"
+    },
+    "Questionari": {
+        "en": "Questionnaires",
+        "fu": "Questionaris"
+    },
+    "Utenti": {
+        "en": "Users",
+        "fu": "Utents"
+    },
+    "Scuole": {
+        "en": "Schools",
+        "fu": "Scuelis"
+    },
+    "Mappature": {
+        "en": "Mappings",
+        "fu": "Mappaturis"
+    },
+    "Entries": {
+        "en": "Entries",
+        "fu": "Entries"
+    },
+    "Benvenuto %!": {
+        "en": "Welcome %!",
+        "fu": "Benvignût %!"
+    },
+    "Login": {
+        "en": "Login",
+        "fu": "Login"
+      },
+    "login": {
+      "en": "login",
+      "fu": "login"
+    },
+    "download backup": {
+      "en": "download backup",
+      "fu": "download backup"
+    },
+    "logout": {
+      "en": "logout",
+      "fu": "logout"
+    },
+    "richiesta non valida": {
+      "en": "richiesta non valida",
+      "fu": "richiesta non valida"
+    },
+    "Errore caricamento": {
+      "en": "Errore caricamento",
+      "fu": "Errore caricamento"
+    },
+    "Impossibile fare il report: nessun questionario compilato": {
+      "en": "Impossibile fare il report: nessun questionario compilato",
+      "fu": "Impossibile fare il report: nessun questionario compilato"
+    },
+    "stampa": {
+      "en": "stampa",
+      "fu": "stampa"
+    },
+    "Risultati aggregati": {
+      "en": "Risultati aggregati (en)",
+      "fu": "Risultati aggregati (fu)"
+    },
+    "Partecipanti": {
+      "en": "Partecipanti",
+      "fu": "Partecipanti"
+    },
+    "Domanda non trovata": {
+      "en": "Domanda non trovata",
+      "fu": "Domanda non trovata"
+    },
+    "Errore:": {
+      "en": "Errore:",
+      "fu": "Errore:"
+    },
+    "Nessuna risposta per la domanda": {
+      "en": "Nessuna risposta per la domanda",
+      "fu": "Nessuna risposta per la domanda"
+    },
+    "Legenda": {
+      "en": "Legenda",
+      "fu": "Legenda"
+    },
+    "abilità": {
+      "en": "abilità",
+      "fu": "abilità"
+    },
+    "scuola": {
+      "en": "scuola",
+      "fu": "scuola"
+    },
+    "città": {
+      "en": "città",
+      "fu": "città"
+    },
+    "classe": {
+      "en": "classe",
+      "fu": "classe"
+    },
+    "partecipanti": {
+      "en": "partecipanti",
+      "fu": "partecipanti"
+    },
+    "totale": {
+      "en": "totale",
+      "fu": "totale"
+    },
+    "conteggio": {
+      "en": "conteggio",
+      "fu": "conteggio"
+    },
+    "percentuale": {
+      "en": "percentuale",
+      "fu": "percentuale"
+    },
+    "non specificato": {
+      "en": "non specificato",
+      "fu": "non specificato"
+    },
+    "Competenze linguistiche autovalutate": {
+      "en": "Competenze linguistiche autovalutate",
+      "fu": "Competenze linguistiche autovalutate"
+    },
+    "per lingua": {
+      "en": "per lingua",
+      "fu": "per lingua"
+    },
+    "per persona": {
+      "en": "per persona",
+      "fu": "per persona"
+    },
+    "Nessuna lingua": {
+      "en": "Nessuna lingua",
+      "fu": "Nessuna lingua"
+    },
+    "Una lingua": {
+      "en": "Una lingua",
+      "fu": "Una lingua"
+    },
+    "Media delle competenze autovalutate sul campione che non dichiara competenze nulle": {
+      "en": "Media delle competenze autovalutate sul campione che non dichiara competenze nulle",
+      "fu": "Media delle competenze autovalutate sul campione che non dichiara competenze nulle"
+    },
+    "campione": {
+      "en": "campione",
+      "fu": "campione"
+    },
+    "n.a.": {
+      "en": "n.a.",
+      "fu": "n.a."
+    },
+    "Età di apprendimento lingua": {
+      "en": "Età di apprendimento lingua",
+      "fu": "Età di apprendimento lingua"
+    },
+    "mai": {
+      "en": "mai",
+      "fu": "mai"
+    }    
+}

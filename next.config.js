@@ -3,7 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   //standalone: true,
   output: 'standalone',
-}
+  i18n: {
+    locales: ['it', 'en', 'fu'],
+    defaultLocale: 'fu',
+  },}
 
 module.exports = nextConfig
 
