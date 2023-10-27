@@ -675,8 +675,8 @@ const questionary: IQuestionary = {
           question: "1.1.a.1", 
           title: {
             it: "Nella mia famiglia si parla abitualmente",
-            en: "Nella mia famiglia si parla abitualmente",
-            fu: "Nella mia famiglia si parla abitualmente",
+            en: "In my family, we habitually speak",
+            fu: "Inte mê famee pal solit si fevele",
           },
         },
         {
@@ -685,34 +685,34 @@ const questionary: IQuestionary = {
           question: "1.1.a.1",
           title: {
             it: "Numero di lingue parlate in famiglia",
-            en: "Numero di lingue parlate in famiglia",
-            fu: "Numero di lingue parlate in famiglia",            
+            en: "Number of languages spoken in the family",
+            fu: "Numar di lenghis feveladis in famee",            
           },
         },
         {
           element: "chart",
           title: {
             it: "Competenze linguistiche autovalutate",
-            en: "Competenze linguistiche autovalutate",
-            fu: "Competenze linguistiche autovalutate",
+            en: "Self-assessed language skills",
+            fu: "Competencis linguistichis autovalutadis",
           },
           question: "2.2.1",
         },
         {
           element: "chart",
-          title: {
+          /* title: {
             it: "A che età hai cominciato a parlare le lingue che conosci?",
             en: "A che età hai cominciato a parlare le lingue che conosci?",
             fu: "A che età hai cominciato a parlare le lingue che conosci?",
-          },
+          }, */
           question: "2.1.1",
         },
         {
           element: "table",
           title: {
             it: "Valori medi delle competenze autovalutate",
-            en: "Valori medi delle competenze autovalutate",
-            fu: "Valori medi delle competenze autovalutate",
+            en: "Average values of self-assessed skills",
+            fu: "Valôrs medis des competencis autovalutadis",
           },
           question: "2.2.1",
         },
@@ -840,8 +840,8 @@ const questionary: IQuestionary = {
           element: "preferred",
           title: {
             it: "Lingua scelta per la compilazione",
-            en: "Lingua scelta per la compilazione",
-            fu: "Lingua scelta per la compilazione",
+            en: "Language chosen for filling out the questionnaire",
+            fu: "Lenghe sielte pe compilazion",
           },
         },
         {
