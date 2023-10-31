@@ -335,7 +335,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "a mio papà parlo in...",
-        fu: "cun mê mari o feveli par ...",
+        fu: "cun gno pari o feveli par ...",
         en: "With my father I speak ...",
       },
     },
