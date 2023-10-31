@@ -700,11 +700,11 @@ const questionary: IQuestionary = {
         },
         {
           element: "chart",
-          /* title: {
+          title: {
             it: "A che età hai cominciato a parlare le lingue che conosci?",
             en: "A che età hai cominciato a parlare le lingue che conosci?",
-            fu: "A che età hai cominciato a parlare le lingue che conosci?",
-          }, */
+            fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+          }, 
           question: "2.1.1",
         },
         {
