@@ -6,8 +6,10 @@ import { useEntries } from '../../lib/api'
 import Loading from '../../components/Loading'
 import Error from '../../components/Error'
 import { formatDate, formatTime } from '../../lib/utils'
+import { useTrans } from '../../lib/trans'
 
 export default function Entries({}) {
+    const _ = useTrans()
     const router = useRouter()
     const entriesQuery = useEntries()
     if (entriesQuery.isLoading) return <Loading />
@@ -17,14 +19,14 @@ export default function Entries({}) {
         <Table hover>
             <thead>
                 <tr>
-                    <th>data</th>
-                    <th>ora</th>
-                    <th>tipo</th>
-                    <th>scuola</th>
-                    <th>città</th>
-                    <th>classe</th>
-                    <th>lingua</th>
-                    <th>risposte</th>
+                    <th>{_("data")}</th>
+                    <th>{_("ora")}</th>
+                    <th>{_("tipo")}</th>
+                    <th>{_("scuola")}</th>
+                    <th>{_("città")}</th>
+                    <th>{_("classe")}</th>
+                    <th>{_("lingua")}</th>
+                    <th>{_("risposte")}</th>
                 </tr>
             </thead>
             <tbody>

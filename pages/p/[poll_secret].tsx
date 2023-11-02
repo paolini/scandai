@@ -7,8 +7,10 @@ import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { IAnswers } from '@/components/Question'
+import { useTrans } from '@/lib/trans'
 
 export default function PollSecret({}) {
+    const _ = useTrans()
     const router = useRouter()
     const secret = router.query.poll_secret as string
 
@@ -25,11 +27,11 @@ export default function PollSecret({}) {
     let poll;
     if (!pollQuery.data) {
         return <Page>
-            <Error>Errore: {pollQuery.error.message}</Error>
+            <Error>{_("Errore")}: {pollQuery.error.message}</Error>
         </Page>
     } else if (pollQuery.data.data.length !== 1) {
         return <Page>
-            <Error>Errore: sondaggio non trovato</Error>
+            <Error>{_("Errore: sondaggio non trovato")}</Error>
         </Page>
     } else {
         poll = pollQuery.data.data[0]

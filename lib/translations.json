@@ -170,5 +170,158 @@
     "mai": {
       "en": "mai",
       "fu": "mai"
-    }    
-}
+    },
+    "classi": {
+      "en": "classi",
+      "fu": "classi"
+    },
+    "espandi": {
+      "en": "espandi",
+      "fu": "espandi"
+    },
+    "nascondi": {
+      "en": "nascondi",
+      "fu": "nascondi"
+    },
+    "data": {
+      "en": "data",
+      "fu": "data"
+    },
+    "ora": {
+      "en": "ora",
+      "fu": "ora"
+    },
+    "tipo": {
+      "en": "tipo",
+      "fu": "tipo"
+    },
+    "lingua": {
+      "en": "lingua",
+      "fu": "lingua"
+    },
+    "elenco": {
+      "en": "elenco",
+      "fu": "elenco"
+    },
+    "elimina": {
+      "en": "elimina",
+      "fu": "elimina"
+    },
+    "domanda": {
+      "en": "domanda",
+      "fu": "domanda"
+    },
+    "risposta": {
+      "en": "risposta",
+      "fu": "risposta"
+    },
+    "errore": {
+      "en": "errore",
+      "fu": "errore"
+    },
+    "risposte": {
+      "en": "risposte",
+      "fu": "risposte"
+    },
+    "Errore": {
+      "en": "Errore",
+      "fu": "Errore"
+    },
+    "Errore: sondaggio non trovato": {
+      "en": "Errore: sondaggio non trovato",
+      "fu": "Errore: sondaggio non trovato"
+    },
+    "sondaggio non trovato": {
+      "en": "sondaggio non trovato",
+      "fu": "sondaggio non trovato"
+    },
+    "Pagina amministrazione scuola": {
+      "en": "Pagina amministrazione scuola",
+      "fu": "Pagina amministrazione scuola"
+    },
+    "Nome": {
+      "en": "Nome",
+      "fu": "Nome"
+    },
+    "Città": {
+      "en": "Città",
+      "fu": "Città"
+    },
+    "Modifica": {
+      "en": "Modifica",
+      "fu": "Modifica"
+    },
+    "Crea nuovo": {
+      "en": "Crea nuovo",
+      "fu": "Crea nuovo"
+    },
+    "Salva modifiche": {
+      "en": "Salva modifiche",
+      "fu": "Salva modifiche"
+    },
+    "Annulla modifiche": {
+      "en": "Annulla modifiche",
+      "fu": "Annulla modifiche"
+    },
+    "Visualizza i questionari compilati": {
+      "en": "Visualizza i questionari compilati",
+      "fu": "Visualizza i questionari compilati"
+    },
+    "Visualizza i report di ogni classe e i dati aggregati della scuola.": {
+      "en": "Visualizza i report di ogni classe e i dati aggregati della scuola.",
+      "fu": "Visualizza i report di ogni classe e i dati aggregati della scuola."
+    },
+    "visualizza": {
+      "en": "visualizza",
+      "fu": "visualizza"
+    },
+    "Condividi i questionari compilati": {
+      "en": "Condividi i questionari compilati",
+      "fu": "Condividi i questionari compilati"
+    },
+    "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.": {
+      "en": "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.",
+      "fu": "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola."
+    },
+    "crea indirizzo condivisione report": {
+      "en": "crea indirizzo condivisione report",
+      "fu": "crea indirizzo condivisione report"
+    },
+    "cancella indirizzo": {
+      "en": "cancella indirizzo",
+      "fu": "cancella indirizzo"
+    },
+    "impossibile copiare l'indirizzo di condivisione report": {
+      "en": "impossibile copiare l'indirizzo di condivisione report",
+      "fu": "impossibile copiare l'indirizzo di condivisione report"
+    },
+    "indirizzo somministrazione (url) copiato": {
+      "en": "indirizzo somministrazione (url) copiato",
+      "fu": "indirizzo somministrazione (url) copiato"
+    },
+    "errore nella creazione/rimozione del link di condivisione report": {
+      "en": "errore nella creazione/rimozione del link di condivisione report",
+      "fu": "errore nella creazione/rimozione del link di condivisione report"
+    },
+    "Nessun questionario": {
+      "en": "Nessun questionario",
+      "fu": "Nessun questionario"
+    },
+    "questionari": {
+      "en": "questionari",
+      "fu": "questionari"
+    },
+    "report": {
+      "en": "report",
+      "fu": "report"
+    },
+    "aggiungi scuola": {
+      "en": "aggiungi scuola",
+      "fu": "aggiungi scuola"
+    },
+    "nome": {
+      "en": "nome",
+      "fu": "nome"
+    }
+  }    
+

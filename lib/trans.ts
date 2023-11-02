@@ -25,12 +25,12 @@ export default function trans(locale: string) {
     }
     _.locale = locale
     return _
-  }
+}
   
-  export function useTrans() {
-      const router = useRouter()
-      const locale = router.locale || 'it'
-      return trans(locale)
-  }
+export function useTrans() {
+    const router = useRouter()
+    const locale = router.locale || 'it'
+    return trans(locale)
+}
   
   

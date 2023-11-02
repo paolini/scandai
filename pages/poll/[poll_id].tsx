@@ -6,8 +6,10 @@ import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import PollAdmin from '@/components/PollAdmin'
+import { useTrans } from '@/lib/trans'
 
 export default function PollId({}) {
+    const _ = useTrans()
     const router = useRouter()
     const poll_id = router.query.poll_id as string
     const searchParams = useSearchParams()
@@ -26,11 +28,11 @@ export default function PollId({}) {
     let poll;
     if (!pollQuery.data) {
         return <Page>
-            <Error>Errore: {pollQuery.error.message}</Error>
+            <Error>{_("Errore")}: {pollQuery.error.message}</Error>
         </Page>
     } else if (pollQuery.data.data.length !== 1) {
         return <Page>
-            <Error>Errore: sondaggio non trovato</Error>
+            <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
         </Page>
     } else {
         poll = pollQuery.data.data[0]

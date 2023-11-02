@@ -280,6 +280,7 @@ function PreferredPie({ stats, title} : {
     stats: IPreferredLanguageCount,
     title?: string,
 }) {
+    const _ = useTrans()
     const total = stats._total
     let items = Object.entries(stats).filter(([k ,v]) => k!=='_total')
     let sum = items.reduce((n, [k,v]) => n+v, 0)
@@ -304,7 +305,7 @@ function PreferredPie({ stats, title} : {
                 },
             }} 
             data={{
-                labels: items.map(([k,v]) => k || undefined),
+                labels: items.map(([k,v]) => questionary.languages[k][_.locale] || k || undefined),
                 datasets: [
                     {
                     data: items.map(([k,v])=>v),
@@ -337,7 +338,7 @@ function PreferredTable({ stats, title} : {
             <tbody>
                 {items.map(([k,v]) => 
                     <tr key={k}>
-                        <th>{k || _("non specificato")}</th>
+                        <th>{questionary.languages[k][_.locale] || k || _("non specificato")}</th>
                         <td>{v}</td>
                         <td>{Math.round(v*100/total)}%</td>
                     </tr>
@@ -495,7 +496,7 @@ function TableChooseLanguageQuestion({stat, count}: {
         </thead>
         <tbody>
             <tr>
-                <th>conteggio</th>
+                <th>{_("conteggio")}</th>
                     {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
                     {val}

@@ -12,8 +12,10 @@ import { value, set, get } from '@/lib/State'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
+import { useTrans } from '@/lib/trans'
 
 export default function Schools() {
+    const _ = useTrans()
     const router = useRouter()
     const sessionUser = useSessionUser()
     const schoolsQuery = useSchools()
@@ -24,17 +26,17 @@ export default function Schools() {
     const schools = schoolsQuery.data.data
 
     return <Page>
-        <h2>Scuole</h2>
+        <h2>{_("Scuole")}</h2>
         <Button onClick={() => router.push('/school/__new__')}>
             <FaCirclePlus className="m-1 bg-blue-300"/>
-            aggiungi scuola
+            {_("aggiungi scuola")}
         </Button>
         <Table hover>
             <thead>
                 <tr>
-                    <th>nome</th>
-                    <th>città</th>
-                    <th>questionari</th>
+                    <th>{_("nome")}</th>
+                    <th>{_("città")}</th>
+                    <th>{_("questionari")}</th>
                 </tr>
             </thead>
             <tbody>
