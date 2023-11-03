@@ -2,7 +2,10 @@ import { useRouter } from "next/router"
 
 import translations from './translations.json'
 
-export default function trans(locale: string) {
+export type Locale = "it"|"en"|"fu" 
+const LOCALES:Locale[] = ["it","en","fu"]
+
+export default function trans(locale: Locale) {
     const _ = function(s: string, ...args: any[]) {
       let r = s
       const t = (translations as any)[s]
@@ -29,7 +32,10 @@ export default function trans(locale: string) {
   
 export function useTrans() {
     const router = useRouter()
-    const locale = router.locale || 'it'
+    let locale:Locale = "it"
+    for (const lang of LOCALES) {
+        if (lang === router.locale) locale=lang
+    }
     return trans(locale)
 }
   

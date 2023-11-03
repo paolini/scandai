@@ -84,6 +84,8 @@ const getPageMargins = () => {
     return `@page { margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important; }`;
 };
 
+type T = (s:string) => string
+
 export default function Report() {
     const user = useProfile()
     const router = useRouter()
@@ -102,8 +104,11 @@ export default function Report() {
     if (translationQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
     
-    const stats = statsQuery.data.data
-
+    const translations = translationQuery.data.data
+    const stats = {
+        ...statsQuery.data.data,
+    }
+    
     if (stats.entriesCount === 0) return <Page header={!!user}>
         <Error>
         {_("Impossibile fare il report: nessun questionario compilato")}
@@ -118,16 +123,28 @@ export default function Report() {
             <style>
                 {getPageMargins()}
             </style>
-        { questionary.forms[form].report.map(
-            (item, i) => <ReportItem key={i} stats={stats} item={item} />
-        )}
+            { questionary.forms[form].report.map(
+                (item, i) => <ReportItem key={i} stats={stats} item={item} t={t}/>
+            )}
         </div>
     </Page>
+
+    /**
+     * traduci i nomi delle lingue
+     * @param source nome della lingua
+     * @returns nome tradotto
+     */
+    function t(source:string) {
+        const d = translations[source]
+        if (!d) return source
+        return d[_.locale] || source
+    }
 }
 
-function ReportItem({ stats, item }: {
+function ReportItem({ stats, item, t }: {
     stats: IStats,
     item: IReportElement,
+    t: T,
 }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -138,9 +155,9 @@ function ReportItem({ stats, item }: {
             if (question === null) return ErrorElement
             switch(item.element) {
                 case 'chart':
-                    return <ReportChart question={question} item={item} />
+                    return <ReportChart question={question} item={item} t={t}/>
                 case 'table':
-                    return <ReportTable question={question} item={item} />    
+                    return <ReportTable question={question} item={item} t={t}/>    
             }
         case 'title':
             return <h1>{item_title || _("Risultati aggregati")}</h1>
@@ -350,9 +367,10 @@ function PreferredTable({ stats, title} : {
     </Item>
 }
 
-function ReportChart({ question, item } : {
+function ReportChart({ question, item, t } : {
         question: IQuestionStat,
-        item: IReportElement
+        item: IReportElement,
+        t: T,
     }) {
     const _ = useTrans()
     const item_title = 
@@ -365,8 +383,8 @@ function ReportChart({ question, item } : {
                 case undefined:
                 case 'chart':
                     return <Item title={item_title}>
-                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "questions" } />
-                        <TableChooseLanguageQuestion stat={question} count={item?.count || "questions" }/>
+                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "questions" } t={t}/>
+                        <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} t={t}/>
                     </Item>
                 case 'count':
                     return <Item small={true} title={item_title || 'yyy'}>
@@ -388,7 +406,7 @@ function ReportChart({ question, item } : {
                     }   
             </Item>
         case 'map-language-to-age': return <Item title={item_title || question.question.question.it}>
-                <GraphMapLanguageToAgeQuestion stat={question} />
+                <GraphMapLanguageToAgeQuestion stat={question} t={t}/>
             </Item>
         default: return <Item>
             <Error>
@@ -399,20 +417,21 @@ function ReportChart({ question, item } : {
     }
 }
 
-function ReportTable({ question, item} : {
+function ReportTable({ question, item, t} : {
     question: IQuestionStat,
-    item: IReportElement
+    item: IReportElement,
+    t: T
 }) {
     assert(item.element === 'table')
     switch(question.type) {
         case 'choose-language': 
             return <Item>
-                <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} />
+                <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} t={t} />
             </Item>
 
         case 'map-language-to-competence':
             return <Item>
-                <TableMapLanguageToCompetence stat={question} item={item} />
+                <TableMapLanguageToCompetence stat={question} item={item} t={t}/>
             </Item>
         default:
             return <Item>
@@ -424,10 +443,11 @@ function ReportTable({ question, item} : {
     }
 }
 
-function GraphChooseLanguageQuestion({item, stat, count } : {
+function GraphChooseLanguageQuestion({item, stat, count, t} : {
         item: IReportElement,
         stat: IChooseLanguageQuestionStat,
         count: "answers" | "questions",
+        t: T,
     }) {
     const _ = useTrans()
     const languages = questionary.languages
@@ -467,7 +487,7 @@ function GraphChooseLanguageQuestion({item, stat, count } : {
             }
         }} 
         data={{
-            labels: Object.keys(stat.answers).map(id => (id in languages?languages[id]['it']:id)),
+            labels: Object.keys(stat.answers).map(id => t(id)),
             datasets: [
                 {
                 data: Object.entries(stat.answers).map(([key, val])=> (total ? val / total : 0) ),
@@ -478,9 +498,10 @@ function GraphChooseLanguageQuestion({item, stat, count } : {
     />
 }
 
-function TableChooseLanguageQuestion({stat, count}: {
+function TableChooseLanguageQuestion({stat, count, t}: {
     stat: IChooseLanguageQuestionStat,
     count: "answers" | "questions" | "both",
+    t: T,
 }) {
     const _ = useTrans()
     const languages = questionary.languages
@@ -492,7 +513,7 @@ function TableChooseLanguageQuestion({stat, count}: {
                 <td></td>
                     {Object.keys(stat.answers).map(id => 
                 <td key={id}>
-                    {(id in languages?languages[id]['it']:id)}
+                    {t(id)}
                 </td>)}
             </tr>
         </thead>
@@ -675,9 +696,10 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
     </Table>
 }
 
-function TableMapLanguageToCompetence({stat, item} : {
+function TableMapLanguageToCompetence({stat, item, t} : {
         stat: IMapLanguageToCompetenceQuestionStat,
         item: IReportTableElement,
+        t: T,
     }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -700,7 +722,7 @@ function TableMapLanguageToCompetence({stat, item} : {
                         .filter(([lang, s]) => s.countValid > 0.005*stat.count)
                         .map(([lang, s]) => 
                         <tr key={lang}>
-                            <th>{questionary.languages[lang]?.it||lang}</th>
+                            <th>{t(lang)}</th>
                             <td>{stat.count ? Math.round(100*s.countValid / stat.count) : "??"}%</td>
                             {Object.entries(s.competence).map(([c,cstat])=>
                                 <td key={c}>{s.countValid?Math.round(100*cstat.sum/s.countValid)/100:_("n.a.")}</td>)}
@@ -714,7 +736,7 @@ function TableMapLanguageToCompetence({stat, item} : {
             labels: questionary.competences.map(c => c.code),
             datasets: entries.map(([lang, s]) => 
                 ({
-                    label: lang,
+                    label: t(lang),
                     data: Object.entries(s.competence).map(([c,n])=> (stat.count?n.sum/stat.count:0)),
                     fill: false,
                     pointRadius: 3,
@@ -736,13 +758,14 @@ function TableMapLanguageToCompetence({stat, item} : {
     </Item>
 }
 
-function GraphMapLanguageToAgeQuestion({stat} : {
+function GraphMapLanguageToAgeQuestion({stat, t} : {
         stat: IMapLanguageToAgeQuestionStat,
+        t: T,
     }) {
     const _ = useTrans()
     const stats = stat.answers
     const ages = questionary.ages.map(x => x.code)
-    const title = _("Età di apprendimento lingua")
+//    const title = _("Età di apprendimento lingua")
     const languages = Object.keys(stat.answers)
 
     const datasets = ages.map(age => 
@@ -751,8 +774,7 @@ function GraphMapLanguageToAgeQuestion({stat} : {
             label: age || _("mai"),
         }))
 
-    const labels = languages.map(lang => (lang in questionary.languages
-        ?questionary.languages[lang]['it']:lang))
+    const labels = languages.map(lang => t(lang))
 
     return <Bar
         options={{
