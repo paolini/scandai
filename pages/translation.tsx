@@ -51,7 +51,7 @@ export default function Translation() {
                         <td>{source}</td>
                         {sources.map((lang:("en"|"fu")) =>
                             editLang[0] === source && editLang[1] === lang 
-                            ? <td key={lang}>
+                            ? <td key={source}>
                                 <div className="d-flex">
                                     <Input state={editState}></Input>
                                     <Button className="mx-1" size="lg" onClick={()=>{

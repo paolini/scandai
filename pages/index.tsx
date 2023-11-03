@@ -6,10 +6,13 @@ import Loading from '@/components/Loading'
 import Polls from '@/components/Polls'
 import SetUserName from '@/components/SetUserName'
 import { useProfile, useProfileQuery } from '@/lib/api'
-
 import { useTrans } from '@/lib/trans'
 
-export default function Index() {
+type Config = {[key: string]: string}
+
+export default function Index({config}:{
+  config: Config
+}) {
   const router = useRouter()
   const profile = useProfile()
 
@@ -25,10 +28,12 @@ export default function Index() {
     return <Loading />
   }
 
-  return <Home/>
+  console.log(`Index config: ${JSON.stringify(config)}`)
+
+  return <Home config={config}/>
 }
 
-function Home() {
+function Home({config}:{config:Config}) {
   const profileQuery = useProfileQuery()
   const profile = profileQuery.data
   const _ = useTrans()
@@ -42,7 +47,7 @@ function Home() {
   }
 
   return <Page>
-    <h1>{(globalThis as any).SITE_TITLE}</h1>
+    <h1>{config.SITE_TITLE}</h1>
     {!profile.name && <SetUserName profile={profile} mutate={profileQuery.mutate}/>}
     <p>{_('Benvenuto %!', profile.name || profile.username || profile.email)}</p>
     <Polls />  
