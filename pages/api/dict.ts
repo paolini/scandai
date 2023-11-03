@@ -46,6 +46,7 @@ export default async function handler(
         
         try {
             const entries = await Entry.aggregate(pipeline)
+            // console.log(JSON.stringify({entries}))
             const dict = Object.fromEntries(await (await Dict.aggregate([{$project: {lang: 1, map: 1}}])).map(d => ([d.lang,d.map])))
             const data: IDictElement[] = []
             for (const entry of entries) {

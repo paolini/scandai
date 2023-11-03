@@ -7,6 +7,8 @@ import package_json from '../package.json'
 import { useProfile } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
 
+const Link = Nav.Link
+
 export default function Header() {
   const profile = useProfile()
   const router = useRouter()
@@ -27,24 +29,25 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { isAdmin && <Nav.Link href="/report">
+          { isAdmin && <Link href="/report">
               {_("Report")}
-            </Nav.Link> }
-          { (isAuthenticated && !isViewer) && <Nav.Link href="/">
+            </Link> }
+          { (isAuthenticated && !isViewer) && <Link href="/">
               {_("Questionari")}
-            </Nav.Link> }
+            </Link> }
           { isAdmin && 
                 <>
-                  <Nav.Link href="/users">{_("Utenti")}</Nav.Link>
-                  <Nav.Link href="/school">{_("Scuole")}</Nav.Link>
-                  <Nav.Link href="/dict">{_("Mappature")}</Nav.Link>
+                  <Link href="/users">{_("Utenti")}</Link>
+                  <Link href="/school">{_("Scuole")}</Link>
+                  <Link href="/dict">{_("Mappature")}</Link>
+                  <Link href="/translation">{_("Lingue")}</Link>
                 </>
           }
           { isSuper &&
-              <Nav.Link href="/entries">{_("Entries")}</Nav.Link>
+              <Link href="/entries">{_("Entries")}</Link>
           }
           { !isAuthenticated && 
-            <Nav.Link href="/api/auth/signin">{_("Login")}</Nav.Link>
+            <Link href="/api/auth/signin">{_("Login")}</Link>
           }
           <Nav className="right">
             <NavDropdown title={_({it: 'italiano', en: 'inglese', fu: 'friulano'}[locale])}>

@@ -6,6 +6,7 @@ import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
+import { IGetTranslation, IPostTranslation } from '@/models/Translation'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (query) {
@@ -147,4 +148,12 @@ export function useDict() {
 
 export async function postDict(dict: IPostDict): Promise<{data: IDictElement}> {
     return await post<IPostDict>('dict', dict)
+}
+
+export function useTranslation() {
+    return useIndex<IGetTranslation>('translation')
+}
+
+export async function postTranslation(translation: IPostTranslation) {
+    return await post<IPostTranslation>('translation', translation)
 }
