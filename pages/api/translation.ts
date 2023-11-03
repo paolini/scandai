@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Translation, {ITranslation, IPostTranslation} from '@/models/Translation'
 import Dict from '@/models/Dict'
 import getSessionUser from '@/lib/getSessionUser'
+import questionary from '@/lib/questionary'
 
 export default async function handler(
     req: NextApiRequest, 
@@ -23,6 +24,7 @@ export default async function handler(
             const dict = await Dict.find()
             const data = {
                 ...Object.fromEntries(dict.filter(d=>d.map).map(d => [d.map, {}])),
+                ...questionary.languages,
                 ...Object.fromEntries(translations.map((d:ITranslation) => [d.source,d.map])),
             }
             res.status(200).json({ data })

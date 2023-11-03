@@ -22,7 +22,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 
-import { useStats, useProfile } from '@/lib/api'
+import { useStats, useProfile, useTranslation } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -88,6 +88,7 @@ export default function Report() {
     const user = useProfile()
     const router = useRouter()
     const statsQuery = useStats(router.query)
+    const translationQuery = useTranslation()
     const form = router.query.form || "full"
     const ref = useRef(null)
     const print = useReactToPrint({
@@ -97,7 +98,8 @@ export default function Report() {
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
-    if (statsQuery.isLoading) return <Loading />
+    if (statsQuery.isLoading || translationQuery.isLoading) return <Loading />
+    if (translationQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
     
     const stats = statsQuery.data.data

@@ -21,7 +21,7 @@ export default function Translation() {
     if (!translations.data) return <Loading />
 
     const data = Object.fromEntries(Object.entries(translations.data.data)
-        .sort())
+        .sort(([s1,d1],[s2,d2]) => s1.localeCompare(s2)))
 
     async function submit(source: string, lang: "en"|"fu", map: string) {
         try {
