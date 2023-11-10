@@ -52,7 +52,8 @@ set these variables in the environment:
     GOOGLE_CLIENT_SECRET=client_secret
     ADMIN_USERNAME=admin
     ADMIN_PASSWORD=your_secret_password
-    SITE_TITLE="Fotografia linguistica" *not working
+    SITE_TITLE="Fotografia linguistica"
+    SITE_VARIANT="(sviluppo)"
 ```
 
 ## links

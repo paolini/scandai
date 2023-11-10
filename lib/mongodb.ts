@@ -1,27 +1,28 @@
-import mongoose from 'mongoose'
-import {Types} from 'mongoose'
+import mongoose, {Types} from 'mongoose'
 
 import migrate from './migrations'
 import createAdminUser from './createAdminUser'
+import updateConfiguration from './updateConfiguration'
 
 async function init() {
-    const uri = process.env.MONGODB_URI
-    if (!uri) {
-      throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
-    }
-    
-    const promise = mongoose.connect(uri, {})
+  const uri = process.env.MONGODB_URI
+  if (!uri) {
+    throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
+  }
 
-    await promise
+  const promise = mongoose.connect(uri, {})
 
-    console.log(`connected to mongodb at ${uri}`)
+  await promise
 
-    await createAdminUser(mongoose.connection)
-    await migrate(mongoose.connection, { apply: true })
+  console.log(`connected to mongodb at ${uri}`)
 
-    const mongodb = await mongoose.connection.getClient()
+  await createAdminUser(mongoose.connection)
+  await migrate(mongoose.connection, { apply: true })
+  const mongodb = await mongoose.connection.getClient()
 
-    return mongodb
+  await updateConfiguration()
+
+  return mongodb
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a

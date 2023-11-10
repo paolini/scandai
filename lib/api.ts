@@ -7,6 +7,7 @@ import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
+import Config, {IGetConfig} from '@/models/Config'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (query) {
@@ -58,6 +59,10 @@ export async function patch(url: string, obj: WithId, querystring: string = '') 
         body: JSON.stringify(obj)
     })
     return res
+}
+
+export function useConfig() {
+    return useSWR<IGetConfig>([`/api/config`], fetcher)
 }
 
 export async function deleteEntry(obj: WithId) {

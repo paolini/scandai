@@ -7,6 +7,7 @@ import Polls from '@/components/Polls'
 import SetUserName from '@/components/SetUserName'
 import { useProfile, useProfileQuery } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
+import Title from '@/components/Title'
 
 type Config = {[key: string]: string}
 
@@ -47,7 +48,7 @@ function Home({config}:{config:Config}) {
   }
 
   return <Page>
-    <h1>{config.SITE_TITLE}</h1>
+    <Title />
     {!profile.name && <SetUserName profile={profile} mutate={profileQuery.mutate}/>}
     <p>{_('Benvenuto %!', profile.name || profile.username || profile.email)}</p>
     <Polls />  
