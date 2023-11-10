@@ -1,6 +1,6 @@
 import {Table, Button} from 'react-bootstrap'
 import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
-import {useState} from 'react'
+import {useState,useRef} from 'react'
 
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
@@ -14,6 +14,7 @@ export default function Translation() {
     const [editLang, setEditLang] = useState<[string,string]>(['','']) 
     const editState = useState<string>('')
     const addMessage = useAddMessage()
+    const [focus, setFocus] = useState<number>(1)
 
 //    console.log(`editLang: ${editLang}, edit: ${value(editState)}`)
 
@@ -22,17 +23,6 @@ export default function Translation() {
 
     const data = Object.fromEntries(Object.entries(translations.data.data)
         .sort(([s1,d1],[s2,d2]) => s1.localeCompare(s2)))
-
-    async function submit(source: string, lang: "en"|"fu", map: string) {
-        try {
-            await postTranslation({[source]: {[lang]: map}})
-            translations.mutate()
-        } catch(err) {
-            addMessage('error', `errore: ${err}`)
-        }
-        setEditLang(['',''])
-        set(editState,'')
-    }
 
     const sources:("en"|"fu")[] = ["en", "fu"]
 
@@ -53,7 +43,7 @@ export default function Translation() {
                             editLang[0] === source && editLang[1] === lang 
                             ? <td key={source}>
                                 <div className="d-flex">
-                                    <Input state={editState}></Input>
+                                    <Input state={editState} focus={focus} enter={()=>submit(source,lang,value(editState))}/>
                                     <Button className="mx-1" size="lg" onClick={()=>{
                                         submit(source,lang,value(editState)) 
                                         }}>
@@ -66,6 +56,7 @@ export default function Translation() {
                                 onClick={()=>{
                                     set(editState,d[lang]||"")
                                     setEditLang([source,lang])
+                                    setFocus(_ => _ + 1)
                                 }}
                                 style={{cursor:"pointer"}}
                                 >
@@ -83,4 +74,18 @@ export default function Translation() {
             </tbody>
         </Table>
     </Page>
+
+    async function submit(source: string, lang: "en"|"fu", map: string) {
+        try {
+            console.log(`submit ${source} ${lang} ${map}`)
+            await postTranslation({[source]: {[lang]: map}})
+            console.log(`submitted ${source} ${lang} ${map}`)
+            translations.mutate()
+        } catch(err) {
+            addMessage('error', `errore: ${err}`)
+        }
+        setEditLang(['',''])
+        set(editState,'')
+    }
+
 }

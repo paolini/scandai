@@ -41,13 +41,14 @@ export default async function handler(
             console.log(`POST translation body=${JSON.stringify(d)}`)
             for (const [source, map] of Object.entries(d)) {
                 let translation = await Translation.findOne({source})
+                console.log(`translation=${JSON.stringify(translation)}`)
                 if (translation) {
                     console.log(`found ${JSON.stringify(translation.map.toObject())}`)
-                    translation.map = {
-                        ...translation.map.toObject(),
-                        ...map,
-                    }
+                    Object.entries(map).forEach(([k,v]) => {
+                        translation.map.set(k,v)
+                    })
                 } else {
+                    console.log('new translation!')
                     translation = new Translation({
                         source,
                         map,
