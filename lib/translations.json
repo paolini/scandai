@@ -13,7 +13,7 @@
     },
     "Report": {
         "en": "Report",
-        "fu": "Report"
+        "fu": "Rapuart"
     },
     "Questionari": {
         "en": "Questionnaires",
@@ -55,6 +55,7 @@
       "en": "logout",
       "fu": "logout"
     },
+     /* --- traduzione in inglese fatta fino qui ---*/
     "richiesta non valida": {
       "en": "richiesta non valida",
       "fu": "Domande no valide"
@@ -173,155 +174,156 @@
     },
     "classi": {
       "en": "classi",
-      "fu": "classi"
+      "fu": "classis"
     },
     "espandi": {
       "en": "espandi",
-      "fu": "espandi"
+      "fu": "slargje"
     },
     "nascondi": {
       "en": "nascondi",
-      "fu": "nascondi"
+      "fu": "plate"
     },
     "data": {
       "en": "data",
-      "fu": "data"
+      "fu": "date"
     },
     "ora": {
       "en": "ora",
-      "fu": "ora"
+      "fu": "ore"
     },
     "tipo": {
       "en": "tipo",
-      "fu": "tipo"
+      "fu": "gjenar"
     },
     "lingua": {
       "en": "lingua",
-      "fu": "lingua"
+      "fu": "lenghe"
     },
     "elenco": {
       "en": "elenco",
-      "fu": "elenco"
+      "fu": "liste"
     },
     "elimina": {
       "en": "elimina",
-      "fu": "elimina"
+      "fu": "elimine"
     },
     "domanda": {
       "en": "domanda",
-      "fu": "domanda"
+      "fu": "domande"
     },
     "risposta": {
       "en": "risposta",
-      "fu": "risposta"
+      "fu": "rispueste"
     },
     "errore": {
       "en": "errore",
-      "fu": "errore"
+      "fu": "erôr"
     },
     "risposte": {
       "en": "risposte",
-      "fu": "risposte"
+      "fu": "rispuestis"
     },
     "Errore": {
       "en": "Errore",
-      "fu": "Errore"
+      "fu": "Erôr"
     },
     "Errore: sondaggio non trovato": {
       "en": "Errore: sondaggio non trovato",
-      "fu": "Errore: sondaggio non trovato"
+      "fu": "Erôr: scandai no cjatât"
     },
     "sondaggio non trovato": {
       "en": "sondaggio non trovato",
-      "fu": "sondaggio non trovato"
+      "fu": "scandai no cjatât"
     },
     "Pagina amministrazione scuola": {
       "en": "Pagina amministrazione scuola",
-      "fu": "Pagina amministrazione scuola"
+      "fu": "Pagjine di aministrazion de scuele"
     },
     "Nome": {
       "en": "Nome",
-      "fu": "Nome"
+      "fu": "Non"
     },
     "Città": {
       "en": "Città",
-      "fu": "Città"
+      "fu": "Citât"
     },
     "Modifica": {
       "en": "Modifica",
-      "fu": "Modifica"
+      "fu": "Modifiche"
     },
     "Crea nuovo": {
       "en": "Crea nuovo",
-      "fu": "Crea nuovo"
+      "fu": "Cree gnûf"
     },
     "Salva modifiche": {
       "en": "Salva modifiche",
-      "fu": "Salva modifiche"
+      "fu": "Salve modifichis"
     },
     "Annulla modifiche": {
       "en": "Annulla modifiche",
-      "fu": "Annulla modifiche"
+      "fu": "Anule lis modifichis"
     },
     "Visualizza i questionari compilati": {
       "en": "Visualizza i questionari compilati",
-      "fu": "Visualizza i questionari compilati"
+      "fu": "Mostre i cuestionaris compilâts"
     },
     "Visualizza i report di ogni classe e i dati aggregati della scuola.": {
       "en": "Visualizza i report di ogni classe e i dati aggregati della scuola.",
-      "fu": "Visualizza i report di ogni classe e i dati aggregati della scuola."
+      "fu": "Mostre i rapuarts di ogni classe e i dâts agragâts de scuele."
     },
     "visualizza": {
       "en": "visualizza",
-      "fu": "visualizza"
+      "fu": "mostre"
     },
     "Condividi i questionari compilati": {
       "en": "Condividi i questionari compilati",
-      "fu": "Condividi i questionari compilati"
+      "fu": "Condivît i cuestionaris compilâts"
     },
     "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.": {
       "en": "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.",
-      "fu": "Crea un link per condividere i report di ogni classe e i dati aggregati della scuola."
+      "fu": "Cree un leam pe condivision dai rapuarts di ogni classe e dai dâts agragâts."
     },
     "crea indirizzo condivisione report": {
       "en": "crea indirizzo condivisione report",
-      "fu": "crea indirizzo condivisione report"
+      "fu": "cree leam pe condivision dal rapuart"
     },
     "cancella indirizzo": {
       "en": "cancella indirizzo",
-      "fu": "cancella indirizzo"
+      "fu": "scancele leam"
     },
     "impossibile copiare l'indirizzo di condivisione report": {
       "en": "impossibile copiare l'indirizzo di condivisione report",
-      "fu": "impossibile copiare l'indirizzo di condivisione report"
+      "fu": "impussibil copiâ il leam di condivision dal rapuart"
     },
     "indirizzo somministrazione (url) copiato": {
       "en": "indirizzo somministrazione (url) copiato",
-      "fu": "indirizzo somministrazione (url) copiato"
+      "fu": "leam pe soministrazion (url) copiât"
     },
     "errore nella creazione/rimozione del link di condivisione report": {
       "en": "errore nella creazione/rimozione del link di condivisione report",
-      "fu": "errore nella creazione/rimozione del link di condivisione report"
+      "fu": "erôr te creazion/rimozion dal leam pe condivision dal rapuart"
     },
     "Nessun questionario": {
       "en": "Nessun questionario",
-      "fu": "Nessun questionario"
+      "fu": "Nissun cuestionari"
     },
     "questionari": {
       "en": "questionari",
-      "fu": "questionari"
+      "fu": "cuestionaris"
     },
     "report": {
       "en": "report",
-      "fu": "report"
+      "fu": "rapuart"
     },
     "aggiungi scuola": {
       "en": "aggiungi scuola",
-      "fu": "aggiungi scuola"
+      "fu": "zonte scuele"
     },
     "nome": {
       "en": "nome",
-      "fu": "nome"
+      "fu": "non"
     }
+    /* --- traduzione in friulano fatta fino qui ---*/
   }    
 
