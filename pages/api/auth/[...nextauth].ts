@@ -186,7 +186,7 @@ async function sendVerificationRequest(params: SendVerificationRequestParams) {
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
-    subject: `login ${config.title.it}`,
+    subject: `login ${config.siteTitle.it}`,
     text: email_text({ url, host, config }),
     html: email_html({ url, host, config }),
   })
