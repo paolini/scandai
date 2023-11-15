@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 
-import translations from './translations.json'
+import translations from './translations'
 
 export type Locale = "it"|"en"|"fu" 
 const LOCALES:Locale[] = ["it","en","fu"]

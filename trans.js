@@ -3,7 +3,7 @@ exports.__esModule = true;
 
 const fs = require('fs');
 
-const translations = require("./lib/translations.json");
+const translations = require("./lib/translations");
 
 console.log("TRANS!");
 
