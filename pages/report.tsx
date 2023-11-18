@@ -219,7 +219,7 @@ function CompetenceLegend({title}:{
         <i>{_("abilità")}:</i>
         <ul>
             {competences.map(c =>
-                <li key={c.code}>{c.code}: {c.it}</li>)}                
+                <li key={c.code}>{c.code}: {c[_.locale]}</li>)}                
         </ul>
     </Item>
 }
@@ -487,7 +487,7 @@ function GraphChooseLanguageQuestion({item, stat, count, t} : {
             }
         }} 
         data={{
-            labels: Object.keys(stat.answers).map(id => t(id)),
+            labels: Object.keys(stat.answers).map(id => id===''?_("altre"):t(id)),
             datasets: [
                 {
                 data: Object.entries(stat.answers).map(([key, val])=> (total ? val / total : 0) ),
