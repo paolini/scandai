@@ -14,10 +14,6 @@ export default async function handler(
         return res.status(401).json({error: 'not authenticated'})
     }
 
-    if (!user.isAdmin) {
-        return res.status(401).json({error: 'not authorized'})
-    }
-
     if (req.method === 'GET') {
         try {
             const translations = await Translation.find()
