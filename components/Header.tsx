@@ -1,38 +1,68 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import assert from 'assert'
 
 import package_json from '../package.json'
-import useSessionUser from '@/lib/useSessionUser'
+import { useProfile } from '@/lib/api'
+import { useTrans } from '@/lib/trans'
+
+const Link = Nav.Link
 
 export default function Header() {
-  const user = useSessionUser()
-  const { data: session } = useSession()
+  const profile = useProfile()
   const router = useRouter()
+  const { data: session } = useSession()
+  const isAdmin = profile?.isAdmin
+  const isViewer = profile?.isViewer
+  const isSuper = profile?.isSuper
+  const isAuthenticated = !!profile
+  const locale = router.locale || 'it'
+  const _ = useTrans()
+
+  assert (locale === 'it' || locale === 'en' || locale === 'fu', 'locale non supportata')
 
   return <div className="noPrint"><Navbar bg="light" expand="lg">
-    { false && JSON.stringify(user) }
+    { false && JSON.stringify(profile) }
     <Container>
       <Navbar.Brand href="/">{package_json.name}-{package_json.version}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { user?.isAdmin && <Nav.Link href="/report">Report</Nav.Link> }
-          { user && <Nav.Link href="/">Questionari</Nav.Link> }
-          { user?.isAdmin && 
+          { isAdmin && <Link href="/report">
+              {_("Report")}
+            </Link> }
+          { (isAuthenticated && !isViewer) && <Link href="/">
+              {_("Questionari")}
+            </Link> }
+          { isAdmin && 
                 <>
-                  <Nav.Link href="/users">Utenti</Nav.Link>
-                  <Nav.Link href="/school">Scuole</Nav.Link>
-                  <Nav.Link href="/dict">Mappature</Nav.Link>
+                  <Link href="/users">{_("Utenti")}</Link>
+                  <Link href="/school">{_("Scuole")}</Link>
+                  <Link href="/dict">{_("Mappature")}</Link>
+                  <Link href="/translation">{_("Lingue")}</Link>
                 </>
           }
-          { user?.isSuper &&
-              <Nav.Link href="/entries">Entries</Nav.Link>
+          { isSuper &&
+              <Link href="/entries">{_("Entries")}</Link>
           }
-          { !(user) && 
-            <Nav.Link href="/api/auth/signin">Login</Nav.Link>
+          { !isAuthenticated && 
+            <Link href="/api/auth/signin">{_("Login")}</Link>
           }
-          { user && 
+          <Nav className="right">
+            <NavDropdown title={_({it: 'italiano', en: 'inglese', fu: 'friulano'}[locale])}>
+              <NavDropdown.Item onClick={() => changeLocale('fu')}>
+                {_("friulano")}
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => changeLocale('it')}>
+                {_("italiano")}
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => changeLocale('en')}>
+                {_("inglese")}
+              </NavDropdown.Item>
+            </NavDropdown>  
+          </Nav>
+          { isAuthenticated && 
           <Nav className="right">
           {!session && <NavDropdown title="user">
             <NavDropdown.Item
@@ -40,25 +70,25 @@ export default function Header() {
                 onClick={(e) => {
                   e.preventDefault()
                   signIn()
-                }}>login
+                }}>{_("login")}
             </NavDropdown.Item>
           </NavDropdown>} 
-          {session && session?.dbUser &&
+          {profile && 
             /* user is authenticated */
             <NavDropdown title={<>
-                {session.user?.image && 
+                {profile.image && 
                 <img
-                  src={session.user.image}
+                  src={profile.image}
                   className="rounded-circle"
                   width="22"
                   alt="Avatar"
                   loading="lazy"
                 />}
-                <span className="me-2">{session.dbUser.email || session.dbUser.username || '---'}</span>
+                <span className="me-2">{profile.email || profile.username || '---'}</span>
               </>}>
-                { user?.isSuper && <NavDropdown.Item
+                { isSuper && <NavDropdown.Item
                     href={`/api/backup`
-                    }>download backup</NavDropdown.Item>
+                    }>{_("download backup")}</NavDropdown.Item>
                 }
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
@@ -68,7 +98,7 @@ export default function Header() {
                       // router.push('/') // non funziona!
                       window.location.href = '/'
                     }}  
-                  >logout
+                  >{_("logout")}
                 </NavDropdown.Item>
             </NavDropdown>}
          </Nav>}
@@ -76,4 +106,8 @@ export default function Header() {
       </Navbar.Collapse>
     </Container>
   </Navbar></div>
+
+  function changeLocale(locale: 'it' | 'en' | 'fu') {
+    router.push(router.asPath, undefined, { locale })
+  }
 }

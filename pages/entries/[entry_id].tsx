@@ -8,8 +8,10 @@ import ErrorElement from "@/components/Error"
 import Page from "@/components/Page"
 import { formatDate, formatTime } from "@/lib/utils"
 import { useAddMessage } from "@/components/Messages"
+import { useTrans } from "@/lib/trans"
 
 export default function Entry({}) {
+    const _ = useTrans()
     const router = useRouter()
     const entryId = router.query.entry_id
     const entryQuery = useEntries({_id: entryId})
@@ -24,34 +26,34 @@ export default function Entry({}) {
         <Table>
             <tbody>
                 <tr>
-                    <th>data</th>
+                    <th>{_("data")}</th>
                     <td>{formatDate(entry.createdAt)}</td>
                 </tr>
                 <tr>
-                    <th>ora</th>
+                    <th>{_("ora")}</th>
                     <td>{ entry.createdAt
                         ? dayjs(entry.createdAt).format("HH:mm:ss")
                         : '---' }
                     </td>
                 </tr>
                 <tr>
-                    <th>tipo</th>
+                    <th>{_("tipo")}</th>
                     <td>{entry?.poll?.form}</td>
                 </tr>
                 <tr>
-                    <th>scuola</th>
+                    <th>{_("scuola")}</th>
                     <td>{entry?.poll?.school?.name}</td>
                 </tr>
                 <tr>
-                    <th>città</th>
+                    <th>{_("città")}</th>
                     <td>{entry?.poll?.school?.city}</td>
                 </tr>
                 <tr>
-                    <th>sezione</th>
-                    <td>{entry?.poll?.class}</td>
+                    <th>{_("classe")}</th>
+                    <td>{entry?.poll?.year}&nbsp;{entry?.poll?.class}</td>
                 </tr>
                 <tr>
-                    <th>lingua</th>
+                    <th>{_("lingua")}</th>
                     <td>{entry?.lang}</td>
                 </tr>
                 <tr>
@@ -65,14 +67,14 @@ export default function Entry({}) {
             </tbody>
         </Table>
         <ButtonGroup>
-            <Button onClick={() => router.push('/entries')}>elenco</Button>
-            <Button variant="danger" onClick={trash}>elimina</Button>
+            <Button onClick={() => router.push('/entries')}>{_("elenco")}</Button>
+            <Button variant="danger" onClick={trash}>{_("elimina")}</Button>
         </ButtonGroup>
         <Table>
             <thead>
                 <tr>
-                    <th>domanda</th>
-                    <th>risposta</th>
+                    <th>{_("domanda")}</th>
+                    <th>{_("risposta")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,9 +103,8 @@ export default function Entry({}) {
         try {
             await deleteEntry(entry)
             router.push('/entries')
-            addMessage('success', 'eliminato')
         } catch (error) {
-            addMessage('warning', `errore: ${error}`)
+            addMessage('warning', `${_("errore")}: ${error}`)
         }
     }
 }

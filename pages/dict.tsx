@@ -4,11 +4,10 @@ import {useState} from 'react'
 
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
-import {useDict} from '@/lib/api'
+import {useDict,postDict} from '@/lib/api'
 import {set, value} from '@/lib/State'
 import Input from '@/components/Input'
 import {useAddMessage} from '@/components/Messages' 
-import {postDict} from '@/lib/api'
 
 export default function Dict() {
     const missing = useDict()
@@ -16,7 +15,7 @@ export default function Dict() {
     const editState = useState<string>('')
     const addMessage = useAddMessage()
 
-    console.log(`editLang: ${editLang}, edit: ${value(editState)}`)
+//    console.log(`editLang: ${editLang}, edit: ${value(editState)}`)
 
     if (missing.isLoading) return <Loading/>
     if (!missing.data) return <Loading />

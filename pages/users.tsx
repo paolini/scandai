@@ -18,21 +18,11 @@ export default function Users() {
     const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
+    const isSuper = sessionUser?.isSuper
 
     if (usersQuery.isLoading) return <Loading />
     if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
     const users = usersQuery.data.data
-
-    const setAdmin = async (user: IGetUser, isAdmin: boolean) => {
-        if (user.isAdmin === isAdmin) return
-        try {
-            const newData = await patchUser({_id: user._id, isAdmin }) 
-            usersQuery.mutate()
-        } catch(e) {
-            addMessage('error', `error updating user: ${e}`)
-            console.error(e)
-        }
-    }
 
     return <Page>
         <h2>Users</h2>
@@ -55,22 +45,37 @@ export default function Users() {
         <table className="table">
             <thead>
                 <tr>
-                    <td>email</td>
-                    <td>name</td>
-                    <td>admin</td>
-                    { value(showDeleteState) && <td>elimina</td> }
+                    <th>email</th>
+                    <th>name</th>
+                    <th>accounts</th>
+                    <th>viewer</th>
+                    <th>admin</th>
+                    { isSuper && <th>super</th>}
+                    { value(showDeleteState) && <th>elimina</th> }
                 </tr>
             </thead>
             <tbody>
                 { users.map((user) => <tr key={user._id.toString()}>
                     <td>{user.email}</td>
                     <td>{user.name || user.username}</td>
-                    <td className="d-flex">
+                    <td>{user.accounts.map(a => a.provider).join(" ")}</td>
+                    <td>
+                        <Switch
+                        checked={!!user.isViewer}
+                        onChange={(checked) => {patch(user, {isViewer: checked})}} />
+                    </td>
+                    <td>
                         <Switch
                         disabled={user._id === sessionUser?._id}
                         checked={!!user.isAdmin}
-                        onChange={(checked) => {setAdmin(user, checked)}} />
+                        onChange={(checked) => {patch(user, {isAdmin: checked})}} />
                     </td>
+                    { isSuper && <td>
+                        <Switch
+                        disabled={user._id === sessionUser?._id}                        
+                        checked={!!user.isSuper}
+                        onChange={(checked) => {patch(user, {isSuper: checked})}} />
+                    </td>}
                     { value(showDeleteState) && <td>
                         <Button variant="danger" size="sm" disabled={user._id === sessionUser?._id}
                             onClick={() => clickDeleteUser(user)}><FaTrash />elimina</Button>
@@ -79,6 +84,16 @@ export default function Users() {
             </tbody>
         </table>
     </Page>
+
+    async function patch(user: IGetUser, payload: {[key:string]: string | boolean}) {
+        try {
+            const newData = await patchUser({_id: user._id, ...payload }) 
+            usersQuery.mutate()
+        } catch(e) {
+            addMessage('error', `error updating user: ${e}`)
+            console.error(e)
+        }
+    }
 
     async function clickDeleteUser(user: IGetUser) {
         try {

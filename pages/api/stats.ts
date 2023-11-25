@@ -50,7 +50,7 @@ export default async function handler(
             if (!user) {
                 return res.status(401).json({error: 'not authenticated'})
             }
-            if (!user.isAdmin) {
+            if (!(user.isAdmin||user.isViewer)) {
                 pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
             }
         }
@@ -389,7 +389,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
             if (entries.length > 10) {
                 const other = entries.slice(9).reduce((acc, [lang, count]) => acc + count, 0)
                 entries.splice(9)
-                entries.push(['altre', other])
+                entries.push(['', other])
             }
             q.answers = Object.fromEntries(entries)
         } 

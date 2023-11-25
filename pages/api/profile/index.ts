@@ -8,7 +8,8 @@ export default async function handler(
     res: NextApiResponse) {
         const sessionUser = await getSessionUser(req)
         if (!sessionUser) {
-            return res.status(401).json({error: 'not authenticated'})
+            return res.json(null)
+            // return res.status(401).json({error: 'not authenticated'})
         }
 
         if (req.method === 'GET') {
@@ -26,7 +27,9 @@ export default async function handler(
                 email: user.email,
                 isAdmin: user.isAdmin,
                 isSuper: user.isSuper,
+                isViewer: user.isViewer,
                 image: user.image,
+                accounts: user.accounts,
             }   
             return res.json(profile)
         }

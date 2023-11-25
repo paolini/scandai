@@ -9,17 +9,17 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get, onChange, State } from '@/lib/State'
 import { IPostPoll, IGetPoll, IPoll } from '@/models/Poll'
-import useSessionUser from '@/lib/useSessionUser'
+import { useProfile } from '@/lib/api'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
-import questionary, {schoolNames} from '@/lib/questionary'
+import questionary from '@/lib/questionary'
 
 const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
     const pollsQuery = usePolls()
-    const user = useSessionUser()
+    const profile = useProfile()
     const router = useRouter()
     const newForm = router.query.new || null  
 
@@ -50,7 +50,7 @@ export default function Polls({}) {
                 <b>questionari aperti</b>
             </Card.Header>
             <Card.Body>
-                <PollsTable user={user} polls={openPolls} />
+                <PollsTable user={profile} polls={openPolls} />
             </Card.Body>
         </Card>
         }
@@ -60,7 +60,7 @@ export default function Polls({}) {
                     <b>questionari chiusi</b>
                 </Card.Header>
                 <Card.Body>
-                    <PollsTable user={user} polls={closedPolls} />
+                    <PollsTable user={profile} polls={closedPolls} />
             </Card.Body>
         </Card>
         }
@@ -109,7 +109,7 @@ function PollsTable({user, polls}:{
                     {poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}
                 </td>
                 <td>
-                    {poll.class}
+                    {poll?.year}&nbsp;{poll.class}
                 </td>
                 <td>
                     {poll.entriesCount}
@@ -144,7 +144,7 @@ function NewPoll({ form, done }:{
     form?: string|null,
     done?: (poll: IGetPoll|null) => void
 }) {
-    const pollState = useState<IPostPoll>({school_id: '', class: '', form: (form || 'full'), closed: false})
+    const pollState = useState<IPostPoll>({school_id: '', class: '', year: '', form: (form || 'full'), closed: false})
     const addMessage = useAddMessage()
 
     return <Card>
@@ -156,10 +156,29 @@ function NewPoll({ form, done }:{
                 { !form && <SelectForm formState={get(pollState, 'form')} />}
                 <SelectSchool schoolState={get(pollState, 'school_id')} />
                 <div className="form-group">
-                    <label htmlFor="class">
+                    <label htmlFor="year">
                         classe
                     </label>
-                    <Input id="class" state={get(pollState, 'class')} placeholder="classe" />
+                    <select className="form-control" id="year" value={value(pollState).year} 
+                        onChange={evt => {
+                            set(get(pollState, 'year'), evt.target.value)
+                        }}>
+                        <option value="" disabled={true}>scegli</option>
+                        {
+                            [   ["1","prima"],
+                                ["2","seconda"],
+                                ["3","terza"],
+                                ["4","quarta"],
+                                ["5","quinta"]].map(([year,label]) =>
+                                    <option key={year} value={year}>{label}</option>)
+                        }
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="class">
+                        sezione
+                    </label>
+                    <Input id="class" state={get(pollState, 'class')} placeholder="sezione" />
                 </div>
             </form>                                
         </Card.Body>

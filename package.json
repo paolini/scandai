@@ -1,13 +1,14 @@
 {
   "name": "scandai",
-  "version": "1.2.9",
+  "version": "1.4.8",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "mail": "node mail.js"
+    "mail": "node mail.js",
+    "trans": "node trans.js"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",

@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Head from 'next/head'
 import { Button } from 'react-bootstrap'
 
 import Header from '@/components/Header'
 import { useMessagesState, Message } from '@/components/Messages'
 import { get, value, array, remove, State } from '@/lib/State'
-import { SITE_TITLE } from '@/lib/config'
 
 export default function Page({header=true, title, children} : {
       header?: boolean
@@ -16,7 +15,7 @@ export default function Page({header=true, title, children} : {
 
     return <>
       <Head>
-        <title>{SITE_TITLE}</title>
+        <title>{(globalThis as any).SITE_TITLE}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>

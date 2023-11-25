@@ -6,6 +6,8 @@ import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
+import { IGetTranslation, IPostTranslation } from '@/models/Translation'
+import Config, {IGetConfig} from '@/models/Config'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (query) {
@@ -59,6 +61,10 @@ export async function patch(url: string, obj: WithId, querystring: string = '') 
     return res
 }
 
+export function useConfig() {
+    return useSWR<IGetConfig>([`/api/config`], fetcher)
+}
+
 export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
@@ -95,8 +101,17 @@ export async function patchUser(user: any) {
     return await patch('users', user)
 }
 
-export function useProfile() {
+export function useProfileQuery() {
     return useGet<IGetUser>('profile', '')
+}
+
+/**
+ * @returns {IGetUser} the current user if logged in
+ * @returns {null} if not logged in
+ * @returns {undefined} if loading
+ */
+export function useProfile() {
+    return useProfileQuery().data
 }
 
 export async function patchProfile(user: any) {
@@ -138,4 +153,12 @@ export function useDict() {
 
 export async function postDict(dict: IPostDict): Promise<{data: IDictElement}> {
     return await post<IPostDict>('dict', dict)
+}
+
+export function useTranslation() {
+    return useIndex<IGetTranslation>('translation')
+}
+
+export async function postTranslation(translation: IPostTranslation) {
+    return await post<IPostTranslation>('translation', translation)
 }

@@ -2,33 +2,6 @@ import assert from "assert"
 
 export const languageCodes = ['it','fu','sl','de','en']
 
-export const schoolNames = [
-  'ISIS PASCHINI/LINUSSIO - TOLMEZZO',
-  'ISIS MAGRINI/MARCHETTI - GEMONA',
-  'ISIS MANZINI - SAN DANIELE',
-  'IIS LINUSSIO - CODROIPO',
-  'LS  MARINELLI - UDINE',
-  'ITI BEARZI - UDINE',
-  'ISIS SOLARI - TOLMEZZO',
-  'ISIS D ARONCO - GEMONA',
-  'ISTITUTO BACHMANN - TOLMEZZO',
-  'ISIS MALIGNANI - UDINE',
-  'ISIS STRINGHER - UDINE',
-  'ISIS DEGANUTTI - UDINE',
-  'LC STELLINI - UDINE',
-  'LICEO PERCOTO - UDINE',
-  'ISTITUTO UCCELLIS - UDINE',
-  'LS/LSA COPERNICO - UDINE',
-  'IPSIA CECONI - UDINE',
-  'LICEO SELLO - UDINE',
-  'IT ZANON - UDINE',
-  'IT MARINONI - UDINE',
-  'CN P.DIACONO - CIVIDALE',
-  'LICEO PAOLINO D AQUILEIA - CIVIDALE',
-  'ISIS MATTEI - LATISANA',
-  'ISIS DELLA BASSA FRIULANA',
-]
-
 const questionary: IQuestionary = {
   version: "0.2.0",
 
@@ -688,7 +661,11 @@ const questionary: IQuestionary = {
       report: [
         {
           element: "title",
-          title: "Risultati aggregati",
+          title: {
+            it: "Risultati aggregati",
+            en: "Aggregated results",
+            fu: "Risultâts agregâts",
+          },
         },
         {
           element: "info",
@@ -696,27 +673,47 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           question: "1.1.a.1", 
-          title: "Nella mia famiglia si parla abitualmente",
+          title: {
+            it: "Nella mia famiglia si parla abitualmente",
+            en: "In my family, we habitually speak",
+            fu: "Inte mê famee pal solit si fevele",
+          },
         },
         {
           element: "chart",
           variant: "count",
           question: "1.1.a.1",
-          title: "Numero di lingue parlate in famiglia",
+          title: {
+            it: "Numero di lingue parlate in famiglia",
+            en: "Number of languages spoken in the family",
+            fu: "Numar di lenghis feveladis in famee",            
+          },
         },
         {
           element: "chart",
-          title: "Competenze linguistiche autovalutate",
+          title: {
+            it: "Competenze linguistiche autovalutate",
+            en: "Self-assessed language skills",
+            fu: "Competencis linguistichis autovalutadis",
+          },
           question: "2.2.1",
         },
         {
           element: "chart",
-          title: "A che età hai cominciato a parlare le lingue che conosci?",
+          title: {
+            it: "A che età hai cominciato a parlare le lingue che conosci?",
+            en: "A che età hai cominciato a parlare le lingue che conosci?",
+            fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+          }, 
           question: "2.1.1",
         },
         {
           element: "table",
-          title: "Valori medi delle competenze autovalutate",
+          title: {
+            it: "Valori medi delle competenze autovalutate",
+            en: "Average values of self-assessed skills",
+            fu: "Valôrs medis des competencis autovalutadis",
+          },
           question: "2.2.1",
         },
         {
@@ -841,7 +838,11 @@ const questionary: IQuestionary = {
         },
         {
           element: "preferred",
-          title: "Lingua scelta per la compilazione",
+          title: {
+            it: "Lingua scelta per la compilazione",
+            en: "Language chosen for filling out the questionnaire",
+            fu: "Lenghe sielte pe compilazion",
+          },
         },
         {
           element: "preferred",
@@ -906,7 +907,11 @@ const questionary: IQuestionary = {
       report: [
         {
           element: "title",
-          title: "Istantanea linguistica",
+          title: {
+            it: "Istantanea linguistica",
+            en: "Istantanea linguistica",
+            fu: "Istantanea linguistica",
+          },            
         },
         {
           element: "info",
@@ -914,16 +919,28 @@ const questionary: IQuestionary = {
         {
           element: "chart",
           question: "family",
-          title: "Lingue parlate in famiglia",
+          title: {
+            it: "Lingue parlate in famiglia",
+            en: "Lingue parlate in famiglia",
+            fu: "Lingue parlate in famiglia",
+          },
         },
         {
           element: "chart",
           question: "friends",
-          title: "Lingue parlate con gli amici",
+          title: {
+            it: "Lingue parlate con gli amici",
+            en: "Lingue parlate con gli amici",
+            fu: "Lingue parlate con gli amici",
+          },
         },
         {
           element: "chart",
-          title: "Competenze linguistiche autovalutate",
+          title: {
+            it: "Competenze linguistiche autovalutate",
+            en: "Competenze linguistiche autovalutate",
+            fu:  "Competenze linguistiche autovalutate",
+          },
           question: "competences",
         },
         {
@@ -994,7 +1011,7 @@ export function extractLevels(questionary: IQuestionary): string[] {
 }
 
 export function trans(s: {[key:string]: string}, lang: string) {
-  return s[lang] || `${lang}: ${s.it||'???'}`
+  return s[lang] || s.it || '???'
 }
 
 export function getPhrase(s: keyof typeof questionary.phrases, lang: LanguageCode) {
@@ -1095,23 +1112,23 @@ export type IReportGlobalElement =
 
 export type IReportTitleElement = {
   element: 'title',
-  title: string,
+  title: LocalizedString,
 }
 
 export type IReportInfoElement = {
   element: 'info',
-  title?: string,
+  title?: LocalizedString,
 }
 
 export type IReportPreferredElement = {
   element: 'preferred',
-  title?: string,
+  title?: LocalizedString,
   table?: boolean,
 }
 
 export type IReportChartElement = {
   element: 'chart',
-  title?: string,
+  title?: LocalizedString,
   question: string,
   variant?: 'chart'|'count',
   count?: "questions" | "answers",
@@ -1119,7 +1136,7 @@ export type IReportChartElement = {
 
 export type IReportTableElement = {
   element: 'table',
-  title?: string,
+  title?: LocalizedString,
   question: string,
   count?: "questions" | "answers",
 }

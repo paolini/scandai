@@ -29,10 +29,13 @@ export default async function handler(
             } catch(error) {
                 return res.status(400).json({error: 'invalid json'})
             }
-            for (const key of ["isAdmin"]) {
+            for (const key of ["isAdmin","isViewer"]) {
                 if (Object.keys(body).includes(key)) {
                     aUser[key] = body[key]
                 }
+            }
+            if (Object.keys(body).includes("isSuper") && user.isSuper) {
+                aUser["isSuper"] = body["isSuper"]
             }
             const out = await aUser.save()
             return res.json({data: out})

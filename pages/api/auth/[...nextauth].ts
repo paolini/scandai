@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import EmailProvider, { SendVerificationRequestParams } from "next-auth/providers/email"
@@ -129,9 +129,11 @@ export default NextAuth({
                         name: dbUser?.name,
                         username: dbUser?.username,
                         email: dbUser?.email,
+                        isViewer: dbUser?.isViewer,
                         isAdmin: dbUser?.isAdmin,
                         isSuper: dbUser?.isSuper,
                         image: dbUser?.image,
+                        accounts: dbUser?.accounts,
                     }
                 } else {
                     console.log(`User not found with id ${token.sub}`)
@@ -173,19 +175,20 @@ export default NextAuth({
 })
 
 import { createTransport } from "nodemailer"
-import { SITE_TITLE } from "@/lib/config"
+import Config, {IGetConfig} from "@/models/Config"
 
 async function sendVerificationRequest(params: SendVerificationRequestParams) {
   const { identifier, url, provider, theme } = params
   const { host } = new URL(url)
+  const config = await Config.findOne({})
   // NOTE: You are not required to use `nodemailer`, use whatever you want.
   const transport = createTransport(provider.server)
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
-    subject: `login ${SITE_TITLE}`,
-    text: email_text({ url, host }),
-    html: email_html({ url, host }),
+    subject: `login ${config.siteTitle.it}`,
+    text: email_text({ url, host, config }),
+    html: email_html({ url, host, config }),
   })
   const failed = result.rejected.concat(result.pending).filter(Boolean)
   if (failed.length) {
@@ -201,8 +204,8 @@ async function sendVerificationRequest(params: SendVerificationRequestParams) {
  *
  * @note We don't add the email address to avoid needing to escape it, if you do, remember to sanitize it!
  */
-function email_html(params: { url: string; host: string }) {
-  const { url, host } = params
+function email_html(params: { url: string; host: string; config: IGetConfig }) {
+  const { url, host, config } = params
 
   const escapedHost = host.replace(/\./g, "&#8203;.")
 
@@ -223,7 +226,7 @@ function email_html(params: { url: string; host: string }) {
     <tr>
       <td align="center"
         style="padding: 10px 0px; font-size: 22px; font-family: Helvetica, Arial, sans-serif; color: ${color.text};">
-        Entra nel sito <strong>${SITE_TITLE}</strong>
+        Entra nel sito <strong>${config.siteTitle.it}</strong>
       </td>
     </tr>
     <tr>
@@ -249,6 +252,6 @@ function email_html(params: { url: string; host: string }) {
 }
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
-function email_text({ url, host }: { url: string; host: string }) {
-  return `Entra nel sito ${SITE_TITLE}:\n${url}\n\n`
+function email_text({ url, host, config }: { url: string; host: string; config: IGetConfig }) {
+  return `Entra nel sito ${config.siteTitle.it}:\n${url}\n\n`
 }

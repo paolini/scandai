@@ -15,6 +15,7 @@ import Error from '@/components/Error'
 import questionary from '@/lib/questionary'
 import useSessionUser from '@/lib/useSessionUser'
 import { formatDate, formatTime } from '@/lib/utils'
+import { useTrans } from '@/lib/trans'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -38,6 +39,7 @@ export default function SchoolId({}) {
 function School({ school, mutate } : { 
     school: IGetSchool, mutate: () => void 
 }) {
+    const _ = useTrans()
     const createNew = school._id === '__new__'
     const nameState = useState<string>(school.name)
     const cityState = useState<string>(school.city)
@@ -51,28 +53,28 @@ function School({ school, mutate } : {
     return <>
         <Card className="my-4">
             <Card.Header>
-                <h2>Pagina amministrazione scuola</h2>
+                <h2>{_("Pagina amministrazione scuola")}</h2>
             </Card.Header>
             <Card.Body>
-                <p>Nome: {}                 
+                <p>{_("Nome")}: {}                 
                     { edit ? <Input state={nameState} /> : <b>{school.name}</b> }
                 </p>
-                <p>Città: {}
+                <p>{_("Città")}: {}
                     { edit ? <Input state={cityState} /> : <b>{school.city}</b> }
                 </p>
             </Card.Body>
             <Card.Footer>
                 { !edit && 
                 <Button className="mx-2" onClick={() => setEdit(true)} variant="danger">
-                    Modifica
+                    {_("Modifica")}
                 </Button>}
                 { edit && 
                 <Button className="mx-2" onClick={save} disabled={!modified}>
-                    {createNew?"Crea nuovo":"Salva modifiche"}
+                    {createNew?_("Crea nuovo"):_("Salva modifiche")}
                 </Button> }
                 { edit && 
                 <Button className="mx-2" onClick={cancel}>
-                        Annulla modifiche
+                        {_("Annulla modifiche")}
                 </Button>
                 }
             </Card.Footer>
@@ -80,27 +82,27 @@ function School({ school, mutate } : {
 
         <Card className="my-4">
             <Card.Header>
-                <h2>Visualizza i questionari compilati</h2>
+                <h2>{_("Visualizza i questionari compilati")}</h2>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                    Visualizza i report di ogni classe e i dati aggregati della scuola.
+                    {_("Visualizza i report di ogni classe e i dati aggregati della scuola.")}
                 </Card.Text>
             </Card.Body>
             <Card.Footer>
                 <Button onClick={() => router.push(reportUrl("full"))}>
-                    visualizza
+                    {_("visualizza")}
                 </Button> 
             </Card.Footer>
         </Card>
 
         <Card className="my-4">
             <Card.Header>
-                <h2>Condividi i questionari compilati</h2>
+                <h2>{_("Condividi i questionari compilati")}</h2>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                    Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.
+                    {_("Crea un link per condividere i report di ogni classe e i dati aggregati della scuola.")}
                 </Card.Text>
                 { school.reportSecret &&
                 <p>
@@ -111,12 +113,12 @@ function School({ school, mutate } : {
             <Card.Footer>
                 { !school.reportSecret &&
                 <Button onClick={createReportSecret}>
-                    <FaShareAlt /> crea indirizzo condivisione report
+                    <FaShareAlt /> {_("crea indirizzo condivisione report")}
                 </Button>
                 }
                 { school.reportSecret &&
                 <Button onClick={createReportSecret} variant="danger">
-                    cancella indirizzo
+                    {_("cancella indirizzo")}
                 </Button>
                 }            
             </Card.Footer>
@@ -154,7 +156,6 @@ function School({ school, mutate } : {
 
     async function remove() {
         await deleteSchool(school)
-        await addMessage("warning", `Scuola ${school.name} eliminata`)
         await mutate()
         router.push('/school')
     }
@@ -171,12 +172,12 @@ function School({ school, mutate } : {
     function shareReport(form: string) {
         return () => {
             if (!school.reportSecret) {
-                addMessage('error', `impossibile copiare l'indirizzo di condivisione report`)
+                addMessage('error', _("impossibile copiare l'indirizzo di condivisione report"))
                 return
             }
             const absoluteUrl = reportAbsoluteUrl(form)
             copyToClipboard(absoluteUrl)
-            addMessage('success', `indirizzo somministrazione (url) copiato: ${absoluteUrl}`)
+            addMessage('success', _("indirizzo somministrazione (url) copiato") + `: ${absoluteUrl}`)
         }
     }
 
@@ -188,32 +189,33 @@ function School({ school, mutate } : {
             })
             await mutate()
         } catch(err) {
-            addMessage('error', `errore nella creazione/rimozione del link di condivisione report: ${err}`)
+            addMessage('error', _("errore nella creazione/rimozione del link di condivisione report")+`: ${err}`)
         }
     }
 }
 
 function SchoolPolls({school}: {school: IGetSchool}) {
+    const _ = useTrans()
     const router = useRouter()
     const pollsQuery = usePolls({school_id: school._id})
     if (pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error}</Error>
     const polls = pollsQuery.data.data
-    if (polls.length === 0) return <p>Nessun questionario</p>
+    if (polls.length === 0) return <p>{_("Nessun questionario")}</p>
     return <Card className="my-2 table-responsive">
         <Card.Header>
-            <h2>questionari</h2>
+            <h2>{_("questionari")}</h2>
         </Card.Header>
         <Card.Body>
         <Table hover>
             <thead>
                 <th></th>
-                <th>tipo</th>
-                <th>data</th>
-                <th>ora</th>
-                <th>classe</th>
-                <th>conteggio</th>
-                <th>report</th>
+                <th>{_("tipo")}</th>
+                <th>{_("data")}</th>
+                <th>{_("ora")}</th>
+                <th>{_("classe")}</th>
+                <th>{_("conteggio")}</th>
+                <th>{_("report")}</th>
             </thead>
             <tbody>
                 {polls.map(poll =>
@@ -222,9 +224,9 @@ function SchoolPolls({school}: {school: IGetSchool}) {
                         <td>{poll.form}</td>
                         <td>{formatDate(poll.date)}</td>
                         <td>{formatTime(poll.date)}</td>
-                        <td>{poll.class}</td>
+                        <td>{poll?.year}&nbsp;{poll.class}</td>
                         <td>{poll.entriesCount}</td>
-                        <td>{poll.closed && <Button onClick={() => router.push(`/report?form=${poll.form}&poll=${poll._id}`)}>report</Button>}</td>
+                        <td>{poll.closed && <Button onClick={() => router.push(`/report?form=${poll.form}&poll=${poll._id}`)}>{_("report")}</Button>}</td>
                     </tr>
                 )}
             </tbody>

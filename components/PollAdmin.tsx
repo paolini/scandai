@@ -7,7 +7,7 @@ import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
 import { IGetPoll } from "@/models/Poll"
-import useSessionUser from "@/lib/useSessionUser"
+import { useProfile } from "@/lib/api"
 import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate } from "@/lib/utils"
@@ -19,9 +19,10 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     adminSecret: string|null,
 }) {
     const [tick, setTick] = useState<number>(0)
-    const user = useSessionUser()
+    const profile = useProfile()
     const addMessage = useAddMessage()
-    const isSupervisor = user && (user.isAdmin || user._id === poll.createdByUser?._id)
+    const isAdmin = profile?.isAdmin
+    const isSupervisor = profile && (isAdmin || profile._id === poll.createdByUser?._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
@@ -50,18 +51,18 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { user?.isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
-                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
+                { isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
+                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll?.year}&nbsp;{poll.class}</b><br />
                 Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
                 { !poll.closed && <>indirizzo compilazione: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
-                { user?.isAdmin && poll.adminSecret && <>indirizzo somministrazione: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
+                { isAdmin && poll.adminSecret && <>indirizzo somministrazione: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
                 Questionari compilati: <b>{poll.entriesCount}</b> 
                 { !poll.closed && <Tick tick={tick} /> } <br />
-                { user?.isAdmin && !poll.adminSecret && 
+                { isAdmin && !poll.adminSecret && 
                     <Button onClick={createAdminSecret}>
                         <FaShareAlt />crea link di somministrazione
                     </Button> }
-                { user?.isAdmin && poll.adminSecret &&
+                { isAdmin && poll.adminSecret &&
                     <Button onClick={createAdminSecret} variant="danger">
                         elimina link di somministrazione
                     </Button> }
@@ -129,8 +130,10 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 </li>
                 <li>
                     A sondaggio chiuso si potranno vedere i report.
-                    Puoi cancellare il sondaggio solo se non ci sono questionari compilati
-                    e dopo averlo chiuso.
+                    { isSupervisor && !adminSecret && <>
+                        Puoi cancellare il sondaggio solo se non ci sono questionari compilati
+                        e dopo averlo chiuso.
+                    </>}
                 </li>
         </ul>
     </>

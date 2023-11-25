@@ -5,27 +5,34 @@ import authOptions from "./api/auth/[...nextauth]"
 import { useSearchParams } from "next/navigation"
 import { Button, Card } from "react-bootstrap"
 import { useState } from "react"
-import { SITE_TITLE } from "@/lib/config"
 
 import Error from '@/components/Error'
-import Email from "next-auth/providers/email";
+import { useConfig } from '@/lib/api'
+import Loading from "@/components/Loading";
 
 export default function SignIn({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? undefined
   const error = searchParams.get('error')
   const invalidCredentials = error === 'Invalid username or password'
+  const oAuthAccountNotLinkedError = error === 'OAuthAccountNotLinked'
   const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
   const google = Object.values(providers).find((provider) => provider.name === 'google')
   const [expanded, setExpanded] = useState(invalidCredentials)
-  
+  const configQuery = useConfig()
+
+  if (configQuery.isLoading) return <Loading />
+  if (!configQuery.data) return <Error>Impossibile caricare la configurazione</Error>
+
+  const config = configQuery.data
 
   return <Card>
       <Card.Header>
-        <Card.Title>{SITE_TITLE}: autenticazione</Card.Title>
+        <Card.Title>{config.siteTitle.it}: autenticazione</Card.Title>
       </Card.Header>
       <Card.Body>
         {error && !invalidCredentials && <Error>{ error }</Error>}
+        {oAuthAccountNotLinkedError && <Error>Il tuo account non è collegato a nessun account locale. Chiedi l&aps;intervento di un amministratore.</Error>}
         <EmailLogin csrfToken={csrfToken} querystring={querystring} />
         {expanded ? <>
           <hr />
