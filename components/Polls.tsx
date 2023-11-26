@@ -14,6 +14,7 @@ import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
+import {useTrans} from '@/lib/trans'
 
 const formTypes = Object.keys(questionary.forms)
 
@@ -21,6 +22,7 @@ export default function Polls({}) {
     const pollsQuery = usePolls()
     const profile = useProfile()
     const router = useRouter()
+    const _ = useTrans()
     const newForm = router.query.new || null  
 
     if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
@@ -47,7 +49,7 @@ export default function Polls({}) {
         }
         { openPolls.length > 0 && <Card className="my-2 table-responsive">
             <Card.Header>
-                <b>questionari aperti</b>
+                <b>{_("questionari aperti")}</b>
             </Card.Header>
             <Card.Body>
                 <PollsTable user={profile} polls={openPolls} />
@@ -72,6 +74,7 @@ function PollsTable({user, polls}:{
     polls: IGetPoll[],
 }) {
     const router = useRouter()
+    const _ = useTrans()
 
     function navigateToPoll(
         evt: any, 
@@ -84,11 +87,11 @@ function PollsTable({user, polls}:{
         <thead>
             <tr>
                 { user?.isAdmin && <th>utente</th> }
-                <th>tipo</th>
-                <th>data</th>
-                <th>scuola</th>
-                <th>classe</th>
-                <th>conteggio</th>
+                <th>{_("tipo")}</th>
+                <th>{_("data")}</th>
+                <th>{_("scuola")}</th>
+                <th>{_("classe")}</th>
+                <th>{_("conteggio")}</th>
             </tr>
         </thead>
         <tbody>
@@ -100,7 +103,7 @@ function PollsTable({user, polls}:{
                             || poll.createdByUser?.username || '???'}
                         {} &lt;{ poll.createdByUser?.email || '???' }&gt;</td>}
                 <td>
-                    {questionary.forms[poll.form]?.name}
+                    {questionary.forms[poll.form]?.name[_.locale]}
                 </td>
                 <td>
                     {formatDate(poll.date)}
@@ -109,7 +112,7 @@ function PollsTable({user, polls}:{
                     {poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}
                 </td>
                 <td>
-                    {poll?.year}&nbsp;{poll.class}
+                    {poll.class} ({poll.year})
                 </td>
                 <td>
                     {poll.entriesCount}
@@ -123,6 +126,8 @@ function NewPollButtons({ form }:{
     form?: string|null,
 }) {
     const router = useRouter()
+    const _ = useTrans()
+
     if (form) {
         return MyButton(form)
     } else {
@@ -134,8 +139,8 @@ function NewPollButtons({ form }:{
     function MyButton (form: string) {
         return <Button key={form} className="my-2 mx-2" variant="primary" size="lg" onClick={() => router.push(`?new=${form}`)}>
             <FaCirclePlus className="m-1 bg-blue-300" /> 
-            nuovo questionario
-            {form && ` ${questionary.forms[form].name}`}
+            {_("nuovo questionario")}
+            {form && ` ${questionary.forms[form].name[_.locale]}`}
         </Button>
 }
 }
@@ -146,10 +151,11 @@ function NewPoll({ form, done }:{
 }) {
     const pollState = useState<IPostPoll>({school_id: '', class: '', year: '', form: (form || 'full'), closed: false})
     const addMessage = useAddMessage()
+    const _ = useTrans()
 
     return <Card>
         <Card.Header>
-            nuovo sondaggio {form && ` ${questionary.forms[form].name}`}
+            {_("nuovo sondaggio")} {form && ` ${questionary.forms[form].name[_.locale]}`}
         </Card.Header>
         <Card.Body>
             <form>
@@ -157,7 +163,7 @@ function NewPoll({ form, done }:{
                 <SelectSchool schoolState={get(pollState, 'school_id')} />
                 <div className="form-group">
                     <label htmlFor="year">
-                        classe
+                        {_("anno di corso")}
                     </label>
                     <select className="form-control" id="year" value={value(pollState).year} 
                         onChange={evt => {
@@ -165,30 +171,30 @@ function NewPoll({ form, done }:{
                         }}>
                         <option value="" disabled={true}>scegli</option>
                         {
-                            [   ["1","prima"],
-                                ["2","seconda"],
-                                ["3","terza"],
-                                ["4","quarta"],
-                                ["5","quinta"]].map(([year,label]) =>
+                            [   ["1",_("primo")],
+                                ["2",_("secondo")],
+                                ["3",_("terzo")],
+                                ["4",_("quarto")],
+                                ["5",_("quinto")]].map(([year,label]) =>
                                     <option key={year} value={year}>{label}</option>)
                         }
                     </select>
                 </div>
                 <div className="form-group">
                     <label htmlFor="class">
-                        sezione
+                        {_("nome della classe")}
                     </label>
-                    <Input id="class" state={get(pollState, 'class')} placeholder="sezione" />
+                    <Input id="class" state={get(pollState, 'class')} placeholder={_("sezione")} />
                 </div>
             </form>                                
         </Card.Body>
         <Card.Footer>
             <ButtonGroup>
                 <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>
-                    crea
+                    {_("crea")}
                 </Button>
                 <Button variant="warning" size="lg" onClick={() => (done?done(null):null)}>
-                    annulla
+                    {_("annulla")}
                 </Button>
             </ButtonGroup>
         </Card.Footer>
@@ -205,7 +211,7 @@ function NewPoll({ form, done }:{
             // addMessage('success', 'nuovo sondaggio creato')
             if (done) done(newPoll)
         } catch(err) {
-            addMessage('error', `errore nella creazione del sondaggio: ${err}`)
+            addMessage('error', `${err}`)
         }
     }
 
@@ -215,14 +221,16 @@ function NewPoll({ form, done }:{
 function SelectForm({ formState }: {
     formState: State<string>
 }) {
+    const _ = useTrans()
+
     return <div className="form-group">
         <label htmlFor="form">
-        tipo di questionario
+        {_("tipo di questionario")}
         </label>
         <select id="form" className="form-control" value={value(formState)} onChange={onChange(formState)}>
             {
                 Object.entries(questionary.forms).map(([key, value]) =>
-                <option key={key} value={key}>{value.name}</option>)
+                <option key={key} value={key}>{value.name[_.locale]}</option>)
             }
         </select>
     </div>
@@ -232,6 +240,7 @@ function SelectSchool({ schoolState }: {
     schoolState: State<string>
 }) {
     const schoolsQuery = useSchools()
+    const _ = useTrans()
 
     if (schoolsQuery.isLoading) return <Loading />
     if (!schoolsQuery.data) return <Error>{schoolsQuery.error.message}</Error>
@@ -240,10 +249,10 @@ function SelectSchool({ schoolState }: {
 
     return <div className="form-grup">
         <label htmlFor="school">
-            scuola 
+            {_("scuola")} 
         </label>
         <select id="school" className="form-control" value={value(schoolState)} onChange={onChange(schoolState)}>
-            <option value="" disabled={true}>scegli</option>
+            <option value="" disabled={true}>{_("scegli")}</option>
             {
                 schools.map(school =>
                     <option key={school._id} value={school._id}>{school.name} - {school.city}</option>)

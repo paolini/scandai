@@ -12,6 +12,7 @@ import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate } from "@/lib/utils"
 import questionary from "@/lib/questionary"
+import { useTrans } from "@/lib/trans"
 
 export default function PollAdmin({poll, mutate, adminSecret}:{
     poll: IGetPoll,
@@ -27,13 +28,14 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
+    const _ = useTrans()
 
     useEffect(() => {
         if (!isSupervisor && !adminSecret) return
         const interval = setInterval(() => {
             setTick(tick => {
                 if (tick % 6 === 0) {
-                    console.log("polling")
+                    // console.log("polling")
                     mutate()
                 }
                 return tick+1
@@ -47,24 +49,24 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     return <>
         <Card className="my-2">
             <Card.Header>
-                <Card.Title>Sondaggio {questionary.forms[poll.form].name}</Card.Title>
+                <Card.Title>{_("Sondaggio")} {questionary.forms[poll.form].name[_.locale]}</Card.Title>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { isAdmin && <>Creato da <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> il {formatDate(poll.createdAt)}<br /></>}
-                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll?.year}&nbsp;{poll.class}</b><br />
-                Il sondaggio è: {poll.closed ? <b>chiuso</b> : <b>aperto</b>}<br/>
-                { !poll.closed && <>indirizzo compilazione: <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
-                { isAdmin && poll.adminSecret && <>indirizzo somministrazione: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
-                Questionari compilati: <b>{poll.entriesCount}</b> 
+                { isAdmin && <>{_("Creato da")} <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> {_("il (data)")} {formatDate(poll.createdAt)}<br /></>}
+                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
+                {_("Il sondaggio è:")} {poll.closed ? <b>{_("chiuso")}</b> : <b>{_("aperto")}</b>}<br/>
+                { !poll.closed && <>{_("indirizzo compilazione:")} <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
+                { isAdmin && poll.adminSecret && <>{_("indirizzo somministrazione:")} <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
+                {_("Questionari compilati:")} <b>{poll.entriesCount}</b> 
                 { !poll.closed && <Tick tick={tick} /> } <br />
                 { isAdmin && !poll.adminSecret && 
                     <Button onClick={createAdminSecret}>
-                        <FaShareAlt />crea link di somministrazione
+                        <FaShareAlt />{_("crea link di somministrazione")}
                     </Button> }
                 { isAdmin && poll.adminSecret &&
                     <Button onClick={createAdminSecret} variant="danger">
-                        elimina link di somministrazione
+                        {_("elimina link di somministrazione")}
                     </Button> }
                 <br />
                 </Card.Text>
@@ -76,30 +78,30 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 <ButtonGroup>
                     { !poll.closed && 
                         <Button onClick={share}>
-                            <FaShareAlt />compilazione
+                            <FaShareAlt />{_("compilazione")}
                         </Button>
                     }
                     { poll.closed && 
                         <a href={`/report?poll=${poll._id}&form=${poll.form}${adminSecret?"&adminSecret="+adminSecret:""}`} className="btn btn-primary">
-                            report
+                            {_("report")}
                         </a>
                     }
                     { poll.closed 
                     ? <Button onClick={() => close(poll, false)}>
-                        riapri
+                        {_("riapri")}
                       </Button>
                     : <Button onClick={() => close(poll)}>
-                        chiudi
+                        {_("chiudi")}
                       </Button>
                     }
                     { !adminSecret &&
                     <Link className="btn btn-primary" href="/">
-                        elenco
+                        {_("elenco")}
                     </Link>
                     }
                     { !adminSecret && poll.closed &&
                         <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>
-                            elimina
+                            {_("elimina")}
                         </Button>
                     }
                 </ButtonGroup>
@@ -109,30 +111,22 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 {
                     !adminSecret && fullAdminUrl && 
                     <li>
-                    Se condividi il link di somministrazione
+                    {_("(precede link di somministrazione)")}
                     {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
-                    chi lo riceve potrà vedere questa pagina e potrà 
-                    chiudere il sondaggio e vedere il report.
-                    Non potrà eliminare il sondaggio o vedere altri sondaggi 
-                    diversi da questo.
+                    {_("chi lo riceve potrà vedere questa pagina e potrà chiudere il sondaggio e vedere il report. Non potrà eliminare il sondaggio o vedere altri sondaggi diversi da questo.")}
                     </li>
                 }
                 <li> 
-                    Devi condividere con gli studenti il <i>link (URL)</i> di compilazione del sondaggio
+                    {_("Devi condividere con gli studenti il")} <i>{_("link (URL)")}</i> {_("di compilazione del sondaggio")}
                     {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
-                    Il link può essere copiato e condiviso oppure puoi 
-                    mostrare o stampare il <i>QR-code</i> che contiene il link codificato.
+                    {} {_("Il link può essere copiato e condiviso oppure puoi mostrare o stampare il")} <i>{_("QR-code")}</i> {_("che contiene il link codificato.")}
                 </li>
                 <li>
-                    Quando tutti gli studenti hanno compilato il questionario puoi chiudere il sondaggio.
-                    Chi ha iniziato a compilare il questionario prima della 
-                    chiusura potrà comunque concludere la compilazione.
-                </li>
+                    {_("(frase 3)")}</li>
                 <li>
-                    A sondaggio chiuso si potranno vedere i report.
+                    {_("(frase 4)")}
                     { isSupervisor && !adminSecret && <>
-                        Puoi cancellare il sondaggio solo se non ci sono questionari compilati
-                        e dopo averlo chiuso.
+                        {} {_("Puoi cancellare il sondaggio solo se non ci sono questionari compilati e dopo averlo chiuso.")}
                     </>}
                 </li>
         </ul>
@@ -146,7 +140,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 }, adminSecret || undefined)
             mutate()
         } catch(err) {
-            addMessage('error', `errore nella chiusura del sondaggio: ${err}`)
+            addMessage('error', `${err}`)
         }
     }
 
@@ -156,22 +150,22 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             mutate()
             router.push('/')
         } catch(err) {
-            addMessage('error', `errore nella cancellazione del sondaggio: ${err}`)
+            addMessage('error', `${err}`)
         }
     }
 
     function share () {
         copyToClipboard(fullUrl);
-        addMessage('success', `indirizzo compilazione (url) copiato: ${fullUrl}`)
+        addMessage('success', `${_("indirizzo compilazione (url) copiato:")} ${fullUrl}`)
     }
 
     function shareAdmin () {
         if (!fullAdminUrl) {
-            addMessage('error', `impossibile copiare l'indirizzo di somministrazione`)
+            addMessage('error', _("errore"))
             return
         }
         copyToClipboard(fullAdminUrl)
-        addMessage('success', `indirizzo somministrazione (url) copiato: ${fullAdminUrl}`)
+        addMessage('success', `${_("indirizzo somministrazione (url) copiato:")} ${fullAdminUrl}`)
     }
 
     function composeAdminFullUrl(adminSecret: string) {
@@ -186,7 +180,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             })
             await mutate()
         } catch(err) {
-            addMessage('error', `errore nella creazione del link di somministrazione: ${err}`)
+            addMessage('error', `${err}`)
         }
     }
 }

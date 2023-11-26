@@ -537,7 +537,11 @@ const questionary: IQuestionary = {
 
   forms: {
     full: {
-      name: 'completo',
+      name: {
+        it: 'completo',
+        en: 'full',
+        fu: 'completo',
+      },
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
@@ -853,7 +857,11 @@ const questionary: IQuestionary = {
 
     /* composizione del questionario breve e del suo report */
     short: {
-      name: "breve",
+      name: {
+        it: "breve",
+        en: "short",
+        fu: "breve",
+      },
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
@@ -1060,7 +1068,7 @@ export interface IQuestionary {
 }
 
 export interface IForm {
-  name: string,
+  name: LocalizedString,
   intro: LocalizedString,
   elements: IFormElement[],
   report: IReportElement[],
