@@ -30,7 +30,7 @@ export default function Header() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
           { isAdmin && <Link href="/report">
-              {_("Report")}
+              {_("Database")}
             </Link> }
           { (isAuthenticated && !isViewer) && <Link href="/">
               {_("Questionari")}
