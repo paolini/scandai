@@ -295,6 +295,11 @@ function ListClasses({ stats, title }: {
     }
 }
 
+function questionary_language(k: string, locale: string) {
+    const s = questionary.languages[k]
+    return (s ? s[locale] : k) || k
+}
+
 function PreferredPie({ stats, title} : {
     stats: IPreferredLanguageCount,
     title?: string,
@@ -324,7 +329,7 @@ function PreferredPie({ stats, title} : {
                 },
             }} 
             data={{
-                labels: items.map(([k,v]) => questionary.languages[k][_.locale] || k || undefined),
+                labels: items.map(([k,v]) => questionary_language(k,_.locale) || undefined),
                 datasets: [
                     {
                     data: items.map(([k,v])=>v),
@@ -357,7 +362,7 @@ function PreferredTable({ stats, title} : {
             <tbody>
                 {items.map(([k,v]) => 
                     <tr key={k}>
-                        <th>{questionary.languages[k][_.locale] || k || _("non specificato")}</th>
+                        <th>{questionary_language(k,_.locale) || _("non specificato")}</th>
                         <td>{v}</td>
                         <td>{Math.round(v*100/total)}%</td>
                     </tr>
@@ -393,17 +398,17 @@ function ReportChart({ question, item, t } : {
             }
         case 'map-language-to-competence': return <Item>
                 <CompetenceLegend />
-                    { Object.keys(questionary.languages).map(lang =>
-                        <Item key={lang} title={`${item_title || question.question.question.it} - ${questionary.languages[lang].it || lang}`}>
-                            <GraphMapLanguageToCompetenceQuestion 
-                                stat={question} 
-                                title={_("Competenze linguistiche autovalutate")}
-                                language={lang} />
-                            <TableMapLanguageToCompetenceQuestion 
-                                stat={question} 
-                                language={lang} />
-                        </Item>)
-                    }   
+                { Object.keys(questionary.languages).map(lang =>
+                    <Item key={lang} title={`${item_title || question.question.question.it} - ${questionary.languages[lang][_.locale] || lang}`}>
+                        <GraphMapLanguageToCompetenceQuestion 
+                            stat={question} 
+                            title={_("Competenze linguistiche autovalutate")}
+                            language={lang} />
+                        <TableMapLanguageToCompetenceQuestion 
+                            stat={question} 
+                            language={lang} />
+                    </Item>)
+                }   
             </Item>
         case 'map-language-to-age': return <Item title={item_title || question.question.question.it}>
                 <GraphMapLanguageToAgeQuestion stat={question} t={t}/>
