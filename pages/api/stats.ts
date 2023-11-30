@@ -224,9 +224,11 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     ])
 
     function langMap(lang: string) {
+        const f = questionary.languages[lang]
+        if (f) return f.it // una delle cinque lingue base
         const m = dict[lang.toLowerCase()]
-        if (m===undefined) return lang // mantieni
-        return m // if m === '' va scartato
+        if (m !== undefined) return m // if m === '' va scartato
+        return lang // mantieni
     }
 
 
