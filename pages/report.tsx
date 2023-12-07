@@ -22,7 +22,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 
-import { useStats, useProfile, useTranslation } from '@/lib/api'
+import { useStats, useProfile, useTranslation, useSchools } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -36,6 +36,8 @@ import Page from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
+import { value, set } from "@/lib/State"
+import { IGetTranslation } from "@/models/Translation"
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -89,33 +91,68 @@ type T = (s:string) => string
 export default function Report() {
     const user = useProfile()
     const router = useRouter()
-    const statsQuery = useStats(router.query)
-    const translationQuery = useTranslation()
     const form = router.query.form || "full"
-    const ref = useRef(null)
+    const schoolsQuery = useSchools()
+    const translationQuery = useTranslation()
+    const searchParams = useSearchParams()
+    const schoolIdState = useState(searchParams.get('school') || '')
+    const cityState = useState(searchParams.get('city')|| '')
+    const _ = useTrans()
     const print = useReactToPrint({
         content: () => ref.current,
     })
-    const _ = useTrans()
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
-    if (statsQuery.isLoading || translationQuery.isLoading) return <><Loading />{statsQuery.isLoading} {translationQuery.isLoading}</>
+    if (translationQuery.isLoading || schoolsQuery.isLoading) return <Loading />
     if (translationQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
-    if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
-    
     const translations = translationQuery.data.data
+    
+    return <Page header={!!user}>
+        <div className="container noPrint">
+            <Filter schoolIdState={schoolIdState} cityState={cityState} schools={schoolsQuery.data.data}/>
+        </div>
+        <Stats 
+            filter={{
+                schoolId: value(schoolIdState),
+                city: value(cityState),
+            }}
+            form={form} 
+            translations={translations}
+        />
+    </Page>
+
+}
+
+function Stats({filter, form, translations}:{
+    filter: {schoolId: string, city: string},
+    form: string,
+    translations: IGetTranslation,
+}) {
+    const user = useProfile()
+    const router = useRouter()
+    const _ = useTrans()
+    const ref = useRef(null)
+    const statsQuery = useStats({
+        ...router.query,
+        ...filter,
+    })
+
+    if (statsQuery.isLoading) return <Loading />
+    if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
+
     const stats = {
         ...statsQuery.data.data,
-    }
-    
+    }    
+
     if (stats.entriesCount === 0) return <Page header={!!user}>
         <Error>
         {_("Impossibile fare il report: nessun questionario compilato")}
         </Error>
     </Page>
 
-    return <Page header={!!user}>
+    return <>
+        {/*JSON.stringify({filter})*/}
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>{_("stampa")}</Button>
         </div>
@@ -127,18 +164,45 @@ export default function Report() {
                 (item, i) => <ReportItem key={i} stats={stats} item={item} t={t}/>
             )}
         </div>
-    </Page>
+    </>
 
     /**
      * traduci i nomi delle lingue
      * @param source nome della lingua
      * @returns nome tradotto
      */
-    function t(source:string) {
-        const d = translations[source]
-        if (!d) return source
-        return d[_.locale] || source
-    }
+        function t(source:string) {
+            const d = translations[source]
+            if (!d) return source
+            return d[_.locale] || source
+        }    
+}
+
+function Filter({schoolIdState, cityState, schools}:{
+    schoolIdState: State<string>,
+    cityState: State<string>,
+    schools: any
+}) {
+    const city = value(cityState)
+    const cities = [...new Set(schools.map(school=>school.city))].sort()
+    const selectedSchools = city 
+        ? schools.filter(school => school.city===city)
+        : schools 
+    return <>
+        { //JSON.stringify({schools,cities})
+        }
+        Filtra: <select onChange={evt => {
+            set(schoolIdState,'')
+            set(cityState,evt.target.value)
+        }}>
+            <option value=''><i>tutte le città</i></option>
+            {cities.map(city => <option key={city} value={city}>{city}</option>)}
+        </select> {}
+        <select onChange={evt => set(schoolIdState,evt.target.value)}>
+            <option value=''><i>tutte le scuole</i></option>
+            {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
+        </select>
+    </>
 }
 
 function ReportItem({ stats, item, t }: {

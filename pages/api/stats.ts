@@ -12,6 +12,17 @@ export default async function handler(
     req: NextApiRequest, 
     res: NextApiResponse) {
         const user = await getSessionUser(req)
+        const query = req.query
+        const $match = {}
+
+        // console.log(JSON.stringify({query}))
+
+        if (query.schoolId) {
+            $match["poll.school._id"] = new ObjectId(query.schoolId)
+        }
+        if (query.city) {
+            $match["poll.school.city"] = query.city
+        }
 
         let pipeline: any = [
             {$lookup: {
@@ -37,6 +48,7 @@ export default async function handler(
                     }},
                 ],
             }}, 
+            {$match},
             {$unwind: '$poll'},
         ]
 
@@ -75,7 +87,7 @@ export default async function handler(
             }
         }
         if (req.query.school_id) {
-            console.log(`school_id: ${req.query.school_id}`)
+            // console.log(`school_id: ${req.query.school_id}`)
             if (Array.isArray(req.query.school_id)) {
                 return res.status(400).json({error: 'school_id cannot be an array (not implemented)'})
             } else {
@@ -89,6 +101,7 @@ export default async function handler(
             }
         }
 
+        // console.log(`pipeline: ${JSON.stringify(pipeline)}`)
 
         try {
             const entries = await Entry.aggregate(pipeline)
