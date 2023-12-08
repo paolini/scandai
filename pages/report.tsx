@@ -146,11 +146,9 @@ function Stats({filter, form, translations}:{
         ...statsQuery.data.data,
     }    
 
-    if (stats.entriesCount === 0) return <Page header={!!user}>
-        <Error>
+    if (stats.entriesCount === 0) return <Error>
         {_("Impossibile fare il report: nessun questionario compilato")}
-        </Error>
-    </Page>
+    </Error>
 
     return <>
         {/*JSON.stringify({filter})*/}
