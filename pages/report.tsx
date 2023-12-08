@@ -36,8 +36,9 @@ import Page from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
-import { value, set } from "@/lib/State"
+import State, { value, set } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
+import { IGetSchool } from "@/models/School"
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -98,14 +99,11 @@ export default function Report() {
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
     const _ = useTrans()
-    const print = useReactToPrint({
-        content: () => ref.current,
-    })
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
     if (translationQuery.isLoading || schoolsQuery.isLoading) return <Loading />
-    if (translationQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
+    if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     const translations = translationQuery.data.data
     
     return <Page header={!!user}>
@@ -136,6 +134,9 @@ function Stats({filter, form, translations}:{
     const statsQuery = useStats({
         ...router.query,
         ...filter,
+    })
+    const print = useReactToPrint({
+        content: () => ref.current,
     })
 
     if (statsQuery.isLoading) return <Loading />
@@ -181,10 +182,10 @@ function Stats({filter, form, translations}:{
 function Filter({schoolIdState, cityState, schools}:{
     schoolIdState: State<string>,
     cityState: State<string>,
-    schools: any
+    schools: IGetSchool[]
 }) {
     const city = value(cityState)
-    const cities = [...new Set(schools.map(school=>school.city))].sort()
+    const cities = Array.from(new Set(schools.map(school=>school.city))).sort()
     const selectedSchools = city 
         ? schools.filter(school => school.city===city)
         : schools 

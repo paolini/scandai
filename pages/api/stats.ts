@@ -13,14 +13,14 @@ export default async function handler(
     res: NextApiResponse) {
         const user = await getSessionUser(req)
         const query = req.query
-        const $match = {}
+        const $match: any = {}
 
         // console.log(JSON.stringify({query}))
 
-        if (query.schoolId) {
+        if (query.schoolId && !Array.isArray(query.schoolId)) {
             $match["poll.school._id"] = new ObjectId(query.schoolId)
         }
-        if (query.city) {
+        if (query.city && !Array.isArray(query.city)) {
             $match["poll.school.city"] = query.city
         }
 
