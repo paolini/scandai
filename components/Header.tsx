@@ -32,15 +32,15 @@ export default function Header() {
           { isAdmin && <Link href="/report">
               {_("Database")}
             </Link> }
-          { (isAuthenticated && !isViewer) && <Link href="/">
+          { (isAuthenticated && !isViewer) && <Link href={`/${locale}/`}>
               {_("Questionari")}
             </Link> }
           { isAdmin && 
                 <>
-                  <Link href="/users">{_("Utenti")}</Link>
-                  <Link href="/school">{_("Scuole")}</Link>
-                  <Link href="/dict">{_("Mappature")}</Link>
-                  <Link href="/translation">{_("Lingue")}</Link>
+                  <Link href={`/${locale}/users`}>{_("Utenti")}</Link>
+                  <Link href={`/${locale}/school`}>{_("Scuole")}</Link>
+                  <Link href={`/${locale}/dict`}>{_("Mappature")}</Link>
+                  <Link href={`/${locale}/translation`}>{_("Lingue")}</Link>
                 </>
           }
           { isSuper &&
