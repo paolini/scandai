@@ -113,7 +113,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                     <li>
                     {_("(precede link di somministrazione)")}
                     {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
-                    {_("chi lo riceve potrà vedere questa pagina e potrà chiudere il sondaggio e vedere il report. Non potrà eliminare il sondaggio o vedere altri sondaggi diversi da questo.")}
+                    {_("(segue link di somministrazione)")}
                     </li>
                 }
                 <li> 

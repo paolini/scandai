@@ -187,18 +187,19 @@ function Filter({schoolIdState, cityState, schools}:{
     const selectedSchools = city 
         ? schools.filter(school => school.city===city)
         : schools 
+    const _ = useTrans()
     return <>
         { //JSON.stringify({schools,cities})
         }
-        Filtra: <select onChange={evt => {
+        {_("Filtra")}: <select onChange={evt => {
             set(schoolIdState,'')
             set(cityState,evt.target.value)
         }}>
-            <option value=''><i>tutte le città</i></option>
+            <option value=''><i>{_("tutte le città")}</i></option>
             {cities.map(city => <option key={city} value={city}>{city}</option>)}
         </select> {}
         <select onChange={evt => set(schoolIdState,evt.target.value)}>
-            <option value=''><i>tutte le scuole</i></option>
+            <option value=''><i>{_("tutte le scuole")}</i></option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
         </select>
     </>
