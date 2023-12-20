@@ -5,10 +5,14 @@ import Dict from '@/models/Dict'
 import getSessionUser from '@/lib/getSessionUser'
 import questionary from '@/lib/questionary'
 
+// const delay = (ms:number) => new Promise(res => setTimeout(res, ms));
+
 export default async function handler(
     req: NextApiRequest, 
     res: NextApiResponse) {
     const user = await getSessionUser(req)
+
+    // await delay(7000)
 
     if (!user) {
         return res.status(401).json({error: 'not authenticated'})

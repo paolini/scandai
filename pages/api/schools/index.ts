@@ -3,9 +3,12 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import School from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
 
+// const delay = (ms:number) => new Promise(res => setTimeout(res, ms));
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
+        // await delay(5000)
         const user = await getSessionUser(req)
         if (!user) {
             return res.status(401).json({error: 'not authenticated'})

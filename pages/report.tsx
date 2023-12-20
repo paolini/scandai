@@ -100,9 +100,12 @@ export default function Report() {
     const cityState = useState(searchParams.get('city')|| '')
     const _ = useTrans()
 
+    console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
+
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
-    if (translationQuery.isLoading || schoolsQuery.isLoading) return <Loading />
+    if (translationQuery.isLoading) return <><Loading/>t</>
+    if (schoolsQuery.isLoading) return <><Loading />s</>
     if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     const translations = translationQuery.data.data
     
@@ -195,11 +198,11 @@ function Filter({schoolIdState, cityState, schools}:{
             set(schoolIdState,'')
             set(cityState,evt.target.value)
         }}>
-            <option value=''><i>{_("tutte le città")}</i></option>
+            <option value=''>{_("tutte le città")}</option>
             {cities.map(city => <option key={city} value={city}>{city}</option>)}
         </select> {}
         <select onChange={evt => set(schoolIdState,evt.target.value)}>
-            <option value=''><i>{_("tutte le scuole")}</i></option>
+            <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
         </select>
     </>

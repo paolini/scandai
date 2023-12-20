@@ -3,15 +3,17 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import User, { IGetUser } from '@/models/User'
 import getSessionUser from '@/lib/getSessionUser'
 
+// const delay = (ms:number) => new Promise(res => setTimeout(res, ms));
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
+        // await delay(8000)
         const sessionUser = await getSessionUser(req)
         if (!sessionUser) {
             return res.json(null)
             // return res.status(401).json({error: 'not authenticated'})
         }
-
         if (req.method === 'GET') {
             const user = await User.findOne({_id: sessionUser._id})
             if (!user) {
