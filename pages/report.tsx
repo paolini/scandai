@@ -104,8 +104,8 @@ export default function Report() {
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
-    if (translationQuery.isLoading) return <><Loading/>t</>
-    if (schoolsQuery.isLoading) return <><Loading />s</>
+    if (translationQuery.isLoading) return <><Loading/><br/>_</>
+    if (schoolsQuery.isLoading) return <><Loading /><br/>__</>
     if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     const translations = translationQuery.data.data
     
