@@ -1,6 +1,6 @@
 ## Production Server
 
-Code is deployed here: [https://scandai.matb.it](https://scandai.matb.it)
+Code is deployed here: [https://scandai.develop.matb.it](https://scandai.develop.matb.it)
 
 Il testo usato nel questionario si trova nel file [/lib/questionary.ts](https://github.com/paolini/scandai/blob/develop/lib/questionary.ts).
 Lo puoi modificare direttamente su github, premendo sul link precedente.
