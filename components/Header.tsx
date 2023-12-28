@@ -29,7 +29,7 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { isAdmin && <Link href="/report">
+          { isAdmin && <Link href={`/${locale}/report`}>
               {_("Database")}
             </Link> }
           { (isAuthenticated && !isViewer) && <Link href={`/${locale}/`}>
@@ -44,7 +44,7 @@ export default function Header() {
                 </>
           }
           { isSuper &&
-              <Link href="/entries">{_("Entries")}</Link>
+              <Link href={`/${locale}/entries`}>{_("Entries")}</Link>
           }
           { !isAuthenticated && 
             <Link href="/api/auth/signin">{_("Login")}</Link>
