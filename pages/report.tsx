@@ -187,9 +187,9 @@ function Filter({schoolIdState, cityState, schools}:{
 }) {
     const city = value(cityState)
     const cities = Array.from(new Set(schools.map(school=>school.city))).sort()
-    const selectedSchools = city 
+    const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
-        : schools 
+        : schools).sort((a,b) => b.pollCount-a.pollCount)
     const _ = useTrans()
     return <>
         { //JSON.stringify({schools,cities})

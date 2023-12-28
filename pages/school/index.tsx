@@ -40,7 +40,7 @@ export default function Schools() {
                 </tr>
             </thead>
             <tbody>
-                { schools.map((school) => 
+                { schools.sort((a,b)=>(b.pollCount-a.pollCount)).map((school) => 
                 <tr key={school._id} onClick={() => router.push(`/school/${school._id}`)}>
                     <td>{school.name}</td>
                     <td>{school.city}</td>
