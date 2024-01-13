@@ -21,6 +21,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
+import Link from 'next/link'
 
 import { useStats, useProfile, useTranslation, useSchools } from '@/lib/api'
 import { 
@@ -156,7 +157,10 @@ function Stats({filter, form, translations}:{
     return <>
         {/*JSON.stringify({filter})*/}
         <div className="container noPrint">
-            <Button onClick={print} style={{float:"right"}}>{_("stampa")}</Button>
+            <Button onClick={print} style={{float:"right"}}>
+                {_("stampa")}
+            </Button>
+            <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">{_("visualizza questionario")}</Link>
         </div>
         <div ref={ref}>
             <style>
