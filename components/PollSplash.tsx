@@ -25,7 +25,7 @@ export default function PollSplash({poll, form, langState, start}:{
     useEffect(() => {
         setMyUrl(window.location.href)
         // force Client-side-only code
-    })
+    },[])
 
     if (!form) return <Error>form is undefined</Error>
     if (!myUrl) return <Loading />
