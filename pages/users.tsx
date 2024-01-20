@@ -18,6 +18,7 @@ export default function Users() {
     const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
+    const showPasswordState = useState<boolean>(false)
     const isSuper = sessionUser?.isSuper
 
     if (usersQuery.isLoading) return <Loading />
@@ -41,6 +42,13 @@ export default function Users() {
             : <Button variant="danger" onClick={() => set(showDeleteState, true)}>
                 <FaTrash /> elimina utente
             </Button> }
+            { value(showPasswordState)
+            ? <Button variant="warning" onClick={() => set(showPasswordState, false)}>
+                annulla
+            </Button>
+            : <Button variant="warning" onClick={() => set(showPasswordState, true)}>
+                <FaTrash /> cambia password
+            </Button> }
         </ButtonGroup>}
         <table className="table">
             <thead>
@@ -52,6 +60,7 @@ export default function Users() {
                     <th>admin</th>
                     { isSuper && <th>super</th>}
                     { value(showDeleteState) && <th>elimina</th> }
+                    { value(showPasswordState) && <th>password</th>}
                 </tr>
             </thead>
             <tbody>
@@ -80,6 +89,10 @@ export default function Users() {
                         <Button variant="danger" size="sm" disabled={user._id === sessionUser?._id}
                             onClick={() => clickDeleteUser(user)}><FaTrash />elimina</Button>
                     </td>}
+                    { value(showPasswordState) && <td>
+                        <Button variant="warning" size="sm"
+                            onClick={() => clickPasswordUser(user)}><FaTrash />cambia password</Button>
+                    </td>}
                 </tr>)}
             </tbody>
         </table>
@@ -89,6 +102,18 @@ export default function Users() {
         try {
             const newData = await patchUser({_id: user._id, ...payload }) 
             usersQuery.mutate()
+        } catch(e) {
+            addMessage('error', `error updating user: ${e}`)
+            console.error(e)
+        }
+    }
+
+    async function clickPasswordUser(user: IGetUser) {
+        try {
+            const newPassword = prompt(`nuova password per ${user.email}`)
+            if (newPassword) {
+                await patchUser({_id: user._id, password: newPassword }) 
+            }
         } catch(e) {
             addMessage('error', `error updating user: ${e}`)
             console.error(e)

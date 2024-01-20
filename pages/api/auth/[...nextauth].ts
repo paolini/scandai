@@ -78,7 +78,10 @@ providers.push(CredentialsProvider({
         if (!credentials) return null
 
         await clientPromise
-        const user = await User.findOne({ username: credentials.username })
+        let user = await User.findOne({ username: credentials.username })
+        if (!user && credentials.username.includes('@')) {
+            user = await User.findOne({ email: credentials.username })
+        }
         if (user) {
             const isValid = await compare(credentials.password, user.password)
             if (isValid) return {
@@ -91,7 +94,7 @@ providers.push(CredentialsProvider({
             }
             console.error(`Password not valid for user ${credentials.username}`)
         } else {
-            console.error(`User not found with username ${credentials.username}`)
+            console.error(`User not found with username/email ${credentials.username}`)
         }
         throw new Error('Invalid username or password')
     }

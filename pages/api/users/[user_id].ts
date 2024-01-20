@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
+import bcrypt from 'bcrypt'
 
 import User from '@/models/User'
 import getSessionUser from '@/lib/getSessionUser'
@@ -36,6 +37,11 @@ export default async function handler(
             }
             if (Object.keys(body).includes("isSuper") && user.isSuper) {
                 aUser["isSuper"] = body["isSuper"]
+            }
+            if (Object.keys(body).includes("password") && user.isSuper) {
+                const saltRounds = 10
+                const hashedPassword = await bcrypt.hash(body["password"], saltRounds)
+                aUser["password"] = hashedPassword
             }
             const out = await aUser.save()
             return res.json({data: out})
