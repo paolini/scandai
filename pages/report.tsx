@@ -101,7 +101,7 @@ export default function Report() {
     const cityState = useState(searchParams.get('city')|| '')
     const _ = useTrans()
 
-    console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
+    // console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
