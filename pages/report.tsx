@@ -894,11 +894,14 @@ function TableMapLanguageToCompetence({stat, item, t} : {
                 }
             },
             plugins: {
-                  datalabels: {
-                      display: false
-                      },
-                  },
-            }}
+                datalabels: {
+                    display: false
+                },
+                colors: {
+                    forceOverride: true,
+                }
+            },
+        }}
         />
     </Item>
 }
