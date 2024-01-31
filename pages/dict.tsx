@@ -8,6 +8,7 @@ import {useDict,postDict} from '@/lib/api'
 import {set, value} from '@/lib/State'
 import Input from '@/components/Input'
 import {useAddMessage} from '@/components/Messages' 
+import { IDictElement } from '@/models/Dict'
 
 export default function Dict() {
     const missing = useDict()
@@ -20,7 +21,17 @@ export default function Dict() {
     if (missing.isLoading) return <Loading/>
     if (!missing.data) return <Loading />
 
-    const data = missing.data.data
+    function sortKey(x: IDictElement) {
+        return x.map==='' ? `Z${x.lang}` : `A${x.lang}`
+    }
+
+    const data = missing.data.data.sort((a,b) => {
+        const ka = sortKey(a)
+        const kb = sortKey(b)
+        if (ka < kb) return -1
+        if (ka > kb) return 1
+        return 0
+    })
 
     async function submit(lang: string, map: string) {
         try {
@@ -34,6 +45,7 @@ export default function Dict() {
     }
 
     return <Page title="Mappatura Lingue">
+        {JSON.stringify(data.map(x=>`${sortKey(x)}`))}
         <Table hover>
             <thead>
                 <tr>
