@@ -1,5 +1,5 @@
 import {Table, Button} from 'react-bootstrap'
-import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
+import { FaCirclePlus } from 'react-icons/fa6'
 import {useState} from 'react'
 
 import Page from '@/components/Page'
@@ -9,12 +9,14 @@ import {set, value} from '@/lib/State'
 import Input from '@/components/Input'
 import {useAddMessage} from '@/components/Messages' 
 import { IDictElement } from '@/models/Dict'
+import { useTrans } from '@/lib/trans'
 
 export default function Dict() {
     const missing = useDict()
     const [editLang, setEditLang] = useState<string>('') 
     const editState = useState<string>('')
     const addMessage = useAddMessage()
+    const _ = useTrans()
 
 //    console.log(`editLang: ${editLang}, edit: ${value(editState)}`)
 
@@ -44,12 +46,12 @@ export default function Dict() {
         set(editState,'')
     }
 
-    return <Page title="Mappatura Lingue">
+    return <Page title={_("Mappatura Lingue")}>
         <Table hover>
             <thead>
                 <tr>
-                    <th>lingua</th>
-                    <th>mappatura</th>
+                    <th>{_("lingua")}</th>
+                    <th>{_("mappatura")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,7 +67,11 @@ export default function Dict() {
                                     <FaCirclePlus className="m-1 bg-blue-300"/>
                                 </Button>
                             </div>
-                            : (map===''?<b className="text-danger">scarta</b>:map===undefined?<b className="text-success">mantieni</b>:map)}
+                            : (map===''?<b className="text-danger">
+                                {_("scarta")}
+                            </b>:map===undefined?<b className="text-success">
+                                {_("mantieni")}
+                            </b>:map)}
                         </td>
                     </tr>
                 )}

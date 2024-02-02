@@ -11,6 +11,7 @@ import { value, set, get } from '@/lib/State'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
+import { useTrans } from '@/lib/trans'
 
 export default function Users() {
     const sessionUser = useSessionUser()
@@ -20,47 +21,48 @@ export default function Users() {
     const showDeleteState = useState<boolean>(false)
     const showPasswordState = useState<boolean>(false)
     const isSuper = sessionUser?.isSuper
+    const _ = useTrans()
 
     if (usersQuery.isLoading) return <Loading />
     if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
     const users = usersQuery.data.data
 
     return <Page>
-        <h2>Users</h2>
+        <h2>{_("Users")}</h2>
         { value(newUserState) 
         ? <NewUser done={newUserDone}/> 
         : <ButtonGroup>
             { !value(newUserState)
             && <Button onClick={() => set(newUserState, true)}>
                 <FaCirclePlus className="m-1 bg-blue-300" onClick={() => set(newUserState,true)}/>
-                aggiungi utente
+                {_("aggiungi utente")}
             </Button> }
             { value(showDeleteState)
             ? <Button variant="warning" onClick={() => set(showDeleteState, false)}>
-                annulla
+                {_("annulla")}
             </Button>
             : <Button variant="danger" onClick={() => set(showDeleteState, true)}>
-                <FaTrash /> elimina utente
+                <FaTrash /> {_("elimina utente")}
             </Button> }
             { value(showPasswordState)
             ? <Button variant="warning" onClick={() => set(showPasswordState, false)}>
-                annulla
+                {_("annulla")}
             </Button>
             : <Button variant="warning" onClick={() => set(showPasswordState, true)}>
-                <FaTrash /> cambia password
+                <FaTrash /> {_("cambia password")}
             </Button> }
         </ButtonGroup>}
         <table className="table">
             <thead>
                 <tr>
-                    <th>email</th>
-                    <th>name</th>
-                    <th>accounts</th>
-                    <th>viewer</th>
-                    <th>admin</th>
-                    { isSuper && <th>super</th>}
-                    { value(showDeleteState) && <th>elimina</th> }
-                    { value(showPasswordState) && <th>password</th>}
+                    <th>{_("email")}</th>
+                    <th>{_("name")}</th>
+                    <th>{_("accounts")}</th>
+                    <th>{_("viewer")}</th>
+                    <th>{_("admin")}</th>
+                    { isSuper && <th>{_("super")}</th>}
+                    { value(showDeleteState) && <th>{_("elimina")}</th> }
+                    { value(showPasswordState) && <th>{_("password")}</th>}
                 </tr>
             </thead>
             <tbody>
@@ -110,7 +112,7 @@ export default function Users() {
 
     async function clickPasswordUser(user: IGetUser) {
         try {
-            const newPassword = prompt(`nuova password per ${user.email}`)
+            const newPassword = prompt(`${_("nuova password per")} ${user.email}`)
             if (newPassword) {
                 await patchUser({_id: user._id, password: newPassword }) 
             }
@@ -141,6 +143,7 @@ function NewUser({done }:{
 }) {
     const userState = useState<IPostUser>({name: "", email: "", username: ""})
     const addMessage = useAddMessage()
+    const _ = useTrans()
 
     function isValid() {
         const user = value(userState)
@@ -154,10 +157,10 @@ function NewUser({done }:{
                 username: value(userState).email,
             }
             const out = await postUser(newUser)
-            addMessage('success', `nuovo utente creato`)
+            addMessage('success', _("nuovo utente creato"))
             if (done) done()
         } catch(err) {
-            addMessage('error', `errore nella creazione del sondaggio: ${err}`)
+            addMessage('error', `errore nella creazione dell'utente: ${err}`)
         }
     }
 
@@ -183,8 +186,12 @@ function NewUser({done }:{
         </Card.Body>
         <Card.Footer>
             <ButtonGroup>
-                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>crea</Button>
-                <Button variant="warning" size="lg" onClick={done}>annulla</Button>
+                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>
+                    {_("crea")}
+                </Button>
+                <Button variant="warning" size="lg" onClick={done}>
+                    {_("annulla")}
+                </Button>
             </ButtonGroup>
         </Card.Footer>
     </Card>

@@ -1,15 +1,10 @@
-import Switch from "react-switch"
-import { Button, ButtonGroup, Card, Table } from "react-bootstrap"
-import { FaCirclePlus, FaTrash } from "react-icons/fa6"
-import { useState } from "react"
-import { Router, useRouter } from "next/router"
+import { Button, Table } from "react-bootstrap"
+import { FaCirclePlus } from "react-icons/fa6"
+import { useRouter } from "next/router"
 
-import { useSchools, postSchool, deleteSchool, patchSchool } from '@/lib/api'
-import { IGetSchool, IPostSchool } from '@/models/School'
+import { useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import useSessionUser from '@/lib/useSessionUser'
-import { value, set, get } from '@/lib/State'
-import Input from '@/components/Input'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
 import { useTrans } from '@/lib/trans'
