@@ -59,7 +59,7 @@ export default function Polls({}) {
         { closedPolls.length > 0 && 
             <Card className="my-2 table-responsive">
                 <Card.Header>
-                    <b>_("questionari chiusi")</b>
+                    <b>{_("questionari chiusi")}</b>
                 </Card.Header>
                 <Card.Body>
                     <PollsTable user={profile} polls={closedPolls} />
