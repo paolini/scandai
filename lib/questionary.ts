@@ -543,9 +543,9 @@ const questionary: IQuestionary = {
   forms: {
     full: {
       name: {
-        it: 'completo',
+        it: 'completa',
         en: 'full',
-        fu: 'completo',
+        fu: 'complete',
       },
       intro: {
         it: `Cara studentessa / Caro studente, 
@@ -865,7 +865,7 @@ const questionary: IQuestionary = {
       name: {
         it: "breve",
         en: "short",
-        fu: "breve",
+        fu: "curte",
       },
       intro: {
         it: `Cara studentessa / Caro studente, 
