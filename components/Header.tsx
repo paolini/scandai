@@ -37,14 +37,14 @@ export default function Header() {
             </Link> }
           { isAdmin && 
                 <>
-                  <Link href={`/${locale}/users`}>{_("Utenti")}</Link>
-                  <Link href={`/${locale}/school`}>{_("Scuole")}</Link>
-                  <Link href={`/${locale}/dict`}>{_("Mappature")}</Link>
-                  <Link href={`/${locale}/translation`}>{_("Lingue")}</Link>
+                  <Link className="bg-warning" href={`/${locale}/users`}>{_("Utenti")}</Link>
+                  <Link className="bg-warning" href={`/${locale}/school`}>{_("Scuole")}</Link>
+                  <Link className="bg-warning" href={`/${locale}/dict`}>{_("Mappature")}</Link>
+                  <Link className="bg-warning" href={`/${locale}/translation`}>{_("Lingue")}</Link>
                 </>
           }
           { isSuper &&
-              <Link href={`/${locale}/entries`}>{_("Entries")}</Link>
+              <Link className="bg-danger" href={`/${locale}/entries`}>{_("Entries")}</Link>
           }
           { !isAuthenticated && 
             <Link href="/api/auth/signin">{_("Login")}</Link>
@@ -86,10 +86,9 @@ export default function Header() {
                 />}
                 <span className="me-2">{profile.email || profile.username || '---'}</span>
               </>}>
-                { isSuper && <NavDropdown.Item
-                    href={`/api/backup`
-                    }>{_("download backup")}</NavDropdown.Item>
-                }
+                { isSuper && <NavDropdown.Item className="bg-danger" href={`/api/backup`}>
+                    {_("download backup")}
+                </NavDropdown.Item>}
                 <NavDropdown.Item
                     href={`/api/auth/signout`}
                     onClick={async (e) => {

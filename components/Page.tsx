@@ -20,7 +20,7 @@ export default function Page({header=true, title, children} : {
       </Head>
       <main>
         { header && <Header /> }
-        { title && <h1>{title}</h1> }
+        { title && <h2>{title}</h2> }
         <Messages messagesState={messagesState} />
         {children}
       </main>

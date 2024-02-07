@@ -1,6 +1,6 @@
 import {Table, Button} from 'react-bootstrap'
-import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
-import {useState,useRef} from 'react'
+import {FaCirclePlus} from 'react-icons/fa6'
+import {useState} from 'react'
 
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
@@ -8,6 +8,7 @@ import {useTranslation,postTranslation} from '@/lib/api'
 import {set, value} from '@/lib/State'
 import Input from '@/components/Input'
 import {useAddMessage} from '@/components/Messages' 
+import {useTrans} from '@/lib/trans'
 
 export default function Translation() {
     const translations = useTranslation()
@@ -15,6 +16,7 @@ export default function Translation() {
     const editState = useState<string>('')
     const addMessage = useAddMessage()
     const [focus, setFocus] = useState<number>(1)
+    const _ = useTrans()
 
 //    console.log(`editLang: ${editLang}, edit: ${value(editState)}`)
 
@@ -26,11 +28,11 @@ export default function Translation() {
 
     const sources:("en"|"fu")[] = ["en", "fu"]
 
-    return <Page title="Traduzioni lingue">
+    return <Page title={_("Traduzioni lingue")}>
         <Table>
             <thead>
                 <tr>
-                    <th>lingua</th>
+                    <th>{_("lingua")}</th>
                     <th>en</th>
                     <th>fu</th>
                 </tr>
