@@ -622,7 +622,7 @@ function TableChooseLanguageQuestion({stat, count, t}: {
                 <td></td>
                     {Object.keys(stat.answers).map(id => 
                 <td key={id}>
-                    {t(id)}
+                    {id===''?_("altre"):t(id)}
                 </td>)}
             </tr>
         </thead>

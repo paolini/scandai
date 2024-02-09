@@ -397,12 +397,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     // sort counts by numbers
     // reduce counts to 10
     // aggregating all counts > 10 in the last one
+    const N = 10
     for (const q of Object.values(questions)) {
         if (q.type === 'choose-language') {
             const entries = Object.entries(q.answers).sort((a,b) => b[1]-a[1])
-            if (entries.length > 10) {
-                const other = entries.slice(9).reduce((acc, [lang, count]) => acc + count, 0)
-                entries.splice(9)
+            if (entries.length > N) {
+                const other = entries.slice(N-1).reduce((acc, [lang, count]) => acc + count, 0)
+                entries.splice(N-1)
                 entries.push(['', other])
             }
             q.answers = Object.fromEntries(entries)
@@ -410,13 +411,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         if (q.type === 'map-language-to-age') {
             const myCount = (a: {[key:string]:number}) => Object.values(a).reduce((acc, v) => acc + v, 0)
             const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
-            if (entries.length > 10) entries.splice(10)
+            if (entries.length > N) entries.splice(N)
             q.answers = Object.fromEntries(entries)
         }
         if (q.type === 'map-language-to-competence') {
             const myCount = (a: ILanguageCompetenceStat) => a.countValid
             const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
-            // if (entries.length > 10) entries.splice(10)
+            // if (entries.length > N) entries.splice(N)
             q.answers = Object.fromEntries(entries)
         }
     }
