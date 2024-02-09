@@ -37,7 +37,7 @@ import Page from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
-import State, { value, set } from "@/lib/State"
+import State, { value, set, update } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
 
@@ -90,6 +90,11 @@ const getPageMargins = () => {
 
 type T = (s:string) => string
 
+type Filter = {
+    schoolId: string,
+    city: string,
+}
+
 export default function Report() {
     const user = useProfile()
     const router = useRouter()
@@ -99,6 +104,7 @@ export default function Report() {
     const searchParams = useSearchParams()
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
+    const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
     // console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
@@ -119,6 +125,7 @@ export default function Report() {
                 schoolId: value(schoolIdState),
                 city: value(cityState),
             }}
+            pollIdsState={pollIdsState}
             form={form} 
             translations={translations}
         />
@@ -126,18 +133,22 @@ export default function Report() {
 
 }
 
-function Stats({filter, form, translations}:{
-    filter: {schoolId: string, city: string},
+function Stats({filter, form, translations, pollIdsState}:{
+    filter: Filter,
     form: string,
     translations: IGetTranslation,
+    pollIdsState: State<string[]|undefined>,
 }) {
-    const user = useProfile()
+//    const user = useProfile()
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
+    const pollIds = value(pollIdsState)
+    const pollQuery = pollIds === undefined ? {} : {poll: pollIds.join(',')}
     const statsQuery = useStats({
         ...router.query,
         ...filter,
+        ...pollQuery,
     })
     const print = useReactToPrint({
         content: () => ref.current,
@@ -160,14 +171,16 @@ function Stats({filter, form, translations}:{
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
             </Button>
-            <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">{_("visualizza questionario")}</Link>
+            <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">
+                {_("visualizza questionario")}
+            </Link>
         </div>
         <div ref={ref}>
             <style>
                 {getPageMargins()}
             </style>
             { questionary.forms[form].report.map(
-                (item, i) => <ReportItem key={i} stats={stats} item={item} t={t}/>
+                (item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState}/>
             )}
         </div>
     </>
@@ -212,10 +225,11 @@ function Filter({schoolIdState, cityState, schools}:{
     </>
 }
 
-function ReportItem({ stats, item, t }: {
+function ReportItem({ stats, item, t, pollIdsState}: {
     stats: IStats,
     item: IReportElement,
     t: T,
+    pollIdsState: State<string[]|undefined>,
 }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -233,7 +247,7 @@ function ReportItem({ stats, item, t }: {
         case 'title':
             return <h1>{item_title || _("Risultati aggregati")}</h1>
         case 'info':
-            return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")}/>
+            return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")} pollIdsState={pollIdsState}/>
         case 'preferred':
             if (item.table) return <PreferredTable stats={stats.preferredLanguageCount} title={item_title}/>
             else return <Item title={item_title}>
@@ -295,30 +309,41 @@ function CompetenceLegend({title}:{
     </Item>
 }
 
-function ListClasses({ stats, title }: {
+function ListClasses({ stats, title, pollIdsState}: {
     stats: IStats,
     title?: string,
+    pollIdsState: State<string[]|undefined>,
 }) {
     const _ = useTrans()
     const router = useRouter()
     const searchParams = useSearchParams()
     const isShort = stats.polls.length <= 5
     const [isOpen, setOpen] = useState<boolean>(isShort)
+    const selectedPollIdsState = useState<string[]>([])
 
     if (!isOpen) return <Item title={title}>
         {_("classi")}: <b>{stats.polls.length}</b>, {}
         {_("partecipanti")}: <b>{stats.entriesCount}</b> {}
         <span className="noPrint">
-            <Button onClick={() => setOpen(true)}>{_("espandi")}</Button>
+            <Button onClick={() => setOpen(true)}>
+                {_("espandi")}
+            </Button>
         </span>
     </Item>
 
     return <Item title={title}>
-        { !isShort && 
         <div className="noPrint">
-            <Button className="noPrint" onClick={() => setOpen(false)}>{_("nascondi")}</Button>
-        </div>
+        { !isShort && 
+            <Button className="noPrint" onClick={() => setOpen(false)}>
+                {_("nascondi")}
+            </Button>
         }
+        { value(selectedPollIdsState).length > 0 &&
+            <Button className="noPrint mx-1" onClick={() => {set(selectedPollIdsState,[]);set(pollIdsState,[...value(selectedPollIdsState)])}}>
+                {_("filtra selezionate")}
+            </Button>
+        }
+        </div>
         <Table className="table" hover>
             <thead>
                 <tr>
@@ -331,7 +356,7 @@ function ListClasses({ stats, title }: {
             <tbody>
         { 
             stats.polls.map(c => 
-            <tr key={c._id.toString()} onClick={() => router.push(composeURL(c._id))}>
+            <tr className={value(selectedPollIdsState).includes(c._id)?"bg-warning":""} key={c._id.toString()} onClick={() => true ? toggle(c._id) : router.push(composeURL(c._id))}>
                 <td>
                     {c?.school?.name} 
                 </td>
@@ -363,6 +388,13 @@ function ListClasses({ stats, title }: {
         const query = new URLSearchParams(searchParams.toString())
         query.set('poll', poll)
         return `${window.location.origin}${window.location.pathname}?${query.toString()}`
+    }
+
+    function toggle(poll_id: string) {
+        update(selectedPollIdsState, selected => {
+            if (selected.includes(poll_id)) return selected.filter(x => x !== poll_id)
+            return [...selected, poll_id]
+        })
     }
 }
 

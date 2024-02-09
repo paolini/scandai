@@ -68,23 +68,22 @@ export default async function handler(
         }
 
         if (req.query.poll) {
+            let pollIds: ObjectId[]
             if (Array.isArray(req.query.poll)) {
-                let pollIds: ObjectId[]
                 try {
                     pollIds = req.query.poll.map((id:any) => new ObjectId(id))
                 } catch(error) {
                     return res.status(400).json({error: 'invalid poll id'})
                 }   
-                pipeline.push({$match: {'poll._id': {$in: pollIds }}})
             } else {
-                let pollId: ObjectId
                 try {   
-                    pollId = new ObjectId(req.query.poll)
+                    pollIds = req.query.poll.split(',').map((s:string) => new ObjectId(s))
                 } catch(error) {    
-                    return res.status(400).json({error: 'invalid poll id'})
+                    return res.status(400).json({error: `invalid poll ids`})
                 }
-                pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
             }
+            // pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
+            pipeline.push({$match: {'poll._id': {$in: pollIds }}})
         }
         if (req.query.school_id) {
             // console.log(`school_id: ${req.query.school_id}`)
