@@ -140,7 +140,8 @@ export interface IErrorQuestionStat {
 export interface IChooseLanguageQuestionStat {
     question: IQuestion,
     type: 'choose-language',
-    count: number, // numero di persone che hanno risposto
+    count: number, // numero di persone che hanno compilato il questionario
+    countPositive: number, // numero di persone che hanno risposto con almeno una lingua
     countAnswers: number, // numero di lingue che sono state scelte
     answers: IChooseLanguageStat,
     counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
@@ -273,6 +274,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         question,
                         type: question.type,
                         count: 0,
+                        countPositive: 0,
                         countAnswers: 0,
                         answers: {},
                         counts: [],
@@ -287,6 +289,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                 }
                 assert(Array.isArray(answer),'answer is not an array')
                 q.count ++
+                if (answer.length>0) q.countPositive ++
                 const n = Math.min(answer.length,10)
                 while (q.counts.length<n+1) {
                     q.counts.push(0)

@@ -491,8 +491,8 @@ function ReportChart({ question, item, t } : {
                 case undefined:
                 case 'chart':
                     return <Item title={item_title}>
-                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "questions" } t={t}/>
-                        <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} t={t}/>
+                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "positive" } t={t}/>
+                        <TableChooseLanguageQuestion stat={question} count={item?.count || "positive"} t={t}/>
                     </Item>
                 case 'count':
                     return <Item small={true} title={item_title || 'yyy'}>
@@ -555,14 +555,14 @@ function ReportTable({ question, item, t} : {
 function GraphChooseLanguageQuestion({item, stat, count, t} : {
         item: IReportElement,
         stat: IChooseLanguageQuestionStat,
-        count: "answers" | "questions",
+        count: "answers" | "questions" | "positive",
         t: T,
     }) {
     const _ = useTrans()
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
     assert(item.element === 'chart')
-    const total = count === 'answers' ? stat.countAnswers : stat.count 
+    const total = count === 'answers' ? stat.countAnswers : count === 'positive' ? stat.countPositive : stat.count
     return <Bar 
         options={{
             responsive: true,
@@ -609,14 +609,14 @@ function GraphChooseLanguageQuestion({item, stat, count, t} : {
 
 function TableChooseLanguageQuestion({stat, count, t}: {
     stat: IChooseLanguageQuestionStat,
-    count: "answers" | "questions" | "both",
+    count: "answers" | "questions" | "positive" | "both",
     t: T,
 }) {
     const _ = useTrans()
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
 
-    return <Table>
+    return <><Table className="my-0">
         <thead>
             <tr>
                 <td></td>
@@ -651,8 +651,34 @@ function TableChooseLanguageQuestion({stat, count, t}: {
                     {stat.count && `${Math.round(val*100/stat.count)}%`}
                 </td>)}
             </tr>}
+            { (count === 'positive' || count === 'both') &&
+            <tr>
+                <th>{count === 'both' ? _("su positivi") : _("percentuale") }</th>
+                    {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    {stat.count && `${Math.round(val*100/stat.countPositive)}%`}
+                </td>)}
+            </tr>}
         </tbody>
-    </Table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>{_("questionari")}</th>
+                <th>{_("non risponde")}</th>
+                <th>{_("risponde")}</th>
+                <th>{_("numero risposte")}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th></th>
+                <td>{stat.count}</td>
+                <td>{stat.count-stat.countPositive}</td>
+                <td>{stat.countPositive}</td>
+                <td>{stat.countAnswers}</td>
+            </tr>
+        </tbody>
+    </Table></>
 }
 
 function GraphChooseLanguageQuestionCounts({item,stat}: {
