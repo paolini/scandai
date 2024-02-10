@@ -318,6 +318,7 @@ function ListClasses({ stats, title, pollIdsState}: {
     const router = useRouter()
     const searchParams = useSearchParams()
     const isShort = stats.polls.length <= 5
+    const isLong = stats.polls.length > 20
     const [isOpen, setOpen] = useState<boolean>(isShort)
     const selectedPollIdsState = useState<string[]>([])
 
@@ -338,11 +339,7 @@ function ListClasses({ stats, title, pollIdsState}: {
                 {_("nascondi")}
             </Button>
         }
-        { value(selectedPollIdsState).length > 0 &&
-            <Button className="noPrint mx-1" onClick={() => {set(selectedPollIdsState,[]);set(pollIdsState,[...value(selectedPollIdsState)])}}>
-                {_("filtra selezionate")}
-            </Button>
-        }
+        <FilterButtons/>
         </div>
         <Table className="table" hover>
             <thead>
@@ -382,7 +379,27 @@ function ListClasses({ stats, title, pollIdsState}: {
         }
         </thead>
         </Table>
+        { isLong &&
+        <div className="noPrint">
+            <FilterButtons/>
+        </div>
+        }
     </Item>
+
+    function FilterButtons() {
+        return <>
+            { value(selectedPollIdsState).length > 0 &&
+                <Button className="noPrint mx-1" onClick={() => {set(selectedPollIdsState,[]);set(pollIdsState,[...value(selectedPollIdsState)])}}>
+                    {_("filtra selezionate")}
+                </Button>
+            } 
+            { value(pollIdsState) !== undefined &&
+                <Button className="noPrint mx-1" onClick={() => set(pollIdsState,undefined)}>
+                    {_("annulla filtro")}
+                </Button>
+            }
+        </> 
+    }
 
     function composeURL(poll: string) {
         const query = new URLSearchParams(searchParams.toString())
