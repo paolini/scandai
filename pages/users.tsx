@@ -1,6 +1,6 @@
 import Switch from "react-switch"
 import { Button, ButtonGroup, Card } from "react-bootstrap"
-import { FaCirclePlus, FaTrash } from "react-icons/fa6"
+import { FaCirclePlus, FaTrash, FaKey } from "react-icons/fa6"
 import { useState } from "react"
 
 import { useUsers, postUser, deleteUser, patchUser } from '@/lib/api'
@@ -49,7 +49,7 @@ export default function Users() {
                 {_("annulla")}
             </Button>
             : <Button variant="warning" onClick={() => set(showPasswordState, true)}>
-                <FaTrash /> {_("cambia password")}
+                <FaKey /> {_("cambia password")}
             </Button> }
         </ButtonGroup>}
         <table className="table">
