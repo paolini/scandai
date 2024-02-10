@@ -660,25 +660,14 @@ function TableChooseLanguageQuestion({stat, count, t}: {
                 </td>)}
             </tr>}
         </tbody>
-        <thead>
-            <tr>
-                <th></th>
-                <th>{_("questionari")}</th>
-                <th>{_("non risponde")}</th>
-                <th>{_("risponde")}</th>
-                <th>{_("numero risposte")}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th></th>
-                <td>{stat.count}</td>
-                <td>{stat.count-stat.countPositive}</td>
-                <td>{stat.countPositive}</td>
-                <td>{stat.countAnswers}</td>
-            </tr>
-        </tbody>
-    </Table></>
+    </Table>
+    <p className="mx-2" style={{fontSize:"smaller"}}>
+        {_("questionari")}: {stat.count}, {}
+        {_("non risponde")}: {stat.count-stat.countPositive}, {}
+        {_("risponde")}: {stat.countPositive}, {}
+        {_("numero risposte")}: {stat.countAnswers}
+    </p>
+    </>
 }
 
 function GraphChooseLanguageQuestionCounts({item,stat}: {
