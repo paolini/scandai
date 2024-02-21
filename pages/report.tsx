@@ -880,8 +880,8 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
 
     function computeDataset(stat: {[key: string]: number}) {
         const total = Object.values(stat).reduce((sum,x) => sum+x,0)
-        if (total === 0) return levels.map(level => 0)
-        return levels.map(level => (stat[level] || 0) / total)
+        if (total === 0) return levels.map(level => ({ratio: 0, count: 0}))
+        return levels.map(level => ({ratio: (stat[level] || 0) / total, count: stat[level] || 0}))
     }
 
     return <Table>
@@ -896,8 +896,11 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
                 Object.entries(stats.competence).map(([competence, x]) => 
                     <tr key={competence}>
                         <th>{competence}</th>
-                        {computeDataset(x.level).map((n,i)=>
-                            <td key={i}>{Math.round(n*100)}%</td>)}
+                        {computeDataset(x.level).map(({ratio, count},i)=>
+                            <td key={i}>
+                                {Math.round(ratio*100)}%
+                                {} <span style={{fontSize: "70%"}}>({count})</span>
+                            </td>)}
                     </tr>
                 )
             }
