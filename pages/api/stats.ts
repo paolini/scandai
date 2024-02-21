@@ -68,23 +68,22 @@ export default async function handler(
         }
 
         if (req.query.poll) {
+            let pollIds: ObjectId[]
             if (Array.isArray(req.query.poll)) {
-                let pollIds: ObjectId[]
                 try {
                     pollIds = req.query.poll.map((id:any) => new ObjectId(id))
                 } catch(error) {
                     return res.status(400).json({error: 'invalid poll id'})
                 }   
-                pipeline.push({$match: {'poll._id': {$in: pollIds }}})
             } else {
-                let pollId: ObjectId
                 try {   
-                    pollId = new ObjectId(req.query.poll)
+                    pollIds = req.query.poll.split(',').map((s:string) => new ObjectId(s))
                 } catch(error) {    
-                    return res.status(400).json({error: 'invalid poll id'})
+                    return res.status(400).json({error: `invalid poll ids`})
                 }
-                pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
             }
+            // pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
+            pipeline.push({$match: {'poll._id': {$in: pollIds }}})
         }
         if (req.query.school_id) {
             // console.log(`school_id: ${req.query.school_id}`)
@@ -141,7 +140,8 @@ export interface IErrorQuestionStat {
 export interface IChooseLanguageQuestionStat {
     question: IQuestion,
     type: 'choose-language',
-    count: number, // numero di persone che hanno risposto
+    count: number, // numero di persone che hanno compilato il questionario
+    countPositive: number, // numero di persone che hanno risposto con almeno una lingua
     countAnswers: number, // numero di lingue che sono state scelte
     answers: IChooseLanguageStat,
     counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
@@ -274,6 +274,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                         question,
                         type: question.type,
                         count: 0,
+                        countPositive: 0,
                         countAnswers: 0,
                         answers: {},
                         counts: [],
@@ -288,6 +289,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                 }
                 assert(Array.isArray(answer),'answer is not an array')
                 q.count ++
+                if (answer.length>0) q.countPositive ++
                 const n = Math.min(answer.length,10)
                 while (q.counts.length<n+1) {
                     q.counts.push(0)
@@ -398,12 +400,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     // sort counts by numbers
     // reduce counts to 10
     // aggregating all counts > 10 in the last one
+    const N = 10
     for (const q of Object.values(questions)) {
         if (q.type === 'choose-language') {
             const entries = Object.entries(q.answers).sort((a,b) => b[1]-a[1])
-            if (entries.length > 10) {
-                const other = entries.slice(9).reduce((acc, [lang, count]) => acc + count, 0)
-                entries.splice(9)
+            if (entries.length > N) {
+                const other = entries.slice(N-1).reduce((acc, [lang, count]) => acc + count, 0)
+                entries.splice(N-1)
                 entries.push(['', other])
             }
             q.answers = Object.fromEntries(entries)
@@ -411,13 +414,13 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         if (q.type === 'map-language-to-age') {
             const myCount = (a: {[key:string]:number}) => Object.values(a).reduce((acc, v) => acc + v, 0)
             const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
-            if (entries.length > 10) entries.splice(10)
+            if (entries.length > N) entries.splice(N)
             q.answers = Object.fromEntries(entries)
         }
         if (q.type === 'map-language-to-competence') {
             const myCount = (a: ILanguageCompetenceStat) => a.countValid
             const entries = Object.entries(q.answers).sort((a,b) => myCount(b[1])-myCount(a[1]))
-            // if (entries.length > 10) entries.splice(10)
+            // if (entries.length > N) entries.splice(N)
             q.answers = Object.fromEntries(entries)
         }
     }

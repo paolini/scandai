@@ -37,7 +37,7 @@ import Page from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
-import State, { value, set } from "@/lib/State"
+import State, { value, set, update } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
 
@@ -90,6 +90,11 @@ const getPageMargins = () => {
 
 type T = (s:string) => string
 
+type Filter = {
+    schoolId: string,
+    city: string,
+}
+
 export default function Report() {
     const user = useProfile()
     const router = useRouter()
@@ -99,6 +104,7 @@ export default function Report() {
     const searchParams = useSearchParams()
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
+    const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
     // console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
@@ -119,6 +125,7 @@ export default function Report() {
                 schoolId: value(schoolIdState),
                 city: value(cityState),
             }}
+            pollIdsState={pollIdsState}
             form={form} 
             translations={translations}
         />
@@ -126,18 +133,22 @@ export default function Report() {
 
 }
 
-function Stats({filter, form, translations}:{
-    filter: {schoolId: string, city: string},
+function Stats({filter, form, translations, pollIdsState}:{
+    filter: Filter,
     form: string,
     translations: IGetTranslation,
+    pollIdsState: State<string[]|undefined>,
 }) {
-    const user = useProfile()
+//    const user = useProfile()
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
+    const pollIds = value(pollIdsState)
+    const pollQuery = pollIds === undefined ? {} : {poll: pollIds.join(',')}
     const statsQuery = useStats({
         ...router.query,
         ...filter,
+        ...pollQuery,
     })
     const print = useReactToPrint({
         content: () => ref.current,
@@ -160,14 +171,16 @@ function Stats({filter, form, translations}:{
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
             </Button>
-            <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">{_("visualizza questionario")}</Link>
+            <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">
+                {_("visualizza questionario")}
+            </Link>
         </div>
         <div ref={ref}>
             <style>
                 {getPageMargins()}
             </style>
             { questionary.forms[form].report.map(
-                (item, i) => <ReportItem key={i} stats={stats} item={item} t={t}/>
+                (item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState}/>
             )}
         </div>
     </>
@@ -212,10 +225,11 @@ function Filter({schoolIdState, cityState, schools}:{
     </>
 }
 
-function ReportItem({ stats, item, t }: {
+function ReportItem({ stats, item, t, pollIdsState}: {
     stats: IStats,
     item: IReportElement,
     t: T,
+    pollIdsState: State<string[]|undefined>,
 }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -233,7 +247,7 @@ function ReportItem({ stats, item, t }: {
         case 'title':
             return <h1>{item_title || _("Risultati aggregati")}</h1>
         case 'info':
-            return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")}/>
+            return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")} pollIdsState={pollIdsState}/>
         case 'preferred':
             if (item.table) return <PreferredTable stats={stats.preferredLanguageCount} title={item_title}/>
             else return <Item title={item_title}>
@@ -295,30 +309,38 @@ function CompetenceLegend({title}:{
     </Item>
 }
 
-function ListClasses({ stats, title }: {
+function ListClasses({ stats, title, pollIdsState}: {
     stats: IStats,
     title?: string,
+    pollIdsState: State<string[]|undefined>,
 }) {
     const _ = useTrans()
     const router = useRouter()
     const searchParams = useSearchParams()
     const isShort = stats.polls.length <= 5
+    const isLong = stats.polls.length > 20
     const [isOpen, setOpen] = useState<boolean>(isShort)
+    const selectedPollIdsState = useState<string[]>([])
 
     if (!isOpen) return <Item title={title}>
         {_("classi")}: <b>{stats.polls.length}</b>, {}
         {_("partecipanti")}: <b>{stats.entriesCount}</b> {}
         <span className="noPrint">
-            <Button onClick={() => setOpen(true)}>{_("espandi")}</Button>
+            <Button onClick={() => setOpen(true)}>
+                {_("espandi")}
+            </Button>
         </span>
     </Item>
 
     return <Item title={title}>
-        { !isShort && 
         <div className="noPrint">
-            <Button className="noPrint" onClick={() => setOpen(false)}>{_("nascondi")}</Button>
-        </div>
+        { !isShort && 
+            <Button className="noPrint" onClick={() => setOpen(false)}>
+                {_("nascondi")}
+            </Button>
         }
+        <FilterButtons/>
+        </div>
         <Table className="table" hover>
             <thead>
                 <tr>
@@ -331,7 +353,7 @@ function ListClasses({ stats, title }: {
             <tbody>
         { 
             stats.polls.map(c => 
-            <tr key={c._id.toString()} onClick={() => router.push(composeURL(c._id))}>
+            <tr className={value(selectedPollIdsState).includes(c._id)?"bg-warning":""} key={c._id.toString()} onClick={() => true ? toggle(c._id) : router.push(composeURL(c._id))}>
                 <td>
                     {c?.school?.name} 
                 </td>
@@ -357,12 +379,39 @@ function ListClasses({ stats, title }: {
         }
         </thead>
         </Table>
+        { isLong &&
+        <div className="noPrint">
+            <FilterButtons/>
+        </div>
+        }
     </Item>
+
+    function FilterButtons() {
+        return <>
+            { value(selectedPollIdsState).length > 0 &&
+                <Button className="noPrint mx-1" onClick={() => {set(selectedPollIdsState,[]);set(pollIdsState,[...value(selectedPollIdsState)])}}>
+                    {_("filtra selezionate")}
+                </Button>
+            } 
+            { value(pollIdsState) !== undefined &&
+                <Button className="noPrint mx-1" onClick={() => set(pollIdsState,undefined)}>
+                    {_("annulla filtro")}
+                </Button>
+            }
+        </> 
+    }
 
     function composeURL(poll: string) {
         const query = new URLSearchParams(searchParams.toString())
         query.set('poll', poll)
         return `${window.location.origin}${window.location.pathname}?${query.toString()}`
+    }
+
+    function toggle(poll_id: string) {
+        update(selectedPollIdsState, selected => {
+            if (selected.includes(poll_id)) return selected.filter(x => x !== poll_id)
+            return [...selected, poll_id]
+        })
     }
 }
 
@@ -459,8 +508,8 @@ function ReportChart({ question, item, t } : {
                 case undefined:
                 case 'chart':
                     return <Item title={item_title}>
-                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "questions" } t={t}/>
-                        <TableChooseLanguageQuestion stat={question} count={item?.count || "questions"} t={t}/>
+                        <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "positive" } t={t}/>
+                        <TableChooseLanguageQuestion stat={question} count={item?.count || "positive"} t={t}/>
                     </Item>
                 case 'count':
                     return <Item small={true} title={item_title || 'yyy'}>
@@ -523,14 +572,14 @@ function ReportTable({ question, item, t} : {
 function GraphChooseLanguageQuestion({item, stat, count, t} : {
         item: IReportElement,
         stat: IChooseLanguageQuestionStat,
-        count: "answers" | "questions",
+        count: "answers" | "questions" | "positive",
         t: T,
     }) {
     const _ = useTrans()
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
     assert(item.element === 'chart')
-    const total = count === 'answers' ? stat.countAnswers : stat.count 
+    const total = count === 'answers' ? stat.countAnswers : count === 'positive' ? stat.countPositive : stat.count
     return <Bar 
         options={{
             responsive: true,
@@ -577,20 +626,20 @@ function GraphChooseLanguageQuestion({item, stat, count, t} : {
 
 function TableChooseLanguageQuestion({stat, count, t}: {
     stat: IChooseLanguageQuestionStat,
-    count: "answers" | "questions" | "both",
+    count: "answers" | "questions" | "positive" | "both",
     t: T,
 }) {
     const _ = useTrans()
     const languages = questionary.languages
     if (!stat.answers) return <div>invalid answers</div>
 
-    return <Table>
+    return <><Table className="my-0">
         <thead>
             <tr>
                 <td></td>
                     {Object.keys(stat.answers).map(id => 
                 <td key={id}>
-                    {t(id)}
+                    {id===''?_("altre"):t(id)}
                 </td>)}
             </tr>
         </thead>
@@ -619,8 +668,23 @@ function TableChooseLanguageQuestion({stat, count, t}: {
                     {stat.count && `${Math.round(val*100/stat.count)}%`}
                 </td>)}
             </tr>}
+            { (count === 'positive' || count === 'both') &&
+            <tr>
+                <th>{count === 'both' ? _("su positivi") : _("percentuale") }</th>
+                    {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    {stat.count && `${Math.round(val*100/stat.countPositive)}%`}
+                </td>)}
+            </tr>}
         </tbody>
     </Table>
+    <p className="mx-2" style={{fontSize:"smaller"}}>
+        {_("questionari")}: {stat.count}, {}
+        {_("non risponde")}: {stat.count-stat.countPositive}, {}
+        {_("risponde")}: {stat.countPositive}, {}
+        {_("numero risposte")}: {stat.countAnswers}
+    </p>
+    </>
 }
 
 function GraphChooseLanguageQuestionCounts({item,stat}: {
@@ -816,8 +880,8 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
 
     function computeDataset(stat: {[key: string]: number}) {
         const total = Object.values(stat).reduce((sum,x) => sum+x,0)
-        if (total === 0) return levels.map(level => 0)
-        return levels.map(level => (stat[level] || 0) / total)
+        if (total === 0) return levels.map(level => ({ratio: 0, count: 0}))
+        return levels.map(level => ({ratio: (stat[level] || 0) / total, count: stat[level] || 0}))
     }
 
     return <Table>
@@ -832,8 +896,11 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
                 Object.entries(stats.competence).map(([competence, x]) => 
                     <tr key={competence}>
                         <th>{competence}</th>
-                        {computeDataset(x.level).map((n,i)=>
-                            <td key={i}>{Math.round(n*100)}%</td>)}
+                        {computeDataset(x.level).map(({ratio, count},i)=>
+                            <td key={i}>
+                                {Math.round(ratio*100)}%
+                                {} <span style={{fontSize: "70%"}}>({count})</span>
+                            </td>)}
                     </tr>
                 )
             }
