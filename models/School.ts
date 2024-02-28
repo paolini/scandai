@@ -4,6 +4,7 @@ import mongoose, {Types} from 'mongoose'
 export interface IPostSchool {
     name: string,
     city: string,
+    city_fu: string,
     reportSecret?: string,
 }
 
@@ -23,6 +24,11 @@ const SchoolSchema = new mongoose.Schema({
         default: '',
     },
     city: {
+        type: String,
+        required: true,
+        default: '',
+    },
+    city_fu: {
         type: String,
         required: true,
         default: '',

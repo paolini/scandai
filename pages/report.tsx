@@ -203,7 +203,8 @@ function Filter({schoolIdState, cityState, schools}:{
     schools: IGetSchool[]
 }) {
     const city = value(cityState)
-    const cities = Array.from(new Set(schools.map(school=>school.city))).sort()
+    const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
+    const cities = Object.keys(map_city_fu).sort()
     const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
         : schools).sort((a,b) => b.pollCount-a.pollCount)
@@ -216,7 +217,7 @@ function Filter({schoolIdState, cityState, schools}:{
             set(cityState,evt.target.value)
         }}>
             <option value=''>{_("tutte le città")}</option>
-            {cities.map(city => <option key={city} value={city}>{city}</option>)}
+            {cities.map(city => <option key={city} value={city}>{_.locale === 'fu' ? (map_city_fu[city] || city) : city}</option>)}
         </select> {}
         <select onChange={evt => set(schoolIdState,evt.target.value)}>
             <option value=''>{_("tutte le scuole")}</option>
@@ -358,7 +359,7 @@ function ListClasses({ stats, title, pollIdsState}: {
                     {c?.school?.name} 
                 </td>
                 <td>
-                    {c?.school?.city}
+                    {(_.locale==='fu' && c?.school?.city_fu) || c?.school?.city}
                 </td>
                 <td>
                      {c?.year}&nbsp;{c.class}

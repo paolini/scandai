@@ -30,7 +30,8 @@ export default function Schools() {
             <thead>
                 <tr>
                     <th>{_("nome")}</th>
-                    <th>{_("città")}</th>
+                    <th>{_("città (in italiano)")}</th>
+                    <th>{_("città (in friulano)")}</th>
                     <th>{_("questionari")}</th>
                 </tr>
             </thead>
@@ -39,6 +40,7 @@ export default function Schools() {
                 <tr key={school._id} onClick={() => router.push(`/school/${school._id}`)}>
                     <td>{school.name}</td>
                     <td>{school.city}</td>
+                    <td>{school.city_fu}</td>
                     <td>{school.pollCount}</td>
                 </tr>)}
             </tbody>

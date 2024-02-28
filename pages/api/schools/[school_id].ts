@@ -29,7 +29,7 @@ export default async function handler(
         if (req.method === 'GET') {
             try {
                 const school = school_id === '__new__' 
-                    ? {_id: '__new__', name: '', city: ''}
+                    ? {_id: '__new__', name: '', city: '', city_fu: ''}
                     : await getSchoolById(school_id)
 
                 if (!school) {
@@ -58,7 +58,7 @@ export default async function handler(
                 return res.status(400).json({error: 'invalid json'})
             }
             let payload: any = {}
-            for (let field of  ['name', 'city']) {
+            for (let field of  ['name', 'city', 'city_fu']) {
                 if (body[field] === undefined) continue
                 payload[field] = body[field]
             }

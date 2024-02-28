@@ -43,12 +43,11 @@ function School({ school, mutate } : {
     const createNew = school._id === '__new__'
     const nameState = useState<string>(school.name)
     const cityState = useState<string>(school.city)
+    const cityFuState = useState<string>(school.city_fu)
     const [edit, setEdit] = useState<boolean>(createNew)
-    const modified = value(nameState) !== school.name || value(cityState) !== school.city
+    const modified = value(nameState) !== school.name || value(cityState) !== school.city || value(cityFuState) !== school.city_fu
     const router = useRouter()
     const addMessage = useAddMessage()
-    const user = useSessionUser()
-    const [share, setShare] = useState<boolean>(false)
 
     return <>
         <Card className="my-4">
@@ -59,8 +58,11 @@ function School({ school, mutate } : {
                 <p>{_("Nome")}: {}                 
                     { edit ? <Input state={nameState} /> : <b>{school.name}</b> }
                 </p>
-                <p>{_("Città")}: {}
+                <p>{_("Città (in italiano)")}: {}
                     { edit ? <Input state={cityState} /> : <b>{school.city}</b> }
+                </p>
+                <p>{_("Città (in friulano)")}: {}
+                    { edit ? <Input state={cityFuState} /> : <b>{school.city_fu}</b> }
                 </p>
             </Card.Body>
             <Card.Footer>
@@ -132,13 +134,15 @@ function School({ school, mutate } : {
         if (createNew) {
             await postSchool({
                 name: value(nameState),
-                city: value(cityState)
+                city: value(cityState),
+                city_fu: value(cityFuState),
             })
         } else {
             await patchSchool({
                 _id: school._id,
                 name: value(nameState),
-                city: value(cityState)
+                city: value(cityState),
+                city_fu: value(cityFuState),
             })
         }
         await mutate()
@@ -152,6 +156,7 @@ function School({ school, mutate } : {
         setEdit(false)
         set(nameState, school.name)
         set(cityState, school.city)
+        set(cityFuState, school.city_fu)
     }
 
     async function remove() {

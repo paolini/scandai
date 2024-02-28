@@ -19,6 +19,7 @@ export interface IGetPoll extends IPostPoll {
         _id: string,
         name: string,
         city: string,
+        city_fu: string,
     }
     createdBy: string,
     createdByUser: {
