@@ -47,9 +47,11 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
         </>}
       </Card.Body>
     </Card>
-    <div> 
-      La Lavagne Plurilengâl 
-    </div>
+    <Card> 
+      <Card.Body>
+        La Lavagne Plurilengâl 
+      </Card.Body>
+    </Card>
 </> 
 }
 
