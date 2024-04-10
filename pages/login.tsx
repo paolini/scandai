@@ -25,8 +25,9 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
   if (!configQuery.data) return <Error>Impossibile caricare la configurazione</Error>
 
   const config = configQuery.data
-
-  return <Card>
+ 
+  return <>
+    <Card> 
       <Card.Header>
         <Card.Title>{config.siteTitle.it}: autenticazione</Card.Title>
       </Card.Header>
@@ -46,6 +47,10 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
         </>}
       </Card.Body>
     </Card>
+    <div> 
+      La Lavagne Plurilengâl 
+    </div>
+</> 
 }
 
 function EmailLogin({querystring, csrfToken}: {
