@@ -107,12 +107,22 @@ export default function Report() {
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
-    // console.log(`Report: user: ${JSON.stringify(user)} translation: ${translationQuery.isLoading}, schools: ${schoolsQuery.isLoading})}`)
+    console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
-    if (schoolsQuery.isLoading) return <><Loading /><br/>__</>
+    if (schoolsQuery.isLoading) return <><Loading /><br/>__ <pre>
+        {JSON.stringify({
+            sQiL: schoolsQuery.isLoading,
+            tQiL: translationQuery.isLoading,
+            user,
+            router,
+            trans: [_],
+            schoolsQuery,
+        },null,2)}
+        </pre>
+        </>
     if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     const translations = translationQuery.data.data
     
