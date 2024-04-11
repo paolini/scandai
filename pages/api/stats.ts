@@ -105,11 +105,11 @@ export default async function handler(
         try {
             const entries = await Entry.aggregate(pipeline)
             const data: IStats = await aggregate(entries)
-            res.status(200).json({ data })
+            return res.status(200).json({ data })
         } catch (error) {
             console.error(error)
             console.log(`database error: ${error}`)
-            res.status(400).json({ error })
+            return res.status(400).json({ error })
         }
 }
 
