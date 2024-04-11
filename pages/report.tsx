@@ -107,7 +107,13 @@ export default function Report() {
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
-    console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
+    console.log(`Report: ${JSON.stringify({
+        user, 
+        translationIsLoading: translationQuery.isLoading, 
+        translationError: translationQuery.error,
+        schoolsIsLoading: schoolsQuery.isLoading, 
+        schoolsError: schoolsQuery.error,
+        trans: [_]})}`)
 
     if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
 
