@@ -49,11 +49,11 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
     </Card>
     <Card> 
       <Card.Body>
-        La Lavagne Plurilengâl <BR>
-        Rete per la promozione dell'educazione plurilingue<BR>
-        e il CLIL in lingua friulana nella scuola superiore di secondo grado<BR>
-        <BR><BR>
-        Progetto realizzato con il sostegno dell'ARLeF<BR>
+        La Lavagne Plurilengâl <br />
+        Rete per la promozione dell&apos;educazione plurilingue<br />
+        e il CLIL in lingua friulana nella scuola superiore di secondo grado<br />
+        <br /><br />
+        Progetto realizzato con il sostegno dell&apos;ARLeF<br />
         Agenzia regionale per la lingua friulana      
       </Card.Body>
     </Card>
