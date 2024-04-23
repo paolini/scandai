@@ -9,7 +9,16 @@ import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
 import Config, {IGetConfig} from '@/models/Config'
 
-async function fetcher(url: string) {
+async function fetcher(keyArray: null|false|any[], options?: RequestInit) {
+    if (!keyArray) return null
+    let url = `/api`
+    for (const key of keyArray) {
+        if (typeof key === 'string') {
+            url += '/' + key
+        } else {
+            url += '?' + new URLSearchParams(key)
+        }
+    }
     const res = await fetch(url)
     if (!res.ok) {
         throw new Error(`fetch error: ${res.status}`)
@@ -22,23 +31,17 @@ export interface Data<T> {
     data: T
 }
 
-function fullUrl(url: string, query?: any, enabled=true) {
-    if (!enabled) return null
-    return `/api/${url}?${new URLSearchParams(query)}`
-}
-
-
 export function useIndex<T>(url: string, query?: any, enabled=true) {
-    return useSWR<Data<T>>(fullUrl(url, query, enabled), fetcher)
+    return useSWR<Data<T>>(enabled && [url, query], fetcher)
 }
 
 export function useGet<T>(url: string, id_: string | null) {
     // use id_=null to disable the query
-    return useSWR<T>(fullUrl(`${url}/${id_}`, undefined, id_ !== null), fetcher)
+    return useSWR<T>(id_ !== null && [url,id_], fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
-    const res = await fetcher([`/api/${url}`], {
+    const res = await fetcher([url], {
         method: 'POST',
         body: JSON.stringify(data)
     })
@@ -50,13 +53,13 @@ interface WithId {
 }
 
 export async function remove(url: string, obj: WithId) {
-    return await fetcher([`/api/${url}/${obj._id}`], {
+    return await fetcher([url,obj._id], {
         method: 'DELETE',
     })
 }
 
-export async function patch(url: string, obj: WithId, querystring: string = '') {
-    const res = await fetcher([`/api/${url}/${obj._id}?${querystring}`], {
+export async function patch(url: string, obj: WithId, query?: any) {
+    const res = await fetcher([url, obj._id, query || {}], {
         method: 'PATCH',
         body: JSON.stringify(obj)
     })
@@ -64,7 +67,7 @@ export async function patch(url: string, obj: WithId, querystring: string = '') 
 }
 
 export function useConfig() {
-    return useSWR<IGetConfig>([`/api/config`], fetcher)
+    return useSWR<IGetConfig>(['config'], fetcher)
 }
 
 export async function deleteEntry(obj: WithId) {
@@ -80,7 +83,7 @@ export async function postPoll(poll: IPostPoll): Promise<{data: IGetPoll}> {
 }
 
 export async function patchPoll(poll: any, adminSecret:string='') {
-    return await patch('polls', poll, adminSecret ? `secret=${adminSecret}` : '')
+    return await patch('polls', poll, adminSecret ? {secret: adminSecret } : {})
 }
 
 export async function deletePoll(poll: IGetPoll) {
