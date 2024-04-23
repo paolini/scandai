@@ -19,7 +19,7 @@ async function fetcher(keyArray: null|false|any[], options?: RequestInit) {
             url += '?' + new URLSearchParams(key)
         }
     }
-    const res = await fetch(url)
+    const res = await fetch(url, options)
     if (!res.ok) {
         throw new Error(`fetch error: ${res.status}`)
     }
