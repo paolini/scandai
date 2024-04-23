@@ -4,12 +4,13 @@ import migrate from './migrations'
 import createAdminUser from './createAdminUser'
 import updateConfiguration from './updateConfiguration'
 
-async function init() {
+async function init(): Promise<mongoose.mongo.MongoClient> {
   const uri = process.env.MONGODB_URI
   if (!uri) {
     throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
   }
-
+  console.log(`connecting to mongodb: ${uri} (MONGODB_URI)`)
+  
   const promise = mongoose.connect(uri, {})
 
   await promise

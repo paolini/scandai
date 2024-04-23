@@ -5,8 +5,11 @@ import EmailProvider, { SendVerificationRequestParams } from "next-auth/provider
 import { compare } from "bcrypt"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 
-import clientPromise from "../../../lib/mongodb"
+import clientPromise from "@/lib/mongodb"
 import User, { IGetUser } from '@/models/User'
+
+import type { MongoClient } from "mongodb";
+
 
 // augment next-auth types
 declare module "next-auth" {
@@ -35,7 +38,7 @@ if (process.env.SMTP_HOST) {
     const portString = process.env.SMTP_PORT || undefined
     const port = portString ? parseInt(portString) : undefined
     providers.push(EmailProvider({
-        name: 'email',
+        //name: 'email',
         server: {
             host: process.env.SMTP_HOST,
             port,
@@ -111,7 +114,9 @@ export default NextAuth({
         verifyRequest: '/verify-request',
     },
 
-    adapter: MongoDBAdapter(clientPromise),
+    // c'è un problema di incompatibilità, sembra che next-auth e mongoose 
+    // utilizzino due diverse versioni di mongodb
+    adapter: MongoDBAdapter(clientPromise as unknown as Promise<MongoClient>),
 
     session: {
         strategy: 'jwt',

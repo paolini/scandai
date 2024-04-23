@@ -8,8 +8,9 @@ import getSessionUser from '@/lib/getSessionUser'
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
-        // await delay(8000)
+        console.log('profile api')
         const sessionUser = await getSessionUser(req)
+        
         if (!sessionUser) {
             return res.json(null)
             // return res.status(401).json({error: 'not authenticated'})

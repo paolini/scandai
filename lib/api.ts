@@ -1,4 +1,4 @@
-import useSWR from 'swr'
+import useSWR, { SWRResponse } from 'swr'
 
 import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
@@ -27,17 +27,18 @@ async function fetcher(keyArray: null|false|any[], options?: RequestInit) {
     return json 
 }
 
-export interface Data<T> {
-    data: T
+export interface IndexData<T> {
+    data: T,
 }
 
-export function useIndex<T>(url: string, query?: any, enabled=true) {
-    return useSWR<Data<T>>(enabled && [url, query], fetcher)
+
+export function useIndex<T>(url: string, query?: any, enabled=true): SWRResponse<IndexData<T>> {
+    return useSWR(enabled && [url, query], fetcher)
 }
 
-export function useGet<T>(url: string, id_: string | null) {
+export function useGet<T>(url: string, id_: string | null): SWRResponse<T> {
     // use id_=null to disable the query
-    return useSWR<T>(id_ !== null && [url,id_], fetcher)
+    return useSWR(id_ !== null && [url,id_], fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
@@ -66,8 +67,8 @@ export async function patch(url: string, obj: WithId, query?: any) {
     return res
 }
 
-export function useConfig() {
-    return useSWR<IGetConfig>(['config'], fetcher)
+export function useConfig(): SWRResponse<IGetConfig> {
+    return useSWR(['config'], fetcher)
 }
 
 export async function deleteEntry(obj: WithId) {
