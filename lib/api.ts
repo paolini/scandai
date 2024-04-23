@@ -9,12 +9,8 @@ import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
 import Config, {IGetConfig} from '@/models/Config'
 
-async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
-    if (query) {
-        const params = new URLSearchParams(query)
-        url = `${url}?${params}`
-    }
-    const res = await fetch(url, init)
+async function fetcher(url: string) {
+    const res = await fetch(url)
     if (!res.ok) {
         throw new Error(`fetch error: ${res.status}`)
     }
@@ -26,13 +22,19 @@ export interface Data<T> {
     data: T
 }
 
+function fullUrl(url: string, query?: any, enabled=true) {
+    if (!enabled) return null
+    return `/api/${url}?${new URLSearchParams(query)}`
+}
+
+
 export function useIndex<T>(url: string, query?: any, enabled=true) {
-    return useSWR<Data<T>>([enabled ? `/api/${url}` : null, query], fetcher)
+    return useSWR<Data<T>>(fullUrl(url, query, enabled), fetcher)
 }
 
 export function useGet<T>(url: string, id_: string | null) {
     // use id_=null to disable the query
-    return useSWR<T>(id_ !== null ? [`/api/${url}/${id_}`] : null, fetcher)
+    return useSWR<T>(fullUrl(`${url}/${id_}`, undefined, id_ !== null), fetcher)
 }
 
 export async function post<T>(url: string, data: T) {
