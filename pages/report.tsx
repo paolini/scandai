@@ -369,21 +369,22 @@ function ListClasses({ stats, title, pollIdsState}: {
             </thead>
             <tbody>
         { 
-            stats.polls.map(c => 
-            <tr className={value(selectedPollIdsState).includes(c._id)?"bg-warning":""} key={c._id.toString()} onClick={() => true ? toggle(c._id) : router.push(composeURL(c._id))}>
-                <td>
-                    {c?.school?.name} 
-                </td>
-                <td>
-                    {(_.locale==='fu' && c?.school?.city_fu) || c?.school?.city}
-                </td>
-                <td>
-                     {c?.year}&nbsp;{c.class}
-                </td>
-                <td>
-                {c?.entriesCount}
-                </td>
-            </tr>)
+            stats.polls.map(c => {
+                const selected = value(selectedPollIdsState).includes(c._id)?"bg-warning":""
+                return <tr key={c._id.toString()} onClick={() => true ? toggle(c._id) : router.push(composeURL(c._id))}>
+                    <td className={selected}>
+                        {c?.school?.name} 
+                    </td>
+                    <td className={selected}>
+                        {(_.locale==='fu' && c?.school?.city_fu) || c?.school?.city}
+                    </td>
+                    <td className={selected}>
+                        {c?.year}&nbsp;{c.class}
+                    </td>
+                    <td className={selected}>
+                    {c?.entriesCount}
+                    </td>
+                </tr>})
         }   
         </tbody>
         <thead>
