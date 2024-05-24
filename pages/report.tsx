@@ -189,7 +189,7 @@ function Stats({filter, form, translations, pollIdsState}:{
             <style>
                 {getPageMargins()}
             </style>
-            { questionary.forms[form].report.map(
+            { questionary.reports[form].elements.map(
                 (item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState}/>
             )}
         </div>

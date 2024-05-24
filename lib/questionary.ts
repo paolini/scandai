@@ -666,201 +666,9 @@ const questionary: IQuestionary = {
           questions: [ "2.2.1" ],
         },
       ],
-      /* Report del questionario lungo */
-      report: [
-        {
-          element: "title",
-          title: {
-            it: "Risultati aggregati",
-            en: "Aggregated results",
-            fu: "Risultâts agregâts",
-          },
-        },
-        {
-          element: "info",
-        },
-        {
-          element: "chart",
-          question: "1.1.a.1", 
-          title: {
-            it: "Nella mia famiglia si parla abitualmente",
-            en: "In my family, we habitually speak",
-            fu: "Inte mê famee pal solit si fevele",
-          },
-        },
-        {
-          element: "chart",
-          variant: "count",
-          question: "1.1.a.1",
-          title: {
-            it: "Numero di lingue parlate in famiglia",
-            en: "Number of languages spoken in the family",
-            fu: "Numar di lenghis feveladis in famee",            
-          },
-        },
-        {
-          element: "chart",
-          title: {
-            it: "Competenze linguistiche autovalutate",
-            en: "Self-assessed language skills",
-            fu: "Competencis linguistichis autovalutadis",
-          },
-          question: "2.2.1",
-        },
-        {
-          element: "chart",
-          title: {
-            it: "A che età hai cominciato a parlare le lingue che conosci?",
-            en: "A che età hai cominciato a parlare le lingue che conosci?",
-            fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
-          }, 
-          question: "2.1.1",
-        },
-        {
-          element: "table",
-          title: {
-            it: "Valori medi delle competenze autovalutate",
-            en: "Average values of self-assessed skills",
-            fu: "Valôrs medis des competencis autovalutadis",
-          },
-          question: "2.2.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.b.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.b.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.b.3",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.b.4",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.c.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.c.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.c.3",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.c.4",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.1.c.5",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.a.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.a.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.a.3",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.b.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.b.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.2.b.3",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.3.a.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.3.a.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.3.b.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.3.b.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.4.1",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.4.2",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.4.3",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.4.4",
-        },
-        {
-          element: "chart",
-          //title: "Prova ...",
-          question: "1.4.5",
-        },
-        {
-          element: "preferred",
-          title: {
-            it: "Lingua scelta per la compilazione",
-            en: "Language chosen for filling out the questionnaire",
-            fu: "Lenghe sielte pe compilazion",
-          },
-        },
-        {
-          element: "preferred",
-          table: true,          
-        },
-      ],    /* Fine Report del questionario lungo */
     },
 
-    /* composizione del questionario breve e del suo report */
+    /* composizione del questionario breve */
     short: {
       name: {
         it: "breve",
@@ -916,8 +724,205 @@ const questionary: IQuestionary = {
           questions: [ "competences" ],
         },
       ],
+    },
+  },
+  
+  reports: {
+          /* Report del questionario lungo */
+          full: { elements: [
+            {
+              element: "title",
+              title: {
+                it: "Risultati aggregati",
+                en: "Aggregated results",
+                fu: "Risultâts agregâts",
+              },
+            },
+            {
+              element: "info",
+            },
+            {
+              element: "chart",
+              question: "1.1.a.1", 
+              title: {
+                it: "Nella mia famiglia si parla abitualmente",
+                en: "In my family, we habitually speak",
+                fu: "Inte mê famee pal solit si fevele",
+              },
+            },
+            {
+              element: "chart",
+              variant: "count",
+              question: "1.1.a.1",
+              title: {
+                it: "Numero di lingue parlate in famiglia",
+                en: "Number of languages spoken in the family",
+                fu: "Numar di lenghis feveladis in famee",            
+              },
+            },
+            {
+              element: "chart",
+              title: {
+                it: "Competenze linguistiche autovalutate",
+                en: "Self-assessed language skills",
+                fu: "Competencis linguistichis autovalutadis",
+              },
+              question: "2.2.1",
+            },
+            {
+              element: "chart",
+              title: {
+                it: "A che età hai cominciato a parlare le lingue che conosci?",
+                en: "A che età hai cominciato a parlare le lingue che conosci?",
+                fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+              }, 
+              question: "2.1.1",
+            },
+            {
+              element: "table",
+              title: {
+                it: "Valori medi delle competenze autovalutate",
+                en: "Average values of self-assessed skills",
+                fu: "Valôrs medis des competencis autovalutadis",
+              },
+              question: "2.2.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.b.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.b.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.b.3",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.b.4",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.c.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.c.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.c.3",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.c.4",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.1.c.5",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.a.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.a.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.a.3",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.b.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.b.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.2.b.3",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.3.a.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.3.a.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.3.b.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.3.b.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.4.1",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.4.2",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.4.3",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.4.4",
+            },
+            {
+              element: "chart",
+              //title: "Prova ...",
+              question: "1.4.5",
+            },
+            {
+              element: "preferred",
+              title: {
+                it: "Lingua scelta per la compilazione",
+                en: "Language chosen for filling out the questionnaire",
+                fu: "Lenghe sielte pe compilazion",
+              },
+            },
+            {
+              element: "preferred",
+              table: true,          
+            },
+          ],    /* Fine Report del questionario lungo */    
+        },
       /* Report del questionario breve */
-      report: [
+      short: { elements: [
         {
           element: "title",
           title: {
@@ -960,8 +965,7 @@ const questionary: IQuestionary = {
           element: "table",
           question: "competences",
         },
-      ]
-    } /* Fine composizione del questionario breve */
+      ]} /* Fine report del questionario breve */
   }
 }
 
@@ -1070,13 +1074,19 @@ export interface IQuestionary {
   forms: {
     [key: string]: IForm,
   },
+  reports: {
+    [key: string]: IReport,
+  }
 }
 
 export interface IForm {
   name: LocalizedString,
   intro: LocalizedString,
   elements: IFormElement[],
-  report: IReportElement[],
+}
+
+export interface IReport {
+  elements: IReportElement[],
 }
 
 export type IFormElement = IFormSection | IFormTitle | IFormQuestions | IFormNewPage
@@ -1104,6 +1114,9 @@ export interface IQuestion {
     type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age',
     question: LocalizedString,
     compulsory?: boolean,
+    // if specified, this question will be saved with this 
+    // code instead of the key in the questions object
+    code?: string, 
 }
 
 export interface ICompetenceValue extends LocalizedString {
