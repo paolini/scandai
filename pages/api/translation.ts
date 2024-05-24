@@ -22,9 +22,11 @@ export default async function handler(
         try {
             const translations = await Translation.find()
             const dict = await Dict.find()
+
+            // usa la traduzione in italiano come chiave
             const data = {
                 ...Object.fromEntries(dict.filter(d=>d.map).map(d => [d.map, {}])),
-                ...questionary.languages,
+                ...Object.fromEntries(Object.values(questionary.languages).map(l => [l.it, l])),
                 ...Object.fromEntries(translations.map((d:ITranslation) => [d.source,d.map])),
             }
             return res.status(200).json({ data })

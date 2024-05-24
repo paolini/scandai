@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-console.log('testing email')
+// console.log('testing email')
 
 function createTransporter() {
   const host = process.env.SMTP_HOST
