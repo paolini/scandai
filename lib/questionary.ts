@@ -303,6 +303,9 @@ const questionary: IQuestionary = {
         it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)",
         fu: "Cualis lenghis si doprìno in mût abituâl te tô famee? (tu puedis segnâ plui di une rispueste)", 
       },
+      // la risposta viene memorizzata con questo codice, 
+      // corrispondente alla prima domanda del questionario completo
+      code: "1.1.a.1", 
     },
     "friends": {
       type: "choose-language",
@@ -318,6 +321,7 @@ const questionary: IQuestionary = {
           compilando la tabella seguente. I livelli di
           competenza utilizzati sono: livello A (principiante), livello B (intermedio), livello C (avanzato)`,
       },
+      code: "2.2.1",
     },
     "1.1.a.1": {
       type: "choose-language",
@@ -728,7 +732,7 @@ const questionary: IQuestionary = {
   },
   
   reports: {
-          /* Report del questionario lungo */
+          /* Report completo */
           full: { elements: [
             {
               element: "title",
@@ -1009,9 +1013,10 @@ export function extractExtraLanguages(questions: string[], answers: {[key:string
   let extraLanguages: string[] = []
   const languageCodes = Object.keys(languages)
   for (const code of questions) {
+    const answer_code = questionary.questions[code]?.code || code
     const q = questionary.questions[code]
     if (q.type === 'choose-language') {
-      for (const l of answers[code]) {
+      for (const l of answers[answer_code]) {
         if (!extraLanguages.includes(l) && !languageCodes.includes(l)) {
           extraLanguages.push(l)
         }

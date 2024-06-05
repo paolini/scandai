@@ -24,23 +24,26 @@ function QuestionaryFormItem({ item, lang, questionary, answersState, extraLangu
   }) {
   switch (item.element) {
     case 'questions': return <>
-      { item.questions.map(code => 
-      <Question 
+      { item.questions
+      .map(code => {
+        const question = questionary.questions[code]
+        const answer_code:string = question.code || code
+      return <Question 
         lang={lang}
         key={code} 
-        question={questionary.questions[code]}
-        answer={value(answersState)[code]}
+        question={question}
+        answer={value(answersState)[answer_code]}
         questionary={questionary}
         extraLanguages={extraLanguages}
         setAnswer={(a: Answer|((_:Answer)=> Answer)) => update(answersState,
           (answers: IAnswers) => ({
             ...answers, 
-            [code]: typeof(a) === 'function' 
-              ? a(answers[code])
+            [answer_code]: typeof(a) === 'function' 
+              ? a(answers[answer_code])
               : a
             })
         )}
-      />) } </>
+      />}) } </>
     case 'section': return <h3>
         {trans(item.title, lang)}
       </h3>

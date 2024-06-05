@@ -34,7 +34,10 @@ export default function Questionary({langState, poll, form, answersState, mutate
   if (Object.keys(answers).length === 0) {
     console.log(`initializing answers: ${JSON.stringify(questionCodes)}`)
     set(answersState, Object.fromEntries(
-      questionCodes.map(code => [code, empty_answer(code)])))
+      questionCodes.map(code => {
+        const answer_code = questionary.questions[code]?.code || code
+        return [answer_code, empty_answer(code)]
+      })))
     return <div>Loading...</div>
   }
 
@@ -44,7 +47,8 @@ export default function Questionary({langState, poll, form, answersState, mutate
   const pageCompleted = page.every(item => {
     if (item.element === 'questions') {
       return item.questions.every(code => {
-        const answer = answers[code]
+        const answer_code = questionary.questions[code]?.code || code
+        const answer = answers[answer_code]
         const question = questionary.questions[code]
         assert(question, `question not found with code ${code}`)
         if (!question.compulsory) return true

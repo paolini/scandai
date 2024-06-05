@@ -31,7 +31,7 @@ export default async function handler(
             { $match },
             ...ENTRY_PIPELINE,
         ]
-        console.log('Entry pipeline', JSON.stringify(pipeline))
+        // console.log('Entry pipeline', JSON.stringify(pipeline))
         try {
             const data = await Entry.aggregate(pipeline)
             return res.status(200).json({ data, filter: $match })
