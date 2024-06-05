@@ -756,6 +756,15 @@ const questionary: IQuestionary = {
             },
             {
               element: "chart",
+              question: "friends", 
+              title: {
+                it: "Con gli amici parlo abitualmente",
+                en: "With my friends, we habitually speak",
+                fu: "Cui miei amis pal solit si fevele",
+              },
+            },
+            {
+              element: "chart",
               variant: "count",
               question: "1.1.a.1",
               title: {
