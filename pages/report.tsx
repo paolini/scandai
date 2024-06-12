@@ -244,7 +244,7 @@ function Filter({schoolIdState, cityState, schools, formState}:{
         </select> {}
         <select onChange={evt => set(formState,evt.target.value)}>
             <option value=''>{_("tutti i questionari")}</option>
-            {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{form}</option>)}
+            {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
         </select>
     </>
 }

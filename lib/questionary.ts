@@ -551,7 +551,7 @@ const questionary: IQuestionary = {
         en: 'full',
         fu: 'complete',
       },
-      name_plural: {
+      namePlural: {
         it: 'complete',
         en: 'full',
         fu: 'completis',
@@ -683,6 +683,11 @@ const questionary: IQuestionary = {
         it: "breve",
         en: "short",
         fu: "curte",
+      },
+      namePlural: {
+        it: "brevi",
+        en: "short",
+        fu: "curtis",
       },
       intro: {
         it: `Cara studentessa / Caro studente, 
@@ -1100,6 +1105,7 @@ export interface IQuestionary {
 
 export interface IForm {
   name: LocalizedString,
+  namePlural: LocalizedString,
   intro: LocalizedString,
   elements: IFormElement[],
 }
