@@ -23,6 +23,9 @@ export default async function handler(
         if (query.city && !Array.isArray(query.city)) {
             $match["poll.school.city"] = query.city
         }
+        if (query.form && !Array.isArray(query.form)) {
+            $match["poll.form"] = query.form
+        }
 
         let pipeline: any = [
             {$lookup: {

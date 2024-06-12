@@ -93,23 +93,25 @@ type T = (s:string) => string
 type Filter = {
     schoolId: string,
     city: string,
+    form: string,
 }
 
 export default function Report() {
     const user = useProfile()
     const router = useRouter()
-    const form = router.query.form || "full"
+    const report = router.query.report || "full" 
     const schoolsQuery = useSchools()
     const translationQuery = useTranslation()
     const searchParams = useSearchParams()
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
+    const formState = useState(searchParams.get('form') || '')
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
     console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
-    if (Array.isArray(form)) return <Error>{_("richiesta non valida")}</Error>
+    if (Array.isArray(report)) return <Error>{_("richiesta non valida")}</Error>
 
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
     if (schoolsQuery.isLoading) return <><Loading /><br/>__ <pre>
@@ -128,24 +130,30 @@ export default function Report() {
     
     return <Page header={!!user}>
         <div className="container noPrint">
-            <Filter schoolIdState={schoolIdState} cityState={cityState} schools={schoolsQuery.data.data}/>
+            <Filter 
+                schoolIdState={schoolIdState} 
+                cityState={cityState} 
+                formState={formState} 
+                schools={schoolsQuery.data.data} 
+            />
         </div>
         <Stats 
             filter={{
                 schoolId: value(schoolIdState),
                 city: value(cityState),
+                form: value(formState),
             }}
             pollIdsState={pollIdsState}
-            form={form} 
+            report={report} 
             translations={translations}
         />
     </Page>
 
 }
 
-function Stats({filter, form, translations, pollIdsState}:{
+function Stats({filter, report, translations, pollIdsState}:{
     filter: Filter,
-    form: string,
+    report: string,
     translations: IGetTranslation,
     pollIdsState: State<string[]|undefined>,
 }) {
@@ -163,6 +171,7 @@ function Stats({filter, form, translations, pollIdsState}:{
     const print = useReactToPrint({
         content: () => ref.current,
     })
+    const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
     if (statsQuery.isLoading) return <Loading />
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
@@ -189,7 +198,7 @@ function Stats({filter, form, translations, pollIdsState}:{
             <style>
                 {getPageMargins()}
             </style>
-            { questionary.reports[form].elements.map(
+            { questionary.reports[report].elements.map(
                 (item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState}/>
             )}
         </div>
@@ -207,10 +216,11 @@ function Stats({filter, form, translations, pollIdsState}:{
         }    
 }
 
-function Filter({schoolIdState, cityState, schools}:{
+function Filter({schoolIdState, cityState, schools, formState}:{
     schoolIdState: State<string>,
     cityState: State<string>,
-    schools: IGetSchool[]
+    schools: IGetSchool[],
+    formState: State<string>,
 }) {
     const city = value(cityState)
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
@@ -220,8 +230,7 @@ function Filter({schoolIdState, cityState, schools}:{
         : schools).sort((a,b) => b.pollCount-a.pollCount)
     const _ = useTrans()
     return <>
-        { //JSON.stringify({schools,cities})
-        }
+        { /*JSON.stringify({schools,cities})*/ }
         {_("Filtra")}: <select onChange={evt => {
             set(schoolIdState,'')
             set(cityState,evt.target.value)
@@ -232,6 +241,10 @@ function Filter({schoolIdState, cityState, schools}:{
         <select onChange={evt => set(schoolIdState,evt.target.value)}>
             <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
+        </select> {}
+        <select onChange={evt => set(formState,evt.target.value)}>
+            <option value=''>{_("tutti i questionari")}</option>
+            {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{form}</option>)}
         </select>
     </>
 }
@@ -272,9 +285,9 @@ function ReportItem({ stats, item, t, pollIdsState}: {
 function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, JSX.Element|null] {
     const _ = useTrans()
     const question = stats.questions[item.question]
-    if (!question) return [null, <Error key={item.question}>
-        {_("Domanda non trovata")} &lt;{item.question}&gt;
-    </Error>]
+    if (!question) {
+        return [null, <></>] // non ci sono statistiche per questa domanda
+    }
     if (question.type === 'error') return [null, <Error key={item.question}>
         {_("Errore:")} {question.error}
     </Error>]
