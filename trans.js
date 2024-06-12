@@ -5,8 +5,6 @@ const fs = require('fs');
 
 const translations = require("./lib/translations");
 
-console.log("TRANS!");
-
 main()
 
 function main() {
