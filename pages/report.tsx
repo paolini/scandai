@@ -102,10 +102,6 @@ export default function Report() {
     const report = router.query.report || "full" 
     const schoolsQuery = useSchools()
     const translationQuery = useTranslation()
-    const searchParams = useSearchParams()
-    const schoolIdState = useState(searchParams.get('school') || '')
-    const cityState = useState(searchParams.get('city')|| '')
-    const formState = useState(searchParams.get('form') || '')
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
@@ -130,34 +126,27 @@ export default function Report() {
     
     return <Page header={!!user}>
         <div className="container noPrint">
-            <Filter 
-                schoolIdState={schoolIdState} 
-                cityState={cityState} 
-                formState={formState} 
-                schools={schoolsQuery.data.data} 
-            />
         </div>
         <Stats 
-            filter={{
-                schoolId: value(schoolIdState),
-                city: value(cityState),
-                form: value(formState),
-            }}
             pollIdsState={pollIdsState}
             report={report} 
             translations={translations}
+            schools={schoolsQuery.data.data}
         />
     </Page>
 
 }
 
-function Stats({filter, report, translations, pollIdsState}:{
-    filter: Filter,
+function Stats({report, translations, pollIdsState, schools}:{
     report: string,
     translations: IGetTranslation,
     pollIdsState: State<string[]|undefined>,
+    schools: IGetSchool[],
 }) {
-//    const user = useProfile()
+    const searchParams = useSearchParams()
+    const schoolIdState = useState(searchParams.get('school') || '')
+    const cityState = useState(searchParams.get('city')|| '')
+    const formState = useState(searchParams.get('form') || '')
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
@@ -165,7 +154,9 @@ function Stats({filter, report, translations, pollIdsState}:{
     const pollQuery = pollIds === undefined ? {} : {poll: pollIds.join(',')}
     const statsQuery = useStats({
         ...router.query,
-        ...filter,
+        schoolId: value(schoolIdState),
+        city: value(cityState),
+        form: value(formState),
         ...pollQuery,
     })
     const print = useReactToPrint({
@@ -180,12 +171,14 @@ function Stats({filter, report, translations, pollIdsState}:{
         ...statsQuery.data.data,
     }    
 
-    if (stats.entriesCount === 0) return <Error>
-        {_("Impossibile fare il report: nessun questionario compilato")}
-    </Error>
-
     return <>
         {/*JSON.stringify({filter})*/}
+        <Filter 
+                schoolIdState={schoolIdState} 
+                cityState={cityState} 
+                formState={formState} 
+                schools={schools} 
+            />
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
@@ -194,14 +187,16 @@ function Stats({filter, report, translations, pollIdsState}:{
                 {_("visualizza questionario")}
             </Link>
         </div>
-        <div ref={ref}>
+        { stats.entriesCount === 0 
+        ? <Error>{_("Impossibile fare il report: nessun questionario compilato")}</Error>
+        : <div ref={ref}>
             <style>
                 {getPageMargins()}
             </style>
             { questionary.reports[report].elements.map(
                 (item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState}/>
             )}
-        </div>
+        </div> }
     </>
 
     /**

@@ -1,6 +1,7 @@
 import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
 import { IGetPoll } from '@/models/Poll'
+import { IGetSchool } from '@/models/School'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
 import { assert } from '@/lib/assert'
@@ -119,6 +120,7 @@ export default async function handler(
 export interface IStats {
     questions: {[key: string]: IQuestionStat},
     polls: IGetPoll[],
+    schools: IGetSchool[],
     entriesCount: number,
     preferredLanguageCount: IPreferredLanguageCount,
 }
@@ -239,6 +241,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         ...(await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]),
     ])
 
+    const schoolDict: {[key: string]: IGetSchool} = {}
+
     function langMap(lang: string) {
         const f = questionary.languages[lang]
         if (f) return f.it // una delle cinque lingue base
@@ -259,6 +263,15 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
                     entriesCount: 1,
                 }
             } else pollDict[poll_id].entriesCount ++
+            if (e.poll.school) {
+                const school_id = e.poll.school._id.toString()
+                if (!schoolDict[school_id]) {
+                    schoolDict[school_id] = {
+                        ...e.poll.school,
+                        pollCount: 1,
+                    }
+                } else schoolDict[school_id].pollCount ++
+            }
         }
         const preferredLanguage = e.lang
         preferredLanguageCount._total ++
@@ -434,6 +447,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         polls: Object.values(pollDict),
         entriesCount,
         preferredLanguageCount,
+        schools: Object.values(schoolDict),
     }
 }
 
