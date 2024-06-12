@@ -92,7 +92,7 @@ function School({ school, mutate } : {
                 </Card.Text>
             </Card.Body>
             <Card.Footer>
-                <Button onClick={() => router.push(reportUrl("full"))}>
+                <Button onClick={() => router.push(reportUrl())}>
                     {_("visualizza")}
                 </Button> 
             </Card.Footer>
@@ -165,13 +165,13 @@ function School({ school, mutate } : {
         router.push('/school')
     }
 
-    function reportUrl(form: string) {
-        return `/report?form=${form}&school_id=${school._id}`
+    function reportUrl() {
+        return `/report?school_id=${school._id}`
     }
 
     function reportAbsoluteUrl(form: string) {
         const secretPart = school.reportSecret ? `&schoolSecret=${school.reportSecret}` : ''
-        return `${window.location.origin}${reportUrl(form)}${secretPart}`
+        return `${window.location.origin}${reportUrl()}${secretPart}`
     }
 
     function shareReport(form: string) {
