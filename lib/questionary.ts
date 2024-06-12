@@ -551,6 +551,11 @@ const questionary: IQuestionary = {
         en: 'full',
         fu: 'complete',
       },
+      name_plural: {
+        it: 'complete',
+        en: 'full',
+        fu: 'completis',
+      },
       intro: {
         it: `Cara studentessa / Caro studente, 
         chiediamo la tua gentile collaborazione per rispondere alle seguenti domande 
