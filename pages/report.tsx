@@ -163,6 +163,7 @@ function Stats({report, translations, pollIdsState, schools}:{
         content: () => ref.current,
     })
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
+    const showFilter = !router.query.poll
 
     if (statsQuery.isLoading) return <Loading />
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
@@ -173,12 +174,11 @@ function Stats({report, translations, pollIdsState, schools}:{
 
     return <>
         {/*JSON.stringify({filter})*/}
-        <Filter 
+        { showFilter && <Filter 
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 
-                schools={schools} 
-            />
+                schools={schools} /> }
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
