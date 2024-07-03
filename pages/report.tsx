@@ -226,18 +226,18 @@ function Filter({schoolIdState, cityState, schools, formState}:{
     const _ = useTrans()
     return <>
         { /*JSON.stringify({schools,cities})*/ }
-        {_("Filtra")}: <select onChange={evt => {
+        {_("Filtra")}: <select value={value(cityState)} onChange={evt => {
             set(schoolIdState,'')
             set(cityState,evt.target.value)
         }}>
             <option value=''>{_("tutte le città")}</option>
             {cities.map(city => <option key={city} value={city}>{_.locale === 'fu' ? (map_city_fu[city] || city) : city}</option>)}
         </select> {}
-        <select onChange={evt => set(schoolIdState,evt.target.value)}>
+        <select value={value(schoolIdState)} onChange={evt => set(schoolIdState,evt.target.value)}>
             <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
         </select> {}
-        <select onChange={evt => set(formState,evt.target.value)}>
+        <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
             <option value=''>{_("tutti i questionari")}</option>
             {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
         </select>
