@@ -30,6 +30,13 @@ export default async function handler(
         if (query.class && !Array.isArray(query.class)) {
             $match["poll.year"] = query.class
         }
+        if (query.year && !Array.isArray(query.year)) {
+            const n = parseInt(query.year)
+            $match["poll.createdAt"] = {
+                $gte: new Date(`${n}-06-01`),
+                $lt: new Date(`${n+1}-06-01`),
+            }
+        }
 
         let pipeline: any = [
             {$lookup: {

@@ -148,6 +148,7 @@ function Stats({report, translations, pollIdsState, schools}:{
     const cityState = useState(searchParams.get('city')|| '')
     const formState = useState(searchParams.get('form') || '')
     const classState = useState(searchParams.get('class') || '')
+    const yearState = useState(searchParams.get('year') || '2024')
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
@@ -159,6 +160,7 @@ function Stats({report, translations, pollIdsState, schools}:{
         city: value(cityState),
         form: value(formState),
         class: value(classState),
+        year: value(yearState),
         ...pollQuery,
     })
     const print = useReactToPrint({
@@ -174,13 +176,11 @@ function Stats({report, translations, pollIdsState, schools}:{
         ...statsQuery.data.data,
     }    
 
-
     const classes = true ? ['1','2','3','4','5'] : stats.polls
         .map(p => p.year)
         .filter((v,i,a) => a.indexOf(v)===i)
         .filter(c=> c)
         .sort()
-
 
     return <>
         {/*JSON.stringify({filter})*/}
@@ -189,6 +189,7 @@ function Stats({report, translations, pollIdsState, schools}:{
                 cityState={cityState} 
                 formState={formState} 
                 classState={classState}
+                yearState={yearState}
                 schools={schools} 
                 classes={classes}
                 /> }
@@ -224,11 +225,12 @@ function Stats({report, translations, pollIdsState, schools}:{
         }    
 }
 
-function Filter({schoolIdState, cityState, formState, classState, schools, classes}:{
+function Filter({schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
     schoolIdState: State<string>,
     cityState: State<string>,
     formState: State<string>,
     classState: State<string>,
+    yearState: State<string>,
     schools: IGetSchool[],
     classes: string[],
 }) {
@@ -264,6 +266,10 @@ function Filter({schoolIdState, cityState, formState, classState, schools, class
                 '3': 'terze',
                 '4': 'quarte',
                 '5': 'quinte' }[c]}</option>)}
+        </select> {}
+        <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
+            <option value=''>{_("tutti gli anni")}</option>
+            {[2023,2024].map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
         </select>
     </>
 }
