@@ -27,6 +27,9 @@ export default async function handler(
         if (query.form && !Array.isArray(query.form)) {
             $match["poll.form"] = query.form
         }
+        if (query.class && !Array.isArray(query.class)) {
+            $match["poll.year"] = query.class
+        }
 
         let pipeline: any = [
             {$lookup: {

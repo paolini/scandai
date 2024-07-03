@@ -147,6 +147,7 @@ function Stats({report, translations, pollIdsState, schools}:{
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
     const formState = useState(searchParams.get('form') || '')
+    const classState = useState(searchParams.get('class') || '')
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
@@ -157,6 +158,7 @@ function Stats({report, translations, pollIdsState, schools}:{
         schoolId: value(schoolIdState),
         city: value(cityState),
         form: value(formState),
+        class: value(classState),
         ...pollQuery,
     })
     const print = useReactToPrint({
@@ -172,13 +174,24 @@ function Stats({report, translations, pollIdsState, schools}:{
         ...statsQuery.data.data,
     }    
 
+
+    const classes = true ? ['1','2','3','4','5'] : stats.polls
+        .map(p => p.year)
+        .filter((v,i,a) => a.indexOf(v)===i)
+        .filter(c=> c)
+        .sort()
+
+
     return <>
         {/*JSON.stringify({filter})*/}
         { showFilter && <Filter 
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 
-                schools={schools} /> }
+                classState={classState}
+                schools={schools} 
+                classes={classes}
+                /> }
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
@@ -211,11 +224,13 @@ function Stats({report, translations, pollIdsState, schools}:{
         }    
 }
 
-function Filter({schoolIdState, cityState, schools, formState}:{
+function Filter({schoolIdState, cityState, formState, classState, schools, classes}:{
     schoolIdState: State<string>,
     cityState: State<string>,
-    schools: IGetSchool[],
     formState: State<string>,
+    classState: State<string>,
+    schools: IGetSchool[],
+    classes: string[],
 }) {
     const city = value(cityState)
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
@@ -240,6 +255,15 @@ function Filter({schoolIdState, cityState, schools, formState}:{
         <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
             <option value=''>{_("tutti i questionari")}</option>
             {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
+        </select> {}
+        <select value={value(classState)} onChange={evt => set(classState,evt.target.value)}>
+            <option value=''>{_("tutte le classi")}</option>
+            {classes.map(c => <option key={c} value={c}>classi {{
+                '1': 'prime', 
+                '2': 'seconde', 
+                '3': 'terze',
+                '4': 'quarte',
+                '5': 'quinte' }[c]}</option>)}
         </select>
     </>
 }
