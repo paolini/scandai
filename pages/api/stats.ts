@@ -18,6 +18,8 @@ export default async function handler(
 
         // console.log(JSON.stringify({query}))
 
+        $match["poll.closed"] = true
+
         if (query.schoolId && !Array.isArray(query.schoolId)) {
             $match["poll.school._id"] = new ObjectId(query.schoolId)
         }

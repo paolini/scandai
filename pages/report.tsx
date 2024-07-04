@@ -22,6 +22,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 import Link from 'next/link'
+import { formatDate } from '@/lib/utils'
 
 import { useStats, useProfile, useTranslation, useSchools } from '@/lib/api'
 import { 
@@ -260,12 +261,12 @@ function Filter({schoolIdState, cityState, formState, classState, yearState, sch
         </select> {}
         <select value={value(classState)} onChange={evt => set(classState,evt.target.value)}>
             <option value=''>{_("tutte le classi")}</option>
-            {classes.map(c => <option key={c} value={c}>classi {{
-                '1': 'prime', 
-                '2': 'seconde', 
-                '3': 'terze',
-                '4': 'quarte',
-                '5': 'quinte' }[c]}</option>)}
+            {classes.map(c => <option key={c} value={c}>{{
+                '1': _("classi prime"), 
+                '2': _("classi seconde"), 
+                '3': _("classi terze"),
+                '4': _("classi quarte"),
+                '5': _("classi quinte") }[c]}</option>)}
         </select> {}
         <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
             <option value=''>{_("tutti gli anni")}</option>
@@ -397,6 +398,8 @@ function ListClasses({ stats, title, pollIdsState}: {
                     <th>{_("città")}</th>
                     <th>{_("classe")}</th>
                     <th>{_("partecipanti")}</th>
+                    <th>{_("variante")}</th>
+                    <th>{_("data")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -414,7 +417,13 @@ function ListClasses({ stats, title, pollIdsState}: {
                         {c?.year}&nbsp;{c.class}
                     </td>
                     <td className={selected}>
-                    {c?.entriesCount}
+                        {c?.entriesCount}
+                    </td>
+                    <td className={selected}>
+                        { questionary.forms[c?.form]?.name[_.locale] }
+                    </td>
+                    <td className={selected}>
+                        {formatDate(c?.date)}
                     </td>
                 </tr>})
         }   
