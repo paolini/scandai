@@ -50,7 +50,7 @@ function Home({config}:{config:Config}) {
   return <Page>
     <Title />
     {!profile.name && <SetUserName profile={profile} mutate={profileQuery.mutate}/>}
-    <p>{_('Benvenuto %!', profile.name || profile.username || profile.email)}</p>
+    <p>{_("Benvenuto %!", profile.name || profile.username || profile.email)}</p>
     <Polls />  
   </Page>
 }
