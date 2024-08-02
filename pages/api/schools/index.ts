@@ -14,16 +14,11 @@ export default async function handler(
         }
         if (req.method === 'GET') {
             const schools = await School.aggregate([
-                { $lookup: { 
-                    from: 'polls', 
-                    localField: '_id', 
-                    foreignField: 'school_id', 
-                    as: 'polls' } 
-                },
-                { $addFields: {
-                    pollCount: {$size: "$polls"}}
-                },
-                { $project: {polls: 0}
+                { $project: {
+                    name: 1,
+                    city: 1,
+                    city_fu: 1,
+                }
                 },
             ])
             return res.json({data: schools})

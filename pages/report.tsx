@@ -106,7 +106,7 @@ export default function Report() {
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
 
-    console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
+    // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
     if (Array.isArray(report)) return <Error>{_("richiesta non valida")}</Error>
 
@@ -183,15 +183,25 @@ function Stats({report, translations, pollIdsState, schools}:{
         .filter(c=> c)
         .sort()
 
+    const schoolsWithCounts = schools.map(school => {
+        const statSchool = stats.schools.filter(s => s._id === school._id)[0]
+        let pollCount = 0
+        if (statSchool) pollCount += statSchool.pollCount
+        return {
+            ...school,
+            pollCount,
+        }
+    })
+
     return <>
-        {/*JSON.stringify({filter})*/}
+        { /*JSON.stringify({stats_schools: stats.schools})*/ }
         { showFilter && <Filter 
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 
                 classState={classState}
                 yearState={yearState}
-                schools={schools} 
+                schools={schoolsWithCounts} 
                 classes={classes}
                 /> }
         <div className="container noPrint">
@@ -237,27 +247,34 @@ function Filter({schoolIdState, cityState, formState, classState, yearState, sch
 }) {
     const city = value(cityState)
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
-    const cities = Object.keys(map_city_fu).sort()
+    const citiesInfo = Object.keys(map_city_fu).map(city => {
+        let pollCount = 0
+        for (const school of schools.filter(school => school.city===city)) {
+            pollCount += school.pollCount
+        }
+        return {pollCount, city}
+    }).sort((a,b) => b.pollCount-a.pollCount)
     const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
         : schools).sort((a,b) => b.pollCount-a.pollCount)
     const _ = useTrans()
     return <>
-        { /*JSON.stringify({schools,cities})*/ }
-        {_("Filtra")}: <select value={value(cityState)} onChange={evt => {
+        { /*JSON.stringify({schools,citiesInfo})*/ }
+        {_("Filtra")}: {}
+        <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
+            <option value=''>{_("tutti gli anni")}</option>
+            {[2023,2024].map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
+        </select> {}
+        <select value={value(cityState)} onChange={evt => {
             set(schoolIdState,'')
             set(cityState,evt.target.value)
         }}>
             <option value=''>{_("tutte le città")}</option>
-            {cities.map(city => <option key={city} value={city}>{_.locale === 'fu' ? (map_city_fu[city] || city) : city}</option>)}
+            {citiesInfo.map(info => <option key={info.city} value={info.city}>{_.locale === 'fu' ? (map_city_fu[info.city] || info.city) : info.city}</option>)}
         </select> {}
         <select value={value(schoolIdState)} onChange={evt => set(schoolIdState,evt.target.value)}>
             <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
-        </select> {}
-        <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
-            <option value=''>{_("tutti i questionari")}</option>
-            {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
         </select> {}
         <select value={value(classState)} onChange={evt => set(classState,evt.target.value)}>
             <option value=''>{_("tutte le classi")}</option>
@@ -268,10 +285,10 @@ function Filter({schoolIdState, cityState, formState, classState, yearState, sch
                 '4': _("classi quarte"),
                 '5': _("classi quinte") }[c]}</option>)}
         </select> {}
-        <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
-            <option value=''>{_("tutti gli anni")}</option>
-            {[2023,2024].map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
-        </select>
+        <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
+            <option value=''>{_("tutti i questionari")}</option>
+            {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
+        </select> {}
     </>
 }
 

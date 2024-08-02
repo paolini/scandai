@@ -34,9 +34,10 @@ export default async function handler(
         }
         if (query.year && !Array.isArray(query.year)) {
             const n = parseInt(query.year)
+            // l'anno scolastico finisce con l'inizio di luglio
             $match["poll.createdAt"] = {
-                $gte: new Date(`${n}-06-01`),
-                $lt: new Date(`${n+1}-06-01`),
+                $gte: new Date(`${n}-07-01`),
+                $lt: new Date(`${n+1}-07-01`),
             }
         }
 
@@ -116,7 +117,7 @@ export default async function handler(
             }
         }
 
-        // console.log(`pipeline: ${JSON.stringify(pipeline)}`)
+        console.log(`pipeline: ${JSON.stringify(pipeline)}`)
 
         try {
             const entries = await Entry.aggregate(pipeline)
@@ -267,6 +268,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
     let questions: {[key: string]: IQuestionStat} = {}
     // populate questions with all aggregate statistics
     for (const e of entries) {
+        console.log(`entry ${e._id} ${e.poll?.school?.name}`)
         if (e.poll) {
             const poll_id = e.poll._id.toString()
             if (!pollDict[poll_id]) {
@@ -425,6 +427,8 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         })
     }
     
+    console.log(`SchoolDict: ${JSON.stringify(schoolDict,null,2)}`)
+
     // sort counts by numbers
     // reduce counts to 10
     // aggregating all counts > 10 in the last one
