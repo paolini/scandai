@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 import School from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
+import { yearMatch } from '../stats'
 
 // const delay = (ms:number) => new Promise(res => setTimeout(res, ms));
 
@@ -13,12 +14,29 @@ export default async function handler(
             return res.status(401).json({error: 'not authenticated'})
         }
         if (req.method === 'GET') {
+            const year = req.query.year && !Array.isArray(req.query.year) && parseInt(req.query.year)
+            const pipeline = []
+            if (year) {
+                pipeline.push({$match: {"createdAt": yearMatch(year)}})
+            }
             const schools = await School.aggregate([
+                { $lookup: { 
+                    from: 'polls', 
+                    localField: '_id', 
+                    foreignField: 'school_id', 
+                    as: 'polls', 
+                    pipeline,
+                } 
+                },
+                { $addFields: {
+                    pollCount: {$size: "$polls"}}
+                },
                 { $project: {
                     name: 1,
                     city: 1,
                     city_fu: 1,
-                }
+                    pollCount: 1
+                    }
                 },
             ])
             return res.json({data: schools})

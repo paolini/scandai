@@ -9,6 +9,14 @@ import { ObjectId } from 'mongodb'
 
 import getSessionUser from '@/lib/getSessionUser'
 
+export function yearMatch(n: number) {
+    // l'anno scolastico finisce con l'inizio di luglio
+    return {
+        $gte: new Date(`${n}-07-01`),
+        $lt: new Date(`${n+1}-07-01`),
+    }
+}
+
 export default async function handler(
     req: NextApiRequest, 
     res: NextApiResponse) {
@@ -34,11 +42,7 @@ export default async function handler(
         }
         if (query.year && !Array.isArray(query.year)) {
             const n = parseInt(query.year)
-            // l'anno scolastico finisce con l'inizio di luglio
-            $match["poll.createdAt"] = {
-                $gte: new Date(`${n}-07-01`),
-                $lt: new Date(`${n+1}-07-01`),
-            }
+            $match["poll.createdAt"] = yearMatch(n)
         }
 
         let pipeline: any = [
@@ -117,7 +121,7 @@ export default async function handler(
             }
         }
 
-        console.log(`pipeline: ${JSON.stringify(pipeline)}`)
+        // console.log(`pipeline: ${JSON.stringify(pipeline)}`)
 
         try {
             const entries = await Entry.aggregate(pipeline)

@@ -126,8 +126,8 @@ export async function deleteUser(user: IGetUser) {
     return await remove('users', user)
 }
 
-export function useSchools() {
-    return useIndex<IGetSchool[]>('schools')
+export function useSchools(year: string | undefined) {
+    return useIndex<IGetSchool[]>('schools', year ? {year} : {})
 }
 
 export function useSchool(id_: string | null) {

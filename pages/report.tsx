@@ -98,10 +98,12 @@ type Filter = {
 }
 
 export default function Report() {
+    const searchParams = useSearchParams()
     const user = useProfile()
     const router = useRouter()
-    const report = router.query.report || "full" 
-    const schoolsQuery = useSchools()
+    const report = router.query.report || "full"
+    const yearState = useState(searchParams.get('year') || '2024')
+    const schoolsQuery = useSchools(value(yearState))
     const translationQuery = useTranslation()
     const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
@@ -133,23 +135,24 @@ export default function Report() {
             report={report} 
             translations={translations}
             schools={schoolsQuery.data.data}
+            yearState={yearState}
         />
     </Page>
 
 }
 
-function Stats({report, translations, pollIdsState, schools}:{
+function Stats({report, translations, pollIdsState, schools, yearState}:{
     report: string,
     translations: IGetTranslation,
     pollIdsState: State<string[]|undefined>,
     schools: IGetSchool[],
+    yearState: State<string>,
 }) {
     const searchParams = useSearchParams()
     const schoolIdState = useState(searchParams.get('school') || '')
     const cityState = useState(searchParams.get('city')|| '')
     const formState = useState(searchParams.get('form') || '')
     const classState = useState(searchParams.get('class') || '')
-    const yearState = useState(searchParams.get('year') || '2024')
     const router = useRouter()
     const _ = useTrans()
     const ref = useRef(null)
@@ -183,16 +186,6 @@ function Stats({report, translations, pollIdsState, schools}:{
         .filter(c=> c)
         .sort()
 
-    const schoolsWithCounts = schools.map(school => {
-        const statSchool = stats.schools.filter(s => s._id === school._id)[0]
-        let pollCount = 0
-        if (statSchool) pollCount += statSchool.pollCount
-        return {
-            ...school,
-            pollCount,
-        }
-    })
-
     return <>
         { /*JSON.stringify({stats_schools: stats.schools})*/ }
         { showFilter && <Filter 
@@ -201,7 +194,7 @@ function Stats({report, translations, pollIdsState, schools}:{
                 formState={formState} 
                 classState={classState}
                 yearState={yearState}
-                schools={schoolsWithCounts} 
+                schools={schools}
                 classes={classes}
                 /> }
         <div className="container noPrint">
