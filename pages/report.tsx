@@ -1,4 +1,4 @@
-import { useRef, CSSProperties, ReactNode, useState } from "react"
+import { useRef, CSSProperties, ReactNode, useState, ReactElement } from "react"
 import { useRouter } from 'next/router'
 import { useSearchParams } from "next/navigation"
 import {
@@ -27,6 +27,7 @@ import { formatDate } from '@/lib/utils'
 import { useStats, useProfile, useTranslation, useSchools } from '@/lib/api'
 import { 
     IStats, 
+    IStatsFilters,
     IQuestionStat,
     IChooseLanguageQuestionStat, 
     IMapLanguageToCompetenceQuestionStat, 
@@ -188,7 +189,11 @@ function Stats({report, translations, pollIdsState, schools, yearState}:{
 
     return <>
         { /*JSON.stringify({stats_schools: stats.schools})*/ }
-        { showFilter && <Filter 
+        { showFilter && <div style={{
+            paddingBottom:"1em",
+            paddingTop:"1em",
+        }}>
+            <Filter 
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 
@@ -196,7 +201,7 @@ function Stats({report, translations, pollIdsState, schools, yearState}:{
                 yearState={yearState}
                 schools={schools}
                 classes={classes}
-                /> }
+                /></div> }
         <div className="container noPrint">
             <Button onClick={print} style={{float:"right"}}>
                 {_("stampa")}
@@ -347,7 +352,7 @@ function Item({title, small, children}: {
     }) {    
     return <div>
         <Title title={title} />
-        <div className="my-4" style={{maxWidth: small ? 400 : 640}}>
+        <div className="mb-5" style={{maxWidth: small ? 400 : 640}}>
         { children }
         </div>
     </div>
@@ -369,6 +374,24 @@ function CompetenceLegend({title}:{
     </Item>
 }
 
+function ListFilters({stats}:{
+    stats: IStats,
+}) {
+    const _ = useTrans()
+    const filters = stats?.filters
+    const entries: [string, ReactElement][] = []
+    if (!filters) return null
+
+    if (filters.year) entries.push(["year", <>{_("anno scolastico")}: <b>{filters.year}/{filters.year + 1}</b></>])
+    if (filters.city) entries.push(["city", <>{_("città")}: <b>{filters.city}</b></>])
+    if (filters.school) entries.push(["school", <>{_("scuola")}: <b>{stats.schools.filter(school => school._id === filters.school)[0].name}</b></>])
+    if (filters.class) entries.push(["class", <>{_("classe")}: <b>{filters.class}</b></>])
+    if (filters.form) entries.push(["form", <>{_("fotografia")}: <b>{questionary.forms[filters.form].name[_.locale]}</b></>])
+    return <div className="indent">
+        {entries.map(([key,elem],i) => <div key={key}>{elem}</div>)}
+    </div>
+}
+
 function ListClasses({ stats, title, pollIdsState}: {
     stats: IStats,
     title?: string,
@@ -383,6 +406,8 @@ function ListClasses({ stats, title, pollIdsState}: {
     const selectedPollIdsState = useState<string[]>([])
 
     if (!isOpen) return <Item title={title}>
+        <ListFilters stats={stats}/>
+        <br />
         {_("classi")}: <b>{stats.polls.length}</b>, {}
         {_("partecipanti")}: <b>{stats.entriesCount}</b> {}
         <span className="noPrint">
@@ -393,6 +418,7 @@ function ListClasses({ stats, title, pollIdsState}: {
     </Item>
 
     return <Item title={title}>
+        <ListFilters stats={stats}/>
         <div className="noPrint">
         { !isShort && 
             <Button className="noPrint" onClick={() => setOpen(false)}>

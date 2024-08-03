@@ -1,3 +1,21 @@
 .count {
     font-size: 0.5em;
 }
+
+.border {
+    border: 2px solid #000;
+}
+
+.indent {
+    padding-left: 0.5em;
+}
+
+.admin {
+    background-color: #f7fa4f;
+    border-radius: 5px;
+}
+
+.superadmin {
+    background-color: #fb7d6f;
+    border-radius: 5px;
+}

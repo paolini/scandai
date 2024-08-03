@@ -23,6 +23,7 @@ export default async function handler(
         const user = await getSessionUser(req)
         const query = req.query
         const $match: any = {}
+        const filters: any = {}
 
         // console.log(JSON.stringify({query}))
 
@@ -30,19 +31,24 @@ export default async function handler(
 
         if (query.schoolId && !Array.isArray(query.schoolId)) {
             $match["poll.school._id"] = new ObjectId(query.schoolId)
+            filters.school = query.schoolId
         }
         if (query.city && !Array.isArray(query.city)) {
             $match["poll.school.city"] = query.city
+            filters.city = query.city
         }
         if (query.form && !Array.isArray(query.form)) {
             $match["poll.form"] = query.form
+            filters.form = query.form
         }
         if (query.class && !Array.isArray(query.class)) {
             $match["poll.year"] = query.class
+            filters.class = query.class
         }
         if (query.year && !Array.isArray(query.year)) {
             const n = parseInt(query.year)
             $match["poll.createdAt"] = yearMatch(n)
+            filters.year = n
         }
 
         let pipeline: any = [
@@ -125,7 +131,7 @@ export default async function handler(
 
         try {
             const entries = await Entry.aggregate(pipeline)
-            const data: IStats = await aggregate(entries)
+            const data: IStats = await aggregate(entries, filters)
             return res.status(200).json({ data })
         } catch (error) {
             console.error(error)
@@ -134,12 +140,21 @@ export default async function handler(
         }
 }
 
+export interface IStatsFilters {
+    city?: string,
+    school?: string,
+    form?: string,
+    class?: string,
+    year?: number,
+}
+
 export interface IStats {
     questions: {[key: string]: IQuestionStat},
     polls: IGetPoll[],
     schools: IGetSchool[],
     entriesCount: number,
     preferredLanguageCount: IPreferredLanguageCount,
+    filters: IStatsFilters
 }
 
 export type IPreferredLanguageCount = {
@@ -216,7 +231,7 @@ export interface IEntryWithPoll extends IEntry {
     poll: IGetPoll,
 }
 
-async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
+async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Promise<IStats> {
     const questionsMap = questionary.questions
     let baseLanguages = Object.keys(questionary.languages)
 
@@ -468,6 +483,7 @@ async function aggregate(entries: IEntryWithPoll[], ): Promise<IStats> {
         entriesCount,
         preferredLanguageCount,
         schools: Object.values(schoolDict),
+        filters
     }
 }
 

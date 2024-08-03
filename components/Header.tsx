@@ -37,14 +37,14 @@ export default function Header() {
             </Link> }
           { isAdmin && 
                 <>
-                  <Link className="bg-warning" href={`/${locale}/users`}>{_("Utenti")}</Link>
-                  <Link className="bg-warning" href={`/${locale}/school`}>{_("Scuole")}</Link>
-                  <Link className="bg-warning" href={`/${locale}/dict`}>{_("Mappature")}</Link>
-                  <Link className="bg-warning" href={`/${locale}/translation`}>{_("Lingue")}</Link>
+                  <Link className="admin" href={`/${locale}/users`}>{_("Utenti")}</Link>
+                  <Link className="admin" href={`/${locale}/school`}>{_("Scuole")}</Link>
+                  <Link className="admin" href={`/${locale}/dict`}>{_("Mappature")}</Link>
+                  <Link className="admin" href={`/${locale}/translation`}>{_("Lingue")}</Link>
                 </>
           }
           { isSuper &&
-              <Link className="bg-danger" href={`/${locale}/entries`}>{_("Entries")}</Link>
+              <Link className="superadmin" href={`/${locale}/entries`}>{_("Entries")}</Link>
           }
           { !isAuthenticated && 
             <Link href="/api/auth/signin">{_("Login")}</Link>
