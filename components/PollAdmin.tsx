@@ -49,7 +49,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     return <>
         <Card className="my-2">
             <Card.Header>
-                <Card.Title>{_("Sondaggio")} {questionary.forms[poll.form].name[_.locale]}</Card.Title>
+                <Card.Title>{_("Pagina di amministrazione")}: {_("Sondaggio")} {questionary.forms[poll.form].name[_.locale]}</Card.Title>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
@@ -107,29 +107,34 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 </ButtonGroup>
             </Card.Footer>
         </Card>
-        <ul>
-                {
-                    !adminSecret && fullAdminUrl && 
-                    <li>
-                    {_("(precede link di somministrazione)")}
-                    {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
-                    {_("(segue link di somministrazione)")}
+        <Card>
+            <Card.Header>
+                <Card.Title>{_("Istruzioni")}</Card.Title>
+            </Card.Header>
+            <ul>
+                    {
+                        !adminSecret && fullAdminUrl && 
+                        <li>
+                        {_("(precede link di somministrazione)")}
+                        {} <a href={fullAdminUrl} target="_blank">{ fullAdminUrl } {}<FaExternalLinkAlt/> </a>
+                        {_("(segue link di somministrazione)")}
+                        </li>
+                    }
+                    <li> 
+                        {_("Devi condividere con gli studenti il")} <i>{_("link (URL)")}</i> {_("di compilazione del sondaggio")}
+                        {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
+                        {} {_("Il link può essere copiato e condiviso oppure puoi mostrare o stampare il")} <i>{_("QR-code")}</i> {_("che contiene il link codificato.")}
                     </li>
-                }
-                <li> 
-                    {_("Devi condividere con gli studenti il")} <i>{_("link (URL)")}</i> {_("di compilazione del sondaggio")}
-                    {} <a href={fullUrl} target="_blank">{ fullUrl } {}<FaExternalLinkAlt/> </a>.
-                    {} {_("Il link può essere copiato e condiviso oppure puoi mostrare o stampare il")} <i>{_("QR-code")}</i> {_("che contiene il link codificato.")}
-                </li>
-                <li>
-                    {_("(frase 3)")}</li>
-                <li>
-                    {_("(frase 4)")}
-                    { isSupervisor && !adminSecret && <>
-                        {} {_("Puoi cancellare il sondaggio solo se non ci sono questionari compilati e dopo averlo chiuso.")}
-                    </>}
-                </li>
-        </ul>
+                    <li>
+                        {_("(frase 3)")}</li>
+                    <li>
+                        {_("(frase 4)")}
+                        { isSupervisor && !adminSecret && <>
+                            {} {_("Puoi cancellare il sondaggio solo se non ci sono questionari compilati e dopo averlo chiuso.")}
+                        </>}
+                    </li>
+            </ul>                    
+        </Card>
     </>
 
     async function close(poll: IGetPoll, close=true) {
