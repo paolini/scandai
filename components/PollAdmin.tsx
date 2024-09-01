@@ -57,7 +57,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                 Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
                 {_("Il sondaggio è:")} {poll.closed ? <b>{_("chiuso")}</b> : <b>{_("aperto")}</b>}<br/>
                 { !poll.closed && <>{_("indirizzo compilazione:")} <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
-                { isAdmin && poll.adminSecret && <>{_("indirizzo somministrazione:")} <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
+                { isAdmin && poll.adminSecret && <>{_("indirizzo somministrazione")}: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}
                 {_("Questionari compilati:")} <b>{poll.entriesCount}</b> 
                 { !poll.closed && <Tick tick={tick} /> } <br />
                 { isAdmin && !poll.adminSecret && 
@@ -161,7 +161,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
 
     function share () {
         copyToClipboard(fullUrl);
-        addMessage('success', `${_("indirizzo compilazione (url) copiato:")} ${fullUrl}`)
+        addMessage('success', `${_("indirizzo compilazione (url) copiato")}: ${fullUrl}`)
     }
 
     function shareAdmin () {
@@ -170,7 +170,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             return
         }
         copyToClipboard(fullAdminUrl)
-        addMessage('success', `${_("indirizzo somministrazione (url) copiato:")} ${fullAdminUrl}`)
+        addMessage('success', `${_("indirizzo somministrazione (url) copiato")}: ${fullAdminUrl}`)
     }
 
     function composeAdminFullUrl(adminSecret: string) {

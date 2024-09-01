@@ -28,6 +28,12 @@ function main() {
 
     const out = {};
 
+    keys.forEach(key => {
+        if (!lst.includes(key)) {
+            console.log("Unused translation:", key);
+        }
+    })
+
     lst.forEach(str => {
         if (!keys.includes(str)) {
             out[str] = {
