@@ -78,9 +78,9 @@ const questionary: IQuestionary = {
       'en': 'Send',
     },
     sendButtonFake: {
-      'it': 'Invia',
-      'fu': 'Mande',
-      'en': 'Send',
+      'it': 'Invia (per finta)',
+      'fu': 'Mande (par finte)',
+      'en': 'Send (fake)',
     },
     otherLanguage: {
       'it': 'Altra lingua:',

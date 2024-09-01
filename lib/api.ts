@@ -7,9 +7,10 @@ import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
-import Config, {IGetConfig} from '@/models/Config'
+import {IGetConfig} from '@/models/Config'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
+    if (url === null) return {} // query is disabled
     if (query) {
         const params = new URLSearchParams(query)
         url = `${url}?${params}`
@@ -126,8 +127,8 @@ export async function deleteUser(user: IGetUser) {
     return await remove('users', user)
 }
 
-export function useSchools(year: string | null = null) {
-    return useIndex<IGetSchool[]>('schools', year ? {year} : {})
+export function useSchools(year: string | null = null, enabled: boolean = true) {
+    return useIndex<IGetSchool[]>('schools', year ? {year} : {}, enabled)
 }
 
 export function useSchool(id_: string | null) {

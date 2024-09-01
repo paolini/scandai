@@ -41,6 +41,7 @@ import { useTrans } from "@/lib/trans"
 import State, { value, set, update } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
+import { IGetUser } from "@/models/User"
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -97,32 +98,71 @@ type Filter = {
     form: string,
 }
 
+function requireSingle(value: undefined|string|string[], default_value: string=''):string {
+    if (value === undefined) return default_value
+    if (Array.isArray(value)) return default_value
+    return value
+}
+
+function requireArray(value: undefined|string|string[], default_value: string[] = []):string[] {
+    if (value === undefined) return default_value
+    if (Array.isArray(value)) return value
+    return [value]
+}
+
 export default function Report() {
-    const searchParams = useSearchParams()
     const user = useProfile()
     const router = useRouter()
-    const report = router.query.report || "full"
-    const yearState = useState(searchParams.get('year') || '2024')
-    const schoolsQuery = useSchools(value(yearState))
+    const year = requireSingle(router.query.year)
+    const report = requireSingle(router.query.report, "full")
+    const pollIds = requireArray(router.query.poll)
+    const schoolId = requireSingle(router.query.school_id)
+    const schoolSecret = requireSingle(router.query.schoolSecret)
+    const showFilter = !(router.query.poll || router.query.school_id)
+
+    if (!router.isReady) return <Loading />
+    return <ReportInner 
+        showFilter={showFilter}
+        user={user} 
+        year={year} 
+        report={report} 
+        pollIds={pollIds} 
+        schoolId={schoolId}
+        schoolSecret={schoolSecret}
+    />
+}
+
+export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret}:{
+    showFilter: boolean,
+    user: IGetUser|undefined,
+    year: string,
+    report: string,
+    pollIds: string[],
+    schoolId: string,
+    schoolSecret: string,
+}) {
     const translationQuery = useTranslation()
-    const pollIdsState = useState<string[]|undefined>(undefined)
     const _ = useTrans()
+    const yearState = useState(year)
+    const schoolsQuery = useSchools(value(yearState), !schoolId)
+    const pollIdsState = useState<string[]>(pollIds)
 
     // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
-    if (Array.isArray(report)) return <Error>{_("richiesta non valida")}</Error>
-
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
-    if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
     if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
     const translations = translationQuery.data.data
+    if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
     
     return <Page header={!!user}>
         <div className="container noPrint">
         </div>
         <Stats 
+            showFilter={showFilter}
             pollIdsState={pollIdsState}
             report={report} 
+            schoolId={schoolId}
+            schoolSecret={schoolSecret}
             translations={translations}
             schools={schoolsQuery.data.data}
             yearState={yearState}
@@ -131,26 +171,27 @@ export default function Report() {
 
 }
 
-function Stats({report, translations, pollIdsState, schools, yearState}:{
+function Stats({showFilter, report, schoolId, schoolSecret, translations, pollIdsState, schools, yearState}:{
+    showFilter: boolean,
     report: string,
+    schoolId: string,
+    schoolSecret: string,
     translations: IGetTranslation,
-    pollIdsState: State<string[]|undefined>,
+    pollIdsState: State<string[]>,
     schools: IGetSchool[],
     yearState: State<string>,
 }) {
-    const searchParams = useSearchParams()
-    const schoolIdState = useState(searchParams.get('school') || '')
-    const cityState = useState(searchParams.get('city')|| '')
-    const formState = useState(searchParams.get('form') || '')
-    const classState = useState(searchParams.get('class') || '')
-    const router = useRouter()
+    const schoolIdState = useState(schoolId)
+    const cityState = useState('')
+    const formState = useState('')
+    const classState = useState('')
     const _ = useTrans()
     const ref = useRef(null)
     const pollIds = value(pollIdsState)
-    const pollQuery = pollIds === undefined ? {} : {poll: pollIds.join(',')}
+    const pollQuery = pollIds.length==0 ? {} : {poll: pollIds.join(',')}
     const statsQuery = useStats({
-        ...router.query,
         schoolId: value(schoolIdState),
+        schoolSecret: schoolSecret,
         city: value(cityState),
         form: value(formState),
         class: value(classState),
@@ -161,7 +202,6 @@ function Stats({report, translations, pollIdsState, schools, yearState}:{
         content: () => ref.current,
     })
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
-    const showFilter = !router.query.poll
 
     if (statsQuery.isLoading) return <Loading />
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
@@ -283,7 +323,7 @@ function ReportItem({ stats, item, t, pollIdsState}: {
     stats: IStats,
     item: IReportElement,
     t: T,
-    pollIdsState: State<string[]|undefined>,
+    pollIdsState: State<string[]>,
 }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -384,7 +424,7 @@ function ListFilters({stats}:{
 function ListClasses({ stats, title, pollIdsState}: {
     stats: IStats,
     title?: string,
-    pollIdsState: State<string[]|undefined>,
+    pollIdsState: State<string[]>,
 }) {
     const _ = useTrans()
     const router = useRouter()
@@ -477,8 +517,8 @@ function ListClasses({ stats, title, pollIdsState}: {
                     {_("filtra selezionate")}
                 </Button>
             } 
-            { value(pollIdsState) !== undefined &&
-                <Button className="noPrint mx-1" onClick={() => set(pollIdsState,undefined)}>
+            { value(pollIdsState).length > 0 &&
+                <Button className="noPrint mx-1" onClick={() => set(pollIdsState,[])}>
                     {_("annulla filtro")}
                 </Button>
             }

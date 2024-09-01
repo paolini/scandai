@@ -14,10 +14,6 @@ export default async function handler(
 
     // await delay(7000)
 
-    if (!user) {
-        return res.status(401).json({error: 'not authenticated'})
-    }
-
     if (req.method === 'GET') {
         try {
             const translations = await Translation.find()
@@ -35,6 +31,10 @@ export default async function handler(
             console.log(`database error: ${error}`)
             return res.status(400).json({ error })
         }
+    }
+
+    if (!user) {
+        return res.status(401).json({error: 'not authenticated'})
     }
 
     if (req.method === 'POST') {

@@ -19,6 +19,10 @@ export default function Header() {
   const isAuthenticated = !!profile
   const locale = router.locale || 'it'
   const _ = useTrans()
+  const currentDate = new Date()
+  const year = currentDate.getMonth()>=6 // 6=luglio
+    ? currentDate.getFullYear() 
+    : currentDate.getFullYear()-1
 
   assert (locale === 'it' || locale === 'en' || locale === 'fu', 'locale non supportata')
 
@@ -29,7 +33,7 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { isAdmin && <Link href={`/${locale}/report`}>
+          { isAdmin && <Link href={`/${locale}/report?year=${year}`}>
               {_("Database")}
             </Link> }
           { (isAuthenticated && !isViewer) && <Link href={`/${locale}/`}>
