@@ -10,7 +10,7 @@ import { IGetPoll } from "@/models/Poll"
 import { useProfile } from "@/lib/api"
 import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
-import { formatDate } from "@/lib/utils"
+import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
 
@@ -54,7 +54,8 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             <Card.Body>
                 <Card.Text>
                 { isAdmin && <>{_("Creato da")} <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> {_("il (data)")} {formatDate(poll.createdAt)}<br /></>}
-                Scuola: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, classe: <b>{poll.class}</b><br />
+                {upperFirst(_("scuola"))}: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, 
+                {_("classe")}: <b>{poll.class}</b><br />
                 {_("Il sondaggio è:")} {poll.closed ? <b>{_("chiuso")}</b> : <b>{_("aperto")}</b>}<br/>
                 { !poll.closed && <>{_("indirizzo compilazione:")} <b onClick={share} style={{cursor:"copy"}}>{fullUrl}</b> <br /></> }
                 { isAdmin && poll.adminSecret && <>{_("indirizzo somministrazione")}: <b onClick={shareAdmin} style={{cursor:"copy"}}>{fullAdminUrl}</b><br/></>}

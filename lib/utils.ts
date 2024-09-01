@@ -40,3 +40,6 @@ export function requireArray(value: undefined|string|string[], default_value: st
     return [value]
 }
 
+export function upperFirst(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
