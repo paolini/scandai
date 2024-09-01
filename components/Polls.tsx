@@ -1,15 +1,15 @@
-import { FaCirclePlus, FaTrashCan } from 'react-icons/fa6'
+import { FaCirclePlus } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-
-import { usePolls, postPoll, patchPoll, deletePoll, useSchools } from '@/lib/api'
+ 
+import { usePolls, postPoll, useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get, onChange, State } from '@/lib/State'
-import { IPostPoll, IGetPoll, IPoll } from '@/models/Poll'
-import { useProfile } from '@/lib/api'
+import { IPostPoll, IGetPoll } from '@/models/Poll'
+import { useProfile, post } from '@/lib/api'
 import { IGetUser } from '@/models/User'
 import { formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
@@ -19,11 +19,14 @@ import {useTrans} from '@/lib/trans'
 const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
+//    const { mutate } = useSWRConfig()
     const pollsQuery = usePolls()
     const profile = useProfile()
     const router = useRouter()
     const _ = useTrans()
     const newForm = router.query.new || null  
+    const addMessage = useAddMessage()
+      
 
     if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
         invalid form type: {JSON.stringify(newForm)}
@@ -66,7 +69,30 @@ export default function Polls({}) {
             </Card.Body>
         </Card>
         }
+        { profile?.isAdmin && 
+            <Card>
+                <Card.Header>
+                    {_("amministratori")}
+                </Card.Header>
+                <Card.Body>
+                    <Button variant="danger" onClick={eraseAdminLinks}>
+                        {_("elimina tutti i link di amministrazione")}
+                    </Button>
+                </Card.Body>
+            </Card>
+        }
     </>
+
+    async function eraseAdminLinks() {
+        try {
+            const res = await post("polls/eraseSecrets",{})
+            addMessage("warning", _("rimossi % link amministrazione", res.count))
+            pollsQuery.mutate()
+        } catch(error) {
+            addMessage("error", `${error}`)
+        }
+        window.scrollTo(0,0)
+    }
 }
 
 function PollsTable({user, polls}:{
@@ -92,6 +118,7 @@ function PollsTable({user, polls}:{
                 <th>{_("scuola")}</th>
                 <th>{_("classe")}</th>
                 <th>{_("conteggio")}</th>
+                <th>{_("link")}</th>
             </tr>
         </thead>
         <tbody>
@@ -116,6 +143,9 @@ function PollsTable({user, polls}:{
                 </td>
                 <td>
                     {poll.entriesCount}
+                </td>
+                <td>
+                    {poll.adminSecret?"•":""}
                 </td>
             </tr>)}
         </tbody>
