@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 import School from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
-import { yearMatch } from '../stats'
+import { schoolYearMatch } from '@/lib/utils'
 
 // const delay = (ms:number) => new Promise(res => setTimeout(res, ms));
 
@@ -17,7 +17,7 @@ export default async function handler(
             const year = req.query.year && !Array.isArray(req.query.year) && parseInt(req.query.year)
             const pipeline = []
             if (year) {
-                pipeline.push({$match: {"createdAt": yearMatch(year)}})
+                pipeline.push({$match: {"createdAt": schoolYearMatch(year)}})
             }
             const schools = await School.aggregate([
                 { $lookup: { 

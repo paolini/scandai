@@ -22,7 +22,7 @@ export default function Entries({}) {
     const years = Array.from({length:currentYear-2022}, (_,i) => currentYear-i)
     return <Page>
         {_("anno scolastico")} <select value={year} onChange={(e) => {setYear(parseInt(e.target.value))}}>
-            { years.map(y => <option value={y}>{y}/{y+1}</option>) }
+            { years.map(y => <option key={y} value={y}>{y}/{y+1}</option>) }
         </select>
         <Table hover>
             <thead>
