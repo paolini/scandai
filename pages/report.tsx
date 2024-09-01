@@ -118,6 +118,7 @@ export default function Report() {
     const pollIds = requireArray(router.query.poll)
     const schoolId = requireSingle(router.query.school_id)
     const schoolSecret = requireSingle(router.query.schoolSecret)
+    const adminSecret = requireSingle(router.query.adminSecret)
     const showFilter = !(router.query.poll || router.query.school_id)
 
     if (!router.isReady) return <Loading />
@@ -129,10 +130,11 @@ export default function Report() {
         pollIds={pollIds} 
         schoolId={schoolId}
         schoolSecret={schoolSecret}
+        adminSecret={adminSecret}
     />
 }
 
-export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret}:{
+export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
     showFilter: boolean,
     user: IGetUser|undefined,
     year: string,
@@ -140,11 +142,12 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     pollIds: string[],
     schoolId: string,
     schoolSecret: string,
+    adminSecret: string,
 }) {
     const translationQuery = useTranslation()
     const _ = useTrans()
     const yearState = useState(year)
-    const schoolsQuery = useSchools(value(yearState), !schoolId)
+    const schoolsQuery = useSchools(value(yearState), showFilter)
     const pollIdsState = useState<string[]>(pollIds)
 
     // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
@@ -163,6 +166,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             report={report} 
             schoolId={schoolId}
             schoolSecret={schoolSecret}
+            adminSecret={adminSecret}
             translations={translations}
             schools={schoolsQuery.data.data}
             yearState={yearState}
@@ -171,11 +175,12 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
 
 }
 
-function Stats({showFilter, report, schoolId, schoolSecret, translations, pollIdsState, schools, yearState}:{
+function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, translations, pollIdsState, schools, yearState}:{
     showFilter: boolean,
     report: string,
     schoolId: string,
     schoolSecret: string,
+    adminSecret: string,
     translations: IGetTranslation,
     pollIdsState: State<string[]>,
     schools: IGetSchool[],
@@ -192,6 +197,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, translations, pollId
     const statsQuery = useStats({
         schoolId: value(schoolIdState),
         schoolSecret: schoolSecret,
+        adminSecret: adminSecret,
         city: value(cityState),
         form: value(formState),
         class: value(classState),
