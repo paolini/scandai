@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb'
 
 import Entry, {ENTRY_PIPELINE} from '@/models/Entry'
 import getSessionUser from '@/lib/getSessionUser'
+import { schoolYearMatch, requireSingle } from '@/lib/utils'
 
 export default async function handler(
     req: NextApiRequest,
@@ -14,18 +15,17 @@ export default async function handler(
     if (!user.isSuper) return res.status(401).json({ error: 'not authorized' })
 
     if (req.method === 'GET') {
+        const poolId = requireSingle(req.query.poolId)
+        const year = requireSingle(req.query.year)
+        const _id = requireSingle(req.query._id)
+
         console.log(`GET query ${JSON.stringify(req.query)}`)
         let $match: any = {}
 
         // set filters from query parameters
-        for (const key of ['poolId', ]) {
-            if (req.query[key]!==undefined) {
-                $match[key] = req.query[key]
-            }
-        }
-        if (req.query._id!==undefined) {
-            $match['_id'] = new ObjectId(req.query._id as string)
-        }
+        if (year) $match['createdAt'] = schoolYearMatch(parseInt(year))
+        if (poolId) $match.pool_id = poolId
+        if (_id) $match['_id'] = new ObjectId(_id)
 
         const pipeline = [
             { $match },

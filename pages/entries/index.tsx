@@ -1,5 +1,6 @@
 import { Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 import Page from '../../components/Page'
 import { useEntries } from '../../lib/api'
@@ -7,15 +8,22 @@ import Loading from '../../components/Loading'
 import Error from '../../components/Error'
 import { formatDate, formatTime } from '../../lib/utils'
 import { useTrans } from '../../lib/trans'
+import { currentSchoolYear } from '../../lib/utils'
 
 export default function Entries({}) {
     const _ = useTrans()
     const router = useRouter()
-    const entriesQuery = useEntries()
+    const currentYear = currentSchoolYear()
+    const [year, setYear] = useState(currentYear)
+    const entriesQuery = useEntries({year})
     if (entriesQuery.isLoading) return <Loading />
     if (!entriesQuery.data) return <Error>{entriesQuery.error.message}</Error>
     const entries = entriesQuery.data.data
+    const years = Array.from({length:currentYear-2022}, (_,i) => currentYear-i)
     return <Page>
+        {_("anno scolastico")} <select value={year} onChange={(e) => {setYear(parseInt(e.target.value))}}>
+            { years.map(y => <option value={y}>{y}/{y+1}</option>) }
+        </select>
         <Table hover>
             <thead>
                 <tr>

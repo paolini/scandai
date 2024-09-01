@@ -42,6 +42,7 @@ import State, { value, set, update } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
 import { IGetUser } from "@/models/User"
+import { requireSingle, requireArray } from "@/lib/utils"
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -96,18 +97,6 @@ type Filter = {
     schoolId: string,
     city: string,
     form: string,
-}
-
-function requireSingle(value: undefined|string|string[], default_value: string=''):string {
-    if (value === undefined) return default_value
-    if (Array.isArray(value)) return default_value
-    return value
-}
-
-function requireArray(value: undefined|string|string[], default_value: string[] = []):string[] {
-    if (value === undefined) return default_value
-    if (Array.isArray(value)) return value
-    return [value]
 }
 
 export default function Report() {

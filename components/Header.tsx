@@ -6,6 +6,7 @@ import assert from 'assert'
 import package_json from '../package.json'
 import { useProfile } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
+import { currentSchoolYear } from '@/lib/utils'
 
 const Link = Nav.Link
 
@@ -19,10 +20,7 @@ export default function Header() {
   const isAuthenticated = !!profile
   const locale = router.locale || 'it'
   const _ = useTrans()
-  const currentDate = new Date()
-  const year = currentDate.getMonth()>=6 // 6=luglio
-    ? currentDate.getFullYear() 
-    : currentDate.getFullYear()-1
+  const year = currentSchoolYear()
 
   assert (locale === 'it' || locale === 'en' || locale === 'fu', 'locale non supportata')
 

@@ -1,21 +1,14 @@
+import { ObjectId } from 'mongodb'
+import { assert } from '@/lib/assert'
+
 import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
 import { IGetPoll } from '@/models/Poll'
 import { IGetSchool } from '@/models/School'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
-import { assert } from '@/lib/assert'
-import { ObjectId } from 'mongodb'
-
 import getSessionUser from '@/lib/getSessionUser'
-
-export function yearMatch(n: number) {
-    // l'anno scolastico finisce con l'inizio di luglio
-    return {
-        $gte: new Date(`${n}-07-01`),
-        $lt: new Date(`${n+1}-07-01`),
-    }
-}
+import { schoolYearMatch } from '@/lib/utils'
 
 export default async function handler(
     req: NextApiRequest, 
@@ -47,7 +40,7 @@ export default async function handler(
         }
         if (query.year && !Array.isArray(query.year)) {
             const n = parseInt(query.year)
-            $match["poll.createdAt"] = yearMatch(n)
+            $match["poll.createdAt"] = schoolYearMatch(n)
             filters.year = n
         }
 
