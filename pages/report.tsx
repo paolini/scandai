@@ -142,7 +142,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
-    if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`})</Error>
+    if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
     const translations = translationQuery.data.data
     if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
     
@@ -199,7 +199,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
     if (statsQuery.isLoading) return <Loading />
-    if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`})</Error>
+    if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`} [sq])</Error>
 
     const stats = {
         ...statsQuery.data.data,
