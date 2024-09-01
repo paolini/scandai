@@ -141,10 +141,13 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
 
     // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
 
+    if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
+    if (schoolsQuery.error) return <Error>{_("Errore caricamento")} ({`${schoolsQuery.error}`} [sq])</Error>
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
-    if (translationQuery.data === undefined || schoolsQuery.data === undefined) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
-    const translations = translationQuery.data.data
     if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
+    if (translationQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
+    if (schoolsQuery.data === undefined) return <Error>{_("undefined ")} (sq)</Error>
+    const translations = translationQuery.data.data
     
     return <Page header={!!user}>
         <div className="container noPrint">
