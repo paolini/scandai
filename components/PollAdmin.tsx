@@ -100,7 +100,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                     </Link>
                     }
                     { !adminSecret && poll.closed &&
-                        <Button variant="danger" disabled={poll.entriesCount>0} onClick={() => remove(poll)}>
+                        <Button variant="danger" disabled={poll.entriesCount>0 && !isAdmin} onClick={() => remove(poll)}>
                             {_("elimina")}
                         </Button>
                     }
@@ -132,6 +132,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
                         { isSupervisor && !adminSecret && <>
                             {} {_("Puoi cancellare il sondaggio solo se non ci sono questionari compilati e dopo averlo chiuso.")}
                         </>}
+                        { isAdmin && <>{} {_("Puoi cancellare un sondaggio chiuso perché sei un utente amministratore.")}</>}
                     </li>
             </ul>                    
         </Card>

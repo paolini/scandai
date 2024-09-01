@@ -31,10 +31,20 @@ export default async function handler(
         }
 
         if (req.method === 'DELETE') {
-            if (!userIsOwnerOrAdmin) return res.status(401).json({error: 'not authorized'})
-            await trashDocument('polls', poll._id)
-            // const out = await Poll.deleteOne({_id: poll._id})
-            return res.status(200).json({ deleted: true })
+            try {
+                const entries = await Poll.find({poll_id: poll._id})
+                const count = entries.length
+                if (!userIsOwnerOrAdmin) return res.status(401).json({error: 'not authorized'})
+                if (!poll.closed) return res.status(400).json({error: 'poll not closed'})
+                if (count && !user.isAdmin) return res.status(400).json({error: 'poll not empty'})
+                for (const entry of entries) {
+                    await trashDocument('entries', entry._id)
+                }
+                await trashDocument('polls', poll._id)
+                return res.status(200).json({ deleted: true, entriesDeleted: count })
+            } catch(error) {
+                return res.status(500).json({error: `${error}`})
+            }
         }
 
         if (req.method === 'PATCH') {
