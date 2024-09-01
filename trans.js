@@ -62,7 +62,7 @@ function parse(filename) {
     console.log("Parsing", filename)
 
     const fileContents = fs.readFileSync(filename, 'utf8')
-    const stringRegex = /_\("([^"]+)"\)/g
+    const stringRegex = /_\("([^"]+)"(\)|,)/g
     let match;
     const stringList = []
     while ((match = stringRegex.exec(fileContents)) !== null) {

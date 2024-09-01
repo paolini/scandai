@@ -944,8 +944,9 @@ function GraphMapLanguageToCompetenceQuestion({stat, title, language}
     const localizedLanguage = questionary.languages[language].it || language
     const stats = stat.answers[localizedLanguage]
     const levels = extractLevels(questionary)
+    const _ = useTrans()
     // const chart_title = `${title || stat.question.question.it} - ${localizedLanguage}`
-    if (!stats) return <div>No stats for language {language}</div>
+    if (!stats) return <div>{_("No stats for language %", language)}</div>
 
     function computeDataset(stat: {[key: string]: number}) {
         const total = Object.values(stat).reduce((sum,x) => sum+x,0)
