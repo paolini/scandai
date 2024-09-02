@@ -111,7 +111,7 @@ export function useProfileQuery() {
  * @returns {null} if not logged in
  * @returns {undefined} if loading
  */
-export function useProfile() {
+export function useProfile(): IGetUser | null | undefined {
     return useProfileQuery().data
 }
 

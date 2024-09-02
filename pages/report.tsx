@@ -110,7 +110,12 @@ export default function Report() {
     const adminSecret = requireSingle(router.query.adminSecret)
     const showFilter = !(router.query.poll || router.query.school_id)
 
+    console.log(`Report: ${JSON.stringify({user, isReady: router.isReady, showFilter})}`)
+
+    if (user === undefined) return <Loading /> 
+
     if (!router.isReady) return <Loading />
+
     return <ReportInner 
         showFilter={showFilter}
         user={user} 
@@ -125,7 +130,7 @@ export default function Report() {
 
 export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
     showFilter: boolean,
-    user: IGetUser|undefined,
+    user: IGetUser|null,
     year: string,
     report: string,
     pollIds: string[],
@@ -139,7 +144,11 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const schoolsQuery = useSchools(value(yearState), showFilter)
     const pollIdsState = useState<string[]>(pollIds)
 
-    // console.log(`Report: ${JSON.stringify({user, translation: translationQuery.isLoading, schools: schoolsQuery.isLoading, trans: [_]})}`)
+    console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
+        t_data: translationQuery.data!==undefined,
+        s_loading: schoolsQuery.isLoading, s_data: schoolsQuery.data!==undefined,
+        trans: [_]
+    })}`)
 
     if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
     if (schoolsQuery.error) return <Error>{_("Errore caricamento")} ({`${schoolsQuery.error}`} [sq])</Error>

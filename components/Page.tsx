@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap'
 
 import Header from '@/components/Header'
 import { useMessagesState, Message } from '@/components/Messages'
-import { get, value, array, remove, State } from '@/lib/State'
+import { value, array, remove, State } from '@/lib/State'
 
 export default function Page({header=true, title, children} : {
       header?: boolean
@@ -31,7 +31,7 @@ function Messages({messagesState}: {messagesState: State<Message[]>}) {
   if (value(messagesState).length === 0) return null
   return <div>
     {array(messagesState).map( (messageState, i) => 
-      <Message 
+      <OneMessage 
           key={i} 
           message={value(messageState)}
           dismiss={() => remove(messagesState, value(messageState))} 
@@ -39,7 +39,7 @@ function Messages({messagesState}: {messagesState: State<Message[]>}) {
   </div>
 }
 
-function Message({message, dismiss}: {
+function OneMessage({message, dismiss}: {
     message: Message
     dismiss: () => void
 }) {  
