@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb'
 import Poll, {POLL_PIPELINE} from '@/models/Poll'
 import School from '@/models/School'
 import getSessionUser from '@/lib/getSessionUser'
+import { schoolYearMatch, requireSingle } from '@/lib/utils'
 
 export default async function handler(
     req: NextApiRequest,
@@ -15,18 +16,20 @@ export default async function handler(
         let $match: any = {}
 
         // set filters from query parameters
-        for (const key of ['school', 'class', 'year', 'secret', 'adminSecret', '_id', 'school_id']) {
+        if (req.query.year) {
+            $match.createdAt = schoolYearMatch(parseInt(requireSingle(req.query.year)))
+        }
+        for (const key of ['school', 'class', 'secret', 'adminSecret', '_id', 'school_id']) {
             const value = req.query[key]
-            if (value!==undefined) {
-                if (Array.isArray(value)) return res.status(400).json({error: `invalid multiple param ${key}`})
-                if (key.endsWith('_id')) {
-                    try {
-                        $match[key] = new ObjectId(value)
-                    } catch(err) {
-                        return res.status(400).json({error: `${err}`})
-                    }
-                } else $match[key] = value
-            }
+            if (value === undefined) continue
+            if (Array.isArray(value)) return res.status(400).json({error: `invalid multiple param ${key}`})
+            if (key.endsWith('_id')) {
+                try {
+                    $match[key] = new ObjectId(value)
+                } catch(err) {
+                    return res.status(400).json({error: `${err}`})
+                }
+            } else $match[key] = value
         }
         // se ho specificato un secret o un adminSecret
         // posso vedere solo quella poll 

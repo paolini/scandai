@@ -11,7 +11,7 @@ import { value, set, get, onChange, State } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
 import { useProfile, post } from '@/lib/api'
 import { IGetUser } from '@/models/User'
-import { formatDate } from '@/lib/utils'
+import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
@@ -20,13 +20,15 @@ const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
 //    const { mutate } = useSWRConfig()
-    const pollsQuery = usePolls()
+    const currentYear = currentSchoolYear()
+    const [year, setYear] = useState(`${currentYear}`)
+    const years = Array.from({length: currentYear-2022}, (_,i) => currentYear - i)
+    const pollsQuery = usePolls({year})
     const profile = useProfile()
     const router = useRouter()
     const _ = useTrans()
     const newForm = router.query.new || null  
     const addMessage = useAddMessage()
-      
 
     if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
         invalid form type: {JSON.stringify(newForm)}
@@ -50,6 +52,12 @@ export default function Polls({}) {
             }}/>
             : <NewPollButtons form={newForm} />
         }
+        <br />
+        {_("anno scolastico")}: 
+        <select value={year} onChange={e => setYear(e.target.value)}>
+            <option value="">tutti gli anni</option>
+            { years.map(year => <option key={year} value={year}>{year}/{year+1}</option>) }
+        </select>
         { openPolls.length > 0 && <Card className="my-2 table-responsive">
             <Card.Header>
                 <b>{_("questionari aperti")}</b>
