@@ -53,7 +53,7 @@ export default function Polls({}) {
             : <NewPollButtons form={newForm} />
         }
         <br />
-        {_("anno scolastico")}: 
+        {_("anno scolastico")}: {}
         <select value={year} onChange={e => setYear(e.target.value)}>
             <option value="">tutti gli anni</option>
             { years.map(year => <option key={year} value={year}>{year}/{year+1}</option>) }
@@ -77,14 +77,15 @@ export default function Polls({}) {
             </Card.Body>
         </Card>
         }
-        { profile?.isAdmin && 
+        { profile?.isSuper && 
             <Card>
                 <Card.Header>
-                    {_("amministratori")}
+                    {_("super amministratori")}
                 </Card.Header>
                 <Card.Body>
                     <Button variant="danger" onClick={eraseAdminLinks}>
                         {_("elimina tutti i link di amministrazione")}
+                        {year ? ` ${year}/${parseInt(year)+1}` : ""}
                     </Button>
                 </Card.Body>
             </Card>
@@ -93,7 +94,7 @@ export default function Polls({}) {
 
     async function eraseAdminLinks() {
         try {
-            const res = await post("polls/eraseSecrets",{})
+            const res = await post("polls/eraseSecrets",{year})
             addMessage("warning", _("rimossi % link amministrazione", res.count))
             pollsQuery.mutate()
         } catch(error) {
