@@ -1,7 +1,7 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
-  console.log('Document')
+  // console.log('Document')
   return (
     <Html lang="it">
       <Head>

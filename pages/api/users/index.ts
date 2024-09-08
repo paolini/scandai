@@ -36,7 +36,7 @@ export default async function handler(
         if (req.method === 'POST') {
             const {name, username, email} = JSON.parse(req.body)
             const newUser = new User({name, username, email, isAdmin: false})
-            console.log(`creating new User: ${newUser}`)
+            // console.log(`creating new User: ${newUser}`)
             const out = await newUser.save()
             return res.json(out)
         }

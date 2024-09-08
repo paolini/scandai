@@ -67,9 +67,9 @@ export default async function handler(
                     ? randomstring.generate({length: 6, readable: true})
                     : ''
             }
-            console.log('patch school', payload)
+            // console.log('patch school', payload)
             const out = await School.updateOne({_id: school_id}, payload)
-            console.log('out', out)
+            // console.log('out', out)
             return res.json({data: out})
         }
 

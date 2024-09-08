@@ -19,7 +19,7 @@ export default async function handler(
         const year = requireSingle(req.query.year)
         const _id = requireSingle(req.query._id)
 
-        console.log(`GET query ${JSON.stringify(req.query)}`)
+        // console.log(`GET query ${JSON.stringify(req.query)}`)
         let $match: any = {}
 
         // set filters from query parameters

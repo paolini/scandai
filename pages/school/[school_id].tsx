@@ -27,7 +27,7 @@ function useRouterQuery(key: string): string | null {
 
 export default function SchoolId({}) {
     const school_id = useRouterQuery('school_id')
-    console.log(`SchoolId: ${school_id}`)
+    // console.log(`SchoolId: ${school_id}`)
     const { data: school, isLoading, error, mutate } = useSchool(school_id)
     if (isLoading) return <Loading /> 
     if (!school) return <Error>{`${error}`}</Error>

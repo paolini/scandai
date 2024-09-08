@@ -32,7 +32,7 @@ export default function Questionary({langState, poll, form, answersState, mutate
   const questionCodes = extractQuestionCodes(form)
 
   if (Object.keys(answers).length === 0) {
-    console.log(`initializing answers: ${JSON.stringify(questionCodes)}`)
+    // console.log(`initializing answers: ${JSON.stringify(questionCodes)}`)
     set(answersState, Object.fromEntries(
       questionCodes.map(code => {
         const answer_code = questionary.questions[code]?.code || code

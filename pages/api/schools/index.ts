@@ -48,7 +48,7 @@ export default async function handler(
         if (req.method === 'POST') {
             const {name, city, city_fu } = JSON.parse(req.body)
             const newSchool = new School({name, city, city_fu})
-            console.log(`creating new School: ${newSchool}`)
+            // console.log(`creating new School: ${newSchool}`)
             const out = await newSchool.save()
             return res.json({data: out})
         }

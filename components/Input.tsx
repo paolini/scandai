@@ -18,7 +18,7 @@ export default function Input({state, id, placeholder, focus, enter, tab}:{
 
     useEffect(() => {
         assert(ref.current)
-        console.log(`Input useEffect focus: ${focus}, ref:${!!ref.current}`)
+        // console.log(`Input useEffect focus: ${focus}, ref:${!!ref.current}`)
         if (focus && ref.current) ref.current.focus()
       }, [focus])
 
