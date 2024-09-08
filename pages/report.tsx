@@ -108,7 +108,10 @@ export default function Report() {
     const schoolId = requireSingle(router.query.school_id)
     const schoolSecret = requireSingle(router.query.schoolSecret)
     const adminSecret = requireSingle(router.query.adminSecret)
-    const showFilter = !(router.query.poll || router.query.school_id)
+    const showFilter = 
+        router.query.poll ? [] : 
+        router.query.school_id ? ["year","class","form"]
+        : ["city","school","year","class","form"]
 
     console.log(`Report: ${JSON.stringify({user, isReady: router.isReady, showFilter})}`)
 
@@ -129,7 +132,7 @@ export default function Report() {
 }
 
 export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
-    showFilter: boolean,
+    showFilter: string[],
     user: IGetUser|null,
     year: string,
     report: string,
@@ -141,7 +144,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const translationQuery = useTranslation()
     const _ = useTrans()
     const yearState = useState(year)
-    const schoolsQuery = useSchools(value(yearState), showFilter)
+    const schoolsQuery = useSchools(value(yearState), showFilter.includes("school"))
     const pollIdsState = useState<string[]>(pollIds)
 
     console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
@@ -177,7 +180,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
 }
 
 function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, translations, pollIdsState, schools, yearState}:{
-    showFilter: boolean,
+    showFilter: string[],
     report: string,
     schoolId: string,
     schoolSecret: string,
@@ -225,11 +228,12 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
 
     return <>
         { /*JSON.stringify({stats_schools: stats.schools})*/ }
-        { showFilter && <div style={{
+        { showFilter.length>0 && <div style={{
             paddingBottom:"1em",
             paddingTop:"1em",
         }}>
             <Filter 
+                fields={showFilter}
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 
@@ -270,7 +274,8 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
         }    
 }
 
-function Filter({schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
+function Filter({fields, schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
+    fields: string[],
     schoolIdState: State<string>,
     cityState: State<string>,
     formState: State<string>,
@@ -294,22 +299,25 @@ function Filter({schoolIdState, cityState, formState, classState, yearState, sch
     const _ = useTrans()
     return <>
         { /*JSON.stringify({schools,citiesInfo})*/ }
-        {_("Filtra")}: {}
+        {_("Filtra")}: {fields.includes("year") &&
         <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
             <option value=''>{_("tutti gli anni")}</option>
             {[2023,2024].map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
-        </select> {}
+        </select>} {}
+        {fields.includes("city") &&
         <select value={value(cityState)} onChange={evt => {
             set(schoolIdState,'')
             set(cityState,evt.target.value)
         }}>
             <option value=''>{_("tutte le città")}</option>
             {citiesInfo.map(info => <option key={info.city} value={info.city}>{_.locale === 'fu' ? (map_city_fu[info.city] || info.city) : info.city}</option>)}
-        </select> {}
+        </select>} {}
+        { fields.includes("school") &&
         <select value={value(schoolIdState)} onChange={evt => set(schoolIdState,evt.target.value)}>
             <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
-        </select> {}
+        </select>} {}
+        { fields.includes("class") && 
         <select value={value(classState)} onChange={evt => set(classState,evt.target.value)}>
             <option value=''>{_("tutte le classi")}</option>
             {classes.map(c => <option key={c} value={c}>{{
@@ -318,11 +326,12 @@ function Filter({schoolIdState, cityState, formState, classState, yearState, sch
                 '3': _("classi terze"),
                 '4': _("classi quarte"),
                 '5': _("classi quinte") }[c]}</option>)}
-        </select> {}
+        </select>} {}
+        { fields.includes("form") &&
         <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
             <option value=''>{_("tutti i questionari")}</option>
             {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
-        </select> {}
+        </select>} {}
     </>
 }
 
