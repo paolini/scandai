@@ -13,7 +13,8 @@ export default function VerifyRequestPage() {
       <div className="card p-5">
         <h1>Controlla la tua email</h1>
         <p>Ti abbiamo inviato un messaggio con le istruzioni per entrare.</p>
-        <p>Puoi chiudere questa pagina</p>
+        <p>Se non lo trovi, controlla la cartella spam.</p>
+        <p>Puoi chiudere questa pagina.</p>
       </div>
     </div>
   )
