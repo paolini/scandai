@@ -153,12 +153,15 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
         trans: [_]
     })}`)
 
+    
     if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
     if (schoolsQuery.error) return <Error>{_("Errore caricamento")} ({`${schoolsQuery.error}`} [sq])</Error>
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
     if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
     if (translationQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
     if (schoolsQuery.data === undefined) return <Error>{_("undefined ")} (sq)</Error>
+    // se schoolsQuery è disabilitata apparentemente schoolsQuery.data={} e non undefined
+
     const translations = translationQuery.data.data
     
     return <Page header={!!user}>
@@ -172,7 +175,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             schoolSecret={schoolSecret}
             adminSecret={adminSecret}
             translations={translations}
-            schools={schoolsQuery.data.data}
+            schools={schoolsQuery.data.data || []}
             yearState={yearState}
         />
     </Page>
