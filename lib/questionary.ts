@@ -320,6 +320,11 @@ const questionary: IQuestionary = {
         it: `Dai una autovalutazione delle tue competenze linguistiche 
           compilando la tabella seguente. I livelli di
           competenza utilizzati sono: livello A (principiante), livello B (intermedio), livello C (avanzato)`,
+        fu: `Prove a dâ une autovalutazion des tôs competencis linguistichis
+          inte tabelle chi sot. I nivei di competence che tu puedis doprâ
+          a son: nivel A (principiant), nivel B (intermedi), nivel C (avanzât)`,
+        en: `Please give a self-evaluation of your language proficiency in the following table.
+          The levels of proficiency are: level A (beginner), level B (intermediate), level C (advanced)`,
       },
       code: "2.2.1",
     },
@@ -705,6 +710,11 @@ const questionary: IQuestionary = {
              Il cuestionari al è anonim: esprimiti cun libertât e scletece!
              Grazie pe colaborazion!
         `,
+        en: `Dear student, please help us by answering the following questions about the languages used in different communication settings of your life 
+             (your family, your friend group, at school...). This survey lets us collect information to improve school activities and to assess possible activities 
+             to offer to your class and your school. The survey is anonymous: please share your thoughts in freedom and sincerity.
+             Thank you for your help!
+        `,
       },
       elements : [
         { 
@@ -712,13 +722,15 @@ const questionary: IQuestionary = {
           title: {
             it: "Istantanea linguistica",
             fu: "Istantanie linguistiche",
+            en: "Short linguistic survey",
           },
         },
         {
           element: "title",
           title: {
             it: "Lingue parlate e contesti comunicativi",
-            fu: "Langhis feveladis e contescj comunicatîfs",
+            fu: "Lenghis feveladis e contescj comunicatîfs",
+            en: "Spoken languages and communication settings",
           },
         },
         { 
@@ -731,6 +743,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Competenza linguistica orale e scritta",
             fu: "Competence linguistiche orâl e scrite",
+            en: "Oral and written language proficiency",
           },
         },
         { 
