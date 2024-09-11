@@ -302,6 +302,7 @@ const questionary: IQuestionary = {
       question: {
         it: "Quali lingue vengono abitualmente utilizzate nella tua famiglia? (puoi indicare più di una risposta)",
         fu: "Cualis lenghis si doprìno in mût abituâl te tô famee? (tu puedis segnâ plui di une rispueste)", 
+        en: "What languages are usually used in your family? (you can choose more than one answer)",
       },
       // la risposta viene memorizzata con questo codice, 
       // corrispondente alla prima domanda del questionario completo
@@ -312,6 +313,7 @@ const questionary: IQuestionary = {
       question: {
         it: "Quali lingue vengono abitualmente utilizzate nel tuo gruppo di amici? (puoi indicare più di una risposta)",
         fu: "Cualis lenghis si doprìno in mût abituâl tal to grup di amîs? (tu puedis segnâ plui di une rispueste)", 
+        en: "What languages are usually used in your friend group? (you can choose more than one answer)",
       },
     },
     "competences": {
