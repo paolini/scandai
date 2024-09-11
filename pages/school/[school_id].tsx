@@ -12,9 +12,7 @@ import Input from '@/components/Input'
 import { value, set } from '@/lib/State'
 import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
-import questionary from '@/lib/questionary'
-import useSessionUser from '@/lib/useSessionUser'
-import { formatDate, formatTime } from '@/lib/utils'
+import { formatDate, formatTime, currentSchoolYear } from '@/lib/utils'
 import { useTrans } from '@/lib/trans'
 
 function useRouterQuery(key: string): string | null {
@@ -48,6 +46,7 @@ function School({ school, mutate } : {
     const modified = value(nameState) !== school.name || value(cityState) !== school.city || value(cityFuState) !== school.city_fu
     const router = useRouter()
     const addMessage = useAddMessage()
+    const year = currentSchoolYear()
 
     return <>
         <Card className="my-4">
@@ -166,7 +165,7 @@ function School({ school, mutate } : {
     }
 
     function reportUrl() {
-        return `/report?school_id=${school._id}`
+        return `/report?school_id=${school._id}&year=${year}`
     }
 
     function reportAbsoluteUrl(form: string) {
