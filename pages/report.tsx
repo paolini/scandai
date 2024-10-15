@@ -414,11 +414,36 @@ function CompetenceLegend({title}:{
     return <Item title={title}>
         <b>{_("Legenda")}</b>
         <br/>
-        <i>{_("abilità")}:</i>
-        <ul>
-            {competences.map(c =>
-                <li key={c.code}>{c.code}: {c[_.locale]}</li>)}                
-        </ul>
+        <Table>
+            <tr>
+                <td>CO</td>
+                <td>CS</td>
+                <td>PO</td>
+                <td>PS</td>     
+            </tr>
+            <tr>
+                <td>{_("comprensione orale")}</td>
+                <td>{_("comprensione scritta")}</td>
+                <td>{_("produzione orale")}</td>
+                <td>{_("produzione scritta")}</td>
+            </tr>
+        </Table>
+        <Table>
+            <tr>        
+                <td>{_("abilità")}</td>
+                <td>{_("livello")} 0</td>   
+                <td>{_("livello")} A</td>   
+                <td>{_("livello")} B</td>
+                <td>{_("livello")} C</td>
+            </tr>
+            <tr>
+                <td>{_("valore dichiarato")}</td>
+                <td> 0-1-2</td>
+                <td> 3-4-5</td>
+                <td> 6-7</td>
+                <td> 8-9-10</td>
+            </tr>
+        </Table>
     </Item>
 }
 
