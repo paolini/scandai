@@ -437,6 +437,13 @@ function CompetenceLegend({title}:{
                 <td>{_("livello")} C</td>
             </tr>
             <tr>
+                <td>{_("competenza")}</td>
+                <td>{_("nulla")}</td>
+                <td>{_("iniziale")}</td>
+                <td>{_("intermedia")}</td>
+                <td>{_("avanzata")}</td>
+            </tr>
+            <tr>
                 <td>{_("valore dichiarato")}</td>
                 <td> 0-1-2</td>
                 <td> 3-4-5</td>
