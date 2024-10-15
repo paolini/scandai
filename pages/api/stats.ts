@@ -315,11 +315,11 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                     q = {
                         question,
                         type: question.type,
-                        count: 0,
-                        countPositive: 0,
-                        countAnswers: 0,
-                        answers: {},
-                        counts: [],
+                        count: 0, // numero di risposte esaminate
+                        countPositive: 0, // numero di risposte con almeno una lingua
+                        countAnswers: 0, // numero totale di lingue scelte
+                        answers: {}, // numero di persone che hanno scelto questa lingua
+                        counts: [], // quanti parlano quante lingue
                     }
                     questions[code] = q
                 }
