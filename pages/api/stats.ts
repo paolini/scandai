@@ -174,6 +174,7 @@ export interface IChooseLanguageQuestionStat {
     countPositive: number, // numero di persone che hanno risposto con almeno una lingua
     countAnswers: number, // numero di lingue che sono state scelte
     answers: IChooseLanguageStat,
+    singleAnswers: IChooseLanguageStat, // numero di persone che hanno scelto solo questa lingua
     counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
 }
 
@@ -319,6 +320,7 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                         countPositive: 0, // numero di risposte con almeno una lingua
                         countAnswers: 0, // numero totale di lingue scelte
                         answers: {}, // numero di persone che hanno scelto questa lingua
+                        singleAnswers: {}, // numero di persone che hanno scelto solo questa lingua
                         counts: [], // quanti parlano quante lingue
                     }
                     questions[code] = q
@@ -343,6 +345,10 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                     q.countAnswers ++
                     if (lang in q.answers) q.answers[lang]++
                     else q.answers[lang] = 1
+                    if (answer.length === 1) {
+                        if (lang in q.singleAnswers) q.singleAnswers[lang]++
+                        else q.singleAnswers[lang] = 1
+                    }
                 }
             } else if (question.type === 'map-language-to-competence') {
                 let q = questions[code]

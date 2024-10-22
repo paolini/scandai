@@ -845,12 +845,25 @@ function TableChooseLanguageQuestion({stat, count, t}: {
             </tr>}
             { (count === 'positive' || count === 'both') &&
             <tr>
-                <th>{count === 'both' ? _("su positivi") : _("percentuale") }</th>
+                <th>{count === 'both' ? _("su positivi") : _("%") }</th>
                     {Object.entries(stat.answers).map(([key, val])=>
                 <td key={key}>
                     {stat.count && `${Math.round(val*100/stat.countPositive)}%`}
                 </td>)}
             </tr>}
+            <tr>
+                <th>{_("monolingue")}</th>
+                {Object.entries(stat.answers).map(([key,val]) =>
+                    <td key={key}>
+                        { stat.singleAnswers[key] || ""}
+                    </td>)}
+            </tr>
+            <tr>
+                <th>{_("risposte")}</th>
+                <td colSpan={Object.keys(stat.answers).length}>
+                    {stat.countAnswers}
+                </td>
+            </tr>
         </tbody>
     </Table>
     <p className="mx-2" style={{fontSize:"smaller"}}>
