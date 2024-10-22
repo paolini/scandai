@@ -737,7 +737,12 @@ const questionary: IQuestionary = {
         },
         { 
           element: "questions",
-          questions: [ "family", "friends" ],
+          questions: [ 
+            "family", 
+            //"friends", // rimossa in favore delle due domande successive
+             "1.2.a.1", 
+             "1.2.b.1",
+          ],
         },
         { element: "newpage" },
         {
@@ -779,7 +784,7 @@ const questionary: IQuestionary = {
                 fu: "Inte mê famee pal solit si fevele",
               },
             },
-            {
+/*            {
               element: "chart",
               question: "friends", 
               title: {
@@ -787,7 +792,7 @@ const questionary: IQuestionary = {
                 en: "With my friends, we habitually speak",
                 fu: "Cui miei amis pal solit si fevele",
               },
-            },
+            },*/
             {
               element: "chart",
               variant: "count",
@@ -959,7 +964,7 @@ const questionary: IQuestionary = {
             },
           ],    /* Fine Report del questionario lungo */    
         },
-      /* Report del questionario breve */
+      /* Report del questionario breve -- attualmente non utilizzato!*/
       short: { elements: [
         {
           element: "title",
