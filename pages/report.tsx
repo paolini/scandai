@@ -414,37 +414,23 @@ function CompetenceLegend({title}:{
     return <Item title={title}>
         <b>{_("Legenda")}</b>
         <br/>
-        <Table>
-            <tr>
-                <td>CO</td>
-                <td>CS</td>
-                <td>PO</td>
-                <td>PS</td>     
+        <Table  style={{fontSize: "75%"}}>
+            <tr style={{background: "#ced4da"}}>
+                <th>{_("abilità")}</th>
+                <td>CO<br />{_("comprensione orale")}</td>
+                <td>CS<br />{_("comprensione scritta")}</td>
+                <td>PO<br />{_("produzione orale")}</td>
+                <td>PS<br />{_("produzione scritta")}</td>
             </tr>
-            <tr>
-                <td>{_("comprensione orale")}</td>
-                <td>{_("comprensione scritta")}</td>
-                <td>{_("produzione orale")}</td>
-                <td>{_("produzione scritta")}</td>
+            <tr style={{background: "#e9ecef"}}>
+                <th>{_("competenza")}</th>
+                <td>0 {_("nulla")}</td>
+                <td>A {_("iniziale")}</td>
+                <td>B {_("intermedia")}</td>
+                <td>C {_("avanzata")}</td>
             </tr>
-        </Table>
-        <Table>
-            <tr>        
-                <td>{_("abilità")}</td>
-                <td>{_("livello")} 0</td>   
-                <td>{_("livello")} A</td>   
-                <td>{_("livello")} B</td>
-                <td>{_("livello")} C</td>
-            </tr>
-            <tr>
-                <td>{_("competenza")}</td>
-                <td>{_("nulla")}</td>
-                <td>{_("iniziale")}</td>
-                <td>{_("intermedia")}</td>
-                <td>{_("avanzata")}</td>
-            </tr>
-            <tr>
-                <td>{_("valore dichiarato")}</td>
+            <tr style={{background: "#e9ecef"}}>
+                <th>{_("valore dichiarato")}</th>
                 <td> 0-1-2</td>
                 <td> 3-4-5</td>
                 <td> 6-7</td>
@@ -851,15 +837,15 @@ function TableChooseLanguageQuestion({stat, count, t}: {
                     {stat.count && `${Math.round(val*100/stat.countPositive)}%`}
                 </td>)}
             </tr>}
-            <tr>
-                <th>{_("uso esclusivo")}</th>
+            <tr className="uso-esclusivo">
+                <td>{_("uso esclusivo")}</td>
                 {Object.entries(stat.answers).map(([key,val]) =>
                     <td key={key}>
                         { stat.singleAnswers[key] || ""}
                     </td>)}
             </tr>
-            <tr>
-                <th>%</th>
+            <tr className="uso-esclusivo">
+                <td>%</td>
                 {Object.entries(stat.answers).map(([key,val]) =>
                     <td key={key}>
                         { stat.singleAnswers[key] && `${Math.round(stat.singleAnswers[key]*100/stat.countPositive)}%` || ""}
