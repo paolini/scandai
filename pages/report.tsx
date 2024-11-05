@@ -18,7 +18,7 @@ import {
   } from 'chart.js';
 import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Nav, NavItem, NavDropdown } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 import Link from 'next/link'
@@ -146,6 +146,10 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const yearState = useState(year)
     const schoolsQuery = useSchools(value(yearState), showFilter.includes("school"))
     const pollIdsState = useState<string[]>(pollIds)
+    const router = useRouter()
+    const locale = router.locale || 'it'
+    const profile = useProfile()
+    const isAuthenticated = !!profile
 
     console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
         t_data: translationQuery.data!==undefined,
@@ -165,7 +169,18 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const translations = translationQuery.data.data
     
     return <Page header={!!user}>
-        <div className="container noPrint">
+        { !isAuthenticated &&
+        <>
+                {_("Lingua")}: {}
+                {locale == 'fu' ? <b style={{color: "blue"}}>{_("friulano")}</b> :
+                    <a href="#" onClick={() => changeLocale('fu')}>{_("friulano")}</a>} {}
+                {locale == 'it' ? <b style={{color: "blue"}}>{_("italiano")}</b> :
+                    <a href="#" onClick={() => changeLocale('it')}>{_("italiano")}</a>} {}
+                {locale == 'en' ? <b style={{color: "blue"}}>{_("inglese")}</b> :
+                    <a href="#" onClick={() => changeLocale('en')}>{_("inglese")}</a>} 
+        </> 
+        }
+            <div className="container noPrint">
         </div>
         <Stats 
             showFilter={showFilter}
@@ -180,6 +195,9 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
         />
     </Page>
 
+    function changeLocale(locale: 'it' | 'en' | 'fu') {
+        router.push(router.asPath, undefined, { locale })
+    }
 }
 
 function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, translations, pollIdsState, schools, yearState}:{
