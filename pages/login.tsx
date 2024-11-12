@@ -9,6 +9,7 @@ import { useState } from "react"
 import Error from '@/components/Error'
 import { useConfig } from '@/lib/api'
 import Loading from "@/components/Loading";
+import { useTrans } from '@/lib/trans'
 
 export default function SignIn({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()
@@ -64,13 +65,21 @@ function EmailLogin({querystring, csrfToken}: {
   querystring: string,
   csrfToken: string|undefined,
 }) {
+  const _ = useTrans()
+  const [email, setEmail] = useState("")
+  const [isTeacher, setIsTeacher] = useState(false)
+
   return <form method="post" action={`/api/auth/signin/email${querystring}`}>
     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
     <label htmlFor="email">
         Inserisci il tuo indirizzo email<br/>
-        <input type="email" id="email" name="email" />
+        <input type="email" id="email" name="email" value={email} onChange={evt => setEmail(evt.target.value)}/>
     </label>
-    {} <Button type="submit">Inviami Email</Button>
+    <br />
+    <input type="checkbox" id="teacher" name="teacher" checked={isTeacher} onChange={(evt) => setIsTeacher(!!evt.target.checked)} /> {} 
+    <label htmlFor="teacher">{_("Dichiaro di essere un insegnante")}</label>
+    <br/>
+    <Button disabled={!email.includes('@') || !isTeacher} type="submit">Inviami Email</Button>
     <br />
     Ti invieremo un messaggio per entrare nel sito.
   </form>
