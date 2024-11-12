@@ -608,8 +608,45 @@ function PreferredPie({ stats, title} : {
     let items = Object.entries(stats).filter(([k ,v]) => k!=='_total')
     let sum = items.reduce((n, [k,v]) => n+v, 0)
     if (sum < total) items.push(['', total-sum])
-    return <Item>
-        <Doughnut
+    return <Item small={true}>
+        <Bar             
+            options = {{
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stacked: true,
+                    },
+                    x: {
+                        beginAtZero: true,
+                        stacked: true,
+                    }
+                },
+                indexAxis: 'y',
+                plugins: {
+                    tooltip: {
+                        enabled: false,
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return 'label'
+                            },
+                        },
+                    },
+                    datalabels: {
+                        formatter: (value) => `${Math.round(value*100/total)}%`,
+                    }
+                }
+            }}
+                 data={{
+                    labels: [''],
+                    datasets: 
+                        items.map(([k,v]) => ({
+                            label: questionary_language(k,_.locale) || k,
+                            data: [v],
+                            formatter: (value: number) => `${Math.round(value*100/total)}%`,
+                        }))
+                }}
+        />
+        { false && <Doughnut
             options={{
                 responsive: true,
                 plugins: {
@@ -636,7 +673,7 @@ function PreferredPie({ stats, title} : {
                     },
                 ],
             }} 
-        />
+        />}
     </Item>
 }
 
@@ -899,6 +936,47 @@ function GraphChooseLanguageQuestionCounts({item,stat}: {
 
     const total = data.reduce((acc, [v,i])=>acc+v, 0)
 
+    return <Bar             
+        options = {{
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stacked: true,
+                },
+                x: {
+                    beginAtZero: true,
+                    stacked: true,
+                }
+            },
+            indexAxis: 'y',
+            plugins: {
+                tooltip: {
+                    enabled: false,
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return 'label'
+                        },
+                    },
+                },
+                datalabels: {
+                    formatter: function(value) { 
+                        const p = Math.round(value*100/total)
+                        return p>5 ? `${p}%` : null
+                    },
+                }
+            }
+        }}
+            data={{
+                labels: [''],
+                datasets: 
+                    data.map(([v,i]) => ({
+                        label: `${i}`,
+                        data: [v],
+                    }))
+            }}
+    />
+
+    // c'era la ciambella
     return <Doughnut
         options={{
             responsive: true,
