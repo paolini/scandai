@@ -59,6 +59,8 @@ export default function Users() {
                     <th>{_("name")}</th>
                     <th>{_("accounts")}</th>
                     <th>{_("viewer")}</th>
+                    <th>{_("teacher")}</th>
+                    <th>{_("student")}</th>
                     <th>{_("admin")}</th>
                     { isSuper && <th>{_("super")}</th>}
                     { value(showDeleteState) && <th>{_("elimina")}</th> }
@@ -74,6 +76,16 @@ export default function Users() {
                         <Switch
                         checked={!!user.isViewer}
                         onChange={(checked) => {patch(user, {isViewer: checked})}} />
+                    </td>
+                    <td>
+                        <Switch
+                        checked={!!user.isTeacher}
+                        onChange={(checked) => {patch(user, {isTeacher: checked})}} />
+                    </td>
+                    <td>
+                        <Switch
+                        checked={!!user.isStudent}
+                        onChange={(checked) => {patch(user, {isStudent: checked})}} />
                     </td>
                     <td>
                         <Switch
@@ -141,7 +153,7 @@ export default function Users() {
 function NewUser({done }:{
         done?: () => void
 }) {
-    const userState = useState<IPostUser>({name: "", email: "", username: ""})
+    const userState = useState<IPostUser>({name: "", email: "", username: "", isTeacher: false})
     const addMessage = useAddMessage()
     const _ = useTrans()
 

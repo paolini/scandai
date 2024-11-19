@@ -27,6 +27,8 @@ export default async function handler(
                 name: user.name,
                 username: user.username,
                 email: user.email,
+                isTeacher: user.isTeacher,
+                isStudent: user.isStudent,
                 isAdmin: user.isAdmin,
                 isSuper: user.isSuper,
                 isViewer: user.isViewer,
@@ -37,8 +39,12 @@ export default async function handler(
         }
 
         if (req.method === 'PATCH') {
-            const { name } = JSON.parse(req.body)
-            const out = await User.findOneAndUpdate({_id: sessionUser._id}, {name})
+            const { name, isTeacher, isStudent } = JSON.parse(req.body)
+            const out = await User.findOneAndUpdate({_id: sessionUser._id}, {
+                name,
+                isTeacher,
+                isStudent,
+            })
             if (!out) {
                 return res.status(404).json({error: 'not found'})
             }

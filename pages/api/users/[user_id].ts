@@ -30,7 +30,7 @@ export default async function handler(
             } catch(error) {
                 return res.status(400).json({error: 'invalid json'})
             }
-            for (const key of ["isAdmin","isViewer"]) {
+            for (const key of ["isAdmin","isViewer","isTeacher","isStudent"]) {
                 if (Object.keys(body).includes(key)) {
                     aUser[key] = body[key]
                 }

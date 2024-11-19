@@ -1,10 +1,11 @@
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
 import Polls from '@/components/Polls'
-import SetUserName from '@/components/SetUserName'
+import SetProfile from '@/components/SetProfile'
 import { useProfile, useProfileQuery } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
 import Title from '@/components/Title'
@@ -49,8 +50,10 @@ function Home({config}:{config:Config}) {
 
   return <Page>
     <Title />
-    {!profile.name && <SetUserName profile={profile} mutate={profileQuery.mutate}/>}
-    <p>{_("Benvenuto %!", profile.name || profile.username || profile.email)}</p>
-    <Polls />  
+    {(!profile.name || !profile.isAdmin || !profile.isTeacher || !profile.isViewer) && <SetProfile profile={profile} mutate={profileQuery.mutate}/>}
+    { profile.name
+      && (profile.isTeacher || profile.isAdmin || profile.isViewer) 
+      && <p>{_("Benvenuto %!", profile.name || profile.username || profile.email)}</p>}
+    { (profile.isTeacher || profile.isAdmin) && <Polls /> }
   </Page>
 }

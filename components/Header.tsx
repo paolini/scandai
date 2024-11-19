@@ -15,6 +15,7 @@ export default function Header() {
   const router = useRouter()
   const { data: session } = useSession()
   const isAdmin = profile?.isAdmin
+  const isTeacher = profile?.isTeacher
   const isViewer = profile?.isViewer
   const isSuper = profile?.isSuper
   const isAuthenticated = !!profile
@@ -31,10 +32,10 @@ export default function Header() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          { isAdmin && <Link href={`/${locale}/report?year=${year}`}>
+          { (isAdmin || isViewer) && <Link href={`/${locale}/report?year=${year}`}>
               {_("Database")}
             </Link> }
-          { (isAuthenticated && !isViewer) && <Link href={`/${locale}/`}>
+          { (isTeacher||isAdmin) && <Link href={`/${locale}/`}>
               {_("Questionari")}
             </Link> }
           { isAdmin && 
