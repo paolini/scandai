@@ -67,7 +67,6 @@ function EmailLogin({querystring, csrfToken}: {
 }) {
   const _ = useTrans()
   const [email, setEmail] = useState("")
-  const [isTeacher, setIsTeacher] = useState(false)
 
   return <form method="post" action={`/api/auth/signin/email${querystring}`}>
     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
@@ -76,10 +75,7 @@ function EmailLogin({querystring, csrfToken}: {
         <input type="email" id="email" name="email" value={email} onChange={evt => setEmail(evt.target.value)}/>
     </label>
     <br />
-    <input type="checkbox" id="teacher" name="teacher" checked={isTeacher} onChange={(evt) => setIsTeacher(!!evt.target.checked)} /> {} 
-    <label htmlFor="teacher">{_("Dichiaro di essere un insegnante")}</label>
-    <br/>
-    <Button disabled={!email.includes('@') || !isTeacher} type="submit">Inviami Email</Button>
+    <Button disabled={!email.includes('@')} type="submit">Inviami Email</Button>
     <br />
     Ti invieremo un messaggio per entrare nel sito.
   </form>
