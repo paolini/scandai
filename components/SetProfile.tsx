@@ -35,7 +35,7 @@ export default function SetProfile({profile, mutate}:{
 
     if (alertViewer) return <div className="alert alert-info" role="alert">
         Non sei ancora abilitato come visualizzatore. 
-        Contatta l'amministratore del sistema e chiudi questa pagina.
+        Contatta l&apos;amministratore del sistema e chiudi questa pagina.
     </div>
 
     if (profile.name && (profile.isTeacher || profile.isViewer || profile.isAdmin)) return null

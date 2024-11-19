@@ -153,7 +153,11 @@ export default function Users() {
 function NewUser({done }:{
         done?: () => void
 }) {
-    const userState = useState<IPostUser>({name: "", email: "", username: "", isTeacher: false})
+    const userState = useState<IPostUser>({
+        name: "", email: "", username: "", 
+        isTeacher: false,
+        isStudent: false,
+    })
     const addMessage = useAddMessage()
     const _ = useTrans()
 

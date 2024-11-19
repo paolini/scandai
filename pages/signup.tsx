@@ -49,7 +49,9 @@ export default function SignupPage({}) {
                 name: value(nameState),
                 email: value(emailState),
                 password: value(passwordState),
-                passwordAgain: value(passwordAgainState)
+                passwordAgain: value(passwordAgainState),
+                isTeacher: false,
+                isStudent: false,
             } as IPostUser)
         })
         if (response.ok) {
