@@ -62,7 +62,7 @@ export default function Users() {
                     <th>teacher</th>
                     <th>student</th>
                     <th>admin</th>
-                    { isSuper && <th>"super</th>}
+                    { isSuper && <th>super</th>}
                     { value(showDeleteState) && <th>{_("elimina")}</th> }
                     { value(showPasswordState) && <th>{_("password")}</th>}
                 </tr>
