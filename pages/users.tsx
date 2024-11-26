@@ -55,14 +55,14 @@ export default function Users() {
         <table className="table">
             <thead>
                 <tr>
-                    <th>{_("email")}</th>
-                    <th>{_("name")}</th>
-                    <th>{_("accounts")}</th>
-                    <th>{_("viewer")}</th>
-                    <th>{_("teacher")}</th>
-                    <th>{_("student")}</th>
-                    <th>{_("admin")}</th>
-                    { isSuper && <th>{_("super")}</th>}
+                    <th>email</th>
+                    <th>name</th>
+                    <th>accounts</th>
+                    <th>viewer</th>
+                    <th>teacher</th>
+                    <th>student</th>
+                    <th>admin</th>
+                    { isSuper && <th>"super</th>}
                     { value(showDeleteState) && <th>{_("elimina")}</th> }
                     { value(showPasswordState) && <th>{_("password")}</th>}
                 </tr>
