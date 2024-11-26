@@ -816,7 +816,7 @@ const questionary: IQuestionary = {
               element: "chart",
               title: {
                 it: "A che età hai cominciato a parlare le lingue che conosci?",
-                en: "A che età hai cominciato a parlare le lingue che conosci?",
+                en: "At what age did you start speaking the languages you know?",
                 fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
               }, 
               question: "2.1.1",
