@@ -803,33 +803,41 @@ const questionary: IQuestionary = {
                 fu: "Numar di lenghis feveladis in famee",            
               },
             },
-            {
-              element: "chart",
+            { element: "block",
               title: {
                 it: "Competenze linguistiche autovalutate",
                 en: "Self-assessed language skills",
                 fu: "Competencis linguistichis autovalutadis",
               },
-              question: "2.2.1",
-            },
-            {
-              element: "chart",
-              title: {
-                it: "A che età hai cominciato a parlare le lingue che conosci?",
-                en: "At what age did you start speaking the languages you know?",
-                fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
-              }, 
-              question: "2.1.1",
-            },
-            {
-              element: "table",
-              title: {
-                it: "Valori medi delle competenze autovalutate",
-                en: "Average values of self-assessed skills",
-                fu: "Valôrs medis des competencis autovalutadis",
+              elements: [
+                {
+                  element: "chart",
+                  title: {
+                    it: "Competenze linguistiche autovalutate",
+                    en: "Self-assessed language skills",
+                    fu: "Competencis linguistichis autovalutadis",
+                  },
+                  question: "2.2.1",
+                },
+                {
+                  element: "chart",
+                  title: {
+                    it: "A che età hai cominciato a parlare le lingue che conosci?",
+                    en: "At what age did you start speaking the languages you know?",
+                    fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+                  }, 
+                  question: "2.1.1",
+                },
+              {
+                element: "table",
+                title: {
+                  it: "Valori medi delle competenze autovalutate",
+                  en: "Average values of self-assessed skills",
+                  fu: "Valôrs medis des competencis autovalutadis",
+                },
+                question: "2.2.1",
               },
-              question: "2.2.1",
-            },
+            ]},
             {
               element: "chart",
               //title: "Prova ...",
@@ -1176,10 +1184,17 @@ export type IReportQuestionElement =
   IReportChartElement |
   IReportTableElement
 
+export type IReportBlockElement = {
+  element: 'block',
+  title: LocalizedString,
+  elements: IReportElement[],
+}
+
 export type IReportGlobalElement =
   IReportTitleElement | 
   IReportInfoElement |
-  IReportPreferredElement
+  IReportPreferredElement |
+  IReportBlockElement
 
 export type IReportTitleElement = {
   element: 'title',

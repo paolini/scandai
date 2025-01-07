@@ -33,7 +33,7 @@ import {
     IMapLanguageToAgeQuestionStat,
     IPreferredLanguageCount,
 } from '@/pages/api/stats'
-import questionary, { extractLevels, trans, IReportChartElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
+import questionary, { extractLevels, trans, IReportBlockElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import Page from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
@@ -384,9 +384,29 @@ function ReportItem({ stats, item, t, pollIdsState}: {
             else return <Item title={item_title}>
                 <PreferredPie stats={stats.preferredLanguageCount} title={item_title}/>
             </Item>
+        case 'block':
+            return <BlockElement item={item} stats={stats} t={t} pollIdsState={pollIdsState}/>
         default:
             return <Error>invalid report item</Error>
     }
+}
+
+function BlockElement({item,stats,t,pollIdsState}:{
+    item: IReportBlockElement,
+    stats: IStats,
+    t: T,
+    pollIdsState: State<string[]>,
+}) {
+    const [hide, setHide] = useState<boolean>(true)
+    const _ = useTrans() 
+    return <div>
+        <Title title={item.title[_.locale]} hide={hide} setHide={setHide}/>
+        { !hide && 
+            <div className="mb-5" style={{maxWidth: 640}}>
+                {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
+            </div>
+        }
+    </div>
 }
 
 function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, JSX.Element|null] {
@@ -404,11 +424,16 @@ function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQu
     return [question, null]
 }
 
-function Title({title}:{
-    title?:string
+function Title({title, hide, setHide}:{
+    title?:string,
+    hide?:boolean,
+    setHide?: (b:boolean) => void,
 }) {
     if (!title) return null
-    return <h3 style={htmlTitleStyle}>{title}</h3>
+    return <h3 style={htmlTitleStyle}>
+        {setHide && (hide ? <span onClick={() => setHide(false)}>&#9655;</span> : hide==undefined?"":<span onClick={() => setHide(true)}>&#9661;</span>)}
+        {title}
+    </h3>
 }
 
 function Item({title, small, children}: {
@@ -1156,28 +1181,33 @@ function TableMapLanguageToCompetenceQuestion({stat, title, language}
         return levels.map(level => ({ratio: (stat[level] || 0) / total, count: stat[level] || 0}))
     }
 
-    return <Table>
-        <thead>
-            <tr>
-                <th></th>
-                {levels.map(level => <th key={level}>{level}</th>)}
-            </tr>
-        </thead>
-        <tbody>
-            {
-                Object.entries(stats.competence).map(([competence, x]) => 
-                    <tr key={competence}>
-                        <th>{competence}</th>
-                        {computeDataset(x.level).map(({ratio, count},i)=>
-                            <td key={i}>
-                                {Math.round(ratio*100)}%
-                                {} <span style={{fontSize: "70%"}}>({count})</span>
-                            </td>)}
-                    </tr>
-                )
-            }
-        </tbody>
-    </Table>
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th></th>
+                    {levels.map(level => <th key={level}>{level}</th>)}
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    Object.entries(stats.competence).map(([competence, x]) => 
+                        <tr key={competence}>
+                            <th>{competence}</th>
+                            {computeDataset(x.level).map(({ratio, count},i)=>
+                                <td key={i}>
+                                    {Math.round(ratio*100)}%
+                                    {} <span style={{fontSize: "70%"}}>({count})</span>
+                                </td>)}
+                        </tr>
+                    )
+                }
+            </tbody>
+        </Table>
+        <p className="mx-2" style={{fontSize:"smaller"}}>
+        {_("questionari")}: {stat.count}
+        </p>
+    </>
 }
 
 function TableMapLanguageToCompetence({stat, item, t} : {
@@ -1263,7 +1293,8 @@ function GraphMapLanguageToAgeQuestion({stat, t} : {
 
     const labels = languages.map(lang => t(lang))
 
-    return <Bar
+    return <>
+        <Bar
         options={{
             responsive: true,
             plugins: {
@@ -1300,5 +1331,9 @@ function GraphMapLanguageToAgeQuestion({stat, t} : {
             labels,
             datasets
         }}
-    />
+       />
+        <p className="mx-2" style={{fontSize:"smaller"}}>
+        {_("questionari")}: {stat.count}
+        </p>
+    </>
 }
