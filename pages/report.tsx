@@ -78,6 +78,13 @@ const htmlTitleStyle: CSSProperties = {
     textAlign: 'left',
 }
 
+const htmlBoldTitleStyle: CSSProperties = {
+    fontSize: 24, 
+    textAlign: 'left',
+    fontWeight: 'bold',
+    paddingBottom: '1em',
+}
+
 const itemClass="my-4"
 
 const itemStyle={maxWidth:CHART_WIDTH}
@@ -400,12 +407,13 @@ function BlockElement({item,stats,t,pollIdsState}:{
     const [hide, setHide] = useState<boolean>(true)
     const _ = useTrans() 
     return <div>
-        <Title title={item.title[_.locale]} hide={hide} setHide={setHide}/>
-        { !hide && 
+        <Title title={item.title[_.locale]} hide={hide} bold={item?.bold} setHide={setHide}/>
+        <div className={hide?"hideBlock":""}>
             <div className="mb-5" style={{maxWidth: 640}}>
                 {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
             </div>
-        }
+            <hr />
+        </div>
     </div>
 }
 
@@ -424,15 +432,16 @@ function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQu
     return [question, null]
 }
 
-function Title({title, hide, setHide}:{
+function Title({title, hide, bold, setHide}:{
     title?:string,
     hide?:boolean,
+    bold?:boolean,
     setHide?: (b:boolean) => void,
 }) {
     if (!title) return null
-    return <h3 style={htmlTitleStyle}>
-        {setHide && (hide ? <span onClick={() => setHide(false)}>&#9655;</span> : hide==undefined?"":<span onClick={() => setHide(true)}>&#9661;</span>)}
-        {title}
+    return <h3 style={bold ? htmlBoldTitleStyle : htmlTitleStyle}>
+        {setHide && (hide ? <span className="noPrint" onClick={() => setHide(false)} style={{cursor: "pointer"}} >&#9655;</span> : hide==undefined?"":<span className="noPrint" onClick={() => setHide(true)} style={{cursor:"pointer"}}>&#9661;</span>)}
+        {} {title}
     </h3>
 }
 

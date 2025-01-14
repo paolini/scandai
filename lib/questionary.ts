@@ -809,6 +809,7 @@ const questionary: IQuestionary = {
                 en: "Self-assessed language skills",
                 fu: "Competencis linguistichis autovalutadis",
               },
+              bold: true,
               elements: [
                 {
                   element: "chart",
@@ -838,127 +839,155 @@ const questionary: IQuestionary = {
                 question: "2.2.1",
               },
             ]},
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.b.1",
+            { element: "block",
+              title: {
+                it: "Lingue usate in famiglia",
+                en: "Languages used in the family",
+                fu: "Lenghis dopradis in famee",
+              },
+              bold: true,
+              elements: [
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.b.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.b.2",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.b.3",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.b.4",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.c.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.c.2",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.c.3",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.c.4",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.1.c.5",
+              },
+            ]},
+            { 
+              element: "block",
+              title: {
+                it: "Lingue usate fuori casa",
+                en: "Languages used outside home",
+                fu: "Lenghis dopradis fûr di cjase",
+              },
+              bold: true,
+              elements: [
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.a.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.a.2",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.a.3",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.b.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.b.2",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.2.b.3",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.3.a.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.3.a.2",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.3.b.1",
+              },
+              {
+                element: "chart",
+                //title: "Prova ...",
+                question: "1.3.b.2",
+              }]
             },
             {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.b.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.b.3",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.b.4",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.c.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.c.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.c.3",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.c.4",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.1.c.5",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.a.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.a.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.a.3",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.b.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.b.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.2.b.3",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.3.a.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.3.a.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.3.b.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.3.b.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.4.1",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.4.2",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.4.3",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.4.4",
-            },
-            {
-              element: "chart",
-              //title: "Prova ...",
-              question: "1.4.5",
-            },
-            {
+              element: "block",
+              title: {
+                it: "Lingue usate nei mezzi di comunicazione",
+                en: "Languages used in media",
+                fu: "Lenghis dopradis tai mieçs di comunicazion",
+              },
+              bold: true,
+              elements: [
+                {
+                  element: "chart",
+                  //title: "Prova ...",
+                  question: "1.4.1",
+                },
+                {
+                  element: "chart",
+                  //title: "Prova ...",
+                  question: "1.4.2",
+                },
+                {
+                  element: "chart",
+                  //title: "Prova ...",
+                  question: "1.4.3",
+                },
+                {
+                  element: "chart",
+                  //title: "Prova ...",
+                  question: "1.4.4",
+                },
+                {
+                  element: "chart",
+                  //title: "Prova ...",
+                  question: "1.4.5",
+                }]
+            }, {
               element: "preferred",
               title: {
                 it: "Lingua scelta per la compilazione",
@@ -1187,6 +1216,7 @@ export type IReportQuestionElement =
 export type IReportBlockElement = {
   element: 'block',
   title: LocalizedString,
+  bold?: boolean,
   elements: IReportElement[],
 }
 

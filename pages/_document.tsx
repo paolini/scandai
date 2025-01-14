@@ -6,7 +6,7 @@ export default function Document() {
     <Html lang="it">
       <Head>
       <style>
-            {`@media print {.noPrint{display: none;}}`}
+        {`@media print {.noPrint{display: none;} .hideBlock{display: "block"}}`}
       </style>
       </Head>
       <body>

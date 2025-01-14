@@ -23,3 +23,14 @@
 .uso-esclusivo {
     color: rgba(55, 55, 55, 0.624);
 }
+
+.hideBlock {
+    display: none;
+}
+
+/*
+@media print {
+    .noPrint{display: none;} 
+    .hideBlock{display: "block"}
+}
+*/
