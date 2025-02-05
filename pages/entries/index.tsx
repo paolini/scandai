@@ -9,7 +9,7 @@ import Error from '../../components/Error'
 import { formatDate, formatTime } from '../../lib/utils'
 import { useTrans } from '../../lib/trans'
 import { currentSchoolYear } from '../../lib/utils'
-import { IGetEntry } from '../../models/Entry'
+import { IGetEntry, LanguageAnswer, MapLanguageToAgeAnswer, MapLanguageToCompetenceAnswer } from '../../models/Entry'
 import questionary from '../../lib/questionary'
 
 export default function Entries({}) {
@@ -27,6 +27,14 @@ export default function Entries({}) {
             { years.map(y => <option key={y} value={y}>{y}/{y+1}</option>) }
         </select>
         <button className="mx-3" onClick={downloadCsv}>download csv</button>
+        { false &&
+        <table className="table table-bordered">
+            <tbody>
+                { csv().map(entry => <tr>
+                    { entry.map(cell => <td>{cell}</td>) }
+                </tr>)}
+            </tbody>
+        </table>}
         <Table hover>
             <thead>
                 <tr>
@@ -58,17 +66,26 @@ export default function Entries({}) {
     </Page>
 
     function downloadCsv() {
-        const question_codes = Object.keys(questionary.questions)
-        const attributes = ['_id', 'date', 'form', 'school', 'city', 'class', 'lang']
-        const csv = "data:text/tsv;charset=utf-8," 
-            + [...attributes, ...question_codes].join('\t') + '\n'
-            + entries.map(entry=>entryRow(attributes, question_codes, entry)).join('\n')
-        const encodedUri = encodeURI(csv)
+        const data = "data:text/tsv;charset=utf-8," 
+            + csv().map(row => row.join('\t')).join('\n')
+        const encodedUri = encodeURI(data)
         const link = document.createElement("a")
         link.setAttribute("href", encodedUri)
         link.setAttribute("download", `entries-${year}.csv`)
         document.body.appendChild(link)
         link.click()
+    }
+
+    function csv() {
+        const question_codes = Object.keys(questionary.questions)
+        const attributes = ['_id', 'date', 'form', 'school', 'city', 'class', 'lang']
+        const headers = [...attributes]
+        for (const code of question_codes) {
+            headers.push(...cells(code))
+        }
+        return [
+            headers,
+            ...entries.map(entry=>entryRow(attributes, question_codes, entry))]
     }
 
     function entryRow(attributes: string[], question_codes: string[], entry: IGetEntry) {
@@ -79,21 +96,87 @@ export default function Entries({}) {
                 case '_id': columns.push(entry._id); break
                 case 'date': columns.push(formatDate(entry.createdAt)); break
                 case 'form': columns.push(entry.poll?.form); break
-                case 'school': columns.push(entry.poll?.school.name); break
-                case 'city': columns.push(entry.poll?.school.city); break
+                case 'school': columns.push(entry.poll?.school?.name); break
+                case 'city': columns.push(entry.poll?.school?.city); break
                 case 'class': columns.push(`${entry.poll?.year} ${entry.poll?.class}`); break
                 case 'lang': columns.push(entry.lang); break
                 default: columns.push('???'); break
             }
         }
         for (const code of question_codes) {
-            columns.push(JSON.stringify(answers[code]) || '')
+            columns.push(...cells(code, entry))
         }
-        return columns.join('\t')
+        return columns
     }
 
     function cells(question_code: string, entry: IGetEntry|null = null) {
-        switch(questionary.questions[question_code].type) {
+        const langs = Object.keys(questionary.languages)
+        const type = questionary.questions[question_code].type
+        switch(type) {
+            case 'choose-language':
+                {
+                    const cells = []
+                    for (const lang of langs) {
+                        if (entry) {
+                            const answer = entry.answers[question_code] as LanguageAnswer|undefined
+                            if (answer) {
+                                cells.push(answer.includes(lang) ? '1' : '')
+                            } else {
+                                cells.push('')
+                            }
+                        } else {
+                            cells.push(`${question_code} ${lang}`)
+                        }
+                    }
+                    return cells
+                }
+            case 'map-language-to-competence':
+                {
+                const competences = questionary.competences.map(k=>k.code)
+                const cells = []
+                for (const lang of langs) {
+                    for (const competence of competences) {
+                        if (entry) {
+                            const answer = entry.answers[question_code] as MapLanguageToCompetenceAnswer|undefined
+                            cells.push(answer 
+                                ? ZeroToEmpty(answer[lang]?.[competence] || '')
+                                : '')
+                        } else {
+                            cells.push(`${question_code} ${lang} ${competence}`)
+                        }
+                    }
+                }
+                return cells
+            }
+            case 'map-language-to-age':
+                {
+                const cells = []
+                for (const lang of langs) {
+                    if (entry) {
+                        const answer = entry.answers[question_code] as MapLanguageToAgeAnswer|undefined
+                        if (answer) {
+                            cells.push(answer[lang] || '')
+                        } else {
+                            cells.push('')
+                        }
+                    } else {
+                        cells.push(`${question_code} ${lang}`)
+                    }
+                }
+                return cells
+            }
+            default:
+                if (!entry) return [`${question_code}>${type}`]
+                return [JSON.stringify(entry.answers[question_code]) || ''] 
+        }
+
+        function myIncludes(list: string[], item: string) {
+            if (!list) return ''
+            return list.includes(item) ? '1' : '0'
+        }
+
+        function ZeroToEmpty(val: any) {
+            return val=== '0' ? '' : val
         }
     }
 }    
