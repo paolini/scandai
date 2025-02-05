@@ -30,8 +30,8 @@ export default function Entries({}) {
         { false &&
         <table className="table table-bordered">
             <tbody>
-                { csv().map(entry => <tr>
-                    { entry.map(cell => <td>{cell}</td>) }
+                { csv().map((entry,i) => <tr key={i}>
+                    { entry.map((cell,j) => <td key={j}>{cell}</td>) }
                 </tr>)}
             </tbody>
         </table>}
