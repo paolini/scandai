@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import dayjs from 'dayjs'
 
 import Page from '../../components/Page'
 import { useEntries } from '../../lib/api'
@@ -94,7 +95,7 @@ export default function Entries({}) {
         for (const attribute of attributes) {
             switch(attribute) {
                 case '_id': columns.push(entry._id); break
-                case 'date': columns.push(formatDate(entry.createdAt)); break
+                case 'date': columns.push(formatTimestamp(entry.createdAt)); break
                 case 'form': columns.push(entry.poll?.form); break
                 case 'school': columns.push(entry.poll?.school?.name); break
                 case 'city': columns.push(entry.poll?.school?.city); break
@@ -107,6 +108,12 @@ export default function Entries({}) {
             columns.push(...cells(code, entry))
         }
         return columns
+
+        function formatTimestamp(date:string) {
+            if (!date) return ''
+            return dayjs(date).format("YYYY-MM-DDTHH:mm:ss")
+        }
+        
     }
 
     function cells(question_code: string, entry: IGetEntry|null = null) {
