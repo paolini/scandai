@@ -120,7 +120,7 @@ export default function Report() {
         router.query.school_id ? ["year","class","form"]
         : ["city","school","year","class","form"]
 
-    console.log(`Report: ${JSON.stringify({user, isReady: router.isReady, showFilter})}`)
+    // console.log(`Report: ${JSON.stringify({user, isReady: router.isReady, showFilter})}`)
 
     if (user === undefined) return <Loading /> 
 
@@ -158,11 +158,11 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const profile = useProfile()
     const isAuthenticated = !!profile
 
-    console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
-        t_data: translationQuery.data!==undefined,
-        s_loading: schoolsQuery.isLoading, s_data: schoolsQuery.data!==undefined,
-        trans: [_]
-    })}`)
+//    console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
+//        t_data: translationQuery.data!==undefined,
+//        s_loading: schoolsQuery.isLoading, s_data: schoolsQuery.data!==undefined,
+//        trans: [_]
+//    })}`)
 
     
     if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
