@@ -467,27 +467,29 @@ function CompetenceLegend({title}:{
         <b>{_("Legenda")}</b>
         <br/>
         <Table  style={{fontSize: "75%"}}>
-            <tr style={{background: "#ced4da"}}>
-                <th>{_("abilità")}</th>
-                <td>CO<br />{_("comprensione orale")}</td>
-                <td>CS<br />{_("comprensione scritta")}</td>
-                <td>PO<br />{_("produzione orale")}</td>
-                <td>PS<br />{_("produzione scritta")}</td>
-            </tr>
-            <tr style={{background: "#e9ecef"}}>
-                <th>{_("competenza")}</th>
-                <td>0 {_("nulla")}</td>
-                <td>A {_("iniziale")}</td>
-                <td>B {_("intermedia")}</td>
-                <td>C {_("avanzata")}</td>
-            </tr>
-            <tr style={{background: "#e9ecef"}}>
-                <th>{_("valore dichiarato")}</th>
-                <td> 0-1-2</td>
-                <td> 3-4-5</td>
-                <td> 6-7</td>
-                <td> 8-9-10</td>
-            </tr>
+            <tbody>
+                <tr style={{background: "#ced4da"}}>
+                    <th>{_("abilità")}</th>
+                    <td>CO<br />{_("comprensione orale")}</td>
+                    <td>CS<br />{_("comprensione scritta")}</td>
+                    <td>PO<br />{_("produzione orale")}</td>
+                    <td>PS<br />{_("produzione scritta")}</td>
+                </tr>
+                <tr style={{background: "#e9ecef"}}>
+                    <th>{_("competenza")}</th>
+                    <td>0 {_("nulla")}</td>
+                    <td>A {_("iniziale")}</td>
+                    <td>B {_("intermedia")}</td>
+                    <td>C {_("avanzata")}</td>
+                </tr>
+                <tr style={{background: "#e9ecef"}}>
+                    <th>{_("valore dichiarato")}</th>
+                    <td> 0-1-2</td>
+                    <td> 3-4-5</td>
+                    <td> 6-7</td>
+                    <td> 8-9-10</td>
+                </tr>
+            </tbody>
         </Table>
     </Item>
 }
