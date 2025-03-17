@@ -1,13 +1,15 @@
-import { useConfig } from '@/lib/api'
+import { useQuery } from '@apollo/client'
+import { ConfigQuery } from '@/lib/api'
 import Loading from '@/components/Loading'
+import Error from '@/components/Error'
 import { useTrans } from '@/lib/trans'
 
 export default function Title(){
-    const configQuery = useConfig()
+    const {data,loading,error} = useQuery(ConfigQuery)
     const _ = useTrans()
-    if (configQuery.isLoading) return <Loading />
-    if (!configQuery.data) return <>***</>
-    const config = configQuery.data
+    if (loading) return <Loading />
+    if (!data) return <Error>{`${error}`}</Error>
+    const config = data.config
     return <h2>
         {config.siteTitle[_.locale]} 
     </h2>

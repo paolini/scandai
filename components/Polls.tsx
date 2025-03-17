@@ -2,6 +2,7 @@ import { FaCirclePlus } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import { useQuery } from '@apollo/client'
  
 import { usePolls, postPoll, useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
@@ -9,22 +10,21 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get, onChange, State } from '@/lib/State'
 import { IPostPoll, IGetPoll } from '@/models/Poll'
-import { useProfile, post } from '@/lib/api'
-import { IGetUser } from '@/models/User'
+import { ProfileQuery } from '@/lib/api'
 import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
+import { User } from '@/pages/api/graphql/types'
 
 const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
-//    const { mutate } = useSWRConfig()
+    const profileQuery = useQuery(ProfileQuery)
     const currentYear = currentSchoolYear()
     const [year, setYear] = useState(`${currentYear}`)
     const years = Array.from({length: currentYear-2022}, (_,i) => currentYear - i)
     const pollsQuery = usePolls({year})
-    const profile = useProfile()
     const router = useRouter()
     const _ = useTrans()
     const newForm = router.query.new || null  
@@ -33,8 +33,11 @@ export default function Polls({}) {
     if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
         invalid form type: {JSON.stringify(newForm)}
     </Error>
-    if (pollsQuery.isLoading) return <Loading />
+    if (profileQuery.loading || pollsQuery.isLoading) return <Loading />
     if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
+    if (!profileQuery.data) return <Error>{`${profileQuery.error}`}</Error>
+
+    const profile = profileQuery.data.profile
 
     const polls = pollsQuery.data.data
     let openPolls = polls
@@ -105,7 +108,7 @@ export default function Polls({}) {
 }
 
 function PollsTable({user, polls}:{
-    user?: IGetUser|null,
+    user?: User|null,
     polls: IGetPoll[],
 }) {
     const router = useRouter()

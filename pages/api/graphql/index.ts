@@ -2,6 +2,7 @@ import { ApolloServer } from '@apollo/server'
 import { startServerAndCreateNextHandler } from '@as-integrations/next'
 import { getToken } from "next-auth/jwt"
 import type { NextRequest } from "next/server"
+import { ObjectId } from "mongodb"
 
 import { Context } from './types'
 import { resolvers } from './resolvers'
@@ -12,15 +13,17 @@ const server = new ApolloServer<Context>({
   typeDefs,
 })
 
-console.log('server', server)
-console.log(`resolvers`, resolvers)
-
 const handler = startServerAndCreateNextHandler<NextRequest,Context>(server, {
     context: async (req, res): Promise<Context> => { 
       const ctx: Context = { req, res }
       const token = await getToken({ req })
       if (!token || !token.dbUser) return ctx // not logged in
-      const user = token.dbUser
+      const db_user = token.dbUser
+      const user = {
+        ...db_user,
+        _id: new ObjectId(db_user._id),
+      }
+
       return { 
         ...ctx,
         user,

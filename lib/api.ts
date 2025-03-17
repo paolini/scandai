@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import { gql, TypedDocumentNode } from '@apollo/client'
 
 import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
@@ -7,7 +8,7 @@ import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
-import {IGetConfig} from '@/models/Config'
+import { User } from '@/pages/api/graphql/types'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (url === null) return {} // query is disabled
@@ -62,9 +63,60 @@ export async function patch(url: string, obj: WithId, querystring: string = '') 
     return res
 }
 
-export function useConfig() {
-    return useSWR<IGetConfig>([`/api/config`], fetcher)
+type Config = {
+    siteTitle: {
+        fu: string
+        it: string 
+        en: string
+    }
 }
+
+export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
+    query ConfigQuery {
+        config {
+            siteTitle {
+                fu
+                it
+                en
+            }
+        }
+    }
+`
+
+type Profile = {
+    _id: string
+    name: string
+    username: string
+    email: string
+    isTeacher: boolean
+    isStudent: boolean
+    isAdmin: boolean
+    isSuper: boolean
+    isViewer: boolean
+    image: string
+    accounts: {
+        provider: string
+    }[]
+}
+
+export const ProfileQuery: TypedDocumentNode<{ profile: User }> = gql`
+    query ProfileQuery {
+        profile {
+            _id
+            name
+            username
+            email
+            isTeacher
+            isStudent
+            isAdmin
+            isSuper
+            isViewer
+            image
+            accounts {
+                provider
+            }
+        }
+    }`
 
 export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
@@ -102,18 +154,11 @@ export async function patchUser(user: any) {
     return await patch('users', user)
 }
 
-export function useProfileQuery() {
-    return useGet<IGetUser>('profile', '')
-}
-
 /**
  * @returns {IGetUser} the current user if logged in
  * @returns {null} if not logged in
  * @returns {undefined} if loading
  */
-export function useProfile(): IGetUser | null | undefined {
-    return useProfileQuery().data
-}
 
 export async function patchProfile(user: any) {
     return await patch('profile', {...user, _id: ''})

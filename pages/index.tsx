@@ -1,28 +1,36 @@
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useQuery } from '@apollo/client'
 
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
+import Error from '@/components/Error'
 import Polls from '@/components/Polls'
 import SetProfile from '@/components/SetProfile'
-import { useProfile, useProfileQuery } from '@/lib/api'
+import { ProfileQuery } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
 import Title from '@/components/Title'
+import Provider from '@/components/Provider'
+import { useSession } from 'next-auth/react'
 
-type Config = {[key: string]: string}
+export default function Index() {
+  return <Provider>
+    <Home/>  
+  </Provider>
+}
 
-export default function Index({config}:{
-  config: Config
-}) {
+function Home() {
+  const session = useSession()
   const router = useRouter()
-  const profile = useProfile()
+  const { data, loading, error } = useQuery(ProfileQuery)
+  if (loading) return <Loading />
+  if (!data) return <Error>{`${error}`}</Error>
 
-  if (profile === undefined) return <Loading />
-  
-  if (profile === null) {
+  const profile = data.profile
+
+  if (!session) {
     router.push('/api/auth/signin')
-    return <Loading />
+    return <Loading>redirecting...</Loading>
   }
 
   if (profile.isViewer) {
@@ -30,17 +38,7 @@ export default function Index({config}:{
     return <Loading />
   }
 
-  console.log(`Index config: ${JSON.stringify(config)}`)
-
-  return <Home config={config}/>
-}
-
-function Home({config}:{config:Config}) {
-  const profileQuery = useProfileQuery()
-  const profile = profileQuery.data
   const _ = useTrans()
-
-  if (profile===undefined) return <Loading/>
 
   if (!profile) {
     /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
@@ -50,7 +48,7 @@ function Home({config}:{config:Config}) {
 
   return <Page>
     <Title />
-    {(!profile.name || !profile.isAdmin || !profile.isTeacher || !profile.isViewer) && <SetProfile profile={profile} mutate={profileQuery.mutate}/>}
+    {(!profile.name || !profile.isAdmin || !profile.isTeacher || !profile.isViewer) && <SetProfile profile={profile}/>}
     { profile.name
       && (profile.isTeacher || profile.isAdmin || profile.isViewer) 
       && <p>{_("Benvenuto %!", profile.name || profile.username || profile.email)}</p>}

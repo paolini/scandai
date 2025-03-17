@@ -1,17 +1,46 @@
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
+import { gql, TypedDocumentNode, useMutation } from '@apollo/client'
 
 import { value } from '@/lib/State'
 import { patchProfile } from '@/lib/api'
 import Input from '@/components/Input'
 import { useAddMessage } from '@/components/Messages'
-import { IGetUser } from '@/models/User'
 import { useTrans } from '@/lib/trans'
+import { User } from '@/pages/api/graphql/types'
+import Loading from './Loading'
 
-export default function SetProfile({profile, mutate}:{
-    profile: IGetUser,
-    mutate: () => void,
+const MutateProfile: TypedDocumentNode<MutateProfileResult, MutateProfileVariables> = gql`
+    mutation MutateProfile($name: String, $isTeacher: Boolean, $isStudent: Boolean) {
+        mutateProfile(name: $name, isTeacher: $isTeacher, isStudent: $isStudent) {
+            _id
+            name
+            isTeacher
+            isStudent
+        }
+    }`
+
+// Tipo per i parametri della mutation
+type MutateProfileVariables = {
+    name?: string;
+    isTeacher?: boolean;
+    isStudent?: boolean;
+  };
+  
+  // Tipo per il risultato della mutation
+  type MutateProfileResult = {
+    mutateProfile: {
+      _id: string;
+      name: string;
+      isTeacher: boolean;
+      isStudent: boolean;
+    };
+  };
+
+export default function SetProfile({profile}:{
+    profile: User,
 }) {
+    const [mutateProfile, {loading, error}] = useMutation(MutateProfile)
     const nameState = useState(profile?.name || '')
     const [what, setWhat] = useState<string>(profile.isTeacher ? "teacher" : "")
     const [alertStudent, setAlertStudent] = useState<boolean>(profile.isStudent)
@@ -19,6 +48,9 @@ export default function SetProfile({profile, mutate}:{
     const name = value(nameState)
     const addMessage = useAddMessage()
     const _ = useTrans()
+
+    if (loading) return <Loading />
+    if (error) addMessage("error", `${error}`)
 
     /*
      Chiunque può creare un profilo. 
@@ -61,17 +93,14 @@ export default function SetProfile({profile, mutate}:{
     </>
 
     async function submit() {
-        try {
-            await patchProfile({
+        await mutateProfile({
+            variables: {
                 name, 
                 isTeacher: what === "teacher", 
                 isStudent: what === "student",
-            })
-            mutate()
-            if (what=="student") setAlertStudent(true)
-            if (what=="viewer") setAlertViewer(true)
-        } catch(err) {
-            addMessage("error", `${err}`)
-        }
+            }})
+        if (what=="student") setAlertStudent(true)
+        if (what=="viewer") setAlertViewer(true)
     }
 }
+

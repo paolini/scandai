@@ -2,6 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { Button } from 'react-bootstrap'
 
+import Provider from '@/components/Provider'
 import Header from '@/components/Header'
 import { useMessagesState, Message } from '@/components/Messages'
 import { value, array, remove, State } from '@/lib/State'
@@ -19,10 +20,12 @@ export default function Page({header=true, title, children} : {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        { header && <Header /> }
-        { title && <h2>{title}</h2> }
-        <Messages messagesState={messagesState} />
-        {children}
+        <Provider>
+          { header && <Header /> }
+          { title && <h2>{title}</h2> }
+          <Messages messagesState={messagesState} />
+          {children}
+        </Provider>
       </main>
     </>
 }

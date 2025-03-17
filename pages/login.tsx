@@ -7,11 +7,10 @@ import { Button, Card } from "react-bootstrap"
 import { useState } from "react"
 
 import Error from '@/components/Error'
-import { useConfig } from '@/lib/api'
-import Loading from "@/components/Loading";
 import { useTrans } from '@/lib/trans'
+import clientPromise from "@/lib/mongodb"
 
-export default function SignIn({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function SignIn({ providers, csrfToken, siteTitle }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? undefined
   const error = searchParams.get('error')
@@ -20,17 +19,11 @@ export default function SignIn({ providers, csrfToken }: InferGetServerSideProps
   const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
   const google = Object.values(providers).find((provider) => provider.name === 'google')
   const [expanded, setExpanded] = useState(invalidCredentials)
-  const configQuery = useConfig()
 
-  if (configQuery.isLoading) return <Loading />
-  if (!configQuery.data) return <Error>Impossibile caricare la configurazione</Error>
-
-  const config = configQuery.data
- 
   return <>
     <Card> 
       <Card.Header>
-        <Card.Title>{config.siteTitle.it}: autenticazione</Card.Title>
+        <Card.Title>{siteTitle.it}: autenticazione</Card.Title>
       </Card.Header>
       <Card.Body>
         {error && !invalidCredentials && <Error>{ error }</Error>}
@@ -115,10 +108,16 @@ function CredentialsLogin({querystring,callbackUrl,csrfToken} : {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
-  
+
+  const db = (await clientPromise).db()
+
+  const result = await db.collection("configs").findOne({});
+  const siteTitle = result?.siteTitle || "*** titolo non configurato ***"
+
   // If the user is already logged in, redirect.
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
+
   if (session) {
     return { redirect: { destination: "/" } };
   }
@@ -130,6 +129,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: { 
         providers: providers ?? [],
         csrfToken,
+        siteTitle,
     },
   }
 }

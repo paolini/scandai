@@ -2,18 +2,23 @@ import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import assert from 'assert'
+import { useQuery } from '@apollo/client'
 
 import package_json from '../package.json'
-import { useProfile } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
 import { currentSchoolYear } from '@/lib/utils'
+import { ProfileQuery } from '@/lib/api'
+import Loading from './Loading'
+import Error from './Error'
 
 const Link = Nav.Link
 
 export default function Header() {
-  const profile = useProfile()
+  const {data, loading, error} = useQuery(ProfileQuery)
   const router = useRouter()
-  const { data: session } = useSession()
+  if (loading) return <Loading />
+  if (!data) return <Error>Impossibile caricare il profilo</Error>
+  const profile = data.profile
   const isAdmin = profile?.isAdmin
   const isTeacher = profile?.isTeacher
   const isViewer = profile?.isViewer
@@ -67,7 +72,7 @@ export default function Header() {
           </Nav>
           { isAuthenticated && 
           <Nav className="right">
-          {!session && <NavDropdown title="user">
+          {!profile && <NavDropdown title="user">
             <NavDropdown.Item
                 href={`/api/auth/signin`}
                 onClick={(e) => {
