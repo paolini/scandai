@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
  
-import { usePolls, postPoll, useSchools } from '@/lib/api'
+import { post, postPoll, PollsQuery, useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
@@ -24,7 +24,7 @@ export default function Polls({}) {
     const currentYear = currentSchoolYear()
     const [year, setYear] = useState(`${currentYear}`)
     const years = Array.from({length: currentYear-2022}, (_,i) => currentYear - i)
-    const pollsQuery = usePolls({year})
+    const pollsQuery = useQuery(PollsQuery, { variables: {year}})
     const router = useRouter()
     const _ = useTrans()
     const newForm = router.query.new || null  
@@ -33,13 +33,13 @@ export default function Polls({}) {
     if (Array.isArray(newForm) || ![null, "", ...formTypes].includes(newForm)) return <Error>
         invalid form type: {JSON.stringify(newForm)}
     </Error>
-    if (profileQuery.loading || pollsQuery.isLoading) return <Loading />
-    if (!pollsQuery.data) return <Error>{pollsQuery.error.message}</Error>
+    if (profileQuery.loading || pollsQuery.loading) return <Loading />
+    if (pollsQuery.error) return <Error>{`${pollsQuery.error}`}</Error>
     if (!profileQuery.data) return <Error>{`${profileQuery.error}`}</Error>
 
     const profile = profileQuery.data.profile
 
-    const polls = pollsQuery.data.data
+    const polls = pollsQuery.data?.polls || []
     let openPolls = polls
         .filter(poll => !poll.closed)
         .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
@@ -99,7 +99,7 @@ export default function Polls({}) {
         try {
             const res = await post("polls/eraseSecrets",{year})
             addMessage("warning", _("rimossi % link amministrazione", res.count))
-            pollsQuery.mutate()
+            pollsQuery.refetch()
         } catch(error) {
             addMessage("error", `${error}`)
         }

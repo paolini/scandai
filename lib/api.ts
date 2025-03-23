@@ -83,22 +83,6 @@ export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
     }
 `
 
-type Profile = {
-    _id: string
-    name: string
-    username: string
-    email: string
-    isTeacher: boolean
-    isStudent: boolean
-    isAdmin: boolean
-    isSuper: boolean
-    isViewer: boolean
-    image: string
-    accounts: {
-        provider: string
-    }[]
-}
-
 export const ProfileQuery: TypedDocumentNode<{ profile: User }> = gql`
     query ProfileQuery {
         profile {
@@ -122,9 +106,31 @@ export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
 
-export function usePolls(filter?: any, enabled=true) {
-    return useIndex<IGetPoll[]>('polls', filter, enabled)
-}
+export const PollsQuery: TypedDocumentNode<{ polls: IGetPoll[] }> = gql`
+    query PollsQuery {
+        polls {
+            _id,
+            secret,
+            adminSecret,
+            entriesCount,
+            date,
+            school {
+                _id,
+                name,
+                city,
+                city_fu,
+            }
+            createdBy {
+                _id,
+                name,
+                email,
+                image,
+                username,
+            }
+            createdAt
+        }
+    }
+`
 
 export async function postPoll(poll: IPostPoll): Promise<{data: IGetPoll}> {
     return await post<IPostPoll>('polls', poll)

@@ -58,4 +58,29 @@ export const ObjectIdType = new GraphQLScalarType({
   }
 });
 
+const Timestamp = new GraphQLScalarType({
+  name: "Timestamp",
+  description: "A custom scalar for Date",  
   
+  parseValue(value: unknown): Date {
+    switch(typeof value) {
+      case "string":
+      case "number":
+        return new Date(value); // Converte in Date
+      default:
+        throw new Error("Timestamp must be a string or a number");
+    }
+  },
+  
+  serialize(value: unknown): string {
+    if (value instanceof Date) return value.toISOString(); // Converte in stringa
+    throw new Error("Timestamp expected");
+  },
+
+  parseLiteral(ast: ValueNode): Date {
+    if (ast.kind === 'StringValue') {
+      return new Date(ast.value)
+    }
+    throw new Error("Timestamp must be a string");
+  }
+})

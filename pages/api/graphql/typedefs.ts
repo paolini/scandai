@@ -3,6 +3,8 @@ import { gql } from 'graphql-tag'
 export const typeDefs = gql`
   scalar ObjectId
 
+  scalar Timestamp
+
   type LocalizedString {
     en: String
     fu: String
@@ -17,7 +19,22 @@ export const typeDefs = gql`
     provider: String
   }
 
+  type School {
+    _id: ObjectId
+    name: String
+    city: String
+    city_fu: String
+  }
+
   type User {
+    _id: ObjectId
+    name: String
+    username: String
+    email: String
+    image: String
+  }
+
+  type Profile {
       _id: ObjectId
       name: String
       username: String
@@ -31,10 +48,22 @@ export const typeDefs = gql`
       accounts: [Account],
   } 
 
+  type Poll {
+    _id: ObjectId
+    secret: String
+    adminSecret: String
+    entriesCount: Int
+    date: String
+    school: School
+    createdBy: User
+    createdAt: Timestamp,
+  }
+
   type Query {
     hello: String
     config: Config
-    profile: User
+    profile: Profile
+    polls(year: Int): [Poll]
   }
 
   type Mutation {
