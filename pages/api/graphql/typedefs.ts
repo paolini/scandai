@@ -38,6 +38,6 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    mutateProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
+    setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
   }
   `

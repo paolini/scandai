@@ -9,10 +9,11 @@ import { useAddMessage } from '@/components/Messages'
 import { useTrans } from '@/lib/trans'
 import { User } from '@/pages/api/graphql/types'
 import Loading from './Loading'
+import Error from './Error'
 
-const MutateProfile: TypedDocumentNode<MutateProfileResult, MutateProfileVariables> = gql`
-    mutation MutateProfile($name: String, $isTeacher: Boolean, $isStudent: Boolean) {
-        mutateProfile(name: $name, isTeacher: $isTeacher, isStudent: $isStudent) {
+const SetProfileMutation: TypedDocumentNode<SetProfileResult, SetProfileVariables> = gql`
+    mutation SetProfile($name: String, $isTeacher: Boolean, $isStudent: Boolean) {
+        setProfile(name: $name, isTeacher: $isTeacher, isStudent: $isStudent) {
             _id
             name
             isTeacher
@@ -21,15 +22,15 @@ const MutateProfile: TypedDocumentNode<MutateProfileResult, MutateProfileVariabl
     }`
 
 // Tipo per i parametri della mutation
-type MutateProfileVariables = {
+type SetProfileVariables = {
     name?: string;
     isTeacher?: boolean;
     isStudent?: boolean;
   };
   
   // Tipo per il risultato della mutation
-  type MutateProfileResult = {
-    mutateProfile: {
+  type SetProfileResult = {
+    setProfile: {
       _id: string;
       name: string;
       isTeacher: boolean;
@@ -40,17 +41,16 @@ type MutateProfileVariables = {
 export default function SetProfile({profile}:{
     profile: User,
 }) {
-    const [mutateProfile, {loading, error}] = useMutation(MutateProfile)
+    const [setProfile, {loading, error}] = useMutation(SetProfileMutation)
     const nameState = useState(profile?.name || '')
     const [what, setWhat] = useState<string>(profile.isTeacher ? "teacher" : "")
     const [alertStudent, setAlertStudent] = useState<boolean>(profile.isStudent)
     const [alertViewer, setAlertViewer] = useState<boolean>(false)
     const name = value(nameState)
-    const addMessage = useAddMessage()
     const _ = useTrans()
 
     if (loading) return <Loading />
-    if (error) addMessage("error", `${error}`)
+    if (error) return <Error>{`${error}`}</Error>
 
     /*
      Chiunque può creare un profilo. 
@@ -93,12 +93,14 @@ export default function SetProfile({profile}:{
     </>
 
     async function submit() {
-        await mutateProfile({
+        await setProfile({
             variables: {
                 name, 
                 isTeacher: what === "teacher", 
                 isStudent: what === "student",
-            }})
+            },
+            refetchQueries: ['ProfileQuery'],
+        })
         if (what=="student") setAlertStudent(true)
         if (what=="viewer") setAlertViewer(true)
     }

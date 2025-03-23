@@ -28,9 +28,18 @@ function Home() {
 
   const profile = data.profile
 
-  if (!session) {
+  if (!session || !session.data) {
     router.push('/api/auth/signin')
     return <Loading>redirecting...</Loading>
+  }
+
+  if (loading) return <Loading />
+  if (error) return <Error>{`${error}`}</Error>
+
+  if (!profile) {
+    /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
+    signOut()
+    return <Loading>logging out...</Loading>
   }
 
   if (profile.isViewer) {
@@ -40,11 +49,6 @@ function Home() {
 
   const _ = useTrans()
 
-  if (!profile) {
-    /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
-    signOut()
-    return <Loading />
-  }
 
   return <Page>
     <Title />

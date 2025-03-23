@@ -31,14 +31,16 @@ export const resolvers = {
   },
 
   Mutation: {
-    profile: async (_parent: any, {name, isTeacher, isStudent}: {name: string, isTeacher: boolean, isStudent: boolean}, context: Context) => {
+    setProfile: async (_parent: any, {name, isTeacher, isStudent}: {name: string, isTeacher: boolean, isStudent: boolean}, context: Context) => {
       if (!context.user) throw new Error('not authenticated')
       const db = (await clientPromise).db()
       const collection = db.collection("users")
       const out = await collection.findOneAndUpdate({_id: context.user._id}, {
-          name,
-          isTeacher,
-          isStudent,
+          $set: {
+              name,
+              isTeacher,
+              isStudent,
+          }
       })
       if (!out) throw new Error('user not found')
       return
