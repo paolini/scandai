@@ -23,32 +23,36 @@ function Home() {
   const session = useSession()
   const router = useRouter()
   const { data, loading, error } = useQuery(ProfileQuery)
+  const _ = useTrans()
+
   if (loading) return <Loading />
   if (!data) return <Error>{`${error}`}</Error>
 
+  if (session.status === "unauthenticated") {
+    router.push('/api/auth/signin')
+    return <Loading>...</Loading>
+  }
   const profile = data.profile
 
-  if (!session || !session.data) {
-    router.push('/api/auth/signin')
-    return <Loading>redirecting...</Loading>
-  }
+  // finché session.status === "loading" risulta data.profile === null 
 
   if (loading) return <Loading />
   if (error) return <Error>{`${error}`}</Error>
 
-  if (!profile) {
+  if (session.status === "authenticated" && !profile) {
     /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
     signOut()
     return <Loading>logging out...</Loading>
   }
 
+  // profile potrebbe non esserci se la sessione è "loading"
+  // controlliamo entrambe per far contento il type checker
+  if (session.status === "loading" || !profile) return <Loading>....</Loading>
+
   if (profile.isViewer) {
     router.push('/report')
     return <Loading />
   }
-
-  const _ = useTrans()
-
 
   return <Page>
     <Title />
@@ -56,6 +60,6 @@ function Home() {
     { profile.name
       && (profile.isTeacher || profile.isAdmin || profile.isViewer) 
       && <p>{_("Benvenuto %!", profile.name || profile.username || profile.email)}</p>}
-    { (profile.isTeacher || profile.isAdmin) && <Polls /> }
+    {(profile.isTeacher || profile.isAdmin) && <Polls />}
   </Page>
 }

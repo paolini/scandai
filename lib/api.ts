@@ -83,7 +83,7 @@ export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
     }
 `
 
-export const ProfileQuery: TypedDocumentNode<{ profile: User }> = gql`
+export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
     query ProfileQuery {
         profile {
             _id
