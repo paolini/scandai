@@ -1,6 +1,7 @@
 import { useRef, CSSProperties, ReactNode, useState, ReactElement } from "react"
 import { useRouter } from 'next/router'
 import { useSearchParams } from "next/navigation"
+import { useQuery } from '@apollo/client'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -18,13 +19,13 @@ import {
   } from 'chart.js';
 import { Bar, Doughnut, Radar, } from "react-chartjs-2"
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { Table, Button, Nav, NavItem, NavDropdown } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
-import { useStats, useProfile, useTranslation, useSchools } from '@/lib/api'
+import { useStats, ProfileQuery, useTranslation, useSchools } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -34,15 +35,16 @@ import {
     IPreferredLanguageCount,
 } from '@/pages/api/stats'
 import questionary, { extractLevels, trans, IReportBlockElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
-import Page from '@/components/Page'
+import Page, { PageWithoutProvider } from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
 import State, { value, set, update } from "@/lib/State"
 import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
-import { IGetUser } from "@/models/User"
 import { requireSingle, requireArray } from "@/lib/utils"
+import { User } from "@/pages/api/graphql/types"
+import Provider from "@/components/Provider"
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -85,10 +87,6 @@ const htmlBoldTitleStyle: CSSProperties = {
     paddingBottom: '1em',
 }
 
-const itemClass="my-4"
-
-const itemStyle={maxWidth:CHART_WIDTH}
-
 const getPageMargins = () => {
     const marginTop="1cm"
     const marginRight="6cm"
@@ -106,8 +104,14 @@ type Filter = {
     form: string,
 }
 
-export default function Report() {
-    const user = useProfile()
+export default function ReportContainer() {
+    return <Provider>
+        <Report />
+    </Provider>
+}
+
+function Report() {
+    const profileQuery = useQuery(ProfileQuery)
     const router = useRouter()
     const year = requireSingle(router.query.year)
     const report = requireSingle(router.query.report, "full")
@@ -119,10 +123,13 @@ export default function Report() {
         router.query.poll ? [] : 
         router.query.school_id ? ["year","class","form"]
         : ["city","school","year","class","form"]
+    const _ = useTrans()
 
     // console.log(`Report: ${JSON.stringify({user, isReady: router.isReady, showFilter})}`)
 
-    if (user === undefined) return <Loading /> 
+    if (profileQuery.loading || !profileQuery.data) return <Loading /> 
+    const user = profileQuery.data.profile
+    if (!user) return <Error>{_("Accesso non autorizzato")}</Error>
 
     if (!router.isReady) return <Loading />
 
@@ -140,7 +147,7 @@ export default function Report() {
 
 export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
     showFilter: string[],
-    user: IGetUser|null,
+    user: User|null,
     year: string,
     report: string,
     pollIds: string[],
@@ -155,8 +162,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const pollIdsState = useState<string[]>(pollIds)
     const router = useRouter()
     const locale = router.locale || 'it'
-    const profile = useProfile()
-    const isAuthenticated = !!profile
+    const isAuthenticated = !!user
 
 //    console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
 //        t_data: translationQuery.data!==undefined,
@@ -175,7 +181,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
 
     const translations = translationQuery.data.data
     
-    return <Page header={!!user}>
+    return <PageWithoutProvider header={!!user}>
         { !isAuthenticated &&
         <>
                 {_("Lingua")}: {}
@@ -200,7 +206,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             schools={schoolsQuery.data.data || []}
             yearState={yearState}
         />
-    </Page>
+    </PageWithoutProvider>
 
     function changeLocale(locale: 'it' | 'en' | 'fu') {
         router.push(router.asPath, undefined, { locale })

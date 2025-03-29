@@ -14,21 +14,32 @@ export default function Page({header=true, title, children} : {
     }) {
     const messagesState = useMessagesState()
 
-    return <>
-      <Head>
-        <title>{(globalThis as any).SITE_TITLE}</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <Provider>
-          { header && <Header /> }
-          { title && <h2>{title}</h2> }
-          <Messages messagesState={messagesState} />
-          {children}
-        </Provider>
-      </main>
-    </>
+    return <Provider>
+      <PageWithoutProvider header={header} title={title}>
+        { children }
+      </PageWithoutProvider>
+    </Provider>
 }
+
+export function PageWithoutProvider({header=true, title, children} : {
+      header?: boolean
+      title?: string,
+      children?: React.ReactNode,
+    }) {
+  const messagesState = useMessagesState()
+  return <>
+    <Head>
+      <title>{(globalThis as any).SITE_TITLE}</title>
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+    <main>
+      { header && <Header /> }
+      { title && <h2>{title}</h2> }
+      <Messages messagesState={messagesState} />
+      {children}
+    </main>
+  </>
+} 
 
 function Messages({messagesState}: {messagesState: State<Message[]>}) {
   if (value(messagesState).length === 0) return null
