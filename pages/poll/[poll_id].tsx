@@ -1,19 +1,34 @@
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
+import { useQuery } from '@apollo/client'
 
 import Page from '@/components/Page'
-import { usePolls } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import PollAdmin from '@/components/PollAdmin'
 import { useTrans } from '@/lib/trans'
+import { PollsQuery, PollQuery } from '@/lib/api'
 
-export default function PollId({}) {
+export default function PollIdContainer() {
+    const searchParams = useSearchParams()
+    const adminSecret = searchParams.get('secret')
+    return <Page header={!adminSecret}>
+        <PollId adminSecret={adminSecret}/>
+    </Page>
+}
+
+function PollId({adminSecret}:{
+    adminSecret: string|null
+}) {
     const _ = useTrans()
     const router = useRouter()
     const poll_id = router.query.poll_id as string
-    const searchParams = useSearchParams()
-    const adminSecret = searchParams.get('secret')
+    const pollsQuery = useQuery(PollsQuery, {
+        variables: {
+            _id: poll_id,
+            adminSecret
+        }
+    })
 
     // secret can be undefined for a while: disable the query until it is set
     const pollQuery = usePolls(adminSecret
@@ -27,13 +42,9 @@ export default function PollId({}) {
 
     let poll;
     if (!pollQuery.data) {
-        return <Page>
-            <Error>{_("Errore")}: {pollQuery.error.message}</Error>
-        </Page>
+        return <Error>{_("Errore")}: {pollQuery.error.message}</Error>
     } else if (pollQuery.data.data.length !== 1) {
-        return <Page>
-            <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
-        </Page>
+        return <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
     } else {
         poll = pollQuery.data.data[0]
     }

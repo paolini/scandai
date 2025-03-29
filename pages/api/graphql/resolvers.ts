@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import randomstring from 'randomstring'
 
 import { Context } from './types'
 import clientPromise from '@/lib/mongodb'
@@ -105,13 +106,16 @@ export const resolvers = {
         adminSecret?: string,
       }, context: Context) => {
       const { user } = context
-      const $match: any = {...params}
-      if ($match.year) $match.year = schoolYearMatch($match.year)
+      const $match: any = {}
+
+      if (params.year) {
+        $match.date = schoolYearMatch(params.year)
+      }
 
       // se ho specificato un secret o un adminSecret
       // posso vedere solo quella poll 
       // ma non ho bisogno di essere autenticato            
-      if (!$match.secret && !$match.adminSecret) {
+      if (!params.secret && !params.adminSecret) {
         // set filters from user authorization
         if (user) {
             if (!user.isAdmin) {
@@ -131,8 +135,9 @@ export const resolvers = {
       ]
 
       const db = (await clientPromise).db()
-      const collection = db.collection("polls")        
-      return await collection.aggregate(pipeline).toArray()
+      const collection = db.collection("polls")
+      const data = await collection.aggregate(pipeline).toArray()
+      return data
     },
   },
 
@@ -150,6 +155,37 @@ export const resolvers = {
       })
       if (!out) throw new Error('user not found')
       return
+    },
+
+    newPoll: async(_parent: any, data: {
+      form: string, 
+      year: string,
+      class: string,
+      school: ObjectId,
+    }, context: Context) => {
+      if (!context.user) throw new Error('not authenticated')
+      const db = (await clientPromise).db()
+      const collection = db.collection("polls")
+      let secret
+      for(;;) {
+        secret = randomstring.generate({length: 6, readable: true})
+        const duplicate = await collection.findOne({secret})
+        if (duplicate === null) break
+      }
+      const schoolCollection = db.collection("schools")
+      const school = await schoolCollection.findOne({_id: new ObjectId(data.school)})
+      if (!school) throw new Error(`school not found _id: ${data.school}`)
+
+      const result = await collection.insertOne({
+          school_id: school._id,
+          "class": data.class,
+          year: data.year,
+          form: data.form,
+          secret,
+          createdBy: context.user._id,
+          date: new Date(),
+      })
+      return result.insertedId
     }
   }
 }

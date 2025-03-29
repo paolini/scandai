@@ -2,27 +2,28 @@ import { FaCirclePlus } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import { useQuery } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
+import { ObjectId } from 'mongodb'
  
-import { post, postPoll, PollsQuery, useSchools } from '@/lib/api'
+import { post, NewPollMutation, PollsQuery, useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { value, set, get, onChange, State } from '@/lib/State'
-import { IPostPoll, IGetPoll } from '@/models/Poll'
+import { IPostPoll } from '@/models/Poll'
 import { ProfileQuery } from '@/lib/api'
 import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
-import { User } from '@/pages/api/graphql/types'
+import { User, Poll } from '@/pages/api/graphql/types'
 
 const formTypes = Object.keys(questionary.forms)
 
 export default function Polls({}) {
     const profileQuery = useQuery(ProfileQuery)
     const currentYear = currentSchoolYear()
-    const [year, setYear] = useState(`${currentYear}`)
+    const [year, setYear] = useState(currentYear)
     const years = Array.from({length: currentYear-2022}, (_,i) => currentYear - i)
     const pollsQuery = useQuery(PollsQuery, { variables: {year}})
     const router = useRouter()
@@ -57,8 +58,8 @@ export default function Polls({}) {
         }
         <br />
         {_("anno scolastico")}: {}
-        <select value={year} onChange={e => setYear(e.target.value)}>
-            <option value="">tutti gli anni</option>
+        <select value={year} onChange={e => setYear(parseInt(e.target.value))}>
+            <option value="0">tutti gli anni</option>
             { years.map(year => <option key={year} value={year}>{year}/{year+1}</option>) }
         </select>
         { openPolls.length > 0 && <Card className="my-2 table-responsive">
@@ -88,7 +89,7 @@ export default function Polls({}) {
                 <Card.Body>
                     <Button variant="danger" onClick={eraseAdminLinks}>
                         {_("elimina tutti i link di amministrazione")}
-                        {year ? ` ${year}/${parseInt(year)+1}` : ""}
+                        {year ? ` ${year}/${year+1}` : ""}
                     </Button>
                 </Card.Body>
             </Card>
@@ -109,14 +110,14 @@ export default function Polls({}) {
 
 function PollsTable({user, polls}:{
     user?: User|null,
-    polls: IGetPoll[],
+    polls: Poll[],
 }) {
     const router = useRouter()
     const _ = useTrans()
 
     function navigateToPoll(
         evt: any, 
-        poll: IGetPoll) {
+        poll: Poll) {
         evt.preventDefault()
         router.push(`/poll/${poll._id}`)
     }
@@ -137,10 +138,11 @@ function PollsTable({user, polls}:{
             {polls.map(poll => 
             <tr key={poll._id.toString()}
                 onClick={(e) => navigateToPoll(e, poll) }>
-                    { user?.isAdmin && <td>
-                        { poll.createdByUser?.name 
-                            || poll.createdByUser?.username || '???'}
-                        {} &lt;{ poll.createdByUser?.email || '???' }&gt;</td>}
+                { user?.isAdmin && <td>
+                    { poll.createdBy?.name 
+                        || poll.createdBy?.username || '???'}
+                    {} &lt;{ poll.createdBy?.email || '???' }&gt;
+                </td>}
                 <td>
                     {questionary.forms[poll.form]?.name[_.locale]}
                 </td>
@@ -189,11 +191,12 @@ function NewPollButtons({ form }:{
 
 function NewPoll({ form, done }:{
     form?: string|null,
-    done?: (poll: IGetPoll|null) => void
+    done?: (poll: ObjectId|null) => void
 }) {
-    const pollState = useState<IPostPoll>({school_id: '', class: '', year: '', form: (form || 'full'), closed: false})
+    const pollState = useState({school: '', class: '', year: '', form: (form || 'full')})
     const addMessage = useAddMessage()
     const _ = useTrans()
+    const [newPollMutation, {loading, error}] = useMutation(NewPollMutation)
 
     return <Card>
         <Card.Header>
@@ -202,7 +205,7 @@ function NewPoll({ form, done }:{
         <Card.Body>
             <form>
                 { !form && <SelectForm formState={get(pollState, 'form')} />}
-                <SelectSchool schoolState={get(pollState, 'school_id')} />
+                <SelectSchool schoolState={get(pollState, 'school')} />
                 <div className="form-group">
                     <label htmlFor="year">
                         {_("anno di corso")}
@@ -231,8 +234,9 @@ function NewPoll({ form, done }:{
             </form>                                
         </Card.Body>
         <Card.Footer>
+            { error && <Error>{`${error}`}</Error>}
             <ButtonGroup>
-                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>
+                <Button variant="primary" size="lg" disabled={!isValid() || loading} onClick={submit}>
                     {_("crea")}
                 </Button>
                 <Button variant="warning" size="lg" onClick={() => (done?done(null):null)}>
@@ -244,20 +248,19 @@ function NewPoll({ form, done }:{
 
     function isValid() {
         const poll = value(pollState)
-        return poll && poll.school_id && poll.class
+        return poll && poll.school && poll.class
     }
 
     async function submit() {
-        try {
-            const {data: newPoll} = await postPoll(value(pollState))
-            // addMessage('success', 'nuovo sondaggio creato')
-            if (done) done(newPoll)
-        } catch(err) {
-            addMessage('error', `${err}`)
+        const result = await newPollMutation({
+            variables: value(pollState),
+        });
+        if (result.errors || !result.data) {
+            addMessage('error', `${result.errors}`)
+        } else {
+            if (done) done(result.data.newPoll)
         }
     }
-
-
 }
 
 function SelectForm({ formState }: {

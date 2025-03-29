@@ -1,5 +1,6 @@
 import useSWR from 'swr'
 import { gql, TypedDocumentNode } from '@apollo/client'
+import { ObjectId } from 'mongodb'
 
 import { IGetPoll, IPostPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
@@ -8,7 +9,7 @@ import { IGetEntry } from '@/models/Entry'
 import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
-import { User } from '@/pages/api/graphql/types'
+import { User, Poll } from '@/pages/api/graphql/types'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (url === null) return {} // query is disabled
@@ -106,14 +107,16 @@ export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
 
-export const PollsQuery: TypedDocumentNode<{ polls: IGetPoll[] }> = gql`
-    query PollsQuery {
-        polls {
+export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year: number }> = gql`
+    query PollsQuery($year: Int) {
+        polls(year: $year) {
             _id,
             secret,
             adminSecret,
             entriesCount,
             date,
+            class,
+            year,
             school {
                 _id,
                 name,
@@ -132,9 +135,15 @@ export const PollsQuery: TypedDocumentNode<{ polls: IGetPoll[] }> = gql`
     }
 `
 
-export async function postPoll(poll: IPostPoll): Promise<{data: IGetPoll}> {
-    return await post<IPostPoll>('polls', poll)
-}
+export const NewPollMutation: TypedDocumentNode<{newPoll: ObjectId}, {
+    school: string,
+    class: string,
+    year: string,
+}> = gql`
+    mutation NewPoll($form: String, $school: ObjectId, $class: String, $year: String) {
+        newPoll(form: $form, school: $school, class: $class, year: $year)
+    }
+`
 
 export async function patchPoll(poll: any, adminSecret:string='') {
     return await patch('polls', poll, adminSecret ? `secret=${adminSecret}` : '')

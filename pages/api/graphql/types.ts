@@ -23,6 +23,28 @@ export type User = {
   image: string,
 }
   
+export type School = {
+  _id: ObjectId,
+  name: string,
+  city: string,
+  city_fu: string,
+}
+
+export type Poll = {
+  _id: ObjectId,
+  secret: string,
+  adminSecret: string,
+  entriesCount: number,
+  date: Date,
+  school: School,
+  class: string,
+  year: string,
+  form: string,
+  closed: boolean,
+  createdBy: User,
+  createdAt: Date,
+}
+
 export type Context = {
     req: NextRequest
     res: Response|undefined

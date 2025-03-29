@@ -1,13 +1,14 @@
 import { Card, ButtonGroup, Button } from "react-bootstrap"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import { useQuery } from "@apollo/client"
 import Link from "next/link"
 import QRCode from "react-qr-code"
 import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
 import { IGetPoll } from "@/models/Poll"
-import { useProfile } from "@/lib/api"
+import { ProfileQuery } from "@/lib/api"
 import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate, upperFirst } from "@/lib/utils"
@@ -20,10 +21,11 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
     adminSecret: string|null,
 }) {
     const [tick, setTick] = useState<number>(0)
-    const profile = useProfile()
+    const profileQuery = useQuery(ProfileQuery)
     const addMessage = useAddMessage()
+    const profile = profileQuery.data?.profile
     const isAdmin = profile?.isAdmin
-    const isSupervisor = profile && (isAdmin || profile._id === poll.createdByUser?._id)
+    const isSupervisor = profile && (isAdmin || profile?._id.toString() === poll.createdByUser?._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`

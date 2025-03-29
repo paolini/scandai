@@ -53,8 +53,12 @@ export const typeDefs = gql`
     secret: String
     adminSecret: String
     entriesCount: Int
-    date: String
+    date: Timestamp
     school: School
+    class: String
+    year: String
+    form: String
+    closed: Boolean
     createdBy: User
     createdAt: Timestamp,
   }
@@ -68,5 +72,6 @@ export const typeDefs = gql`
 
   type Mutation {
     setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
+    newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
   }
   `
