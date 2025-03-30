@@ -67,7 +67,7 @@ export const typeDefs = gql`
     hello: String
     config: Config
     profile: Profile
-    polls(year: Int): [Poll]
+    polls(year: Int, _id: ObjectId, adminSecret: String): [Poll]
   }
 
   type Mutation {

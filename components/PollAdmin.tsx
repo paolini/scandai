@@ -1,52 +1,47 @@
 import { Card, ButtonGroup, Button } from "react-bootstrap"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { useQuery } from "@apollo/client"
+import { useQuery, useApolloClient } from "@apollo/client"
 import Link from "next/link"
 import QRCode from "react-qr-code"
 import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
-import { IGetPoll } from "@/models/Poll"
-import { ProfileQuery } from "@/lib/api"
+import { ProfileQuery, PollsQuery } from "@/lib/api"
 import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
+import { Poll } from "@/pages/api/graphql/types"
 
-export default function PollAdmin({poll, mutate, adminSecret}:{
-    poll: IGetPoll,
-    mutate: () => void,
-    adminSecret: string|null,
+export default function PollAdmin({poll, adminSecret}:{
+    poll: Poll,
+    adminSecret?: string,
 }) {
     const [tick, setTick] = useState<number>(0)
-    const profileQuery = useQuery(ProfileQuery)
     const addMessage = useAddMessage()
+    const profileQuery = useQuery(ProfileQuery)
     const profile = profileQuery.data?.profile
     const isAdmin = profile?.isAdmin
-    const isSupervisor = profile && (isAdmin || profile?._id.toString() === poll.createdByUser?._id)
+    const isSupervisor = profile && (isAdmin || profile?._id === poll.createdBy?._id)
     const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
     const _ = useTrans()
-
+    const pollQuery = useQuery(PollsQuery, {
+        variables: {
+            _id: poll._id,
+            adminSecret
+        },
+        pollInterval: 1000,
+        skip: !isSupervisor && !adminSecret,
+    })
     useEffect(() => {
-        if (!isSupervisor && !adminSecret) return
-        const interval = setInterval(() => {
-            setTick(tick => {
-                if (tick % 6 === 0) {
-                    // console.log("polling")
-                    mutate()
-                }
-                return tick+1
-            })
-        }, 1000 / 2)
+        const interval = setInterval(() => setTick(tick => tick+1), 1000 / 2)
         return () => clearInterval(interval)
-    }, [isSupervisor, adminSecret, mutate])
-
-    if (!isSupervisor && !adminSecret) return null
+    }, [])
 
     return <>
         <Card className="my-2">
@@ -55,7 +50,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
             </Card.Header>
             <Card.Body>
                 <Card.Text>
-                { isAdmin && <>{_("Creato da")} <b>{ poll.createdByUser?.name || poll.createdByUser?.username || '???' }</b> <i>{poll.createdByUser?.email}</i> {_("il (data)")} {formatDate(poll.createdAt)}<br /></>}
+                { isAdmin && <>{_("Creato da")} <b>{ poll.createdBy?.name || poll.createdBy?.username || '???' }</b> <i>{poll.createdBy?.email}</i> {_("il (data)")} {formatDate(poll.createdAt)}<br /></>}
                 {upperFirst(_("scuola"))}: <b>{poll?.school?.name} {poll?.school?.city && ` - ${poll?.school?.city}`}</b>, {}
                 {_("classe")}: <b>{poll.class}</b><br />
                 {_("Il sondaggio è:")} {poll.closed ? <b>{_("chiuso")}</b> : <b>{_("aperto")}</b>}<br/>
@@ -141,7 +136,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
         </Card>
     </>
 
-    async function close(poll: IGetPoll, close=true) {
+    async function close(poll: Poll, close=true) {
         try {
             await patchPoll({
                 _id: poll._id, 
@@ -153,7 +148,7 @@ export default function PollAdmin({poll, mutate, adminSecret}:{
         }
     }
 
-    async function remove(poll: IGetPoll) {
+    async function remove(poll: Poll) {
         try {
             await deletePoll(poll)
             mutate()

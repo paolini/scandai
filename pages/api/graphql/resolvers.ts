@@ -108,14 +108,18 @@ export const resolvers = {
       const { user } = context
       const $match: any = {}
 
-      if (params.year) {
-        $match.date = schoolYearMatch(params.year)
-      }
+      if (params._id) $match._id = new ObjectId(params._id)      
+      if (params.secret) $match.secret = params.secret
+      if (params.adminSecret) $match.adminSecret = params.adminSecret
+      if (params.class) $match.class = params.class
+      if (params.school_id) $match.school_id = new ObjectId(params.school_id)
+
+      if (params.year) $match.date = schoolYearMatch(params.year)
 
       // se ho specificato un secret o un adminSecret
       // posso vedere solo quella poll 
       // ma non ho bisogno di essere autenticato            
-      if (!params.secret && !params.adminSecret) {
+      if (!$match.secret && !$match.adminSecret) {
         // set filters from user authorization
         if (user) {
             if (!user.isAdmin) {
@@ -128,6 +132,7 @@ export const resolvers = {
             $match['public'] = true
         }
       }
+
 
       const pipeline:any = [
           { $match },

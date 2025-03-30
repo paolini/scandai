@@ -107,10 +107,11 @@ export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
 
-export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year: number }> = gql`
-    query PollsQuery($year: Int) {
-        polls(year: $year) {
+export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, _id?: ObjectId, adminSecret?: string }> = gql`
+    query PollsQuery($year: Int, $_id: ObjectId, $adminSecret: String) {
+        polls(year: $year, _id: $_id, adminSecret: $adminSecret) {
             _id,
+            form,
             secret,
             adminSecret,
             entriesCount,
