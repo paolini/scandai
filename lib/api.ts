@@ -2,7 +2,7 @@ import useSWR from 'swr'
 import { gql, TypedDocumentNode } from '@apollo/client'
 import { ObjectId } from 'mongodb'
 
-import { IGetPoll, IPostPoll } from '@/models/Poll'
+import { IGetPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
 import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
@@ -112,6 +112,7 @@ export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, _
         polls(year: $year, _id: $_id, adminSecret: $adminSecret) {
             _id,
             form,
+            closed,
             secret,
             adminSecret,
             entriesCount,

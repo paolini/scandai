@@ -73,5 +73,7 @@ export const typeDefs = gql`
   type Mutation {
     setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
     newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
+    patchPoll(_id: ObjectId!, secret: String, school_id: ObjectId, form: String, type: String, class: String, year: String, adminSecret: Boolean, closed: Boolean): Poll
+    deletePoll(_id: ObjectId!): Boolean
   }
   `

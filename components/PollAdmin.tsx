@@ -1,7 +1,7 @@
 import { Card, ButtonGroup, Button } from "react-bootstrap"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { useQuery, useApolloClient } from "@apollo/client"
+import { useQuery, useMutation, gql } from "@apollo/client"
 import Link from "next/link"
 import QRCode from "react-qr-code"
 import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
@@ -14,6 +14,23 @@ import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
 import { Poll } from "@/pages/api/graphql/types"
+import Error from '@/components/Error'
+
+const PollSetAdminSecretMutation = gql`
+    mutation ($_id: ObjectId!, $secret: Boolean) {
+        patchPoll(_id: $_id, secret: $secret) {
+            adminSecret
+        }
+    }
+`
+
+const PollSetCloseMutation = gql`
+    mutation ($_id: ObjectId!, $adminSecret: String, $closed: Boolean) {
+        patchPoll(_id: $_id, secret: $adminSecret, closed: $closed) {
+            closed
+        }
+    }
+`
 
 export default function PollAdmin({poll, adminSecret}:{
     poll: Poll,
@@ -30,12 +47,14 @@ export default function PollAdmin({poll, adminSecret}:{
     const fullUrl = `${window.location.origin}${pollUrl}`
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
     const _ = useTrans()
+    const [setCloseMutation, {loading: loadingClose, error: errorClose}] = useMutation(PollSetCloseMutation)
+    const [setAdminSecret, {loading: loadingAdminSecret, error: errorAdminSecret}] = useMutation(PollSetAdminSecretMutation)
     const pollQuery = useQuery(PollsQuery, {
         variables: {
             _id: poll._id,
             adminSecret
         },
-        pollInterval: 1000,
+        //pollInterval: 1000,
         skip: !isSupervisor && !adminSecret,
     })
     useEffect(() => {
@@ -73,6 +92,7 @@ export default function PollAdmin({poll, adminSecret}:{
                 }
             </Card.Body>                
             <Card.Footer>
+                { errorClose && <Error>{`${errorClose}`}</Error>}
                 <ButtonGroup>
                     { !poll.closed && 
                         <Button onClick={share}>
@@ -85,10 +105,10 @@ export default function PollAdmin({poll, adminSecret}:{
                         </a>
                     }
                     { poll.closed 
-                    ? <Button onClick={() => close(poll, false)}>
+                    ? <Button disabled={loadingClose} onClick={() => close(poll, false)}>
                         {_("riapri")}
                       </Button>
-                    : <Button onClick={() => close(poll)}>
+                    : <Button disabled={loadingClose} onClick={() => close(poll)}>
                         {_("chiudi")}
                       </Button>
                     }
@@ -137,15 +157,10 @@ export default function PollAdmin({poll, adminSecret}:{
     </>
 
     async function close(poll: Poll, close=true) {
-        try {
-            await patchPoll({
-                _id: poll._id, 
-                closed: !!close,
-                }, adminSecret || undefined)
-            mutate()
-        } catch(err) {
-            addMessage('error', `${err}`)
-        }
+        setCloseMutation({
+            variables: {_id: poll._id, adminSecret, closed: !!close},
+            refetchQueries: [PollsQuery]
+        })
     }
 
     async function remove(poll: Poll) {
