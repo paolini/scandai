@@ -18,8 +18,6 @@ export default async function handler(
         const $match: any = {}
         const filters: any = {}
 
-        // console.log(JSON.stringify({query}))
-
         if (0) $match["poll.closed"] = true // solo i sondaggi chiusi
 
         if (query.schoolId && !Array.isArray(query.schoolId)) {
@@ -106,7 +104,6 @@ export default async function handler(
             pipeline.push({$match: {'poll._id': {$in: pollIds }}})
         }
         if (req.query.school_id) {
-            // console.log(`school_id: ${req.query.school_id}`)
             if (Array.isArray(req.query.school_id)) {
                 return res.status(400).json({error: 'school_id cannot be an array (not implemented)'})
             } else {
@@ -119,8 +116,6 @@ export default async function handler(
                 pipeline.push({$match: {'poll.school_id': school_id}})
             }
         }
-
-        // console.log(`pipeline: ${JSON.stringify(pipeline)}`)
 
         try {
             const entries = await Entry.aggregate(pipeline)
@@ -281,7 +276,6 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
     let questions: {[key: string]: IQuestionStat} = {}
     // populate questions with all aggregate statistics
     for (const e of entries) {
-        console.log(`entry ${e._id} ${e.poll?.school?.name}`)
         if (e.poll) {
             const poll_id = e.poll._id.toString()
             if (!pollDict[poll_id]) {
@@ -398,7 +392,6 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                     }
                     if (isValid) q.answers[lang].countValid++
                 }
-                //console.log(JSON.stringify(q,null,2))
             } else if (question.type === 'map-language-to-age') {
                 let q = questions[code]
                 if (!q) {
@@ -422,7 +415,6 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                     return
                 }
                 q.count ++
-                // console.log(`${e._id} answer: ${JSON.stringify(answer)}`)
                 for (const [sourceLang, age] of Object.entries(answer)) {
                     const lang = langMap(sourceLang)
                     if (!lang) continue // language is marked for discard
@@ -445,8 +437,6 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
         })
     }
     
-    console.log(`SchoolDict: ${JSON.stringify(schoolDict,null,2)}`)
-
     // sort counts by numbers
     // reduce counts to 10
     // aggregating all counts > 10 in the last one

@@ -21,7 +21,6 @@ export function currentSchoolYear() {
 }
 
 export function schoolYearMatch(n: number) {
-    console.log(`schoolYearMatch(${n})`)
     // l'anno scolastico finisce con l'inizio di luglio
     return {
         $gte: new Date(`${n}-${SCHOOL_MONTH_STRING}-01`),
