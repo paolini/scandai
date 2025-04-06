@@ -214,6 +214,3 @@ export async function postDict(dict: IPostDict): Promise<{data: IDictElement}> {
     return await post<IPostDict>('dict', dict)
 }
 
-export async function postTranslation(translation: IPostTranslation) {
-    return await post<IPostTranslation>('translation', translation)
-}

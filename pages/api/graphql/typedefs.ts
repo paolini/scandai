@@ -13,6 +13,12 @@ export const typeDefs = gql`
     it: String
   }
 
+  input LocalizedStringInput {
+    en: String
+    fu: String
+    it: String
+  }
+
   type Config {
     siteTitle: LocalizedString
   }
@@ -65,6 +71,11 @@ export const typeDefs = gql`
     createdAt: Timestamp,
   }
 
+  type Translation {
+    source: String
+    map: LocalizedString
+  }
+
   type Query {
     hello: String
     config: Config
@@ -85,5 +96,6 @@ export const typeDefs = gql`
     newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
     patchPoll(_id: ObjectId!, secret: String, school_id: ObjectId, form: String, type: String, class: String, year: String, adminSecret: Boolean, closed: Boolean): Poll
     deletePoll(_id: ObjectId!): Boolean
+    postTranslation(source: String!, map: LocalizedStringInput!): Translation
   }
   `
