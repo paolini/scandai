@@ -82,6 +82,38 @@ export const resolvers = {
           date: new Date(),
       })
       return result.insertedId
+    },
+
+    postTranslation: async (_parent: any, params: {
+      source: string,
+      map: {
+          it?: string,
+          en?: string,
+          fu?: string,
+      }
+    }, context: Context) => {
+      const user = context.user
+      if (!user) throw new Error('not authenticated')
+      if (!user.isAdmin) throw new Error('not authorized')
+
+      const collection = await getCollection("translations")
+      let translation = await collection.findOne({source: params.source})
+      if (translation) {
+        collection.updateOne({source: params.source}, {
+            $set: {
+                map: {
+                    ...translation.map,
+                    ...params.map,
+                }
+            }
+        })
+      } else {
+        collection.insertOne({
+            source: params.source,
+            map: params.map,
+        })
     }
+   }
+
   }
 }

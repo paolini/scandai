@@ -1,14 +1,14 @@
 import {Table, Button} from 'react-bootstrap'
 import {FaCirclePlus} from 'react-icons/fa6'
 import {useState} from 'react'
-import {useQuery, useApolloClient} from '@apollo/client'
+import {useQuery, useMutation, useApolloClient, gql} from '@apollo/client'
 
 import Page from '@/components/Page'    
 import Loading from '@/components/Loading'
-import {postTranslation, TranslationsQuery} from '@/lib/api'
+import {TranslationsQuery} from '@/lib/api'
 import {set, value} from '@/lib/State'
 import Input from '@/components/Input'
-import {useAddMessage} from '@/components/Messages' 
+import Error from '@/components/Error'
 import {useTrans} from '@/lib/trans'
 
 export default function TranslationContainer() {
@@ -18,11 +18,26 @@ export default function TranslationContainer() {
     </Page>
 }
 
+const TranslationMutation = gql`
+    mutation PostTranslation($source: String!, $map: LocalizedStringInput!) {
+        postTranslation(source: $source, map: $map) {
+            source
+            map {
+                it
+                en
+                fu
+            }
+        }
+    }
+`
+
 function Translation() {
     const translations = useQuery(TranslationsQuery)
+    const [postTranslation, {loading,error}] = useMutation(TranslationMutation, {
+        refetchQueries: [TranslationsQuery],
+    })
     const [editLang, setEditLang] = useState<[string,string]>(['','']) 
     const editState = useState<string>('')
-    const addMessage = useAddMessage()
     const [focus, setFocus] = useState<number>(1)
     const _ = useTrans()
     const client = useApolloClient()
@@ -53,8 +68,9 @@ function Translation() {
                         editLang[0] === source && editLang[1] === lang 
                         ? <td key={source}>
                             <div className="d-flex">
+                                { error && <Error>{`${error}`}</Error>}
                                 <Input state={editState} focus={focus} enter={()=>submit(source,lang,value(editState))}/>
-                                <Button className="mx-1" size="lg" onClick={()=>{
+                                <Button className="mx-1" size="lg" disabled={loading} onClick={()=>{
                                     submit(source,lang,value(editState)) 
                                     }}>
                                     <FaCirclePlus className="m-1 bg-blue-300"/>
@@ -73,24 +89,15 @@ function Translation() {
                             {d[lang] || '---'}
                         </td>
                     )}
-                    {/*
-                    <td>{lang===editLang 
-                        ? 
-                        : (map===''?<b className="text-danger">scarta</b>:map===undefined?<b className="text-success">mantieni</b>:map)}
-                    </td>
-                    */}
                 </tr>
             )}
         </tbody>
     </Table>
 
     async function submit(source: string, lang: "en"|"fu", map: string) {
-        try {
-            await postTranslation({[source]: {[lang]: map}})
-            client.refetchQueries({ include: [TranslationsQuery] })
-        } catch(err) {
-            addMessage('error', `errore: ${err}`)
-        }
+        await postTranslation({variables: {
+            source, 
+            map: {[lang]: map}}})            
         setEditLang(['',''])
         set(editState,'')
     }
