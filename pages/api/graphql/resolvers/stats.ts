@@ -1,15 +1,11 @@
 import { ObjectId } from 'mongodb'
 import { assert } from '@/lib/assert'
 
-import Entry, { IEntry } from '@/models/Entry'
 import Dict from '@/models/Dict'
-import { IGetPoll } from '@/models/Poll'
-import { IGetSchool } from '@/models/School'
-import type { NextApiRequest, NextApiResponse } from 'next'
 import questionary, { IQuestion, extractLevels } from '../../../../lib/questionary'
-import getSessionUser from '@/lib/getSessionUser'
 import { schoolYearMatch } from '@/lib/utils'
 import { Context } from '../types'
+import { getCollection } from '@/lib/mongodb'
 
 export default async function resolver(_parent: any, query: {
     poll?: ObjectId,
@@ -98,19 +94,74 @@ export default async function resolver(_parent: any, query: {
             pipeline.push({$match: {'poll._id': query.poll}})
         }
 
-        console.log(JSON.stringify({pipeline},null,2))
-
-        const entries = await Entry.aggregate(pipeline)
-        const data: IStats = await aggregate(entries, filters)
+        const collection = await getCollection("entries")
+        const entries = await collection.aggregate(pipeline).toArray()
+        const data: IStats = await aggregate(entries as IEntryWithPoll[], filters)
         return data
 }
 
-export interface IStatsFilters {
+interface IStatsFilters {
     city?: string,
     school?: string,
     form?: string,
     class?: string,
     year?: number,
+}
+
+interface IPostPoll {
+    school_id: string,
+    class: string,
+    year: string,
+    form: string,
+    closed: boolean, 
+}
+
+interface IGetPoll extends IPostPoll {
+    _id: string,
+    secret: string,
+    adminSecret?: string,
+    entriesCount: number,
+    date: string,
+    school?: {
+        _id: string,
+        name: string,
+        city: string,
+        city_fu: string,
+    }
+    createdBy: string,
+    createdByUser: {
+        _id: string,
+        name?: string,
+        email?: string,
+        image?: string,
+        username?: string,
+    },
+    createdAt: string,
+}
+
+interface IPoll {
+    _id: ObjectId,
+    school_id: ObjectId,
+    class: string,
+    year: string,
+    form: string,
+    closed: boolean, 
+    secret: string,
+    adminSecret?: string,
+    createdBy: ObjectId,
+    createdAt: string,
+}
+
+interface IPostSchool {
+    name: string,
+    city: string,
+    city_fu: string,
+    reportSecret?: string,
+}
+
+interface IGetSchool extends IPostSchool {
+    _id: string,
+    pollCount: number,
 }
 
 export interface IStats {
@@ -133,7 +184,7 @@ export type IQuestionStat =
     IMapLanguageToCompetenceQuestionStat |
     IMapLanguageToAgeQuestionStat
 
-export interface IErrorQuestionStat {
+interface IErrorQuestionStat {
     question: IQuestion,
     error: string,
     type: 'error',
@@ -150,7 +201,7 @@ export interface IChooseLanguageQuestionStat {
     counts: number[], // numero di risposte con 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 o 10 lingue
 }
 
-export interface IChooseLanguageStat {
+interface IChooseLanguageStat {
     [key: string]: number // quanti hanno indicato questa lingua
 }
 
@@ -161,12 +212,12 @@ export interface IMapLanguageToCompetenceQuestionStat {
     answers: IMapLanguageToCompetenceStat,
 }
 
-export interface IMapLanguageToCompetenceStat {
+interface IMapLanguageToCompetenceStat {
     [key: string]:  // language
         ILanguageCompetenceStat
 }
 
-export interface ILanguageCompetenceStat {
+interface ILanguageCompetenceStat {
     competence: {
         [key: string]: {// competence 
             level: {
@@ -187,13 +238,30 @@ export interface IMapLanguageToAgeQuestionStat {
     answers: IMapLanguageToAgeStat,
 }
 
-export interface IMapLanguageToAgeStat {
+interface IMapLanguageToAgeStat {
     [key: string]: { // language
         [key: string]: number // age
     }
 }
 
-export interface IEntryWithPoll extends IEntry {
+type QuestionCode = string
+type LanguageAnswer = string[]
+type MapLanguageToCompetenceAnswer = {[key: string]: {[key: string]: string}}
+type MapLanguageToAgeAnswer = {[key: string]: string}
+type Answer = LanguageAnswer | MapLanguageToAgeAnswer | MapLanguageToCompetenceAnswer
+
+interface IEntry {
+    _id: ObjectId,
+    pollId: ObjectId,
+    answers: {
+        [key: QuestionCode]: Answer
+    },
+    lang: string,
+    IP: string,
+    clientTimestamp: number,
+}
+
+interface IEntryWithPoll extends IEntry {
     poll: IGetPoll,
 }
 

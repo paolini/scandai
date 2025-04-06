@@ -4,7 +4,7 @@ import migrate from './migrations'
 import createAdminUser from './createAdminUser'
 import updateConfiguration from './updateConfiguration'
 
-async function init() {
+async function db() {
   const uri = process.env.MONGODB_URI
   if (!uri) {
     throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
@@ -27,7 +27,8 @@ async function init() {
 
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
-export default init()
+const clientPromise = db()
+export default clientPromise
 
 export async function trashDocument(collectionName: string, documentId: string) {
   const db = mongoose.connection
@@ -39,4 +40,9 @@ export async function trashDocument(collectionName: string, documentId: string) 
   const trashCollection = db.collection(`${collectionName}_trash`)
   await trashCollection.findOneAndUpdate({ _id: document._id }, { $set: document }, { upsert: true })
   await collection.deleteOne({ _id: document._id })
+}
+
+export async function getCollection(collection: string) {
+  const db = (await clientPromise).db()
+  return db.collection(collection)
 }
