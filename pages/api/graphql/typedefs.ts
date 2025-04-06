@@ -70,6 +70,7 @@ export const typeDefs = gql`
     config: Config
     profile: Profile
     polls(year: Int, _id: ObjectId, adminSecret: String): [Poll]
+    schools(year: Int): JSON
     stats(poll: ObjectId, polls: [ObjectId], 
       adminSecret: String, schoolSecret: String,
       year: Int,

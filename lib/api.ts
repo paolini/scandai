@@ -6,7 +6,6 @@ import { IGetPoll } from '@/models/Poll'
 import { IPostUser, IGetUser } from '@/models/User'
 import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
-import { IStats } from '@/pages/api/stats'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation, IPostTranslation } from '@/models/Translation'
 import { User, Poll } from '@/pages/api/graphql/types'
@@ -159,10 +158,6 @@ export function useEntries(query?: any) {
     return useIndex<IGetEntry[]>('entries', query)
 }
 
-export function useStats(query?: any) {
-    return useIndex<IStats>('stats', query)
-}
-
 export function useUsers() {
     return useIndex<IGetUser[]>('users')
 }
@@ -187,10 +182,6 @@ export async function postUser(user: IPostUser): Promise<{data: IGetUser, passwo
 
 export async function deleteUser(user: IGetUser) {
     return await remove('users', user)
-}
-
-export function useSchools(year: string | null = null, enabled: boolean = true) {
-    return useIndex<IGetSchool[]>('schools', year ? {year} : {}, enabled)
 }
 
 export function useSchool(id_: string | null) {

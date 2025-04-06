@@ -25,7 +25,7 @@ import { assert } from '@/lib/assert'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
-import { ProfileQuery, useTranslation, useSchools } from '@/lib/api'
+import { ProfileQuery, useTranslation } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -145,6 +145,12 @@ function Report() {
     />
 }
 
+const SchoolsQuery = gql`
+    query SchoolQuery($year: Int) {
+        schools(year: $year)
+    }
+`
+
 export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
     showFilter: string[],
     user: User|null,
@@ -158,7 +164,9 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const translationQuery = useTranslation()
     const _ = useTrans()
     const yearState = useState(year)
-    const schoolsQuery = useSchools(value(yearState), showFilter.includes("school"))
+    const schoolsQuery = useQuery(SchoolsQuery, { variables: {
+        year: value(yearState)?parseInt(value(yearState)):null},
+        skip: !showFilter.includes("school")})
     const pollIdsState = useState<string[]>(pollIds)
     const router = useRouter()
     const locale = router.locale || 'it'
@@ -174,7 +182,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
     if (schoolsQuery.error) return <Error>{_("Errore caricamento")} ({`${schoolsQuery.error}`} [sq])</Error>
     if (translationQuery.isLoading) return <><Loading/><br/>_</>
-    if (schoolsQuery.isLoading) return <><Loading /><br/>_ _</>
+    if (schoolsQuery.loading) return <><Loading /><br/>_ _</>
     if (translationQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
     if (schoolsQuery.data === undefined) return <Error>{_("undefined ")} (sq)</Error>
     // se schoolsQuery è disabilitata apparentemente schoolsQuery.data={} e non undefined
@@ -203,7 +211,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             schoolSecret={schoolSecret}
             adminSecret={adminSecret}
             translations={translations}
-            schools={schoolsQuery.data.data || []}
+            schools={schoolsQuery.data.schools || []}
             yearState={yearState}
         />
     </PageWithoutProvider>
@@ -323,7 +331,7 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
     yearState: State<string>,
     schools: IGetSchool[],
     classes: string[],
-}) {
+}) {    
     const city = value(cityState)
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
     const citiesInfo = Object.keys(map_city_fu).map(city => {
@@ -335,7 +343,7 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
     }).sort((a,b) => b.pollCount-a.pollCount)
     const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
-        : schools).sort((a,b) => b.pollCount-a.pollCount)
+        : [...schools]).sort((a,b) => b.pollCount-a.pollCount)
     const _ = useTrans()
     return <>
         { /*JSON.stringify({schools,citiesInfo})*/ }
