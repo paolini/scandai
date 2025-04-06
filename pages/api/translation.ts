@@ -14,25 +14,6 @@ export default async function handler(
 
     // await delay(7000)
 
-    if (req.method === 'GET') {
-        try {
-            const translations = await Translation.find()
-            const dict = await Dict.find()
-
-            // usa la traduzione in italiano come chiave
-            const data = {
-                ...Object.fromEntries(dict.filter(d=>d.map).map(d => [d.map, {}])),
-                ...Object.fromEntries(Object.values(questionary.languages).map(l => [l.it, l])),
-                ...Object.fromEntries(translations.map((d:ITranslation) => [d.source,d.map])),
-            }
-            return res.status(200).json({ data })
-        } catch (error) {
-            console.error(error)
-            console.log(`database error: ${error}`)
-            return res.status(400).json({ error })
-        }
-    }
-
     if (!user) {
         return res.status(401).json({error: 'not authenticated'})
     }
@@ -64,4 +45,6 @@ export default async function handler(
             return res.status(400).json(error?.message)
         }
     }
+
+    return res.status(405).json({error: 'Method not allowed'})
 }

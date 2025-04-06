@@ -77,6 +77,7 @@ export const typeDefs = gql`
       class: String, city: String, form: String,
       schoolId: ObjectId,
     ): JSON
+    translations: JSON
   }
 
   type Mutation {

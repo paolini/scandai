@@ -25,7 +25,7 @@ import { assert } from '@/lib/assert'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
-import { ProfileQuery, useTranslation } from '@/lib/api'
+import { ProfileQuery, TranslationsQuery } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -161,7 +161,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     schoolSecret: string,
     adminSecret: string,
 }) {
-    const translationQuery = useTranslation()
+    const translationsQuery = useQuery(TranslationsQuery)
     const _ = useTrans()
     const yearState = useState(year)
     const schoolsQuery = useQuery(SchoolsQuery, { variables: {
@@ -172,22 +172,22 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const locale = router.locale || 'it'
     const isAuthenticated = !!user
 
-//    console.log(`ReportInner: ${JSON.stringify({user, t_loading: translationQuery.isLoading, 
-//        t_data: translationQuery.data!==undefined,
+//    console.log(`ReportInner: ${JSON.stringify({user, t_loading: TranslationsQuery.isLoading, 
+//        t_data: TranslationsQuery.data!==undefined,
 //        s_loading: schoolsQuery.isLoading, s_data: schoolsQuery.data!==undefined,
 //        trans: [_]
 //    })}`)
 
     
-    if (translationQuery.error) return <Error>{_("Errore caricamento")} ({`${translationQuery.error}`} [tq])</Error>
+    if (translationsQuery.error) return <Error>{_("Errore caricamento")} ({`${translationsQuery.error}`} [tq])</Error>
     if (schoolsQuery.error) return <Error>{_("Errore caricamento")} ({`${schoolsQuery.error}`} [sq])</Error>
-    if (translationQuery.isLoading) return <><Loading/><br/>_</>
+    if (translationsQuery.loading) return <><Loading/><br/>_</>
     if (schoolsQuery.loading) return <><Loading /><br/>_ _</>
-    if (translationQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
+    if (translationsQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
     if (schoolsQuery.data === undefined) return <Error>{_("undefined ")} (sq)</Error>
     // se schoolsQuery è disabilitata apparentemente schoolsQuery.data={} e non undefined
 
-    const translations = translationQuery.data.data
+    const translations = translationsQuery.data.translations
     
     return <PageWithoutProvider header={!!user}>
         { !isAuthenticated &&

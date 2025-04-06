@@ -7,6 +7,7 @@ import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
 import polls from './resolvers/polls'
 import schools from './resolvers/schools'
+import translations from './resolvers/translations'
 
 export const resolvers = {
   ObjectId: ObjectIdType,
@@ -35,6 +36,7 @@ export const resolvers = {
     polls,
     schools,
     stats,
+    translations,
   },
 
   Mutation: {

@@ -102,6 +102,11 @@ export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
         }
     }`
 
+export const TranslationsQuery: TypedDocumentNode<{translations:IGetTranslation}> = gql`
+    query TranslationsQuery {
+        translations
+    }`
+
 export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
@@ -207,10 +212,6 @@ export function useDict() {
 
 export async function postDict(dict: IPostDict): Promise<{data: IDictElement}> {
     return await post<IPostDict>('dict', dict)
-}
-
-export function useTranslation() {
-    return useIndex<IGetTranslation>('translation')
 }
 
 export async function postTranslation(translation: IPostTranslation) {
