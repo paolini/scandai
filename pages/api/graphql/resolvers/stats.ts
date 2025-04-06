@@ -6,40 +6,47 @@ import Dict from '@/models/Dict'
 import { IGetPoll } from '@/models/Poll'
 import { IGetSchool } from '@/models/School'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import questionary, { IQuestion, extractLevels } from '../../lib/questionary'
+import questionary, { IQuestion, extractLevels } from '../../../../lib/questionary'
 import getSessionUser from '@/lib/getSessionUser'
 import { schoolYearMatch } from '@/lib/utils'
+import { Context } from '../types'
 
-export default async function handler(
-    req: NextApiRequest, 
-    res: NextApiResponse) {
-        const user = await getSessionUser(req)
-        const query = req.query
+export default async function resolver(_parent: any, query: {
+    poll?: ObjectId,
+    polls?: ObjectId[],
+    adminSecret?: string,
+    schoolSecret?: string,
+    year?: number,
+    class?: string,
+    city?: string,
+    form?: string,
+    schoolId?: ObjectId,
+}, context: Context) {
+        const user = context.user
         const $match: any = {}
         const filters: any = {}
 
         if (0) $match["poll.closed"] = true // solo i sondaggi chiusi
 
-        if (query.schoolId && !Array.isArray(query.schoolId)) {
-            $match["poll.school._id"] = new ObjectId(query.schoolId)
+        if (query.schoolId) {
+            $match["poll.school._id"] = query.schoolId
             filters.school = query.schoolId
         }
-        if (query.city && !Array.isArray(query.city)) {
+        if (query.city) {
             $match["poll.school.city"] = query.city
             filters.city = query.city
         }
-        if (query.form && !Array.isArray(query.form)) {
+        if (query.form) {
             $match["poll.form"] = query.form
             filters.form = query.form
         }
-        if (query.class && !Array.isArray(query.class)) {
+        if (query.class) {
             $match["poll.year"] = query.class
             filters.class = query.class
         }
-        if (query.year && !Array.isArray(query.year)) {
-            const n = parseInt(query.year)
-            $match["poll.createdAt"] = schoolYearMatch(n)
-            filters.year = n
+        if (query.year) {
+            $match["poll.createdAt"] = schoolYearMatch(query.year)
+            filters.year = query.year
         }
 
         let pipeline: any = [
@@ -70,62 +77,32 @@ export default async function handler(
             {$unwind: '$poll'},
         ]
 
-        if (req.query.adminSecret) {
+        if (query.adminSecret) {
             // se fornisce l'adminSecret anche un utente anonimo
             // può vedere le statistiche di quel sondaggio
-            pipeline.push({$match: {'poll.adminSecret': req.query.adminSecret}})
-        } else if (req.query.schoolSecret) {
-            pipeline.push({$match: {'poll.school.reportSecret': req.query.schoolSecret}})
+            pipeline.push({$match: {'poll.adminSecret': query.adminSecret}})
+        } else if (query.schoolSecret) {
+            pipeline.push({$match: {'poll.school.reportSecret': query.schoolSecret}})
         } else {
-            if (!user) {
-                return res.status(401).json({error: 'not authenticated'})
-            }
-            if (!(user.isAdmin||user.isViewer)) {
+            if (!user) throw new Error('not authenticated')
+            if (!(user.isAdmin || user.isViewer)) {
                 pipeline.push({$match: {'poll.createdBy': new ObjectId(user._id)}})
             }
         }
 
-        if (req.query.poll) {
-            let pollIds: ObjectId[]
-            if (Array.isArray(req.query.poll)) {
-                try {
-                    pollIds = req.query.poll.map((id:any) => new ObjectId(id))
-                } catch(error) {
-                    return res.status(400).json({error: 'invalid poll id'})
-                }   
-            } else {
-                try {   
-                    pollIds = req.query.poll.split(',').map((s:string) => new ObjectId(s))
-                } catch(error) {    
-                    return res.status(400).json({error: `invalid poll ids`})
-                }
-            }
-            // pipeline.push({$match: {'poll._id': new ObjectId(req.query.poll)}})
-            pipeline.push({$match: {'poll._id': {$in: pollIds }}})
-        }
-        if (req.query.school_id) {
-            if (Array.isArray(req.query.school_id)) {
-                return res.status(400).json({error: 'school_id cannot be an array (not implemented)'})
-            } else {
-                let school_id: ObjectId
-                try {
-                    school_id = new ObjectId(req.query.school_id)
-                } catch(error) {
-                    return res.status(400).json({error: 'invalid school_id'})
-                }
-                pipeline.push({$match: {'poll.school_id': school_id}})
-            }
+        if (query.polls) {
+            pipeline.push({$match: {'poll._id': {$in: query.polls }}})
         }
 
-        try {
-            const entries = await Entry.aggregate(pipeline)
-            const data: IStats = await aggregate(entries, filters)
-            return res.status(200).json({ data })
-        } catch (error) {
-            console.error(error)
-            console.log(`database error: ${error}`)
-            return res.status(400).json({ error })
+        if (query.poll) {
+            pipeline.push({$match: {'poll._id': query.poll}})
         }
+
+        console.log(JSON.stringify({pipeline},null,2))
+
+        const entries = await Entry.aggregate(pipeline)
+        const data: IStats = await aggregate(entries, filters)
+        return data
 }
 
 export interface IStatsFilters {

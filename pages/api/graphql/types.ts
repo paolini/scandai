@@ -106,3 +106,27 @@ const Timestamp = new GraphQLScalarType({
     throw new Error("Timestamp must be a string");
   }
 })
+
+export const JSONType = new GraphQLScalarType({
+  name: "JSON",
+  description: "A custom scalar for JSON",
+
+  parseValue(value: unknown): unknown {
+    return value; // Ritorna il valore così com'è
+  },
+
+  serialize(value: unknown): unknown {
+    return value; // Ritorna il valore così com'è
+  },
+  
+  parseLiteral(ast: ValueNode): unknown {   
+    if (ast.kind === Kind.OBJECT) {
+      const obj: any = {};
+      ast.fields.forEach((field) => {
+        obj[field.name.value] = field.value;
+      });
+      return obj;
+    }
+    throw new Error("JSON expected");
+  }
+})

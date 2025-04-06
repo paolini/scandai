@@ -1,7 +1,7 @@
 import { useRef, CSSProperties, ReactNode, useState, ReactElement } from "react"
 import { useRouter } from 'next/router'
 import { useSearchParams } from "next/navigation"
-import { useQuery } from '@apollo/client'
+import { useQuery, gql } from '@apollo/client'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -25,7 +25,7 @@ import { assert } from '@/lib/assert'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
-import { useStats, ProfileQuery, useTranslation, useSchools } from '@/lib/api'
+import { ProfileQuery, useTranslation, useSchools } from '@/lib/api'
 import { 
     IStats, 
     IQuestionStat,
@@ -33,7 +33,7 @@ import {
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat,
     IPreferredLanguageCount,
-} from '@/pages/api/stats'
+} from '@/pages/api/graphql/resolvers/stats'
 import questionary, { extractLevels, trans, IReportBlockElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import Page, { PageWithoutProvider } from '@/components/Page'
 import Error from '@/components/Error'
@@ -213,6 +213,13 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     }
 }
 
+const StatsQuery = gql`
+    query Stats($schoolId: ObjectId, $schoolSecret: String, $adminSecret: String, 
+        $city: String, $form: String, $class: String, $year: Int, $poll: ObjectId, $polls: [ObjectId]) {
+        stats(schoolId: $schoolId, schoolSecret: $schoolSecret, adminSecret: $adminSecret, city: $city, form: $form, class: $class, year: $year, poll: $poll, polls: $polls)
+        }   
+`
+
 function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, translations, pollIdsState, schools, yearState}:{
     showFilter: string[],
     report: string,
@@ -231,28 +238,27 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     const _ = useTrans()
     const ref = useRef(null)
     const pollIds = value(pollIdsState)
-    const pollQuery = pollIds.length==0 ? {} : {poll: pollIds.join(',')}
-    const statsQuery = useStats({
-        schoolId: value(schoolIdState),
-        schoolSecret: schoolSecret,
-        adminSecret: adminSecret,
+    const statsQuery = useQuery(StatsQuery, {variables: {
+        schoolId:  value(schoolIdState) || null,
+        schoolSecret,
+        adminSecret,
         city: value(cityState),
         form: value(formState),
         class: value(classState),
-        year: value(yearState),
-        ...pollQuery,
-    })
+        year: value(yearState) ? parseInt(value(yearState)) : null,
+        polls: pollIds.length>0 ? pollIds : null, // empty means all
+    }})
     const print = useReactToPrint({
         content: () => ref.current,
     })
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
-    if (statsQuery.isLoading) return <Loading />
+    if (statsQuery.loading) return <Loading />
     if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`} [sq])</Error>
 
     const stats = {
-        ...statsQuery.data.data,
-    }    
+        ...statsQuery.data.stats,
+    } as IStats
 
     const classes = true ? ['1','2','3','4','5'] : stats.polls
         .map(p => p.year)

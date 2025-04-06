@@ -3,8 +3,9 @@ import randomstring from 'randomstring'
 
 import { Context } from './types'
 import clientPromise from '@/lib/mongodb'
-import { ObjectIdType } from './types'
+import { ObjectIdType, JSONType } from './types'
 import { schoolYearMatch } from '@/lib/utils'
+import stats from './resolvers/stats'
 
 export const POLL_PIPELINE = [
   { $lookup: {
@@ -75,6 +76,7 @@ export const POLL_PIPELINE = [
 
 export const resolvers = {
   ObjectId: ObjectIdType,
+  JSON: JSONType,
 
   Query: {
     hello: async (_parent: any, _args: any, context: Context) => {
@@ -133,7 +135,6 @@ export const resolvers = {
         }
       }
 
-
       const pipeline:any = [
           { $match },
           ...POLL_PIPELINE,
@@ -144,6 +145,8 @@ export const resolvers = {
       const data = await collection.aggregate(pipeline).toArray()
       return data
     },
+
+    stats,
   },
 
   Mutation: {

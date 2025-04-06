@@ -5,6 +5,8 @@ export const typeDefs = gql`
 
   scalar Timestamp
 
+  scalar JSON
+
   type LocalizedString {
     en: String
     fu: String
@@ -68,6 +70,12 @@ export const typeDefs = gql`
     config: Config
     profile: Profile
     polls(year: Int, _id: ObjectId, adminSecret: String): [Poll]
+    stats(poll: ObjectId, polls: [ObjectId], 
+      adminSecret: String, schoolSecret: String,
+      year: Int,
+      class: String, city: String, form: String,
+      schoolId: ObjectId,
+    ): JSON
   }
 
   type Mutation {
