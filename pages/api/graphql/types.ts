@@ -1,7 +1,9 @@
 import { GraphQLScalarType, Kind, ValueNode } from "graphql"
 import type { NextRequest } from "next/server"
 import { ObjectId } from "mongodb"
+// Removed ResolverContext import as it is not exported from '@/generated/graphql'
 
+/*
 export type Config = {
   siteTitle: {
     fu: string,
@@ -9,6 +11,7 @@ export type Config = {
     en: string
   }
 }
+*/
 
 export type User = {
   _id: ObjectId,
@@ -23,6 +26,7 @@ export type User = {
   image: string,
 }
   
+/*
 export type School = {
   _id: ObjectId,
   name: string,
@@ -44,7 +48,7 @@ export type Poll = {
   createdBy: User,
   createdAt: Date,
 }
-
+*/
 export type Context = {
     req: NextRequest
     res: Response|undefined

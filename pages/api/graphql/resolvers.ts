@@ -1,15 +1,13 @@
-import { ObjectId } from 'mongodb'
-import randomstring from 'randomstring'
-
 import { Context } from './types'
 import { getCollection } from '@/lib/mongodb'
 import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
-import polls from './resolvers/polls'
+import {polls, newPoll} from './resolvers/polls'
 import schools from './resolvers/schools'
 import translations from './resolvers/translations'
+import { Resolvers, Config, MutationSetProfileArgs, User, MutationPostTranslationArgs, Translation } from '@/generated/graphql'
 
-export const resolvers = {
+export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
   JSON: JSONType,
 
@@ -18,10 +16,11 @@ export const resolvers = {
       return "Hello world!"
     },
 
-    config: async () => {
+    config: async (): Promise<Config | null> => {
       const collection = await getCollection("configs")
       const config = await collection.findOne({})
-      return config
+      if (!config) return null
+      return config as Config
     },
 
     profile: async (_parent: any, _args: any, context: Context) => {
@@ -40,7 +39,7 @@ export const resolvers = {
   },
 
   Mutation: {
-    setProfile: async (_parent: any, {name, isTeacher, isStudent}: {name: string, isTeacher: boolean, isStudent: boolean}, context: Context) => {
+    setProfile: async (_parent: any, {name, isTeacher, isStudent}: MutationSetProfileArgs, context: Context) => {
       if (!context.user) throw new Error('not authenticated')
       const collection = await getCollection("users")
       const out = await collection.findOneAndUpdate({_id: context.user._id}, {
@@ -51,47 +50,12 @@ export const resolvers = {
           }
       })
       if (!out) throw new Error('user not found')
-      return
+      return out as User
     },
 
-    newPoll: async(_parent: any, data: {
-      form: string, 
-      year: string,
-      class: string,
-      school: ObjectId,
-    }, context: Context) => {
-      if (!context.user) throw new Error('not authenticated')
-      const collection = await getCollection("polls")
-      let secret
-      for(;;) {
-        secret = randomstring.generate({length: 6, readable: true})
-        const duplicate = await collection.findOne({secret})
-        if (duplicate === null) break
-      }
-      const schoolCollection = await getCollection("schools")
-      const school = await schoolCollection.findOne({_id: new ObjectId(data.school)})
-      if (!school) throw new Error(`school not found _id: ${data.school}`)
+    newPoll,
 
-      const result = await collection.insertOne({
-          school_id: school._id,
-          "class": data.class,
-          year: data.year,
-          form: data.form,
-          secret,
-          createdBy: context.user._id,
-          date: new Date(),
-      })
-      return result.insertedId
-    },
-
-    postTranslation: async (_parent: any, params: {
-      source: string,
-      map: {
-          it?: string,
-          en?: string,
-          fu?: string,
-      }
-    }, context: Context) => {
+    postTranslation: async (_parent: any, params: MutationPostTranslationArgs, context: Context) => {
       const user = context.user
       if (!user) throw new Error('not authenticated')
       if (!user.isAdmin) throw new Error('not authorized')
@@ -99,7 +63,7 @@ export const resolvers = {
       const collection = await getCollection("translations")
       let translation = await collection.findOne({source: params.source})
       if (translation) {
-        collection.updateOne({source: params.source}, {
+        await collection.updateOne({source: params.source}, {
             $set: {
                 map: {
                     ...translation.map,
@@ -108,11 +72,12 @@ export const resolvers = {
             }
         })
       } else {
-        collection.insertOne({
+        await collection.insertOne({
             source: params.source,
             map: params.map,
         })
-    }
+      }
+      return await collection.findOne({source: params.source}) as Translation
    }
 
   }

@@ -7,7 +7,7 @@ import { IPostUser, IGetUser } from '@/models/User'
 import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
 import { IDictElement, IPostDict } from '@/models/Dict'
-import { IGetTranslation, IPostTranslation } from '@/models/Translation'
+import { IGetTranslation } from '@/models/Translation'
 import { User, Poll } from '@/pages/api/graphql/types'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {

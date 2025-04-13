@@ -1,101 +1,17 @@
-import { gql } from 'graphql-tag'
+import path from 'path'
+import fs from 'fs'
+import { loadFilesSync } from '@graphql-tools/load-files'
+import { mergeTypeDefs } from '@graphql-tools/merge'
 
-export const typeDefs = gql`
-  scalar ObjectId
+// Risolve il percorso a partire dalla root del progetto
+const schemaPath = path.resolve(process.cwd(), 'public/schema.graphql');
 
-  scalar Timestamp
+// Verifica se il file esiste
+if (!fs.existsSync(schemaPath)) {
+  throw new Error(`File schema.graphql non trovato in ${schemaPath}`);
+}
 
-  scalar JSON
+// Carica il file schema.graphql
+const typesArray = loadFilesSync(schemaPath);
 
-  type LocalizedString {
-    en: String
-    fu: String
-    it: String
-  }
-
-  input LocalizedStringInput {
-    en: String
-    fu: String
-    it: String
-  }
-
-  type Config {
-    siteTitle: LocalizedString
-  }
-
-  type Account {
-    provider: String
-  }
-
-  type School {
-    _id: ObjectId
-    name: String
-    city: String
-    city_fu: String
-  }
-
-  type User {
-    _id: ObjectId
-    name: String
-    username: String
-    email: String
-    image: String
-  }
-
-  type Profile {
-      _id: ObjectId
-      name: String
-      username: String
-      email: String
-      isTeacher: Boolean
-      isStudent: Boolean
-      isAdmin: Boolean
-      isSuper: Boolean
-      isViewer: Boolean
-      image: String
-      accounts: [Account],
-  } 
-
-  type Poll {
-    _id: ObjectId
-    secret: String
-    adminSecret: String
-    entriesCount: Int
-    date: Timestamp
-    school: School
-    class: String
-    year: String
-    form: String
-    closed: Boolean
-    createdBy: User
-    createdAt: Timestamp,
-  }
-
-  type Translation {
-    source: String
-    map: LocalizedString
-  }
-
-  type Query {
-    hello: String
-    config: Config
-    profile: Profile
-    polls(year: Int, _id: ObjectId, adminSecret: String): [Poll]
-    schools(year: Int): JSON
-    stats(poll: ObjectId, polls: [ObjectId], 
-      adminSecret: String, schoolSecret: String,
-      year: Int,
-      class: String, city: String, form: String,
-      schoolId: ObjectId,
-    ): JSON
-    translations: JSON
-  }
-
-  type Mutation {
-    setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
-    newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
-    patchPoll(_id: ObjectId!, secret: String, school_id: ObjectId, form: String, type: String, class: String, year: String, adminSecret: Boolean, closed: Boolean): Poll
-    deletePoll(_id: ObjectId!): Boolean
-    postTranslation(source: String!, map: LocalizedStringInput!): Translation
-  }
-  `
+export const typeDefs = mergeTypeDefs(typesArray);

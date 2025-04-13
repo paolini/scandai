@@ -13,7 +13,7 @@ import { useAddMessage } from "@/components/Messages"
 import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
-import { Poll } from "@/pages/api/graphql/types"
+import { Poll } from "@/generated/graphql"
 import Error from '@/components/Error'
 
 const PollSetAdminSecretMutation = gql`
@@ -65,7 +65,7 @@ export default function PollAdmin({poll, adminSecret}:{
     return <>
         <Card className="my-2">
             <Card.Header>
-                <Card.Title>{_("Pagina di amministrazione")}: {_("Sondaggio")} {questionary.forms[poll.form].name[_.locale]}</Card.Title>
+                <Card.Title>{_("Pagina di amministrazione")}: {_("Sondaggio")} {poll.form && questionary.forms[poll.form].name[_.locale]}</Card.Title>
             </Card.Header>
             <Card.Body>
                 <Card.Text>
@@ -118,7 +118,7 @@ export default function PollAdmin({poll, adminSecret}:{
                     </Link>
                     }
                     { !adminSecret && poll.closed &&
-                        <Button variant="danger" disabled={poll.entriesCount>0 && !isAdmin} onClick={() => remove(poll)}>
+                        <Button variant="danger" disabled={poll.entriesCount!==null && poll.entriesCount>0 && !isAdmin} onClick={() => remove(poll)}>
                             {_("elimina")}
                         </Button>
                     }
@@ -164,6 +164,8 @@ export default function PollAdmin({poll, adminSecret}:{
     }
 
     async function remove(poll: Poll) {
+        // TODO: convert to GRAPHQL
+        /*
         try {
             await deletePoll(poll)
             mutate()
@@ -171,6 +173,7 @@ export default function PollAdmin({poll, adminSecret}:{
         } catch(err) {
             addMessage('error', `${err}`)
         }
+        */
     }
 
     function share () {
@@ -192,6 +195,8 @@ export default function PollAdmin({poll, adminSecret}:{
     }
 
     async function createAdminSecret () {
+        // TODO: convert to GRAPHQL
+        /*
         try {
             const res = await patchPoll({ 
                 _id: poll._id, 
@@ -201,6 +206,7 @@ export default function PollAdmin({poll, adminSecret}:{
         } catch(err) {
             addMessage('error', `${err}`)
         }
+        */
     }
 }
 

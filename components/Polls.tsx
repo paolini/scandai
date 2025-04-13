@@ -2,10 +2,10 @@ import { FaCirclePlus } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery, useMutation, gql } from '@apollo/client'
 import { ObjectId } from 'mongodb'
- 
-import { post, NewPollMutation, PollsQuery, useSchools } from '@/lib/api'
+
+import { post, NewPollMutation, PollsQuery } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
@@ -15,7 +15,7 @@ import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
-import { User, Poll } from '@/pages/api/graphql/types'
+import { User, Poll, School } from '@/generated/graphql'
 
 const formTypes = Object.keys(questionary.forms)
 
@@ -50,7 +50,7 @@ export default function Polls({}) {
     return <>
         { newForm !== null
             ? <NewPoll form={newForm} done={(poll) => {
-                if (poll) router.push(`/poll/${poll._id}`)
+                if (poll) router.push(`/poll/${poll}`)
                 else router.push('/')
             }}/>
             : <NewPollButtons form={newForm} />
@@ -143,7 +143,7 @@ function PollsTable({user, polls}:{
                     {} &lt;{ poll.createdBy?.email || '???' }&gt;
                 </td>}
                 <td>
-                    {questionary.forms[poll.form]?.name[_.locale]}
+                    {poll.form && questionary.forms[poll.form]?.name[_.locale]}
                 </td>
                 <td>
                     {formatDate(poll.date)}
@@ -283,13 +283,13 @@ function SelectForm({ formState }: {
 function SelectSchool({ schoolState }: {
     schoolState: State<string>
 }) {
-    const schoolsQuery = useSchools()
+    const schoolsQuery = useQuery(gql`query { schools }`)
     const _ = useTrans()
 
-    if (schoolsQuery.isLoading) return <Loading />
-    if (!schoolsQuery.data) return <Error>{schoolsQuery.error.message}</Error>
+    if (schoolsQuery.loading) return <Loading />
+    if (!schoolsQuery.data) return <Error>{`${schoolsQuery.error?.graphQLErrors}`}</Error>
 
-    const schools = schoolsQuery.data.data
+    const schools = schoolsQuery.data.schools as School[]
 
     return <div className="form-grup">
         <label htmlFor="school">
@@ -299,7 +299,7 @@ function SelectSchool({ schoolState }: {
             <option value="" disabled={true}>{_("scegli")}</option>
             {
                 schools.map(school =>
-                    <option key={school._id} value={school._id}>{school.name} - {school.city}</option>)
+                    <option key={`${school._id}`} value={`${school._id}`}>{school.name} - {school.city}</option>)
             }
         </select>
         { /*<Input id="school" state={get(pollState, 'school')} placeholder="scuola" /> */ }

@@ -35,7 +35,7 @@ import {
     IPreferredLanguageCount,
 } from '@/pages/api/graphql/resolvers/stats'
 import questionary, { extractLevels, trans, IReportBlockElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
-import Page, { PageWithoutProvider } from '@/components/Page'
+import { PageWithoutProvider } from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"

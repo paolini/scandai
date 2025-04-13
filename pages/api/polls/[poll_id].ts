@@ -37,9 +37,7 @@ export default async function handler(
             }
         }
 
-        if (req.method === 'PATCH') {
-        }
-
+        return res.status(405).json({error: 'method not allowed'})
     }
 
 async function getPollById(id: string | ObjectId): Promise<IGetPoll|null> {

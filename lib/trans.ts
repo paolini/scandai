@@ -10,7 +10,6 @@ export default function trans(locale: Locale) {
       let r = s
       const t = (translations as any)[s]
       if (t) r = t[locale as 'it'|'en'|'fu'] ?? s
-      // console.log(JSON.stringify({ locale, s, t, r,  }))
       args.forEach(arg => {
           const i = r.indexOf('%')
           if (i >= 0) {

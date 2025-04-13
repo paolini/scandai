@@ -6,18 +6,9 @@ import questionary, { IQuestion, extractLevels } from '../../../../lib/questiona
 import { schoolYearMatch } from '@/lib/utils'
 import { Context } from '../types'
 import { getCollection } from '@/lib/mongodb'
+import { QueryStatsArgs } from '@/generated/graphql'
 
-export default async function resolver(_parent: any, query: {
-    poll?: ObjectId,
-    polls?: ObjectId[],
-    adminSecret?: string,
-    schoolSecret?: string,
-    year?: number,
-    class?: string,
-    city?: string,
-    form?: string,
-    schoolId?: ObjectId,
-}, context: Context) {
+export default async function resolver(_parent: any, query: QueryStatsArgs, context: Context) {
         const user = context.user
         const $match: any = {}
         const filters: any = {}

@@ -16,9 +16,7 @@ const Link = Nav.Link
 export default function Header() {
   const {data, loading, error} = useQuery(ProfileQuery)
   const router = useRouter()
-  if (loading) return <Loading />
-  if (!data) return <Error>Impossibile caricare il profilo</Error>
-  const profile = data.profile
+  const profile = data?.profile
   const isAdmin = profile?.isAdmin
   const isTeacher = profile?.isTeacher
   const isViewer = profile?.isViewer
@@ -27,6 +25,9 @@ export default function Header() {
   const locale = router.locale || 'it'
   const _ = useTrans()
   const year = currentSchoolYear()
+
+  if (loading) return <Loading />
+  if (!data) return <Error>Impossibile caricare il profilo</Error>
 
   assert (locale === 'it' || locale === 'en' || locale === 'fu', 'locale non supportata')
 
