@@ -7,7 +7,7 @@ import QRCode from "react-qr-code"
 import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
-import { ProfileQuery, PollsQuery } from "@/lib/api"
+import { ProfileQuery, PollQuery } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
@@ -30,7 +30,9 @@ export default function PollAdmin({poll, adminSecret}:{
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
     const _ = useTrans()
     const router = useRouter()
-    useQuery(PollsQuery, {
+
+    // polling query
+    useQuery(PollQuery, {
         variables: {
             _id: poll._id,
             adminSecret
@@ -43,7 +45,7 @@ export default function PollAdmin({poll, adminSecret}:{
             _id: poll._id,
             secret: adminSecret || null
         }, 
-        refetchQueries: [PollsQuery]
+        refetchQueries: [PollQuery]
     }
     useEffect(() => {
         const interval = setInterval(() => setTick(tick => tick+1), 1000 / 2)

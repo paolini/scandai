@@ -9,7 +9,7 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import PollAdmin from '@/components/PollAdmin'
 import { useTrans } from '@/lib/trans'
-import { PollsQuery, ProfileQuery } from '@/lib/api'
+import { ProfileQuery, PollQuery } from '@/lib/api'
 
 export default function PollIdContainer() {
     const searchParams = useSearchParams()
@@ -26,8 +26,8 @@ function PollId({adminSecret, poll_id}:{
     poll_id?: ObjectId|undefined,
 }) {
     const _ = useTrans()
-    const pollQuery = useQuery(PollsQuery, {variables: {_id: poll_id, adminSecret}})
-    const poll = pollQuery.data?.polls[0]
+    const pollQuery = useQuery(PollQuery, {variables: {_id: poll_id, adminSecret}})
+    const poll = pollQuery.data?.poll
     const profileQuery = useQuery(ProfileQuery)
     const profile = profileQuery.data?.profile
     const isAdmin = profile?.isAdmin
@@ -36,18 +36,8 @@ function PollId({adminSecret, poll_id}:{
     if (pollQuery.loading) return <Loading />
     if (!pollQuery.data) return <Error>{_("Errore")}: {`${pollQuery.error}`}</Error>
 
-    if (pollQuery.data?.polls.length === 0) return <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
+    if (!poll) return <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
     
-    if (!poll) return <Loading />
-
-    if (!pollQuery.data) return <Error>{_("Errore")}: {`${pollQuery.error}`}</Error>
-    
-    if (pollQuery.data.polls.length !== 1) return <Error>{_("Errore")}: {_("sondaggio non trovato")}</Error>
-
-    if (!isSupervisor && !adminSecret) {
-        return <Error>{_("Errore")}: {_("Non hai i permessi per visualizzare questo sondaggio")}</Error>
-    }
-
     return <PollAdmin poll={poll} adminSecret={adminSecret} />
 }
 

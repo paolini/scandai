@@ -8,7 +8,7 @@ import { IPostSchool, IGetSchool } from '@/models/School'
 import { IGetEntry } from '@/models/Entry'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation } from '@/models/Translation'
-import { User, Poll } from '@/pages/api/graphql/types'
+import { User, Poll } from '@/generated/graphql'
 
 async function fetcher([url, query]: [url:URL|RequestInfo, query?: any], init?: RequestInit) {
     if (url === null) return {} // query is disabled
@@ -111,9 +111,9 @@ export async function deleteEntry(obj: WithId) {
     return remove('entries', obj)
 }
 
-export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, _id?: ObjectId, adminSecret?: string }> = gql`
-    query PollsQuery($year: Int, $_id: ObjectId, $adminSecret: String) {
-        polls(year: $year, _id: $_id, adminSecret: $adminSecret) {
+export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, adminSecret?: string }> = gql`
+    query PollsQuery($year: Int) {
+        polls(year: $year) {
             _id,
             form,
             closed,
@@ -139,6 +139,35 @@ export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, _
             createdAt
         }
     }
+`
+
+export const PollQuery = gql`query PollQuery($_id: ObjectId, $adminSecret: String, $secret: String) {
+    poll(_id: $_id, adminSecret: $adminSecret, secret: $secret) {
+        _id,
+        form,
+        closed,
+        secret,
+        adminSecret,
+        entriesCount,
+        date,
+        class,
+        year,
+        school {
+            _id,
+            name,
+            city,
+            city_fu,
+        }
+        createdBy {
+            _id,
+            name,
+            email,
+            image,
+            username,
+        }
+        createdAt
+    }
+}
 `
 
 export const NewPollMutation: TypedDocumentNode<{newPoll: ObjectId}, {

@@ -140,6 +140,7 @@ export type Query = {
   __typename?: 'Query';
   config: Config;
   hello: Maybe<Scalars['String']['output']>;
+  poll: Maybe<Poll>;
   polls: Maybe<Array<Maybe<Poll>>>;
   profile: Maybe<Profile>;
   schools: Maybe<Scalars['JSON']['output']>;
@@ -148,9 +149,17 @@ export type Query = {
 };
 
 
+export type QueryPollArgs = {
+  _id: InputMaybe<Scalars['ObjectId']['input']>;
+  adminSecret: InputMaybe<Scalars['String']['input']>;
+  secret: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPollsArgs = {
   _id: InputMaybe<Scalars['ObjectId']['input']>;
   adminSecret: InputMaybe<Scalars['String']['input']>;
+  secret: InputMaybe<Scalars['String']['input']>;
   year: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -382,6 +391,7 @@ export type ProfileResolvers<ContextType = Context, ParentType extends Resolvers
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   config: Resolver<ResolversTypes['Config'], ParentType, ContextType>;
   hello: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType, QueryPollArgs>;
   polls: Resolver<Maybe<Array<Maybe<ResolversTypes['Poll']>>>, ParentType, ContextType, QueryPollsArgs>;
   profile: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   schools: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, QuerySchoolsArgs>;

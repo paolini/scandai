@@ -10,12 +10,11 @@ import { IGetPoll } from '@/models/Poll'
 import PollSplash from '@/components/PollSplash'
 import { State, value, set } from '@/lib/State'
 
-export default function Questionary({langState, poll, form, answersState, mutate, timestamp } : {
+export default function Questionary({langState, poll, form, answersState, timestamp } : {
     langState: State<string>,
     form: string,
     poll: IGetPoll|null,
     answersState: State<IAnswers>,
-    mutate: (() => void)|null,
     timestamp: number,
   }) {
 

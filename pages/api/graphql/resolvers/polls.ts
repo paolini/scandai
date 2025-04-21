@@ -4,7 +4,7 @@ import randomstring from 'randomstring'
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
 import {getCollection, getPollCollection} from '@/lib/mongodb'
-import {User, MutationNewPollArgs, Poll, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs} from '@/generated/graphql'
+import {User, MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
   { $lookup: {
@@ -76,15 +76,8 @@ export async function polls(_parent: any, params: QueryPollsArgs, context: Conte
     const { user } = context
     const $match: any = {}
 
-    if (params._id) $match._id = new ObjectId(params._id)      
-    if (params.adminSecret) $match.adminSecret = params.adminSecret
-
     if (params.year) $match.date = schoolYearMatch(params.year)
 
-    // se ho specificato un secret o un adminSecret
-    // posso vedere solo quella poll 
-    // ma non ho bisogno di essere autenticato            
-    if (!$match.secret && !$match.adminSecret) {
     // set filters from user authorization
     if (user) {
         if (!user.isAdmin) {
@@ -96,7 +89,6 @@ export async function polls(_parent: any, params: QueryPollsArgs, context: Conte
         // or get a specific poll by secret
         $match['public'] = true
     }
-    }
 
     const pipeline:any = [
         { $match },
@@ -106,6 +98,47 @@ export async function polls(_parent: any, params: QueryPollsArgs, context: Conte
     const collection = await getCollection("polls")
     const data = await collection.aggregate(pipeline).toArray()
     return data as Poll[]
+}
+
+export async function poll(_parent: any, {_id, adminSecret, secret}: QueryPollArgs, context: Context): Promise<Poll> {
+    const { user } = context
+    const $match: any = {}
+
+    if (_id) $match._id = new ObjectId(_id)      
+    if (adminSecret) $match.adminSecret = adminSecret
+    if (secret) $match.secret = secret
+
+    // se ho specificato un secret o un adminSecret
+    // posso vedere solo quella poll 
+    // ma non ho bisogno di essere autenticato            
+    if (!secret && !adminSecret) {
+        // set filters from user authorization
+        if (user) {
+            if (!user.isAdmin) {
+                // non admin vede solo i suoi poll                
+                $match['createdBy'] = new ObjectId(user._id)
+            }
+        } else {
+            // anonymous user can only see public polls
+            // or get a specific poll by secret
+            $match['public'] = true
+        }
+    }
+
+    if (!_id && !secret) throw Error(`"_id" or "secret" required`)
+
+    const pipeline:any = [
+        { $match },
+        ...POLL_PIPELINE,
+    ]
+
+    const collection = await getCollection("polls")
+    console.log(`$match: ${JSON.stringify($match)}`)
+    const data = await collection.aggregate(pipeline).toArray()
+    console.log(`data: ${JSON.stringify(data)}`)
+    if (data.length===0) throw Error("not found")
+    if (data.length>1) throw Error("multiple objects")
+    return data[0] as Poll
 }
 
 export async function newPoll(_parent: any, data: MutationNewPollArgs, context: Context) {

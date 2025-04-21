@@ -2,7 +2,7 @@ import { Context } from './types'
 import { getConfigCollection, getUserCollection, getTranslationCollection } from '@/lib/mongodb'
 import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
-import {polls, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret } from './resolvers/polls'
+import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret } from './resolvers/polls'
 import schools from './resolvers/schools'
 import translations from './resolvers/translations'
 import { Resolvers, Profile, MutationSetProfileArgs, MutationPostTranslationArgs } from '@/generated/graphql'
@@ -34,6 +34,7 @@ export const resolvers: Resolvers<Context> = {
     },
 
     polls,
+    poll,
     schools,
     stats,
     translations,

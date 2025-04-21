@@ -82,7 +82,8 @@ type Query {
     hello: String
     config: Config!
     profile: Profile
-    polls(year: Int, _id: ObjectId, adminSecret: String): [Poll]
+    polls(year: Int): [Poll]
+    poll(_id: ObjectId, adminSecret: String, secret: String): Poll
     schools(year: Int): JSON
     stats(poll: ObjectId, polls: [ObjectId], 
         adminSecret: String, schoolSecret: String,
