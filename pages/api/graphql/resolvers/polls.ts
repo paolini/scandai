@@ -3,8 +3,8 @@ import randomstring from 'randomstring'
 
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
-import {getCollection} from '@/lib/mongodb'
-import {MutationNewPollArgs, Poll, QueryPollsArgs} from '@/generated/graphql'
+import {getCollection, getPollCollection} from '@/lib/mongodb'
+import {User, MutationNewPollArgs, Poll, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
   { $lookup: {
@@ -133,68 +133,80 @@ export async function newPoll(_parent: any, data: MutationNewPollArgs, context: 
     return result.insertedId
 }
 
-/*
-export async function patchPoll(_parent: any, data: {
-        _id: ObjectId,
-        form?: string, 
-        year?: string,
-        class?: string,
-        school?: ObjectId,
-        closed?: boolean,
-        closedAt?: Date,
-        adminSecret?: string,
-        }, context: Context) {
-    if (!context.user) throw new Error('not authenticated')
-    const collection = await getCollection("polls")
-    const poll = await collection.findOne({_id: data._id})
-    if (!poll) throw new Error(`poll not found _id: ${data._id}`)
-    
-        const adminSecret = req.query.secret
-        const poll_id = req.query.poll_id
+export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {user}: Context) {
+    if (!user) throw new Error('not authenticated')
+    const collection = await getPollCollection()
+    const poll = await collection.findOne({_id})
+    if (!poll) throw new Error(`poll not found`)
+    const userIsOwnerOrAdmin = user.isAdmin || user._id == poll.createdBy
 
-        if (typeof poll_id !== 'string') return res.status(400).json({error: 'invalid poll_id'})  
-        if (Array.isArray(adminSecret)) return res.status(400).json({error: 'invalid secret'})
+    if (!userIsOwnerOrAdmin) throw Error('not authorized')
 
-        const poll = await getPollById(poll_id)
-
-        if (!poll) {
-            return res.status(404).json({error: 'poll not found'})
-        }
-
-        const userKnowsSecret = (poll.adminSecret && poll.adminSecret === adminSecret)
-        const userIsOwnerOrAdmin = user && (user.isAdmin || user._id == poll.createdBy.toString()) 
-
-        if (!userKnowsSecret && !userIsOwnerOrAdmin) {
-            return res.status(401).json({error: 'not authorized'})
-        }
-
-        let body
-        try {
-            body = JSON.parse(req.body)
-        } catch(error) {
-            return res.status(400).json({error: 'invalid json'})
-        }
-        let payload: any = {}
-        console.log(`PATCH ${poll_id} ${JSON.stringify(body)}`)
-        if (userIsOwnerOrAdmin) {
-            for (let field of  ['school_id', 'form', 'type', 'class', 'year']) {
-                if (body[field] === undefined) continue
-                payload[field] = body[field]
-            }
-            if (body.adminSecret !== undefined) {
-                payload['adminSecret'] = body.adminSecret 
-                    ? randomstring.generate({length: 6, readable: true})
-                    : ''
-            }
-        }
-        
-        if (body.closed !== undefined) {
-            if (body.closed && !poll.closed) {
-                payload.date = new Date()
-            }
-            payload.closed = body.closed
-        }
-        const out = await Poll.updateOne({_id: poll._id}, payload)
-        return res.json({data: out})
+    const res = await collection.deleteOne({_id})
+    return res.deletedCount === 1
 }
-        */
+
+async function getPoll(_id: ObjectId, secret: string|null, user: User|undefined) {
+    if (!user) throw new Error('not authenticated')
+    const collection = await getPollCollection()
+    const poll = await collection.findOne({_id})
+    if (!poll) throw new Error(`poll not found`)
+    
+    const userKnowsSecret = poll.adminSecret && poll.adminSecret === secret
+    const userIsOwnerOrAdmin = user.isAdmin || user._id == poll.createdBy
+
+    if (!userKnowsSecret && !userIsOwnerOrAdmin) throw Error('not authorized')
+
+    return {
+        collection,
+        poll,
+        userKnowsSecret,
+        userIsOwnerOrAdmin
+    }
+}
+
+export async function openPoll(_parent: any, {_id,secret}: MutationOpenPollArgs, {user}: Context) {
+    const { collection, poll, userKnowsSecret, userIsOwnerOrAdmin } = await getPoll(_id, secret, user)
+
+    if (!userKnowsSecret && !userIsOwnerOrAdmin) throw Error('not authorized')
+
+    if (!poll.closed) return false
+
+    const closed = false
+
+    const out = await collection.updateOne({_id}, {$set: {closed}})
+
+    return out.modifiedCount > 0
+}
+
+export async function closePoll(_parent: any, {_id,secret}: MutationClosePollArgs, {user}: Context) {
+    const { collection, poll, userKnowsSecret, userIsOwnerOrAdmin } = await getPoll(_id, secret, user)
+
+    if (!userKnowsSecret && !userIsOwnerOrAdmin) throw Error('not authorized')
+
+    if (poll.closed) return false
+
+    const date = new Date()
+    const closed = true
+
+    const out = await collection.updateOne({_id}, {
+        $set: {closed, date}
+    })
+
+    return out.modifiedCount > 0
+}
+
+export async function pollCreateAdminSecret(_parent: any, {_id, secret}: MutationPollCreateAdminSecretArgs, {user}: Context) {
+    const { collection, userIsOwnerOrAdmin } = await getPoll(_id, secret, user)
+    if (!userIsOwnerOrAdmin) throw Error('not authorized')
+    const adminSecret = randomstring.generate({length: 6, readable: true})
+    const out = await collection.updateOne({_id},{$set:{adminSecret}})
+    return out.modifiedCount > 0
+}
+
+export async function pollRemoveAdminSecret(_parent: any, {_id,secret}: MutationPollRemoveAdminSecretArgs, {user}: Context) {
+    const { collection, userIsOwnerOrAdmin } = await getPoll(_id, secret, user)
+    if (!userIsOwnerOrAdmin) throw Error('not authorized')
+    const out = await collection.updateOne({_id},{$set: {adminSecret: ''}})
+    return out.modifiedCount > 0
+}

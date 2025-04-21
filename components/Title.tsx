@@ -10,6 +10,7 @@ export default function Title(){
     if (loading) return <Loading />
     if (!data) return <Error>{`${error}`}</Error>
     const config = data.config
+    if (!config.siteTitle) return JSON.stringify({config})
     return <h2>
         {config.siteTitle[_.locale]} 
     </h2>

@@ -1,36 +1,19 @@
 import { Card, ButtonGroup, Button } from "react-bootstrap"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { useQuery, useMutation, gql } from "@apollo/client"
+import { useQuery, useMutation, gql, DocumentNode, MutationHookOptions } from "@apollo/client"
 import Link from "next/link"
 import QRCode from "react-qr-code"
 import { FaShareAlt, FaExternalLinkAlt } from "react-icons/fa"
 import copyToClipboard from 'copy-to-clipboard'
 
 import { ProfileQuery, PollsQuery } from "@/lib/api"
-import { patchPoll, deletePoll } from "@/lib/api"
 import { useAddMessage } from "@/components/Messages"
 import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
 import { Poll } from "@/generated/graphql"
 import Error from '@/components/Error'
-
-const PollSetAdminSecretMutation = gql`
-    mutation ($_id: ObjectId!, $secret: Boolean) {
-        patchPoll(_id: $_id, secret: $secret) {
-            adminSecret
-        }
-    }
-`
-
-const PollSetCloseMutation = gql`
-    mutation ($_id: ObjectId!, $adminSecret: String, $closed: Boolean) {
-        patchPoll(_id: $_id, secret: $adminSecret, closed: $closed) {
-            closed
-        }
-    }
-`
 
 export default function PollAdmin({poll, adminSecret}:{
     poll: Poll,
@@ -42,21 +25,26 @@ export default function PollAdmin({poll, adminSecret}:{
     const profile = profileQuery.data?.profile
     const isAdmin = profile?.isAdmin
     const isSupervisor = profile && (isAdmin || profile?._id === poll.createdBy?._id)
-    const router = useRouter()
     const pollUrl = `/p/${poll.secret}` 
     const fullUrl = `${window.location.origin}${pollUrl}`
     const fullAdminUrl = poll.adminSecret ? composeAdminFullUrl(poll.adminSecret) : null
     const _ = useTrans()
-    const [setCloseMutation, {loading: loadingClose, error: errorClose}] = useMutation(PollSetCloseMutation)
-    const [setAdminSecret, {loading: loadingAdminSecret, error: errorAdminSecret}] = useMutation(PollSetAdminSecretMutation)
-    const pollQuery = useQuery(PollsQuery, {
+    const router = useRouter()
+    useQuery(PollsQuery, {
         variables: {
             _id: poll._id,
             adminSecret
         },
-        //pollInterval: 1000,
+        pollInterval: 1000,
         skip: !isSupervisor && !adminSecret,
     })
+    const PollMutationOptions = {
+        variables: {
+            _id: poll._id,
+            secret: adminSecret || null
+        }, 
+        refetchQueries: [PollsQuery]
+    }
     useEffect(() => {
         const interval = setInterval(() => setTick(tick => tick+1), 1000 / 2)
         return () => clearInterval(interval)
@@ -78,13 +66,19 @@ export default function PollAdmin({poll, adminSecret}:{
                 {_("Questionari compilati:")} <b>{poll.entriesCount}</b> 
                 { !poll.closed && <Tick tick={tick} /> } <br />
                 { isAdmin && !poll.adminSecret && 
-                    <Button onClick={createAdminSecret}>
-                        <FaShareAlt />{_("crea link di somministrazione")}
-                    </Button> }
+                    <MutationButton query={gql`
+                        mutation ($_id: ObjectId!, $secret: String) {
+                            pollCreateAdminSecret(_id: $_id, secret: $secret)
+                        }`} options={PollMutationOptions}>
+                        <FaShareAlt />{} {_("crea link di somministrazione")}
+                    </MutationButton> }
                 { isAdmin && poll.adminSecret &&
-                    <Button onClick={createAdminSecret} variant="danger">
+                    <MutationButton query={gql`
+                        mutation ($_id: ObjectId!, $secret: String) {
+                            pollRemoveAdminSecret(_id: $_id, secret: $secret)
+                        }`} options={PollMutationOptions} variant="danger">
                         {_("elimina link di somministrazione")}
-                    </Button> }
+                    </MutationButton> }
                 <br />
                 </Card.Text>
                 {
@@ -92,7 +86,6 @@ export default function PollAdmin({poll, adminSecret}:{
                 }
             </Card.Body>                
             <Card.Footer>
-                { errorClose && <Error>{`${errorClose}`}</Error>}
                 <ButtonGroup>
                     { !poll.closed && 
                         <Button onClick={share}>
@@ -105,12 +98,18 @@ export default function PollAdmin({poll, adminSecret}:{
                         </a>
                     }
                     { poll.closed 
-                    ? <Button disabled={loadingClose} onClick={() => close(poll, false)}>
+                    ? <MutationButton query={gql`
+                        mutation ($_id: ObjectId!, $secret: String) {
+                            openPoll(_id: $_id, secret: $secret)
+                        }`} options={PollMutationOptions}>
                         {_("riapri")}
-                      </Button>
-                    : <Button disabled={loadingClose} onClick={() => close(poll)}>
+                    </MutationButton>
+                    : <MutationButton query={gql`
+                        mutation ($_id: ObjectId!, $secret: String) {
+                            closePoll(_id: $_id, secret: $secret)
+                        }`} options={PollMutationOptions}>
                         {_("chiudi")}
-                      </Button>
+                    </MutationButton>
                     }
                     { !adminSecret &&
                     <Link className="btn btn-primary" href="/">
@@ -118,9 +117,17 @@ export default function PollAdmin({poll, adminSecret}:{
                     </Link>
                     }
                     { !adminSecret && poll.closed &&
-                        <Button variant="danger" disabled={poll.entriesCount!==null && poll.entriesCount>0 && !isAdmin} onClick={() => remove(poll)}>
+                        <MutationButton variant="danger" disabled={poll.entriesCount!==null && poll.entriesCount>0 && !isAdmin}
+                            query={gql`
+                                mutation ($_id: ObjectId!) {
+                                    deletePoll(_id: $_id)
+                                }`}
+                            options={{
+                                variables: {_id: poll._id},
+                                onCompleted: () => { router.push('/')}
+                            }}>
                             {_("elimina")}
-                        </Button>
+                        </MutationButton>
                     }
                 </ButtonGroup>
             </Card.Footer>
@@ -156,13 +163,6 @@ export default function PollAdmin({poll, adminSecret}:{
         </Card>
     </>
 
-    async function close(poll: Poll, close=true) {
-        setCloseMutation({
-            variables: {_id: poll._id, adminSecret, closed: !!close},
-            refetchQueries: [PollsQuery]
-        })
-    }
-
     async function remove(poll: Poll) {
         // TODO: convert to GRAPHQL
         /*
@@ -193,21 +193,6 @@ export default function PollAdmin({poll, adminSecret}:{
     function composeAdminFullUrl(adminSecret: string) {
         return `${window.location}?secret=${adminSecret}`
     }
-
-    async function createAdminSecret () {
-        // TODO: convert to GRAPHQL
-        /*
-        try {
-            const res = await patchPoll({ 
-                _id: poll._id, 
-                adminSecret: poll.adminSecret ? 0 : 1
-            })
-            await mutate()
-        } catch(err) {
-            addMessage('error', `${err}`)
-        }
-        */
-    }
 }
 
 function Tick({tick}:{tick:number}) {
@@ -220,4 +205,18 @@ function Tick({tick}:{tick:number}) {
         '\u00b7\u00b7\u00b7',
     ][tick % 6]
     return <span className="mx-2" style={{fontFamily: 'monospace'}}>{s}</span>
+}
+
+function MutationButton({query, options, variant, disabled, children}: {
+    query: DocumentNode,
+    options: MutationHookOptions,
+    variant?: string,
+    disabled?: boolean,
+    children: React.ReactNode
+}) {
+    const [mutate, {loading, error}] = useMutation(query, options)
+    if (error) return <Error>{`${error.message}`}</Error>
+    return <Button variant={variant} disabled={disabled || loading} onClick={() => mutate()}>
+        {children}
+    </Button>
 }

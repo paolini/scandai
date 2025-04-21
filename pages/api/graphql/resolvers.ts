@@ -1,11 +1,11 @@
 import { Context } from './types'
-import { getCollection } from '@/lib/mongodb'
+import { getConfigCollection, getUserCollection, getTranslationCollection } from '@/lib/mongodb'
 import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
-import {polls, newPoll} from './resolvers/polls'
+import {polls, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret } from './resolvers/polls'
 import schools from './resolvers/schools'
 import translations from './resolvers/translations'
-import { Resolvers, Config, MutationSetProfileArgs, User, MutationPostTranslationArgs, Translation } from '@/generated/graphql'
+import { Resolvers, Profile, MutationSetProfileArgs, MutationPostTranslationArgs } from '@/generated/graphql'
 
 export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
@@ -16,20 +16,21 @@ export const resolvers: Resolvers<Context> = {
       return "Hello world!"
     },
 
-    config: async (): Promise<Config | null> => {
-      const collection = await getCollection("configs")
+    config: async () => {
+      const collection = await getConfigCollection()
       const config = await collection.findOne({})
-      if (!config) return null
-      return config as Config
+      if (!config) throw Error("config not found")
+      return config
     },
 
-    profile: async (_parent: any, _args: any, context: Context) => {
-      if (!context.user) return null      
+    profile: async (_parent: any, _args: any, context: Context): Promise<Profile|null> => {
+      if (!context.user) return null
       const sessionUser = context.user
       console.log(`Profile query: sessionUser: ${JSON.stringify(sessionUser)}`)
-      const collection = await getCollection("users")
+      const collection = await getUserCollection()
       const user = await collection.findOne({_id: sessionUser._id})
-      return user
+      if (!user) return null
+      return user as Profile
     },
 
     polls,
@@ -41,7 +42,7 @@ export const resolvers: Resolvers<Context> = {
   Mutation: {
     setProfile: async (_parent: any, {name, isTeacher, isStudent}: MutationSetProfileArgs, context: Context) => {
       if (!context.user) throw new Error('not authenticated')
-      const collection = await getCollection("users")
+      const collection = await getUserCollection()
       const out = await collection.findOneAndUpdate({_id: context.user._id}, {
           $set: {
               name,
@@ -50,17 +51,22 @@ export const resolvers: Resolvers<Context> = {
           }
       })
       if (!out) throw new Error('user not found')
-      return out as User
+      return out.value
     },
 
     newPoll,
+    deletePoll,
+    openPoll,
+    closePoll,
+    pollCreateAdminSecret,
+    pollRemoveAdminSecret,
 
     postTranslation: async (_parent: any, params: MutationPostTranslationArgs, context: Context) => {
       const user = context.user
       if (!user) throw new Error('not authenticated')
       if (!user.isAdmin) throw new Error('not authorized')
 
-      const collection = await getCollection("translations")
+      const collection = await getTranslationCollection()
       let translation = await collection.findOne({source: params.source})
       if (translation) {
         await collection.updateOne({source: params.source}, {
@@ -77,7 +83,8 @@ export const resolvers: Resolvers<Context> = {
             map: params.map,
         })
       }
-      return await collection.findOne({source: params.source}) as Translation
+      const res = await collection.findOne({source: params.source})
+      return res
    }
 
   }

@@ -8,7 +8,7 @@ const config: CodegenConfig = {
       config: {
         useIndexSignature: true,
         contextType: '../pages/api/graphql/types#Context', // Percorso al tipo del tuo context
-        avoidOptionals: true, // 👈 questo forza l'uso di `T | null` invece di `T | null | undefined`
+        avoidOptionals: true, // questo forza l'uso di `T | null` invece di `T | null | undefined`
       },
     },
   },

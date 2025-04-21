@@ -1,8 +1,10 @@
 import mongoose, {Types} from 'mongoose'
+import {WithoutId, Document, ObjectId} from 'mongodb'
 
 import migrate from './migrations'
 import createAdminUser from './createAdminUser'
 import updateConfiguration from './updateConfiguration'
+import {Config, User, Translation, Poll} from '@/generated/graphql'
 
 async function db() {
   const uri = process.env.MONGODB_URI
@@ -42,7 +44,37 @@ export async function trashDocument(collectionName: string, documentId: string) 
   await collection.deleteOne({ _id: document._id })
 }
 
-export async function getCollection(collection: string) {
+export async function getCollection<T extends Document=Document>(collection: string) {
   const db = (await clientPromise).db()
-  return db.collection(collection)
+  return db.collection<T>(collection)
+}
+
+export async function getConfigCollection() {
+  return getCollection<WithoutId<Config>>("configs")
+}
+
+export async function getUserCollection() {
+  return getCollection<WithoutId<User>>("users")
+}
+
+export async function getTranslationCollection() {
+  return getCollection<WithoutId<Translation>>("translations")
+}
+
+type MongoPoll = {
+  secret: string
+  adminSecret: string
+  entriesCount: number
+  date: Date
+  school_id: ObjectId
+  class: string
+  year: string
+  form: string
+  closed: boolean
+  createdBy: ObjectId
+  createdAt: Date
+}
+
+export async function getPollCollection() {
+  return getCollection<MongoPoll>("polls")
 }
