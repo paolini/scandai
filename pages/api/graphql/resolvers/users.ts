@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
 
-import { getUserCollection } from "@/lib/mongodb"
+import { getUserCollection, trashDocument } from "@/lib/mongodb"
 import {Context} from "../types"
-import {MutationNewUserArgs, MutationPatchUserArgs, MutationSetProfileArgs, Profile, User} from "@/generated/graphql"
+import {MutationDeleteUserArgs, MutationNewUserArgs, MutationPatchUserArgs, MutationSetProfileArgs, Profile, User} from "@/generated/graphql"
 
 export async function users(_parent:any, {}, {user}: Context) {
     if (!user) throw Error("not authenticated")
@@ -90,4 +90,12 @@ export async function patchUser(_parent: any, {_id, data}: MutationPatchUserArgs
     const out = await collection.findOne({_id})
     if (!out) throw Error("database error")
     return out as Profile
+}
+
+export async function deleteUser(_parent: any, {_id}: MutationDeleteUserArgs, {user}:Context) {
+    if (!user) throw Error("not authenticated")
+    if (!user.isAdmin) throw Error("not authorized")
+    const collection = await getUserCollection()
+    await trashDocument(collection,_id)
+    return true
 }

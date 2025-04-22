@@ -47,6 +47,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   closePoll: Maybe<Scalars['Boolean']['output']>;
   deletePoll: Maybe<Scalars['Boolean']['output']>;
+  deleteUser: Maybe<Scalars['Boolean']['output']>;
   newPoll: Maybe<Scalars['ObjectId']['output']>;
   newUser: Maybe<Profile>;
   openPoll: Maybe<Scalars['Boolean']['output']>;
@@ -67,6 +68,11 @@ export type MutationClosePollArgs = {
 
 
 export type MutationDeletePollArgs = {
+  _id: Scalars['ObjectId']['input'];
+};
+
+
+export type MutationDeleteUserArgs = {
   _id: Scalars['ObjectId']['input'];
 };
 
@@ -388,6 +394,7 @@ export type LocalizedStringResolvers<ContextType = Context, ParentType extends R
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   closePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationClosePollArgs, '_id'>>;
   deletePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePollArgs, '_id'>>;
+  deleteUser: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, '_id'>>;
   newPoll: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType, MutationNewPollArgs>;
   newUser: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, MutationNewUserArgs>;
   openPoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationOpenPollArgs, '_id'>>;

@@ -43,8 +43,12 @@ export default function UsersContainer() {
 const PatchMutation = gql`
     mutation ($_id: ObjectId!, $data: PatchUserData!) {
         patchUser(_id: $_id, data: $data) {_id}
-    }
-`
+    }`
+
+const DeleteMutation = gql`
+    mutation ($_id: ObjectId!) {
+        deleteUser(_id: $_id)
+    }`
 
 function Users() {
     const sessionUser = useSessionUser()
@@ -57,6 +61,9 @@ function Users() {
     const isSuper = sessionUser?.isSuper
     const _ = useTrans()
     const [patchMutation, {loading, error}] = useMutation(PatchMutation,{
+        refetchQueries: [UsersQuery]
+    })
+    const [deleteMutation, {loading: deleteLoading, error: deleteError}] = useMutation(DeleteMutation, {
         refetchQueries: [UsersQuery]
     })
 
@@ -89,6 +96,7 @@ function Users() {
             </Button> }
         </ButtonGroup>}
         {error && <Error>{`${error}`}</Error>}
+        {deleteError && <Error>{`${deleteError}`}</Error>}
         <table className="table">
             <thead>
                 <tr>
@@ -137,7 +145,7 @@ function Users() {
                         onChange={(checked) => {patch(user, {isSuper: checked})}} />
                     </td>}
                     { value(showDeleteState) && <td>
-                        <Button variant="danger" size="sm" disabled={user._id === sessionUser?._id}
+                        <Button variant="danger" size="sm" disabled={deleteLoading || user._id === sessionUser?._id}
                             onClick={() => clickDeleteUser(user)}><FaTrash />elimina</Button>
                     </td>}
                     { value(showPasswordState) && <td>
@@ -147,33 +155,21 @@ function Users() {
                 </tr>)}
             </tbody>
         </table>
-        { loading && <Loading />}
+        { (loading || deleteLoading) && <Loading />}
     </>
 
     async function patch(user: User, data: {[key:string]: string | boolean}) {
-        patchMutation({variables: {_id:user._id, data}})
+        await patchMutation({variables: {_id:user._id, data}})
     }
 
-    async function clickPasswordUser(user: IGetUser) {
-        try {
-            const newPassword = prompt(`${_("nuova password per")} ${user.email}`)
-            if (newPassword) {
-                await patchUser({_id: user._id, password: newPassword }) 
-            }
-        } catch(e) {
-            addMessage('error', `error updating user: ${e}`)
-            console.error(e)
-        }
+    async function clickPasswordUser(user: User) {
+        const newPassword = prompt(`${_("nuova password per")} ${user.email}`)
+        if (newPassword) await patch(user, {password: newPassword}) 
     }
 
-    async function clickDeleteUser(user: IGetUser) {
-        try {
-            await deleteUser(user) 
-            await usersQuery.mutate()
-        } catch(e) {
-            addMessage('error', `error deleting user: ${e}`)
-            console.error(e)
-        }
+    async function clickDeleteUser(user: User) {
+        set(showDeleteState, false)
+        deleteMutation({variables:{_id: user._id}})
     }
 
     function newUserDone() {

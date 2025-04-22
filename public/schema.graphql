@@ -113,6 +113,7 @@ type Mutation {
     
     newUser(name: String, username: String, email: String): Profile
     patchUser(_id: ObjectId!, data: PatchUserData!): Profile
+    deleteUser(_id: ObjectId!): Boolean
     setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): Profile
 
     newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId

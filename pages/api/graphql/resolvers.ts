@@ -6,7 +6,7 @@ import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSe
 import schools from './resolvers/schools'
 import {translations, postTranslation} from './resolvers/translations'
 import submit from './resolvers/submit'
-import {users, profile, setProfile, newUser, patchUser} from './resolvers/users'
+import {users, profile, setProfile, newUser, patchUser, deleteUser} from './resolvers/users'
 import { Resolvers } from '@/generated/graphql'
 
 export const resolvers: Resolvers<Context> = {
@@ -41,6 +41,7 @@ export const resolvers: Resolvers<Context> = {
     setProfile,
     newUser,
     patchUser,
+    deleteUser,
 
     newPoll,
     deletePoll,
