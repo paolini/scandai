@@ -2,9 +2,9 @@ import { Context } from './types'
 import { getConfigCollection, getUserCollection, getTranslationCollection } from '@/lib/mongodb'
 import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
-import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret } from './resolvers/polls'
+import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret, pollsRemoveAdminSecrets } from './resolvers/polls'
 import schools from './resolvers/schools'
-import translations from './resolvers/translations'
+import {translations, postTranslation} from './resolvers/translations'
 import submit from './resolvers/submit'
 import { Resolvers, Profile, MutationSetProfileArgs, MutationPostTranslationArgs } from '@/generated/graphql'
 
@@ -63,32 +63,9 @@ export const resolvers: Resolvers<Context> = {
     closePoll,
     pollCreateAdminSecret,
     pollRemoveAdminSecret,
+    pollsRemoveAdminSecrets,
 
-    postTranslation: async (_parent: any, params: MutationPostTranslationArgs, context: Context) => {
-      const user = context.user
-      if (!user) throw new Error('not authenticated')
-      if (!user.isAdmin) throw new Error('not authorized')
-
-      const collection = await getTranslationCollection()
-      let translation = await collection.findOne({source: params.source})
-      if (translation) {
-        await collection.updateOne({source: params.source}, {
-            $set: {
-                map: {
-                    ...translation.map,
-                    ...params.map,
-                }
-            }
-        })
-      } else {
-        await collection.insertOne({
-            source: params.source,
-            map: params.map,
-        })
-      }
-      const res = await collection.findOne({source: params.source})
-      return res
-   }
+    postTranslation,
 
   }
 }

@@ -19,12 +19,21 @@ import { User, Poll, School } from '@/generated/graphql'
 
 const formTypes = Object.keys(questionary.forms)
 
+const RemoveAdminLinksMutation = gql`
+    mutation ($year: Int) {
+        pollsRemoveAdminSecrets(year: $year)
+}`
+
 export default function Polls({}) {
     const profileQuery = useQuery(ProfileQuery)
     const currentYear = currentSchoolYear()
     const [year, setYear] = useState(currentYear)
     const years = Array.from({length: currentYear-2022}, (_,i) => currentYear - i)
     const pollsQuery = useQuery(PollsQuery, { variables: {year}})
+    const [removeAdminLinksMutation, {loading, error}] = useMutation(RemoveAdminLinksMutation, {
+        variables: {year},
+        onCompleted: removeAdminLinksCompleted
+    })
     const router = useRouter()
     const _ = useTrans()
     const newForm = router.query.new || null  
@@ -86,7 +95,7 @@ export default function Polls({}) {
                     {_("super amministratori")}
                 </Card.Header>
                 <Card.Body>
-                    <Button variant="danger" onClick={eraseAdminLinks}>
+                    <Button variant="danger" disabled={loading} onClick={()=>removeAdminLinksMutation()}>
                         {_("elimina tutti i link di amministrazione")}
                         {year ? ` ${year}/${year+1}` : ""}
                     </Button>
@@ -95,14 +104,9 @@ export default function Polls({}) {
         }
     </>
 
-    async function eraseAdminLinks() {
-        try {
-            const res = await post("polls/eraseSecrets",{year})
-            addMessage("warning", _("rimossi % link amministrazione", res.count))
-            pollsQuery.refetch()
-        } catch(error) {
-            addMessage("error", `${error}`)
-        }
+    async function removeAdminLinksCompleted(data:any) {
+        addMessage("warning", _("rimossi % link amministrazione", data.pollsRemoveAdminSecrets))
+        pollsQuery.refetch()
         window.scrollTo(0,0)
     }
 }

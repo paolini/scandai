@@ -103,5 +103,6 @@ type Mutation {
     closePoll(_id: ObjectId!, secret: String): Boolean
     pollCreateAdminSecret(_id: ObjectId!, secret: String): Boolean 
     pollRemoveAdminSecret(_id: ObjectId!, secret: String): Boolean
+    pollsRemoveAdminSecrets(year: Int): Int
     postTranslation(source: String!, map: LocalizedStringInput!): Translation
 }

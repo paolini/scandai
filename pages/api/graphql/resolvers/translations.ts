@@ -1,5 +1,7 @@
-import {getCollection} from '@/lib/mongodb'
+import { MutationPostTranslationArgs } from '@/generated/graphql'
+import {getCollection, getTranslationCollection} from '@/lib/mongodb'
 import questionary from '@/lib/questionary'
+import { Context } from '../types'
 
 export type IPostTranslation = {
     [key: string]: {
@@ -11,7 +13,7 @@ export type IPostTranslation = {
 
 export type IGetTranslation = IPostTranslation
 
-export default async function resolver() {
+export async function translations() {
     const collection = await getCollection("translations")
     const translations = await collection.find().toArray()
     const dictCollection = await getCollection("dicts")
@@ -25,4 +27,30 @@ export default async function resolver() {
     }
     return data
 }
+
+export async function postTranslation (_parent: any, params: MutationPostTranslationArgs, context: Context) {
+      const user = context.user
+      if (!user) throw new Error('not authenticated')
+      if (!user.isAdmin) throw new Error('not authorized')
+
+      const collection = await getTranslationCollection()
+      let translation = await collection.findOne({source: params.source})
+      if (translation) {
+        await collection.updateOne({source: params.source}, {
+            $set: {
+                map: {
+                    ...translation.map,
+                    ...params.map,
+                }
+            }
+        })
+      } else {
+        await collection.insertOne({
+            source: params.source,
+            map: params.map,
+        })
+      }
+      const res = await collection.findOne({source: params.source})
+      return res
+   }
 

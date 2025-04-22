@@ -4,7 +4,7 @@ import randomstring from 'randomstring'
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
 import {getCollection, getPollCollection} from '@/lib/mongodb'
-import {User, MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs} from '@/generated/graphql'
+import {User, MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs, MutationPollsRemoveAdminSecretsArgs} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
   { $lookup: {
@@ -72,11 +72,11 @@ export const POLL_PIPELINE = [
   }            
 ]
 
-export async function polls(_parent: any, params: QueryPollsArgs, context: Context): Promise<Poll[]> {
+export async function polls(_parent: any, {year}: QueryPollsArgs, context: Context): Promise<Poll[]> {
     const { user } = context
     const $match: any = {}
 
-    if (params.year) $match.date = schoolYearMatch(params.year)
+    if (year) $match.date = schoolYearMatch(year)
 
     // set filters from user authorization
     if (user) {
@@ -152,14 +152,17 @@ export async function newPoll(_parent: any, data: MutationNewPollArgs, context: 
     const school = await schoolCollection.findOne({_id: new ObjectId(data.school)})
     if (!school) throw new Error(`school not found _id: ${data.school}`)
 
+    const date = new Date()
+
     const result = await collection.insertOne({
         school_id: school._id,
         "class": data.class,
         year: data.year,
         form: data.form,
         secret,
+        createdAt: date,
         createdBy: context.user._id,
-        date: new Date(),
+        date: date,
     })
     return result.insertedId
 }
@@ -240,4 +243,16 @@ export async function pollRemoveAdminSecret(_parent: any, {_id,secret}: Mutation
     if (!userIsOwnerOrAdmin) throw Error('not authorized')
     const out = await collection.updateOne({_id},{$set: {adminSecret: ''}})
     return out.modifiedCount > 0
+}
+
+export async function pollsRemoveAdminSecrets(_parent: any, {year}: MutationPollsRemoveAdminSecretsArgs, {user}: Context) {
+    if (!user) throw Error("not authenticated")
+    if (!user.isSuper) throw Error("not authorized")
+    const $match: any = { adminSecret: {$exists: true}}
+    if (year) $match.date = schoolYearMatch(year)
+    const collection = await getPollCollection()
+    const result = await collection.updateMany(
+        $match,
+        { $unset: {adminSecret: ""}})
+    return result.modifiedCount
 }

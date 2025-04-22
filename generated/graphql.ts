@@ -51,6 +51,7 @@ export type Mutation = {
   openPoll: Maybe<Scalars['Boolean']['output']>;
   pollCreateAdminSecret: Maybe<Scalars['Boolean']['output']>;
   pollRemoveAdminSecret: Maybe<Scalars['Boolean']['output']>;
+  pollsRemoveAdminSecrets: Maybe<Scalars['Int']['output']>;
   postTranslation: Maybe<Translation>;
   setProfile: Maybe<User>;
   submit: Maybe<Scalars['Boolean']['output']>;
@@ -91,6 +92,11 @@ export type MutationPollCreateAdminSecretArgs = {
 export type MutationPollRemoveAdminSecretArgs = {
   _id: Scalars['ObjectId']['input'];
   secret: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationPollsRemoveAdminSecretsArgs = {
+  year: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -355,6 +361,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   openPoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationOpenPollArgs, '_id'>>;
   pollCreateAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollCreateAdminSecretArgs, '_id'>>;
   pollRemoveAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollRemoveAdminSecretArgs, '_id'>>;
+  pollsRemoveAdminSecrets: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, MutationPollsRemoveAdminSecretsArgs>;
   postTranslation: Resolver<Maybe<ResolversTypes['Translation']>, ParentType, ContextType, RequireFields<MutationPostTranslationArgs, 'map' | 'source'>>;
   setProfile: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, MutationSetProfileArgs>;
   submit: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSubmitArgs, '_id'>>;
