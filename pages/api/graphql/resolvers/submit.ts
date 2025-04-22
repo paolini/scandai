@@ -9,12 +9,15 @@ export default async function submit(parent: any, {_id, answers, lang, timestamp
 
     const collection = await getEntryCollection()
 
+    const createdAt = new Date()
+
     await collection.insertOne({
         answers,
         pollId: _id,
         lang: lang||'',
         clientTimestamp: timestamp,
         IP,
+        createdAt,
     })
     
     return true

@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
-import bcrypt from 'bcrypt'
 
 import User from '@/models/User'
 import getSessionUser from '@/lib/getSessionUser'
@@ -24,27 +23,6 @@ export default async function handler(
         }
 
         if (req.method === 'PATCH') {
-            let body
-            try {
-                body = JSON.parse(req.body)
-            } catch(error) {
-                return res.status(400).json({error: 'invalid json'})
-            }
-            for (const key of ["isAdmin","isViewer","isTeacher","isStudent"]) {
-                if (Object.keys(body).includes(key)) {
-                    aUser[key] = body[key]
-                }
-            }
-            if (Object.keys(body).includes("isSuper") && user.isSuper) {
-                aUser["isSuper"] = body["isSuper"]
-            }
-            if (Object.keys(body).includes("password") && user.isSuper) {
-                const saltRounds = 10
-                const hashedPassword = await bcrypt.hash(body["password"], saltRounds)
-                aUser["password"] = hashedPassword
-            }
-            const out = await aUser.save()
-            return res.json({data: out})
         }
 
         if (req.method === 'DELETE') {

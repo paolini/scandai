@@ -2,8 +2,9 @@ import Switch from "react-switch"
 import { Button, ButtonGroup, Card } from "react-bootstrap"
 import { FaCirclePlus, FaTrash, FaKey } from "react-icons/fa6"
 import { useState } from "react"
+import { gql, useMutation, useQuery } from "@apollo/client"
 
-import { useUsers, postUser, deleteUser, patchUser } from '@/lib/api'
+import { postUser, deleteUser, patchUser } from '@/lib/api'
 import { IGetUser, IPostUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
 import useSessionUser from '@/lib/useSessionUser'
@@ -11,23 +12,58 @@ import { value, set, get } from '@/lib/State'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
+import Error from '@/components/Error'
 import { useTrans } from '@/lib/trans'
+import { User } from "@/generated/graphql"
 
-export default function Users() {
+const UsersQuery = gql`
+    query {
+        users {
+            _id
+            email
+            name
+            username
+            isAdmin
+            isSuper
+            isTeacher
+            isStudent
+            isViewer
+            accounts {
+                provider
+            }
+        }
+    }
+`
+export default function UsersContainer() {
+    return <Page>
+        <Users />
+    </Page>
+}
+
+const PatchMutation = gql`
+    mutation ($_id: ObjectId!, $data: PatchUserData!) {
+        patchUser(_id: $_id, data: $data) {_id}
+    }
+`
+
+function Users() {
     const sessionUser = useSessionUser()
-    const usersQuery = useUsers()
+    const usersQuery = useQuery(UsersQuery)
+    const users = usersQuery?.data?.users as User[]
     const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
     const showPasswordState = useState<boolean>(false)
     const isSuper = sessionUser?.isSuper
     const _ = useTrans()
+    const [patchMutation, {loading, error}] = useMutation(PatchMutation,{
+        refetchQueries: [UsersQuery]
+    })
 
-    if (usersQuery.isLoading) return <Loading />
-    if (!usersQuery.data) return <div>{usersQuery.error.message}</div>
-    const users = usersQuery.data.data
+    if (usersQuery.loading) return <Loading />
+    if (!users) return <div>{`${usersQuery.error}`}</div>
 
-    return <Page>
+    return <>
         <h2>{_("Users")}</h2>
         { value(newUserState) 
         ? <NewUser done={newUserDone}/> 
@@ -52,6 +88,7 @@ export default function Users() {
                 <FaKey /> {_("cambia password")}
             </Button> }
         </ButtonGroup>}
+        {error && <Error>{`${error}`}</Error>}
         <table className="table">
             <thead>
                 <tr>
@@ -71,7 +108,7 @@ export default function Users() {
                 { users.map((user) => <tr key={user._id.toString()}>
                     <td>{user.email}</td>
                     <td>{user.name || user.username}</td>
-                    <td>{user.accounts.map(a => a.provider).join(" ")}</td>
+                    <td>{user.accounts?.map(a => a.provider).join(" ")}</td>
                     <td>
                         <Switch
                         checked={!!user.isViewer}
@@ -110,16 +147,11 @@ export default function Users() {
                 </tr>)}
             </tbody>
         </table>
-    </Page>
+        { loading && <Loading />}
+    </>
 
-    async function patch(user: IGetUser, payload: {[key:string]: string | boolean}) {
-        try {
-            const newData = await patchUser({_id: user._id, ...payload }) 
-            usersQuery.mutate()
-        } catch(e) {
-            addMessage('error', `error updating user: ${e}`)
-            console.error(e)
-        }
+    async function patch(user: User, data: {[key:string]: string | boolean}) {
+        patchMutation({variables: {_id:user._id, data}})
     }
 
     async function clickPasswordUser(user: IGetUser) {
@@ -146,38 +178,38 @@ export default function Users() {
 
     function newUserDone() {
         set(newUserState, false)
-        usersQuery.mutate()
     }    
 }
+
+const NewUserMutation = gql`
+    mutation($name: String, $email: String) {
+        newUser(name: $name, email: $email) {_id}
+    }
+`
 
 function NewUser({done }:{
         done?: () => void
 }) {
-    const userState = useState<IPostUser>({
-        name: "", email: "", username: "", 
-        isTeacher: false,
-        isStudent: false,
-    })
+    const [name,setName] = useState('')
+    const [email,setEmail] = useState('')
     const addMessage = useAddMessage()
     const _ = useTrans()
+    const [mutate, {loading, error}] = useMutation(NewUserMutation,{
+        refetchQueries: [UsersQuery]
+    })
 
     function isValid() {
-        const user = value(userState)
-        return user && user.name && user.email
+        return name && email
     }
 
     async function submit() {
-        try {
-            const newUser = {
-                ...value(userState),
-                username: value(userState).email,
+        mutate({
+            variables:{name,email},
+            onCompleted: () => {
+                addMessage('success', _("nuovo utente creato"))
+                if (done) done()
             }
-            const out = await postUser(newUser)
-            addMessage('success', _("nuovo utente creato"))
-            if (done) done()
-        } catch(err) {
-            addMessage('error', `errore nella creazione dell'utente: ${err}`)
-        }
+        })
     }
 
     return <Card>
@@ -190,22 +222,23 @@ function NewUser({done }:{
                     <label htmlFor="name">
                         nome
                     </label>
-                    <Input id="school" state={get(userState, 'name')} placeholder="nome" />
+                    <Input id="school" state={[name,setName]} placeholder="nome" />
                 </div>
                 <div className="form-group">
                     <label htmlFor="email">
                         email
                     </label>
-                    <Input id="email" state={get(userState, 'email')} placeholder="email" />
+                    <Input id="email" state={[email,setEmail]} placeholder="email" />
                 </div>
             </form>                                
         </Card.Body>
         <Card.Footer>
+            { error && <Error>{`${error}`}</Error>}
             <ButtonGroup>
-                <Button variant="primary" size="lg" disabled={!isValid()} onClick={submit}>
+                <Button variant="primary" size="lg" disabled={loading || !isValid()} onClick={submit}>
                     {_("crea")}
                 </Button>
-                <Button variant="warning" size="lg" onClick={done}>
+                <Button variant="warning" size="lg" disabled={loading} onClick={done}>
                     {_("annulla")}
                 </Button>
             </ButtonGroup>

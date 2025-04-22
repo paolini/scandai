@@ -1,10 +1,9 @@
 import mongoose, {Types} from 'mongoose'
-import {WithoutId, Document, ObjectId} from 'mongodb'
+import {Document, ObjectId, Collection} from 'mongodb'
 
 import migrate from './migrations'
 import createAdminUser from './createAdminUser'
 import updateConfiguration from './updateConfiguration'
-import {Config, User, Translation, Poll} from '@/generated/graphql'
 
 async function db() {
   const uri = process.env.MONGODB_URI
@@ -32,15 +31,20 @@ async function db() {
 const clientPromise = db()
 export default clientPromise
 
-export async function trashDocument(collectionName: string, documentId: string) {
-  const db = mongoose.connection
-
-  const collection = db.collection(collectionName)
-  const document = await collection.findOne({ _id: new Types.ObjectId(documentId) })
-  if (!document) throw new Error(`document ${documentId} not found in collection ${collectionName}`)
+export async function trashDocument<T extends Document>(collection: Collection<T>, _id: ObjectId) {
+  const collectionName = collection.collectionName
+  console.log(`trashDocument ${collectionName} ${_id}`)
+  const db = (await clientPromise).db()
+  const document = await collection.findOne({ _id })
+  if (!document) throw new Error(`document ${_id} not found in collection ${collectionName}`)
   // save document to "trash" collection
   const trashCollection = db.collection(`${collectionName}_trash`)
-  await trashCollection.findOneAndUpdate({ _id: document._id }, { $set: document }, { upsert: true })
+  const trashedAt = new Date()
+  await trashCollection.findOneAndUpdate({ _id: document._id }, { 
+    $set: {
+      ...document, 
+      trashedAt,
+    }}, { upsert: true })
   await collection.deleteOne({ _id: document._id })
 }
 
@@ -49,16 +53,45 @@ export async function getCollection<T extends Document=Document>(collection: str
   return db.collection<T>(collection)
 }
 
+type MongoConfig = {
+    siteTitle: {
+        en: string;
+        fu: string;
+        it: string;
+    }
+}
+
 export async function getConfigCollection() {
-  return getCollection<WithoutId<Config>>("configs")
+  return getCollection<MongoConfig>("configs")
+}
+
+type MongoUser = {
+    email: string,
+    name?: string,
+    username?: string,
+    isAdmin?: boolean,
+    isSuper?: boolean,
+    isViewer?: boolean,
+    isTeacher?: boolean,
+    isStudent?: boolean,
+    image?: string,
 }
 
 export async function getUserCollection() {
-  return getCollection<WithoutId<User>>("users")
+  return getCollection<MongoUser>("users")
+}
+
+type MongoTranslation = {
+  source: string,
+  map: {
+      it?: string,
+      en?: string,
+      fu?: string,
+  },
 }
 
 export async function getTranslationCollection() {
-  return getCollection<WithoutId<Translation>>("translations")
+  return getCollection<MongoTranslation>("translations")
 }
 
 export type QuestionCode = string
@@ -75,6 +108,7 @@ export interface MongoEntry {
     lang: string,
     IP: string,
     clientTimestamp: number,
+    createdAt: Date,
 }
 
 export async function getEntryCollection() {
@@ -93,8 +127,43 @@ type MongoPoll = {
   closed: boolean
   createdBy: ObjectId
   createdAt: Date
+  updatedBy: ObjectId
+  updatedAt: Date
 }
 
 export async function getPollCollection() {
   return getCollection<MongoPoll>("polls")
+}
+
+type MongoSchool = {
+    name: string,
+    city: string,
+    city_fu: string,
+    reportSecret?: string,
+}
+
+export async function getSchoolCollection() {
+  return getCollection<MongoSchool>("schools")
+}
+
+type MongoAccount = {
+    provider: string,
+    type: string,
+    providerAccountId: string,
+    userId: ObjectId,
+}
+
+export async function getAccountCollection() {
+  return getCollection<MongoAccount>("accounts")
+}
+
+type MongoDict = {
+    lang: string,
+    map: string,
+    createdAt: Date,
+    updatedAt: Date,
+}
+
+export async function getDictCollection() {
+  return getCollection<MongoDict>("dicts")
 }

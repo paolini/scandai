@@ -96,9 +96,6 @@ export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
             isSuper
             isViewer
             image
-            accounts {
-                provider
-            }
         }
     }`
 

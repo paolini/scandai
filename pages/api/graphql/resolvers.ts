@@ -6,7 +6,8 @@ import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSe
 import schools from './resolvers/schools'
 import {translations, postTranslation} from './resolvers/translations'
 import submit from './resolvers/submit'
-import { Resolvers, Profile, MutationSetProfileArgs, MutationPostTranslationArgs } from '@/generated/graphql'
+import {users, profile, setProfile, newUser, patchUser} from './resolvers/users'
+import { Resolvers } from '@/generated/graphql'
 
 export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
@@ -24,38 +25,22 @@ export const resolvers: Resolvers<Context> = {
       return config
     },
 
-    profile: async (_parent: any, _args: any, context: Context): Promise<Profile|null> => {
-      if (!context.user) return null
-      const sessionUser = context.user
-      console.log(`Profile query: sessionUser: ${JSON.stringify(sessionUser)}`)
-      const collection = await getUserCollection()
-      const user = await collection.findOne({_id: sessionUser._id})
-      if (!user) return null
-      return user as Profile
-    },
+    profile,
 
     polls,
     poll,
     schools,
     stats,
     translations,
+    users,
   },
 
   Mutation: {
     submit,
-    setProfile: async (_parent: any, {name, isTeacher, isStudent}: MutationSetProfileArgs, context: Context) => {
-      if (!context.user) throw new Error('not authenticated')
-      const collection = await getUserCollection()
-      const out = await collection.findOneAndUpdate({_id: context.user._id}, {
-          $set: {
-              name,
-              isTeacher,
-              isStudent,
-          }
-      })
-      if (!out) throw new Error('user not found')
-      return out.value
-    },
+
+    setProfile,
+    newUser,
+    patchUser,
 
     newPoll,
     deletePoll,
@@ -66,6 +51,5 @@ export const resolvers: Resolvers<Context> = {
     pollsRemoveAdminSecrets,
 
     postTranslation,
-
   }
 }

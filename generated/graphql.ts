@@ -48,12 +48,14 @@ export type Mutation = {
   closePoll: Maybe<Scalars['Boolean']['output']>;
   deletePoll: Maybe<Scalars['Boolean']['output']>;
   newPoll: Maybe<Scalars['ObjectId']['output']>;
+  newUser: Maybe<Profile>;
   openPoll: Maybe<Scalars['Boolean']['output']>;
+  patchUser: Maybe<Profile>;
   pollCreateAdminSecret: Maybe<Scalars['Boolean']['output']>;
   pollRemoveAdminSecret: Maybe<Scalars['Boolean']['output']>;
   pollsRemoveAdminSecrets: Maybe<Scalars['Int']['output']>;
   postTranslation: Maybe<Translation>;
-  setProfile: Maybe<User>;
+  setProfile: Maybe<Profile>;
   submit: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -77,9 +79,22 @@ export type MutationNewPollArgs = {
 };
 
 
+export type MutationNewUserArgs = {
+  email: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  username: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationOpenPollArgs = {
   _id: Scalars['ObjectId']['input'];
   secret: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationPatchUserArgs = {
+  _id: Scalars['ObjectId']['input'];
+  data: PatchUserData;
 };
 
 
@@ -120,6 +135,19 @@ export type MutationSubmitArgs = {
   timestamp: InputMaybe<Scalars['Timestamp']['input']>;
 };
 
+export type PatchUserData = {
+  email: InputMaybe<Scalars['String']['input']>;
+  image: InputMaybe<Scalars['String']['input']>;
+  isAdmin: InputMaybe<Scalars['Boolean']['input']>;
+  isStudent: InputMaybe<Scalars['Boolean']['input']>;
+  isSuper: InputMaybe<Scalars['Boolean']['input']>;
+  isTeacher: InputMaybe<Scalars['Boolean']['input']>;
+  isViewer: InputMaybe<Scalars['Boolean']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  password: InputMaybe<Scalars['String']['input']>;
+  username: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Poll = {
   __typename?: 'Poll';
   _id: Maybe<Scalars['ObjectId']['output']>;
@@ -139,7 +167,6 @@ export type Poll = {
 export type Profile = {
   __typename?: 'Profile';
   _id: Maybe<Scalars['ObjectId']['output']>;
-  accounts: Maybe<Array<Maybe<Account>>>;
   email: Maybe<Scalars['String']['output']>;
   image: Maybe<Scalars['String']['output']>;
   isAdmin: Maybe<Scalars['Boolean']['output']>;
@@ -161,6 +188,7 @@ export type Query = {
   schools: Maybe<Scalars['JSON']['output']>;
   stats: Maybe<Scalars['JSON']['output']>;
   translations: Maybe<Scalars['JSON']['output']>;
+  users: Array<User>;
 };
 
 
@@ -210,6 +238,7 @@ export type Translation = {
 export type User = {
   __typename?: 'User';
   _id: Maybe<Scalars['ObjectId']['output']>;
+  accounts: Maybe<Array<Account>>;
   email: Maybe<Scalars['String']['output']>;
   image: Maybe<Scalars['String']['output']>;
   isAdmin: Maybe<Scalars['Boolean']['output']>;
@@ -302,6 +331,7 @@ export type ResolversTypes = ResolversObject<{
   LocalizedStringInput: LocalizedStringInput;
   Mutation: ResolverTypeWrapper<{}>;
   ObjectId: ResolverTypeWrapper<Scalars['ObjectId']['output']>;
+  PatchUserData: PatchUserData;
   Poll: ResolverTypeWrapper<Poll>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
@@ -323,6 +353,7 @@ export type ResolversParentTypes = ResolversObject<{
   LocalizedStringInput: LocalizedStringInput;
   Mutation: {};
   ObjectId: Scalars['ObjectId']['output'];
+  PatchUserData: PatchUserData;
   Poll: Poll;
   Profile: Profile;
   Query: {};
@@ -358,12 +389,14 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   closePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationClosePollArgs, '_id'>>;
   deletePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePollArgs, '_id'>>;
   newPoll: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType, MutationNewPollArgs>;
+  newUser: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, MutationNewUserArgs>;
   openPoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationOpenPollArgs, '_id'>>;
+  patchUser: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<MutationPatchUserArgs, '_id' | 'data'>>;
   pollCreateAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollCreateAdminSecretArgs, '_id'>>;
   pollRemoveAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollRemoveAdminSecretArgs, '_id'>>;
   pollsRemoveAdminSecrets: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, MutationPollsRemoveAdminSecretsArgs>;
   postTranslation: Resolver<Maybe<ResolversTypes['Translation']>, ParentType, ContextType, RequireFields<MutationPostTranslationArgs, 'map' | 'source'>>;
-  setProfile: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, MutationSetProfileArgs>;
+  setProfile: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, MutationSetProfileArgs>;
   submit: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSubmitArgs, '_id'>>;
 }>;
 
@@ -389,7 +422,6 @@ export type PollResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type ProfileResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   _id: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType>;
-  accounts: Resolver<Maybe<Array<Maybe<ResolversTypes['Account']>>>, ParentType, ContextType>;
   email: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   image: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAdmin: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -411,6 +443,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   schools: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, QuerySchoolsArgs>;
   stats: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, QueryStatsArgs>;
   translations: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  users: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type SchoolResolvers<ContextType = Context, ParentType extends ResolversParentTypes['School'] = ResolversParentTypes['School']> = ResolversObject<{
@@ -433,6 +466,7 @@ export type TranslationResolvers<ContextType = Context, ParentType extends Resol
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   _id: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType>;
+  accounts: Resolver<Maybe<Array<ResolversTypes['Account']>>, ParentType, ContextType>;
   email: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   image: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAdmin: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;

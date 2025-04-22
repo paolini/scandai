@@ -3,7 +3,7 @@ import randomstring from 'randomstring'
 
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
-import {getCollection, getPollCollection} from '@/lib/mongodb'
+import {getCollection, getPollCollection, trashDocument} from '@/lib/mongodb'
 import {User, MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs, MutationPollsRemoveAdminSecretsArgs} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
@@ -168,6 +168,7 @@ export async function newPoll(_parent: any, data: MutationNewPollArgs, context: 
 }
 
 export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {user}: Context) {
+    console.log(`deletePoll ${_id}`)
     if (!user) throw new Error('not authenticated')
     const collection = await getPollCollection()
     const poll = await collection.findOne({_id})
@@ -175,9 +176,8 @@ export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {u
     const userIsOwnerOrAdmin = user.isAdmin || user._id == poll.createdBy
 
     if (!userIsOwnerOrAdmin) throw Error('not authorized')
-
-    const res = await collection.deleteOne({_id})
-    return res.deletedCount === 1
+    await trashDocument(collection, _id)
+    return true
 }
 
 async function getPoll(_id: ObjectId, secret: string|null, user: User|undefined) {

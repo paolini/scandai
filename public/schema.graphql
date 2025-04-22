@@ -42,6 +42,7 @@ type User {
     isTeacher: Boolean
     isStudent: Boolean
     isViewer: Boolean
+    accounts: [Account!]
 }
 
 type Profile {
@@ -49,14 +50,26 @@ type Profile {
     name: String
     username: String
     email: String
-    isTeacher: Boolean
-    isStudent: Boolean
+    image: String
     isAdmin: Boolean
     isSuper: Boolean
+    isTeacher: Boolean
+    isStudent: Boolean
     isViewer: Boolean
-    image: String
-    accounts: [Account]
 } 
+
+input PatchUserData {
+    name: String
+    username: String
+    email: String
+    image: String
+    isAdmin: Boolean
+    isSuper: Boolean
+    isTeacher: Boolean
+    isStudent: Boolean
+    isViewer: Boolean
+    password: String
+}
 
 type Poll {
     _id: ObjectId
@@ -92,11 +105,16 @@ type Query {
         schoolId: ObjectId,
     ): JSON
     translations: JSON
+    users: [User!]!
 }
 
 type Mutation {
     submit(_id: ObjectId!, answers: JSON, lang: String, timestamp: Timestamp): Boolean
-    setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
+    
+    newUser(name: String, username: String, email: String): Profile
+    patchUser(_id: ObjectId!, data: PatchUserData!): Profile
+    setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): Profile
+
     newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
     deletePoll(_id: ObjectId!): Boolean
     openPoll(_id: ObjectId!, secret: String): Boolean
@@ -104,5 +122,6 @@ type Mutation {
     pollCreateAdminSecret(_id: ObjectId!, secret: String): Boolean 
     pollRemoveAdminSecret(_id: ObjectId!, secret: String): Boolean
     pollsRemoveAdminSecrets(year: Int): Int
+
     postTranslation(source: String!, map: LocalizedStringInput!): Translation
 }

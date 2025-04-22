@@ -1,4 +1,4 @@
-import { MutationPostTranslationArgs } from '@/generated/graphql'
+import { LocalizedString, LocalizedStringInput, MutationPostTranslationArgs, Translation } from '@/generated/graphql'
 import {getCollection, getTranslationCollection} from '@/lib/mongodb'
 import questionary from '@/lib/questionary'
 import { Context } from '../types'
@@ -35,22 +35,23 @@ export async function postTranslation (_parent: any, params: MutationPostTransla
 
       const collection = await getTranslationCollection()
       let translation = await collection.findOne({source: params.source})
+      let map: any = {}
+      Object.entries(params.map).forEach(([key,val]) => {
+        if ((translation?.map as any)[key]) map[key] = (translation?.map as any)[key]
+        if (val!==null && val!==undefined) map[key] = val
+      })
       if (translation) {
         await collection.updateOne({source: params.source}, {
-            $set: {
-                map: {
-                    ...translation.map,
-                    ...params.map,
-                }
-            }
+            $set: {map}
         })
       } else {
         await collection.insertOne({
             source: params.source,
-            map: params.map,
+            map,
         })
       }
       const res = await collection.findOne({source: params.source})
-      return res
+      if (!res) throw Error("database error")
+      return res as Translation
    }
 
