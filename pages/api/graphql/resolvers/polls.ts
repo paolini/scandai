@@ -133,9 +133,7 @@ export async function poll(_parent: any, {_id, adminSecret, secret}: QueryPollAr
     ]
 
     const collection = await getCollection("polls")
-    console.log(`$match: ${JSON.stringify($match)}`)
     const data = await collection.aggregate(pipeline).toArray()
-    console.log(`data: ${JSON.stringify(data)}`)
     if (data.length===0) throw Error("not found")
     if (data.length>1) throw Error("multiple objects")
     return data[0] as Poll

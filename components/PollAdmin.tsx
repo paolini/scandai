@@ -165,19 +165,6 @@ export default function PollAdmin({poll, adminSecret}:{
         </Card>
     </>
 
-    async function remove(poll: Poll) {
-        // TODO: convert to GRAPHQL
-        /*
-        try {
-            await deletePoll(poll)
-            mutate()
-            router.push('/')
-        } catch(err) {
-            addMessage('error', `${err}`)
-        }
-        */
-    }
-
     function share () {
         copyToClipboard(fullUrl);
         addMessage('success', `${_("indirizzo compilazione (url) copiato")}: ${fullUrl}`)

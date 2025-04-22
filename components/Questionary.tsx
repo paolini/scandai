@@ -1,14 +1,20 @@
 import { useState } from 'react'
 import { Button, Card } from 'react-bootstrap'
 import { assert } from '@/lib/assert'
+import { gql, useMutation } from '@apollo/client'
 
 import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages, getPhrase } from '@/lib/questionary'
 import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
-import { useAddMessage } from '@/components/Messages'
 import { IGetPoll } from '@/models/Poll'
 import PollSplash from '@/components/PollSplash'
 import { State, value, set } from '@/lib/State'
+import Error from '@/components/Error'
+
+const SubmitQuery = gql`
+  mutation ($_id: ObjectId!, $answers: JSON!, $lang: String, $timestamp: Timestamp) {
+    submit(_id: $_id, answers: $answers, lang: $lang, timestamp: $timestamp)
+}`
 
 export default function Questionary({langState, poll, form, answersState, timestamp } : {
     langState: State<string>,
@@ -17,10 +23,8 @@ export default function Questionary({langState, poll, form, answersState, timest
     answersState: State<IAnswers>,
     timestamp: number,
   }) {
-
+  const [submitMutation, {loading,error}] = useMutation(SubmitQuery, {})
   const [pageCount, setPageCount] = useState(-1)
-  const addMessage = useAddMessage()
-  const [submitting, setSubmitting] = useState(false)
   const answers = answersState[0]
   const lang = langState[0]
 
@@ -92,9 +96,16 @@ export default function Questionary({langState, poll, form, answersState, timest
       }
       {
         pageCount >= pages.length-1 &&
-        <Button disabled={!pageCompleted || submitting} variant="danger" onClick={submit}>
-          {poll?getPhrase("sendButton", lang):getPhrase("sendButtonFake", lang)}
-        </Button>
+        <>
+          <Button disabled={!pageCompleted || loading} variant="danger" onClick={submit}>
+            {poll?getPhrase("sendButton", lang):getPhrase("sendButtonFake", lang)}
+          </Button>
+        </>
+      }
+      { error && 
+          <Error>
+            {`${error}`}
+          </Error>
       }
       { pageCount < pages.length && false
         && <Button className="m-2" variant="warning" disabled={pageCount>=pages.length-1} onClick={() => setPageCount(pages.length-1)}>
@@ -122,37 +133,21 @@ export default function Questionary({langState, poll, form, answersState, timest
     if (!poll) {
       // fake submit
       setPageCount(-2)
-
       return
     }
 
     const pollId = poll?._id || ''
-    let res
-    setSubmitting(true)
-    try {
-      res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          answers,
-          pollId,
-          lang,
-          timestamp,
-        })
-      })
-      console.log(res)
-    } catch (e) {
-      console.error(e)
-      addMessage('error', "Errore di rete")
-    }
-    if (res && res.status === 200) {
-      setPageCount(-2)
-    } else {
-      addMessage('error', res?.statusText || 'errore') 
-    }
-    setSubmitting(false)
+    await submitMutation({
+      variables: {
+        _id: pollId,
+        answers,
+        lang,
+        timestamp
+      },
+      onCompleted: () => {
+        setPageCount(-2)
+      }
+    })
   }
 }
 
@@ -174,5 +169,3 @@ function Completed({lang}:{
       */}
   </Card>
 }
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))

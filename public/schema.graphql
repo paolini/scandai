@@ -95,6 +95,7 @@ type Query {
 }
 
 type Mutation {
+    submit(_id: ObjectId!, answers: JSON, lang: String, timestamp: Timestamp): Boolean
     setProfile(name: String, isTeacher: Boolean, isStudent: Boolean): User
     newPoll(school: ObjectId, class: String, year: String, form: String): ObjectId
     deletePoll(_id: ObjectId!): Boolean

@@ -5,6 +5,7 @@ import stats from './resolvers/stats'
 import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret } from './resolvers/polls'
 import schools from './resolvers/schools'
 import translations from './resolvers/translations'
+import submit from './resolvers/submit'
 import { Resolvers, Profile, MutationSetProfileArgs, MutationPostTranslationArgs } from '@/generated/graphql'
 
 export const resolvers: Resolvers<Context> = {
@@ -41,6 +42,7 @@ export const resolvers: Resolvers<Context> = {
   },
 
   Mutation: {
+    submit,
     setProfile: async (_parent: any, {name, isTeacher, isStudent}: MutationSetProfileArgs, context: Context) => {
       if (!context.user) throw new Error('not authenticated')
       const collection = await getUserCollection()

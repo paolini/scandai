@@ -53,6 +53,7 @@ export type Mutation = {
   pollRemoveAdminSecret: Maybe<Scalars['Boolean']['output']>;
   postTranslation: Maybe<Translation>;
   setProfile: Maybe<User>;
+  submit: Maybe<Scalars['Boolean']['output']>;
 };
 
 
@@ -103,6 +104,14 @@ export type MutationSetProfileArgs = {
   isStudent: InputMaybe<Scalars['Boolean']['input']>;
   isTeacher: InputMaybe<Scalars['Boolean']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationSubmitArgs = {
+  _id: Scalars['ObjectId']['input'];
+  answers: InputMaybe<Scalars['JSON']['input']>;
+  lang: InputMaybe<Scalars['String']['input']>;
+  timestamp: InputMaybe<Scalars['Timestamp']['input']>;
 };
 
 export type Poll = {
@@ -157,9 +166,6 @@ export type QueryPollArgs = {
 
 
 export type QueryPollsArgs = {
-  _id: InputMaybe<Scalars['ObjectId']['input']>;
-  adminSecret: InputMaybe<Scalars['String']['input']>;
-  secret: InputMaybe<Scalars['String']['input']>;
   year: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -351,6 +357,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   pollRemoveAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollRemoveAdminSecretArgs, '_id'>>;
   postTranslation: Resolver<Maybe<ResolversTypes['Translation']>, ParentType, ContextType, RequireFields<MutationPostTranslationArgs, 'map' | 'source'>>;
   setProfile: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, MutationSetProfileArgs>;
+  submit: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSubmitArgs, '_id'>>;
 }>;
 
 export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ObjectId'], any> {

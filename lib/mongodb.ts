@@ -61,6 +61,26 @@ export async function getTranslationCollection() {
   return getCollection<WithoutId<Translation>>("translations")
 }
 
+export type QuestionCode = string
+export type LanguageAnswer = string[]
+export type MapLanguageToCompetenceAnswer = {[key: string]: {[key: string]: string}}
+export type MapLanguageToAgeAnswer = {[key: string]: string}
+export type Answer = LanguageAnswer | MapLanguageToAgeAnswer | MapLanguageToCompetenceAnswer
+
+export interface MongoEntry {
+    pollId: Types.ObjectId,
+    answers: {
+        [key: QuestionCode]: Answer
+    },
+    lang: string,
+    IP: string,
+    clientTimestamp: number,
+}
+
+export async function getEntryCollection() {
+  return getCollection<MongoEntry>("entries")
+}
+
 type MongoPoll = {
   secret: string
   adminSecret: string
