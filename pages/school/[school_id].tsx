@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { Card, Button, ButtonGroup, Table } from 'react-bootstrap'
+import { Card, Button, Table } from 'react-bootstrap'
 import copyToClipboard from 'copy-to-clipboard'
 import { FaShareAlt } from "react-icons/fa"
+import { gql, useQuery, useMutation } from "@apollo/client"
 
 import Page from '@/components/Page'
-import { useSchool, patchSchool, postSchool, deleteSchool, usePolls } from '@/lib/api'
-import { IGetSchool } from '@/models/School'
+import { School } from '@/generated/graphql'
+import { patchSchool, postSchool, deleteSchool } from '@/lib/api'
 import Loading from '@/components/Loading'
 import Input from '@/components/Input'
 import { value, set } from '@/lib/State'
@@ -14,6 +15,7 @@ import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
 import { formatDate, formatTime, currentSchoolYear } from '@/lib/utils'
 import { useTrans } from '@/lib/trans'
+import MutationButton from '@/components/MutationButton'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -23,35 +25,75 @@ function useRouterQuery(key: string): string | null {
     return val
 }
 
+const SchoolQuery = gql`
+    query SchoolQuery($_id: ObjectId) {
+        school(_id: $_id) {
+            _id
+            name
+            city
+            city_fu
+            reportSecret
+        }
+    }`
+
 export default function SchoolId({}) {
-    const school_id = useRouterQuery('school_id')
-    // console.log(`SchoolId: ${school_id}`)
-    const { data: school, isLoading, error, mutate } = useSchool(school_id)
-    if (isLoading) return <Loading /> 
-    if (!school) return <Error>{`${error}`}</Error>
+    const q = useRouterQuery('school_id')
+    const school_id = q && q !== '__new__' ? q : null
     return <Page>
-        <School school={school} mutate={mutate} />
+        <Inner school_id={school_id} />
     </Page>
 }
 
-function School({ school, mutate } : { 
-    school: IGetSchool, mutate: () => void 
+function Inner({school_id}:{school_id:string|null}) {
+    const { data, loading, error } = useQuery(SchoolQuery, {
+        variables:{_id: school_id}
+    })
+    const school = data?.school
+    if (loading) return <Loading /> 
+    if (!school) return <Error>{`${error}`}</Error>
+    return <TheSchool school={school} />
+}
+
+const NewSchoolMutation = gql`
+    mutation ($data: SchoolData!) {
+        newSchool(data: $data) {
+            _id
+        }
+    }`
+
+const PatchSchoolMutation = gql`
+    mutation ($_id: ObjectId!, $data: SchoolData!) {
+        patchSchool(_id: $_id, data: $data) {
+            _id
+        }
+    }`
+
+function TheSchool({ school } : { 
+    school: School
 }) {
     const _ = useTrans()
-    const createNew = school._id === '__new__'
-    const nameState = useState<string>(school.name)
-    const cityState = useState<string>(school.city)
-    const cityFuState = useState<string>(school.city_fu)
+    const createNew = !school._id
+    const original_name = school.name || ''
+    const nameState = useState<string>(original_name)
+    const original_city = school.city || ''
+    const cityState = useState<string>(original_city)
+    const original_city_fu = school.city_fu || ''
+    const cityFuState = useState<string>(original_city_fu)
     const [edit, setEdit] = useState<boolean>(createNew)
-    const modified = value(nameState) !== school.name || value(cityState) !== school.city || value(cityFuState) !== school.city_fu
+    const modified = value(nameState) !== original_name || value(cityState) !== original_city || value(cityFuState) !== original_city_fu
     const router = useRouter()
     const addMessage = useAddMessage()
     const year = currentSchoolYear()
+    const [mutate, {loading,error}] = useMutation(createNew ? NewSchoolMutation : PatchSchoolMutation)
+    const secretMutationOptions={variables:{_id: school._id},refetchQueries:[SchoolQuery]}
 
     return <>
         <Card className="my-4">
             <Card.Header>
-                <h2>{_("Pagina amministrazione scuola")}</h2>
+                <h2>{createNew 
+                    ? _("Pagina creazione scuola")
+                    : _("Pagina amministrazione scuola")
+                }</h2>
             </Card.Header>
             <Card.Body>
                 <p>{_("Nome")}: {}                 
@@ -80,7 +122,7 @@ function School({ school, mutate } : {
                 }
             </Card.Footer>
         </Card>
-
+    { !createNew &&
         <Card className="my-4">
             <Card.Header>
                 <h2>{_("Visualizza i questionari compilati")}</h2>
@@ -95,8 +137,9 @@ function School({ school, mutate } : {
                     {_("visualizza")}
                 </Button> 
             </Card.Footer>
-        </Card>
+        </Card> }
 
+    { !createNew &&
         <Card className="my-4">
             <Card.Header>
                 <h2>{_("Condividi i questionari compilati")}</h2>
@@ -113,55 +156,48 @@ function School({ school, mutate } : {
             </Card.Body>
             <Card.Footer>
                 { !school.reportSecret &&
-                <Button onClick={createReportSecret}>
+                <MutationButton query={gql`mutation($_id:ObjectId!) {schoolCreateSecret(_id:$_id){_id}}`} options={secretMutationOptions}>
                     <FaShareAlt /> {_("crea indirizzo condivisione report")}
-                </Button>
+                </MutationButton>
                 }
                 { school.reportSecret &&
-                <Button onClick={createReportSecret} variant="danger">
+                <MutationButton query={gql`mutation($_id:ObjectId!) {schoolRemoveSecret(_id:$_id){_id}}`} options={secretMutationOptions} variant="danger">
                     {_("cancella indirizzo")}
-                </Button>
+                </MutationButton>
                 }            
             </Card.Footer>
-        </Card>
+        </Card>}
     { !createNew && false &&
         <SchoolPolls school={school}/>
     }
     </>
 
     async function save() {
+        const _id = school._id
+        const data = {
+            name: value(nameState),
+            city: value(cityState),
+            city_fu: value(cityFuState),
+        }
+
         if (createNew) {
-            await postSchool({
-                name: value(nameState),
-                city: value(cityState),
-                city_fu: value(cityFuState),
+            await mutate({
+                variables: {data},
+                onCompleted: () => router.push('/school')
             })
         } else {
-            await patchSchool({
-                _id: school._id,
-                name: value(nameState),
-                city: value(cityState),
-                city_fu: value(cityFuState),
-            })
+            await mutate({
+                variables: {_id, data},
+                refetchQueries: [SchoolQuery]})
         }
-        await mutate()
         setEdit(false)
-        if (createNew) {
-            router.push('/school')
-        }
     }
 
     async function cancel() {
         setEdit(false)
-        set(nameState, school.name)
-        set(cityState, school.city)
-        set(cityFuState, school.city_fu)
-    }
-
-    async function remove() {
-        await deleteSchool(school)
-        await mutate()
-        router.push('/school')
+        set(nameState, original_name)
+        set(cityState, original_city)
+        set(cityFuState, original_city_fu)
     }
 
     function reportUrl() {
@@ -184,21 +220,9 @@ function School({ school, mutate } : {
             addMessage('success', _("indirizzo somministrazione (url) copiato") + `: ${absoluteUrl}`)
         }
     }
-
-    async function createReportSecret () {
-        try {
-            const res = await patchSchool({ 
-                _id: school._id, 
-                reportSecret: school.reportSecret ? '0' : '1',
-            })
-            await mutate()
-        } catch(err) {
-            addMessage('error', _("errore nella creazione/rimozione del link di condivisione report")+`: ${err}`)
-        }
-    }
 }
 
-function SchoolPolls({school}: {school: IGetSchool}) {
+function SchoolPolls({school}: {school: School}) {
     const _ = useTrans()
     const router = useRouter()
     const pollsQuery = usePolls({school_id: school._id})

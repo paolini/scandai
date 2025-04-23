@@ -26,21 +26,6 @@ export default async function handler(
             return res.status(400).json({error: 'invalid school_id'})
         }
 
-        if (req.method === 'GET') {
-            try {
-                const school = school_id === '__new__' 
-                    ? {_id: '__new__', name: '', city: '', city_fu: ''}
-                    : await getSchoolById(school_id)
-
-                if (!school) {
-                    return res.status(404).json({error: 'school not found'})
-                }
-                return res.json(school)
-            } catch(err) {
-                return res.status(500).json({error: 'invalid school_id'})
-            }
-        }
-
         if (req.method === 'DELETE') {
             try {
                 await trashDocument('schools', school_id)

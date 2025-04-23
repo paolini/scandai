@@ -4,7 +4,7 @@ import randomstring from 'randomstring'
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
 import {getCollection, getPollCollection, trashDocument} from '@/lib/mongodb'
-import {User, MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs, MutationPollsRemoveAdminSecretsArgs} from '@/generated/graphql'
+import {MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs, MutationPollsRemoveAdminSecretsArgs, Profile} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
   { $lookup: {
@@ -180,7 +180,7 @@ export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {u
     return true
 }
 
-async function getPoll(_id: ObjectId, secret: string|null, user: User|undefined) {
+async function getPoll(_id: ObjectId, secret: string|null, user: Profile|undefined) {
     if (!user) throw new Error('not authenticated')
     const collection = await getPollCollection()
     const poll = await collection.findOne({_id})

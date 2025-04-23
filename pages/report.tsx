@@ -145,9 +145,9 @@ function Report() {
     />
 }
 
-const SchoolsQuery = gql`
-    query SchoolQuery($year: Int) {
-        schools(year: $year)
+const PollSchoolsQuery = gql`
+    query PollSchoolQuery($year: Int) {
+        pollSchools(year: $year)
     }
 `
 
@@ -164,7 +164,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const translationsQuery = useQuery(TranslationsQuery)
     const _ = useTrans()
     const yearState = useState(year)
-    const schoolsQuery = useQuery(SchoolsQuery, { variables: {
+    const schoolsQuery = useQuery(PollSchoolsQuery, { variables: {
         year: value(yearState)?parseInt(value(yearState)):null},
         skip: !showFilter.includes("school")})
     const pollIdsState = useState<string[]>(pollIds)
@@ -184,8 +184,9 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     if (translationsQuery.loading) return <><Loading/><br/>_</>
     if (schoolsQuery.loading) return <><Loading /><br/>_ _</>
     if (translationsQuery.data === undefined) return <Error>{_("undefined ")} (tq)</Error>
-    if (schoolsQuery.data === undefined) return <Error>{_("undefined ")} (sq)</Error>
-    // se schoolsQuery è disabilitata apparentemente schoolsQuery.data={} e non undefined
+    if (schoolsQuery.data === undefined) {
+        // può succedere se la query è disabilitata
+    }
 
     const translations = translationsQuery.data.translations
     
@@ -211,7 +212,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             schoolSecret={schoolSecret}
             adminSecret={adminSecret}
             translations={translations}
-            schools={schoolsQuery.data.schools || []}
+            schools={schoolsQuery.data?.schools || []}
             yearState={yearState}
         />
     </PageWithoutProvider>

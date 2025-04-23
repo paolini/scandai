@@ -29,6 +29,14 @@ type School {
     name: String
     city: String
     city_fu: String
+    reportSecret: String
+    pollCount: Int
+}
+
+input SchoolData {
+    name: String!
+    city: String!
+    city_fu: String
 }
 
 type User {
@@ -97,7 +105,8 @@ type Query {
     profile: Profile
     polls(year: Int): [Poll]
     poll(_id: ObjectId, adminSecret: String, secret: String): Poll
-    schools(year: Int): JSON
+    schools(year: Int): [School!]!
+    school(_id: ObjectId): School
     stats(poll: ObjectId, polls: [ObjectId], 
         adminSecret: String, schoolSecret: String,
         year: Int,
@@ -123,6 +132,11 @@ type Mutation {
     pollCreateAdminSecret(_id: ObjectId!, secret: String): Boolean 
     pollRemoveAdminSecret(_id: ObjectId!, secret: String): Boolean
     pollsRemoveAdminSecrets(year: Int): Int
+
+    newSchool(data: SchoolData!): School
+    patchSchool(_id: ObjectId!, data: SchoolData!): School
+    schoolCreateSecret(_id: ObjectId!): School
+    schoolRemoveSecret(_id: ObjectId!): School
 
     postTranslation(source: String!, map: LocalizedStringInput!): Translation
 }

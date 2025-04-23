@@ -2,10 +2,7 @@ import useSWR from 'swr'
 import { gql, TypedDocumentNode } from '@apollo/client'
 import { ObjectId } from 'mongodb'
 
-import { IGetPoll } from '@/models/Poll'
-import { IPostUser, IGetUser } from '@/models/User'
 import { IPostSchool, IGetSchool } from '@/models/School'
-import { IGetEntry } from '@/models/Entry'
 import { IDictElement, IPostDict } from '@/models/Dict'
 import { IGetTranslation } from '@/models/Translation'
 import { User, Poll } from '@/generated/graphql'
@@ -80,8 +77,7 @@ export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
                 en
             }
         }
-    }
-`
+    }`
 
 export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
     query ProfileQuery {
@@ -135,8 +131,7 @@ export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, a
             }
             createdAt
         }
-    }
-`
+    }`
 
 export const PollQuery = gql`query PollQuery($_id: ObjectId, $adminSecret: String, $secret: String) {
     poll(_id: $_id, adminSecret: $adminSecret, secret: $secret) {
@@ -164,8 +159,7 @@ export const PollQuery = gql`query PollQuery($_id: ObjectId, $adminSecret: Strin
         }
         createdAt
     }
-}
-`
+}`
 
 export const NewPollMutation: TypedDocumentNode<{newPoll: ObjectId}, {
     school: string,
@@ -176,44 +170,6 @@ export const NewPollMutation: TypedDocumentNode<{newPoll: ObjectId}, {
         newPoll(form: $form, school: $school, class: $class, year: $year)
     }
 `
-
-export async function patchPoll(poll: any, adminSecret:string='') {
-    return await patch('polls', poll, adminSecret ? `secret=${adminSecret}` : '')
-}
-
-export async function deletePoll(poll: IGetPoll) {
-    await remove('polls', poll)
-}
-
-export function useEntries(query?: any) {
-    return useIndex<IGetEntry[]>('entries', query)
-}
-
-export function useUsers() {
-    return useIndex<IGetUser[]>('users')
-}
-
-export async function patchUser(user: any) {
-    return await patch('users', user)
-}
-
-/**
- * @returns {IGetUser} the current user if logged in
- * @returns {null} if not logged in
- * @returns {undefined} if loading
- */
-
-export async function patchProfile(user: any) {
-    return await patch('profile', {...user, _id: ''})
-}
-
-export async function postUser(user: IPostUser): Promise<{data: IGetUser, password: string}> {
-    return await post<IPostUser>('users', user)
-}
-
-export async function deleteUser(user: IGetUser) {
-    return await remove('users', user)
-}
 
 export function useSchool(id_: string | null) {
     // use null to disable

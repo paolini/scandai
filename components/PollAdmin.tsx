@@ -13,7 +13,7 @@ import { formatDate, upperFirst } from "@/lib/utils"
 import questionary from "@/lib/questionary"
 import { useTrans } from "@/lib/trans"
 import { Poll } from "@/generated/graphql"
-import Error from '@/components/Error'
+import MutationButton from "./MutationButton"
 
 export default function PollAdmin({poll, adminSecret}:{
     poll: Poll,
@@ -194,18 +194,4 @@ function Tick({tick}:{tick:number}) {
         '\u00b7\u00b7\u00b7',
     ][tick % 6]
     return <span className="mx-2" style={{fontFamily: 'monospace'}}>{s}</span>
-}
-
-function MutationButton({query, options, variant, disabled, children}: {
-    query: DocumentNode,
-    options: MutationHookOptions,
-    variant?: string,
-    disabled?: boolean,
-    children: React.ReactNode
-}) {
-    const [mutate, {loading, error}] = useMutation(query, options)
-    if (error) return <Error>{`${error.message}`}</Error>
-    return <Button variant={variant} disabled={disabled || loading} onClick={() => mutate()}>
-        {children}
-    </Button>
 }

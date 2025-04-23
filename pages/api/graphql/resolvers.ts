@@ -1,13 +1,13 @@
 import { Context } from './types'
-import { getConfigCollection, getUserCollection, getTranslationCollection } from '@/lib/mongodb'
+import { getConfigCollection } from '@/lib/mongodb'
 import { ObjectIdType, JSONType } from './types'
 import stats from './resolvers/stats'
 import {polls, poll, newPoll, deletePoll, openPoll, closePoll, pollCreateAdminSecret, pollRemoveAdminSecret, pollsRemoveAdminSecrets } from './resolvers/polls'
-import schools from './resolvers/schools'
 import {translations, postTranslation} from './resolvers/translations'
 import submit from './resolvers/submit'
 import {users, profile, setProfile, newUser, patchUser, deleteUser} from './resolvers/users'
 import { Resolvers } from '@/generated/graphql'
+import {schools,school,newSchool,patchSchool,schoolCreateSecret,schoolRemoveSecret} from './resolvers/schools'
 
 export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
@@ -29,10 +29,11 @@ export const resolvers: Resolvers<Context> = {
 
     polls,
     poll,
-    schools,
     stats,
     translations,
     users,
+    schools,
+    school,
   },
 
   Mutation: {
@@ -50,6 +51,11 @@ export const resolvers: Resolvers<Context> = {
     pollCreateAdminSecret,
     pollRemoveAdminSecret,
     pollsRemoveAdminSecrets,
+
+    newSchool,
+    patchSchool,
+    schoolCreateSecret,
+    schoolRemoveSecret,
 
     postTranslation,
   }

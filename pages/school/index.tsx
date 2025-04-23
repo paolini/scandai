@@ -2,25 +2,42 @@ import { Button, Table } from "react-bootstrap"
 import { FaCirclePlus } from "react-icons/fa6"
 import { useRouter } from "next/router"
 
-import { useSchools } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import useSessionUser from '@/lib/useSessionUser'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
 import { useTrans } from '@/lib/trans'
+import { gql, useQuery } from '@apollo/client'
 
-export default function Schools() {
+const SchoolsQuery = gql`
+query SchoolsQuery {
+    schools {
+        _id
+        name
+        city
+        city_fu
+        pollCount
+    }
+}`
+
+export default function SchoolsPage() {
+    return <Page>
+        <Schools />
+    </Page>
+}
+
+function Schools() {
     const _ = useTrans()
     const router = useRouter()
     const sessionUser = useSessionUser()
-    const schoolsQuery = useSchools()
+    const schoolsQuery = useQuery(SchoolsQuery)
+    const schools = schoolsQuery?.data?.schools
     const addMessage = useAddMessage()
 
-    if (schoolsQuery.isLoading) return <Loading />
-    if (!schoolsQuery.data) return <div>{schoolsQuery.error.message}</div>
-    const schools = schoolsQuery.data.data
+    if (schoolsQuery.loading) return <Loading />
+    if (!schools) return <div>{`${schoolsQuery.error}`}</div>
 
-    return <Page>
+    return <>
         <h2>{_("Scuole")}</h2>
         <Button onClick={() => router.push('/school/__new__')}>
             <FaCirclePlus className="m-1 bg-blue-300"/>
@@ -36,7 +53,7 @@ export default function Schools() {
                 </tr>
             </thead>
             <tbody>
-                { schools.sort((a,b)=>(b.pollCount-a.pollCount)).map((school) => 
+                { [...schools].sort((a,b)=>(b.pollCount-a.pollCount)).map((school) => 
                 <tr key={school._id} onClick={() => router.push(`/school/${school._id}`)}>
                     <td>{school.name}</td>
                     <td>{school.city}</td>
@@ -45,5 +62,5 @@ export default function Schools() {
                 </tr>)}
             </tbody>
         </Table>
-    </Page>
+    </>
 }
