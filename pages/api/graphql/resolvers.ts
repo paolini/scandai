@@ -8,6 +8,7 @@ import submit from './resolvers/submit'
 import {users, profile, setProfile, newUser, patchUser, deleteUser} from './resolvers/users'
 import { Resolvers } from '@/generated/graphql'
 import {schools,school,newSchool,patchSchool,schoolCreateSecret,schoolRemoveSecret} from './resolvers/schools'
+import {dict,addDict} from './resolvers/dict'
 
 export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
@@ -30,10 +31,11 @@ export const resolvers: Resolvers<Context> = {
     polls,
     poll,
     stats,
-    translations,
     users,
     schools,
     school,
+    dict,
+    translations,
   },
 
   Mutation: {
@@ -56,6 +58,8 @@ export const resolvers: Resolvers<Context> = {
     patchSchool,
     schoolCreateSecret,
     schoolRemoveSecret,
+
+    addDict,
 
     postTranslation,
   }

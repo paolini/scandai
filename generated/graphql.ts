@@ -30,6 +30,13 @@ export type Config = {
   siteTitle: Maybe<LocalizedString>;
 };
 
+export type Dict = {
+  __typename?: 'Dict';
+  lang: Scalars['String']['output'];
+  map: Maybe<Scalars['String']['output']>;
+  variants: Array<Scalars['String']['output']>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   en: Maybe<Scalars['String']['output']>;
@@ -45,6 +52,7 @@ export type LocalizedStringInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addDict: Maybe<Scalars['Boolean']['output']>;
   closePoll: Maybe<Scalars['Boolean']['output']>;
   deletePoll: Maybe<Scalars['Boolean']['output']>;
   deleteUser: Maybe<Scalars['Boolean']['output']>;
@@ -62,6 +70,12 @@ export type Mutation = {
   schoolRemoveSecret: Maybe<School>;
   setProfile: Maybe<Profile>;
   submit: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type MutationAddDictArgs = {
+  lang: Scalars['String']['input'];
+  map: Scalars['String']['input'];
 };
 
 
@@ -212,6 +226,7 @@ export type Profile = {
 export type Query = {
   __typename?: 'Query';
   config: Config;
+  dict: Array<Dict>;
   hello: Maybe<Scalars['String']['output']>;
   poll: Maybe<Poll>;
   polls: Maybe<Array<Maybe<Poll>>>;
@@ -370,6 +385,7 @@ export type ResolversTypes = ResolversObject<{
   Account: ResolverTypeWrapper<Account>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Config: ResolverTypeWrapper<Config>;
+  Dict: ResolverTypeWrapper<Dict>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LocalizedString: ResolverTypeWrapper<LocalizedString>;
@@ -393,6 +409,7 @@ export type ResolversParentTypes = ResolversObject<{
   Account: Account;
   Boolean: Scalars['Boolean']['output'];
   Config: Config;
+  Dict: Dict;
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
   LocalizedString: LocalizedString;
@@ -421,6 +438,13 @@ export type ConfigResolvers<ContextType = Context, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type DictResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dict'] = ResolversParentTypes['Dict']> = ResolversObject<{
+  lang: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  map: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  variants: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -433,6 +457,7 @@ export type LocalizedStringResolvers<ContextType = Context, ParentType extends R
 }>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  addDict: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationAddDictArgs, 'lang' | 'map'>>;
   closePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationClosePollArgs, '_id'>>;
   deletePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePollArgs, '_id'>>;
   deleteUser: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, '_id'>>;
@@ -488,6 +513,7 @@ export type ProfileResolvers<ContextType = Context, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   config: Resolver<ResolversTypes['Config'], ParentType, ContextType>;
+  dict: Resolver<Array<ResolversTypes['Dict']>, ParentType, ContextType>;
   hello: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType, QueryPollArgs>;
   polls: Resolver<Maybe<Array<Maybe<ResolversTypes['Poll']>>>, ParentType, ContextType, QueryPollsArgs>;
@@ -537,6 +563,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
 export type Resolvers<ContextType = Context> = ResolversObject<{
   Account: AccountResolvers<ContextType>;
   Config: ConfigResolvers<ContextType>;
+  Dict: DictResolvers<ContextType>;
   JSON: GraphQLScalarType;
   LocalizedString: LocalizedStringResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;

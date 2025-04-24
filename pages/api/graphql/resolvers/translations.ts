@@ -1,22 +1,12 @@
-import { LocalizedString, LocalizedStringInput, MutationPostTranslationArgs, Translation } from '@/generated/graphql'
-import {getCollection, getTranslationCollection} from '@/lib/mongodb'
+import { MutationPostTranslationArgs, Translation } from '@/generated/graphql'
+import {getDictCollection, getTranslationCollection} from '@/lib/mongodb'
 import questionary from '@/lib/questionary'
 import { Context } from '../types'
 
-export type IPostTranslation = {
-    [key: string]: {
-        it?: string,
-        en?: string,
-        fu?: string,
-    }
-}
-
-export type IGetTranslation = IPostTranslation
-
 export async function translations() {
-    const collection = await getCollection("translations")
+    const collection = await getTranslationCollection()
     const translations = await collection.find().toArray()
-    const dictCollection = await getCollection("dicts")
+    const dictCollection = await getDictCollection()
     const dict = await dictCollection.find().toArray()
 
     // usa la traduzione in italiano come chiave
@@ -28,29 +18,27 @@ export async function translations() {
     return data
 }
 
-export async function postTranslation (_parent: any, params: MutationPostTranslationArgs, context: Context) {
+export async function postTranslation (_parent: any, {source,map: input_map}: MutationPostTranslationArgs, context: Context) {
       const user = context.user
       if (!user) throw new Error('not authenticated')
       if (!user.isAdmin) throw new Error('not authorized')
-
       const collection = await getTranslationCollection()
-      let translation = await collection.findOne({source: params.source})
-      let map: any = {}
-      Object.entries(params.map).forEach(([key,val]) => {
-        if ((translation?.map as any)[key]) map[key] = (translation?.map as any)[key]
-        if (val!==null && val!==undefined) map[key] = val
-      })
+      const translation = await collection.findOne({source})
+      let map = translation ? translation.map : {}
+      if (input_map.it) map.it = input_map.it
+      if (input_map.en) map.en = input_map.en
+      if (input_map.fu) map.fu = input_map.fu
       if (translation) {
-        await collection.updateOne({source: params.source}, {
+        await collection.updateOne({source}, {
             $set: {map}
         })
       } else {
         await collection.insertOne({
-            source: params.source,
+            source,
             map,
         })
       }
-      const res = await collection.findOne({source: params.source})
+      const res = await collection.findOne({source})
       if (!res) throw Error("database error")
       return res as Translation
    }

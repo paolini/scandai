@@ -157,7 +157,7 @@ export async function getAccountCollection() {
   return getCollection<MongoAccount>("accounts")
 }
 
-type MongoDict = {
+export type MongoDict = {
     lang: string,
     map: string,
     createdAt: Date,

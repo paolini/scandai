@@ -99,6 +99,12 @@ type Translation {
     map: LocalizedString
 }
 
+type Dict {
+    lang: String!
+    variants: [String!]!
+    map: String
+}
+
 type Query {
     hello: String
     config: Config!
@@ -115,6 +121,7 @@ type Query {
     ): JSON
     translations: JSON
     users: [User!]!
+    dict: [Dict!]!
 }
 
 type Mutation {
@@ -138,5 +145,7 @@ type Mutation {
     schoolCreateSecret(_id: ObjectId!): School
     schoolRemoveSecret(_id: ObjectId!): School
 
+    addDict(lang: String!, map: String!): Boolean
+ 
     postTranslation(source: String!, map: LocalizedStringInput!): Translation
 }
