@@ -2,9 +2,9 @@ import { Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import dayjs from 'dayjs'
+import {gql, useQuery} from '@apollo/client'
 
 import Page from '../../components/Page'
-import { useEntries } from '../../lib/api'
 import Loading from '../../components/Loading'
 import Error from '../../components/Error'
 import { formatDate, formatTime } from '../../lib/utils'
@@ -12,30 +12,50 @@ import { useTrans } from '../../lib/trans'
 import { currentSchoolYear } from '../../lib/utils'
 import { IGetEntry, LanguageAnswer, MapLanguageToAgeAnswer, MapLanguageToCompetenceAnswer } from '../../models/Entry'
 import questionary from '../../lib/questionary'
+import { Entry } from '@/generated/graphql'
 
-export default function Entries({}) {
+const EntriesQuery = gql`
+    query EntriesQuery($year: Int!) {
+        entries(year:$year) {
+            _id
+            createdAt
+            poll {
+                date
+                school {
+                    name
+                    city
+                    city_fu
+                }
+                class
+                year
+                form
+            }
+            lang
+            answers
+        }
+    }`
+
+export default function EntriesContainer() {
+    return <Page>
+        <Entries />
+    </Page>
+}
+
+function Entries({}) {
     const _ = useTrans()
     const router = useRouter()
     const currentYear = currentSchoolYear()
     const [year, setYear] = useState(currentYear)
-    const entriesQuery = useEntries({year})
-    if (entriesQuery.isLoading) return <Loading />
-    if (!entriesQuery.data) return <Error>{entriesQuery.error.message}</Error>
-    const entries = entriesQuery.data.data
+    const entriesQuery = useQuery(EntriesQuery,{variables:{year}})
+    if (entriesQuery.loading) return <Loading />
+    if (!entriesQuery.data) return <Error>{`${entriesQuery.error}`}</Error>
+    const entries: Entry[] = entriesQuery.data.entries
     const years = Array.from({length:currentYear-2022}, (_,i) => currentYear-i)
-    return <Page>
+    return <>
         {_("anno scolastico")} <select value={year} onChange={(e) => {setYear(parseInt(e.target.value))}}>
             { years.map(y => <option key={y} value={y}>{y}/{y+1}</option>) }
         </select>
         <button className="mx-3" onClick={downloadCsv}>download csv</button>
-        { false &&
-        <table className="table table-bordered">
-            <tbody>
-                { csv().map((entry,i) => <tr key={i}>
-                    { entry.map((cell,j) => <td key={j}>{cell}</td>) }
-                </tr>)}
-            </tbody>
-        </table>}
         <Table hover>
             <thead>
                 <tr>
@@ -64,7 +84,7 @@ export default function Entries({}) {
                 )}
             </tbody>
         </Table>
-    </Page>
+    </>
 
     function downloadCsv() {
         const data = "data:text/tsv;charset=utf-8," 

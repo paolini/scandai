@@ -60,32 +60,3 @@ const EntrySchema = new mongoose.Schema({
 
 export default mongoose.models.Entry || mongoose.model<IEntry>('Entry', EntrySchema)
 
-export const ENTRY_PIPELINE = [
-    {$lookup: {
-        from: 'polls',
-        as: 'poll',
-        let: { pollId: '$pollId' },
-        pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$pollId'] } } },
-            { $lookup: {
-                from: 'schools',
-                as: 'school',
-                let: { schoolId: '$school_id' },
-                pipeline: [
-                    { $match: { $expr: { $eq: ['$_id', '$$schoolId'] } } },
-                ],
-            }},
-            { $unwind: {
-                path: '$school',
-                preserveNullAndEmptyArrays: true,
-            }}
-        ]
-    }},
-   {$unwind: {
-        path: '$poll',
-        preserveNullAndEmptyArrays: true,
-    }},
-    {$sort: { 
-        createdAt: -1 as const,
-    }},
-]

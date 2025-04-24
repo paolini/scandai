@@ -37,6 +37,15 @@ export type Dict = {
   variants: Array<Scalars['String']['output']>;
 };
 
+export type Entry = {
+  __typename?: 'Entry';
+  _id: Maybe<Scalars['ObjectId']['output']>;
+  answers: Maybe<Scalars['JSON']['output']>;
+  createdAt: Maybe<Scalars['Timestamp']['output']>;
+  lang: Maybe<Scalars['String']['output']>;
+  poll: Maybe<Poll>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   en: Maybe<Scalars['String']['output']>;
@@ -227,6 +236,7 @@ export type Query = {
   __typename?: 'Query';
   config: Config;
   dict: Array<Dict>;
+  entries: Array<Entry>;
   hello: Maybe<Scalars['String']['output']>;
   poll: Maybe<Poll>;
   polls: Maybe<Array<Maybe<Poll>>>;
@@ -236,6 +246,13 @@ export type Query = {
   stats: Maybe<Scalars['JSON']['output']>;
   translations: Maybe<Scalars['JSON']['output']>;
   users: Array<User>;
+};
+
+
+export type QueryEntriesArgs = {
+  _id: InputMaybe<Scalars['ObjectId']['input']>;
+  poolId: InputMaybe<Scalars['ObjectId']['input']>;
+  year: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -386,6 +403,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Config: ResolverTypeWrapper<Config>;
   Dict: ResolverTypeWrapper<Dict>;
+  Entry: ResolverTypeWrapper<Entry>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LocalizedString: ResolverTypeWrapper<LocalizedString>;
@@ -410,6 +428,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Config: Config;
   Dict: Dict;
+  Entry: Entry;
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
   LocalizedString: LocalizedString;
@@ -442,6 +461,15 @@ export type DictResolvers<ContextType = Context, ParentType extends ResolversPar
   lang: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   map: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   variants: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Entry'] = ResolversParentTypes['Entry']> = ResolversObject<{
+  _id: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType>;
+  answers: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  createdAt: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  lang: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -514,6 +542,7 @@ export type ProfileResolvers<ContextType = Context, ParentType extends Resolvers
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   config: Resolver<ResolversTypes['Config'], ParentType, ContextType>;
   dict: Resolver<Array<ResolversTypes['Dict']>, ParentType, ContextType>;
+  entries: Resolver<Array<ResolversTypes['Entry']>, ParentType, ContextType, QueryEntriesArgs>;
   hello: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType, QueryPollArgs>;
   polls: Resolver<Maybe<Array<Maybe<ResolversTypes['Poll']>>>, ParentType, ContextType, QueryPollsArgs>;
@@ -564,6 +593,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Account: AccountResolvers<ContextType>;
   Config: ConfigResolvers<ContextType>;
   Dict: DictResolvers<ContextType>;
+  Entry: EntryResolvers<ContextType>;
   JSON: GraphQLScalarType;
   LocalizedString: LocalizedStringResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;

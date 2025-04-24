@@ -105,6 +105,14 @@ type Dict {
     map: String
 }
 
+type Entry {
+    _id: ObjectId
+    createdAt: Timestamp
+    poll: Poll
+    lang: String
+    answers: JSON
+}
+
 type Query {
     hello: String
     config: Config!
@@ -122,6 +130,7 @@ type Query {
     translations: JSON
     users: [User!]!
     dict: [Dict!]!
+    entries(poolId:ObjectId,year:Int,_id:ObjectId): [Entry!]!
 }
 
 type Mutation {
