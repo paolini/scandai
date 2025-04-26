@@ -1,6 +1,6 @@
 import { MutationPostTranslationArgs, Translation } from '@/generated/graphql'
 import {getDictCollection, getTranslationCollection} from '@/lib/mongodb'
-import questionary from '@/lib/questionary'
+import questionary, {LocalizedString} from '@/lib/questionary'
 import { Context } from '../types'
 
 export async function translations() {
@@ -10,7 +10,7 @@ export async function translations() {
     const dict = await dictCollection.find().toArray()
 
     // usa la traduzione in italiano come chiave
-    const data = {
+    const data:{[key:string]: LocalizedString} = {
         ...Object.fromEntries(dict.filter(d=>d.map).map(d => [d.map, {}])),
         ...Object.fromEntries(Object.values(questionary.languages).map(l => [l.it, l])),
         ...Object.fromEntries(translations.map(d => [d.source,d.map])),

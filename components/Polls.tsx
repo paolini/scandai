@@ -2,10 +2,10 @@ import { FaCirclePlus } from 'react-icons/fa6'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Table } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import { useQuery, useMutation, gql } from '@apollo/client'
+import { useQuery, useMutation, gql, TypedDocumentNode } from '@apollo/client'
 import { ObjectId } from 'mongodb'
 
-import { post, NewPollMutation, PollsQuery } from '@/lib/api'
+import { PollsQuery } from '@/lib/api'
 import { useAddMessage } from '@/components/Messages'
 import Loading from '@/components/Loading'
 import Error from '@/components/Error'
@@ -23,6 +23,16 @@ const RemoveAdminLinksMutation = gql`
     mutation ($year: Int) {
         pollsRemoveAdminSecrets(year: $year)
 }`
+
+const NewPollMutation: TypedDocumentNode<{newPoll: ObjectId}, {
+    school: string,
+    class: string,
+    year: string,
+}> = gql`
+    mutation NewPoll($form: String, $school: ObjectId, $class: String, $year: String) {
+        newPoll(form: $form, school: $school, class: $class, year: $year)
+    }
+`
 
 export default function Polls({}) {
     const profileQuery = useQuery(ProfileQuery)

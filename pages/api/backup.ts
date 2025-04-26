@@ -3,10 +3,10 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import child_process from 'child_process'
 import fs from 'fs'
 import util from 'util'
-import { writeFile, stat } from 'fs/promises' 
+import { stat } from 'fs/promises' 
 
 const exec = util.promisify(child_process.exec)
-const mkdtemp = util.promisify(fs.mkdtemp);
+const mkdtemp = util.promisify(fs.mkdtemp)
 
 const MONGODB_URI = process.env.MONGODB_URI
 
