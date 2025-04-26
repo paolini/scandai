@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb'
 
 import { schoolYearMatch } from '@/lib/utils'
-import { getEntryCollection } from '@/lib/mongodb'
-import { Entry, QueryEntriesArgs } from '@/generated/graphql'
+import { getEntryCollection, trashDocument } from '@/lib/mongodb'
+import { Entry, MutationDeleteEntryArgs, QueryEntriesArgs } from '@/generated/graphql'
 import { Context } from '../types'
 
 const ENTRY_PIPELINE = [
@@ -54,4 +54,27 @@ export async function entries(_:any,{poolId,year,_id}:QueryEntriesArgs,{user}:Co
     const data = await collection.aggregate(pipeline).toArray()
     return data as Entry[]
 }
+
+export async function entry(_:any,{_id}:QueryEntriesArgs,{user}:Context): Promise<Entry> {
+    if (!user) throw Error('not authenticated')
+    if (!user.isAdmin || !user.isSuper) throw Error('not authorized')
+
+    const pipeline = [
+        { $match: {_id: _id} },
+        ...ENTRY_PIPELINE,
+    ]
+    const collection = await getEntryCollection()
+    const data = await collection.aggregate(pipeline).toArray()
+    if (data.length === 0) throw new Error('entry not found')
+    if (data.length > 1) throw new Error('multiple entries found')
+    return data[0] as Entry
+}
   
+export async function deleteEntry(_:any,{_id}:MutationDeleteEntryArgs,{user}:Context): Promise<boolean> {
+    if (!user) throw Error('not authenticated')
+    if (!user.isAdmin || !user.isSuper) throw Error('not authorized')
+
+    const collection = await getEntryCollection()
+    await trashDocument(collection, _id)
+    return true
+}

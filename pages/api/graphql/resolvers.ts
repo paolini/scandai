@@ -9,7 +9,7 @@ import {users, profile, setProfile, newUser, patchUser, deleteUser} from './reso
 import { Resolvers } from '@/generated/graphql'
 import {schools,school,newSchool,patchSchool,schoolCreateSecret,schoolRemoveSecret} from './resolvers/schools'
 import {dict,addDict} from './resolvers/dict'
-import {entries} from './resolvers/entry'
+import {entry, entries, deleteEntry} from './resolvers/entry'
 
 export const resolvers: Resolvers<Context> = {
   ObjectId: ObjectIdType,
@@ -38,6 +38,7 @@ export const resolvers: Resolvers<Context> = {
     dict,
     translations,
     entries,
+    entry,
   },
 
   Mutation: {
@@ -64,5 +65,7 @@ export const resolvers: Resolvers<Context> = {
     addDict,
 
     postTranslation,
+
+    deleteEntry,
   }
 }

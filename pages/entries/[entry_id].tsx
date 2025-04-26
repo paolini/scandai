@@ -2,27 +2,70 @@ import { useRouter } from "next/router"
 import { ButtonGroup, Button, Table } from "react-bootstrap"
 import dayjs from "dayjs"
 
-import { useEntries, deleteEntry } from "@/lib/api"
 import Loading from "@/components/Loading"
 import ErrorElement from "@/components/Error"
 import Page from "@/components/Page"
 import { formatDate, formatTime } from "@/lib/utils"
 import { useAddMessage } from "@/components/Messages"
 import { useTrans } from "@/lib/trans"
+import { gql, useMutation, useQuery } from "@apollo/client"
+import Error from "@/components/Error"
 
-export default function Entry({}) {
+export default function EntryContainer() {
+    return <Page>
+        <EntryPage />
+    </Page>
+}
+
+const EntryQuery = gql`
+    query EntryQuery($_id: ObjectId!) {
+        entry(_id: $_id) {
+            _id
+            createdAt
+            clientTimestamp
+            IP
+            lang
+            poll {
+                _id
+                form
+                year
+                class
+                school {
+                    _id
+                    name
+                    city
+                    city_fu
+                }
+            }
+            answers
+        }
+    }
+`
+const DeleteEntryMutation = gql`
+    mutation DeleteEntry($_id: ObjectId!) {
+        deleteEntry(_id: $_id)
+    }
+`
+
+function EntryPage({}) {
     const _ = useTrans()
     const router = useRouter()
     const entryId = router.query.entry_id
-    const entryQuery = useEntries({_id: entryId})
+    const entryQuery = useQuery(EntryQuery,{variables:{_id: entryId}})
+    const [deleteEntry, {loading, error}] = useMutation(DeleteEntryMutation,{
+        variables: { _id: entryId },
+        onCompleted: () => {
+            router.push('/entries')
+        }
+    })
     const addMessage = useAddMessage()
 
     if (!entryId || Array.isArray(entryId)) return <ErrorElement>id non valido</ErrorElement>
 
-    if (entryQuery.isLoading) return <Loading />
-    if (!entryQuery.data) return <ErrorElement>{entryQuery.error.message}</ErrorElement>
-    const entry = entryQuery.data.data[0]
-    return <Page>
+    if (entryQuery.loading) return <Loading />
+    if (!entryQuery.data) return <ErrorElement>{`${entryQuery.error}`}</ErrorElement>
+    const entry = entryQuery.data.entry
+    return <>
         <Table>
             <tbody>
                 <tr>
@@ -67,8 +110,9 @@ export default function Entry({}) {
             </tbody>
         </Table>
         <ButtonGroup>
+            {error && <Error>{`${error}`}</Error>}
             <Button onClick={() => router.push('/entries')}>{_("elenco")}</Button>
-            <Button variant="danger" onClick={trash}>{_("elimina")}</Button>
+            <Button variant="danger" disabled={loading} onClick={() => deleteEntry()}>{_("elimina")}</Button>
         </ButtonGroup>
         <Table>
             <thead>
@@ -86,7 +130,7 @@ export default function Entry({}) {
                 )}
             </tbody>
         </Table>
-    </Page>
+    </>
 
     function display(ans:any) {
         if (Array.isArray(ans)) return ans.join(', ')
@@ -97,14 +141,5 @@ export default function Entry({}) {
         if (val==='') return ''
         if (typeof val === 'string') return val
         return `{${Object.entries(val).map(([key, val]) => `${key}: ${val}`).join(', ')}}`
-    }
-
-    async function trash() {
-        try {
-            await deleteEntry(entry)
-            router.push('/entries')
-        } catch (error) {
-            addMessage('warning', `${_("errore")}: ${error}`)
-        }
     }
 }

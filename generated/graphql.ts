@@ -39,8 +39,10 @@ export type Dict = {
 
 export type Entry = {
   __typename?: 'Entry';
+  IP: Maybe<Scalars['String']['output']>;
   _id: Maybe<Scalars['ObjectId']['output']>;
   answers: Maybe<Scalars['JSON']['output']>;
+  clientTimestamp: Maybe<Scalars['Timestamp']['output']>;
   createdAt: Maybe<Scalars['Timestamp']['output']>;
   lang: Maybe<Scalars['String']['output']>;
   poll: Maybe<Poll>;
@@ -63,6 +65,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDict: Maybe<Scalars['Boolean']['output']>;
   closePoll: Maybe<Scalars['Boolean']['output']>;
+  deleteEntry: Maybe<Scalars['Boolean']['output']>;
   deletePoll: Maybe<Scalars['Boolean']['output']>;
   deleteUser: Maybe<Scalars['Boolean']['output']>;
   newPoll: Maybe<Scalars['ObjectId']['output']>;
@@ -91,6 +94,11 @@ export type MutationAddDictArgs = {
 export type MutationClosePollArgs = {
   _id: Scalars['ObjectId']['input'];
   secret: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteEntryArgs = {
+  _id: Scalars['ObjectId']['input'];
 };
 
 
@@ -237,6 +245,7 @@ export type Query = {
   config: Config;
   dict: Array<Dict>;
   entries: Array<Entry>;
+  entry: Maybe<Entry>;
   hello: Maybe<Scalars['String']['output']>;
   poll: Maybe<Poll>;
   polls: Maybe<Array<Maybe<Poll>>>;
@@ -253,6 +262,11 @@ export type QueryEntriesArgs = {
   _id: InputMaybe<Scalars['ObjectId']['input']>;
   poolId: InputMaybe<Scalars['ObjectId']['input']>;
   year: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryEntryArgs = {
+  _id: Scalars['ObjectId']['input'];
 };
 
 
@@ -465,8 +479,10 @@ export type DictResolvers<ContextType = Context, ParentType extends ResolversPar
 }>;
 
 export type EntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Entry'] = ResolversParentTypes['Entry']> = ResolversObject<{
+  IP: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   _id: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType>;
   answers: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  clientTimestamp: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   createdAt: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   lang: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType>;
@@ -487,6 +503,7 @@ export type LocalizedStringResolvers<ContextType = Context, ParentType extends R
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addDict: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationAddDictArgs, 'lang' | 'map'>>;
   closePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationClosePollArgs, '_id'>>;
+  deleteEntry: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteEntryArgs, '_id'>>;
   deletePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePollArgs, '_id'>>;
   deleteUser: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, '_id'>>;
   newPoll: Resolver<Maybe<ResolversTypes['ObjectId']>, ParentType, ContextType, MutationNewPollArgs>;
@@ -543,6 +560,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   config: Resolver<ResolversTypes['Config'], ParentType, ContextType>;
   dict: Resolver<Array<ResolversTypes['Dict']>, ParentType, ContextType>;
   entries: Resolver<Array<ResolversTypes['Entry']>, ParentType, ContextType, QueryEntriesArgs>;
+  entry: Resolver<Maybe<ResolversTypes['Entry']>, ParentType, ContextType, RequireFields<QueryEntryArgs, '_id'>>;
   hello: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType, QueryPollArgs>;
   polls: Resolver<Maybe<Array<Maybe<ResolversTypes['Poll']>>>, ParentType, ContextType, QueryPollsArgs>;

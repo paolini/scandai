@@ -45,7 +45,7 @@ export async function trashDocument<T extends Document>(collection: Collection<T
       ...document, 
       trashedAt,
     }}, { upsert: true })
-  await collection.deleteOne({ _id: document._id })
+  await collection.deleteOne({ _id: document._id})
 }
 
 export async function getCollection<T extends Document=Document>(collection: string) {
