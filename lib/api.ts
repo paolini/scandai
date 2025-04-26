@@ -29,9 +29,16 @@ export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
         }
     }`
 
-export const TranslationsQuery: TypedDocumentNode<{translations:Translation}> = gql`
+export const TranslationsQuery: TypedDocumentNode<{translations:Translation[]}> = gql`
     query TranslationsQuery {
-        translations
+        translations {
+            source
+            map {
+                it
+                en
+                fu  
+            }
+        }
     }`
 
 export const PollsQuery: TypedDocumentNode<{ polls: Poll[] }, { year?: number, adminSecret?: string }> = gql`

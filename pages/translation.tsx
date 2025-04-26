@@ -1,20 +1,20 @@
-import {Table} from 'react-bootstrap'
+import {Button, Table} from 'react-bootstrap'
 import {FaCirclePlus} from 'react-icons/fa6'
 import {useState} from 'react'
-import {useQuery, gql} from '@apollo/client'
+import {useQuery, gql, useMutation} from '@apollo/client'
 
 import Page from '@/components/Page'    
 import Loading from '@/components/Loading'
 import {TranslationsQuery} from '@/lib/api'
-import {set, value} from '@/lib/State'
+import State, {set, value} from '@/lib/State'
 import Input from '@/components/Input'
 import {useTrans} from '@/lib/trans'
-import MutationButton from '@/components/MutationButton'
+import { Translation } from '@/generated/graphql'
 
 export default function TranslationContainer() {
     const _ = useTrans()
     return <Page title={_("Traduzioni lingue")}>
-        <Translation/>
+        <TranslationPage/>
     </Page>
 }
 
@@ -31,7 +31,7 @@ const TranslationMutation = gql`
     }
 `
 
-function Translation() {
+function TranslationPage() {
     const translations = useQuery(TranslationsQuery)
     const [editLang, setEditLang] = useState<[string,string]>(['','']) 
     const editState = useState<string>('')
@@ -41,8 +41,7 @@ function Translation() {
     if (translations.loading) return <Loading/>
     if (!translations.data) return <Loading />
 
-    const data = Object.fromEntries(Object.entries(translations.data.translations)
-        .sort(([s1,d1],[s2,d2]) => s1.localeCompare(s2)))
+    const data = sort(translations.data.translations)
 
     const sources:("en"|"fu")[] = ["en", "fu"]
 
@@ -55,39 +54,58 @@ function Translation() {
             </tr>
         </thead>
         <tbody>
-            {Object.entries(data).map(([source, d]) =>
-                <tr key={source}>
-                    <td>{source}</td>
+            {data.map((t) =>
+                <tr key={t.source}>
+                    <td>{t.source}</td>
                     {sources.map((lang:("en"|"fu")) =>
-                        editLang[0] === source && editLang[1] === lang 
-                        ? <td key={source}>
-                            <div className="d-flex">
-                                <Input state={editState} focus={focus} enter={()=>submit(source,lang,value(editState))}/>
-                                <MutationButton className="mx-1" size="lg" 
-                                    query={TranslationMutation}
-                                    options={{
-                                        variables:{source,map:{[lang]:value(editState)}},
-                                        refetchQueries: [TranslationsQuery],
-                                        onCompleted: () => {setEditLang(['','']);set(editState,'')}
-                                        }}>
-                                    <FaCirclePlus className="m-1 bg-blue-300"/>
-                                </MutationButton>
-                            </div>
+                        editLang[0] === t.source && editLang[1] === lang 
+                        ? <td key={t.source}>
+                            <Cell editState={editState} setEditLang={setEditLang} source={t.source} lang={lang} focus={focus}/>
                         </td>
                         : <td 
                             key={lang} 
                             onClick={()=>{
-                                set(editState,d[lang]||"")
-                                setEditLang([source,lang])
+                                set(editState,t.map[lang]||"")
+                                setEditLang([t.source,lang])
                                 setFocus(_ => _ + 1)
                             }}
                             style={{cursor:"pointer"}}
                             >
-                            {d[lang] || '---'}
+                            {t.map[lang] || '---'}
                         </td>
                     )}
                 </tr>
             )}
         </tbody>
     </Table>
+
+    function sort(data: Translation[]):Translation[] {
+        return [...data].sort((t1:Translation,t2:Translation) => {
+            return t1.source?.localeCompare(t2.source)
+        // return Object.entries(data).sort(([s1,d1],[s2,d2]) => s1.localeCompare(s2))
+    })}
+}
+
+function Cell({editState, setEditLang, source, lang, focus}:{
+    editState: State<string>,
+    setEditLang: (l:[string,string])=>void,
+    source: string,
+    lang: string,
+    focus: number
+}) {
+    const _ = useTrans()
+    const [mutate, {loading,error}] = useMutation(TranslationMutation, {
+        variables: {source, map: {[lang]: value(editState)}},
+        refetchQueries: [TranslationsQuery],
+        onCompleted: () => {
+            setEditLang(['','']);
+            set(editState,'')
+        }
+    })
+    return <div className="d-flex">
+        <Input state={editState} focus={focus} enter={()=>mutate()}/>
+        <Button className="mx-1" size="lg">
+            <FaCirclePlus className="m-1 bg-blue-300"/>
+        </Button>
+    </div>
 }

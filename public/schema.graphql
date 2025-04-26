@@ -95,8 +95,8 @@ type Poll {
 }
 
 type Translation {
-    source: String
-    map: LocalizedString
+    source: String!
+    map: LocalizedString!
 }
 
 type Dict {
@@ -127,7 +127,7 @@ type Query {
         class: String, city: String, form: String,
         schoolId: ObjectId,
     ): JSON
-    translations: JSON
+    translations: [Translation!]!
     users: [User!]!
     dict: [Dict!]!
     entries(poolId:ObjectId,year:Int,_id:ObjectId): [Entry!]!

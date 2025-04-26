@@ -244,7 +244,7 @@ export type Query = {
   school: Maybe<School>;
   schools: Array<School>;
   stats: Maybe<Scalars['JSON']['output']>;
-  translations: Maybe<Scalars['JSON']['output']>;
+  translations: Array<Translation>;
   users: Array<User>;
 };
 
@@ -308,8 +308,8 @@ export type SchoolData = {
 
 export type Translation = {
   __typename?: 'Translation';
-  map: Maybe<LocalizedString>;
-  source: Maybe<Scalars['String']['output']>;
+  map: LocalizedString;
+  source: Scalars['String']['output'];
 };
 
 export type User = {
@@ -550,7 +550,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   school: Resolver<Maybe<ResolversTypes['School']>, ParentType, ContextType, QuerySchoolArgs>;
   schools: Resolver<Array<ResolversTypes['School']>, ParentType, ContextType, QuerySchoolsArgs>;
   stats: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, QueryStatsArgs>;
-  translations: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  translations: Resolver<Array<ResolversTypes['Translation']>, ParentType, ContextType>;
   users: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
@@ -569,8 +569,8 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
 }
 
 export type TranslationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Translation'] = ResolversParentTypes['Translation']> = ResolversObject<{
-  map: Resolver<Maybe<ResolversTypes['LocalizedString']>, ParentType, ContextType>;
-  source: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  map: Resolver<ResolversTypes['LocalizedString'], ParentType, ContextType>;
+  source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

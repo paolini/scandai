@@ -15,7 +15,17 @@ export async function translations() {
         ...Object.fromEntries(Object.values(questionary.languages).map(l => [l.it, l])),
         ...Object.fromEntries(translations.map(d => [d.source,d.map])),
     }
-    return data
+    return Object.entries(data).map(([source, map]) => {
+        const res: Translation = {
+            source,
+            map: {
+                it: map.it,
+                en: map.en,
+                fu: map.fu,
+            }
+        }
+        return res
+    })
 }
 
 export async function postTranslation (_parent: any, {source,map: input_map}: MutationPostTranslationArgs, context: Context) {
@@ -28,6 +38,7 @@ export async function postTranslation (_parent: any, {source,map: input_map}: Mu
       if (input_map.it) map.it = input_map.it
       if (input_map.en) map.en = input_map.en
       if (input_map.fu) map.fu = input_map.fu
+      console.log("postTranslation", JSON.stringify({source, map, input_map, db: translation?.map}))
       if (translation) {
         await collection.updateOne({source}, {
             $set: {map}
