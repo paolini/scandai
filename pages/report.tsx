@@ -40,11 +40,10 @@ import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
 import State, { value, set, update } from "@/lib/State"
-import { IGetTranslation } from "@/models/Translation"
 import { IGetSchool } from "@/models/School"
 import { requireSingle, requireArray } from "@/lib/utils"
-import { User } from "@/pages/api/graphql/types"
 import Provider from "@/components/Provider"
+import { Profile, Translation } from "@/generated/graphql";
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -145,15 +144,21 @@ function Report() {
     />
 }
 
-const PollSchoolsQuery = gql`
-    query PollSchoolQuery($year: Int) {
-        pollSchools(year: $year)
+const SchoolsQuery = gql`
+    query SchoolQuery($year: Int) {
+        schools(year: $year) {
+            _id
+            name
+            city
+            city_fu
+            pollCount
+        }
     }
 `
 
 export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
     showFilter: string[],
-    user: User|null,
+    user: Profile|null,
     year: string,
     report: string,
     pollIds: string[],
@@ -164,7 +169,7 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
     const translationsQuery = useQuery(TranslationsQuery)
     const _ = useTrans()
     const yearState = useState(year)
-    const schoolsQuery = useQuery(PollSchoolsQuery, { variables: {
+    const schoolsQuery = useQuery(SchoolsQuery, { variables: {
         year: value(yearState)?parseInt(value(yearState)):null},
         skip: !showFilter.includes("school")})
     const pollIdsState = useState<string[]>(pollIds)
@@ -235,7 +240,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     schoolId: string,
     schoolSecret: string,
     adminSecret: string,
-    translations: IGetTranslation,
+    translations: Translation[],
     pollIdsState: State<string[]>,
     schools: IGetSchool[],
     yearState: State<string>,
@@ -274,6 +279,8 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
         .filter((v,i,a) => a.indexOf(v)===i)
         .filter(c=> c)
         .sort()
+
+    const translationsDict = Object.fromEntries(translations.map(t => [t.source, t.map]))
 
     return <>
         { /*JSON.stringify({stats_schools: stats.schools})*/ }
@@ -317,7 +324,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
      * @returns nome tradotto
      */
         function t(source:string) {
-            const d = translations[source]
+            const d = translationsDict[source]
             if (!d) return source
             return d[_.locale] || source
         }    

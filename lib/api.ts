@@ -1,6 +1,6 @@
 import { gql, TypedDocumentNode } from '@apollo/client'
 
-import { User, Poll, Config, Translation } from '@/generated/graphql'
+import { User, Poll, Config, Translation, Profile } from '@/generated/graphql'
 
 export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
     query ConfigQuery {
@@ -13,7 +13,7 @@ export const ConfigQuery: TypedDocumentNode<{ config: Config }> = gql`
         }
     }`
 
-export const ProfileQuery: TypedDocumentNode<{ profile: User|null }> = gql`
+export const ProfileQuery: TypedDocumentNode<{ profile: Profile|null }> = gql`
     query ProfileQuery {
         profile {
             _id
