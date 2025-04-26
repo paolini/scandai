@@ -15,20 +15,33 @@ const server = new ApolloServer<Context>({
 
 const handler = startServerAndCreateNextHandler<NextRequest,Context>(server, {
     context: async (req, res): Promise<Context> => { 
+      console.log("🔵 Ricevuta richiesta su /api/graphql");
       const ctx: Context = { req, res }
+    try {
       const token = await getToken({ req })
-      if (!token || !token.dbUser) return ctx // not logged in
+      console.log("🟡 Token ricevuto:", token);
+      
+      if (!token || !token.dbUser) {
+        console.log("🟠 Nessun utente loggato");
+        return ctx
+      }
+
       const db_user = token.dbUser
       const user = {
         ...db_user,
         _id: new ObjectId(db_user._id),
       }
+      console.log("🟢 Utente autenticato:", user);
 
       return { 
         ...ctx,
         user,
       }
+    } catch (err) {
+      console.error("🔴 Errore in context GraphQL:", err);
+      throw err;
     }
+  }
 });
 
 export default handler;
