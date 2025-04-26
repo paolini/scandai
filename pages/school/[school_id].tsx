@@ -6,8 +6,7 @@ import { FaShareAlt } from "react-icons/fa"
 import { gql, useQuery, useMutation } from "@apollo/client"
 
 import Page from '@/components/Page'
-import { School } from '@/generated/graphql'
-import { patchSchool, postSchool, deleteSchool } from '@/lib/api'
+import { Poll, School } from '@/generated/graphql'
 import Loading from '@/components/Loading'
 import Input from '@/components/Input'
 import { value, set } from '@/lib/State'
@@ -16,6 +15,7 @@ import Error from '@/components/Error'
 import { formatDate, formatTime, currentSchoolYear } from '@/lib/utils'
 import { useTrans } from '@/lib/trans'
 import MutationButton from '@/components/MutationButton'
+import { PollQuery } from '@/lib/api'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -225,10 +225,10 @@ function TheSchool({ school } : {
 function SchoolPolls({school}: {school: School}) {
     const _ = useTrans()
     const router = useRouter()
-    const pollsQuery = usePolls({school_id: school._id})
-    if (pollsQuery.isLoading) return <Loading />
-    if (!pollsQuery.data) return <Error>{pollsQuery.error}</Error>
-    const polls = pollsQuery.data.data
+    const pollsQuery = useQuery(PollQuery, {variables:{school_id: school._id}})
+    if (pollsQuery.loading) return <Loading />
+    if (!pollsQuery.data) return <Error>{`${pollsQuery.error}`}</Error>
+    const polls: Poll[] = pollsQuery.data.polls
     if (polls.length === 0) return <p>{_("Nessun questionario")}</p>
     return <Card className="my-2 table-responsive">
         <Card.Header>

@@ -5,9 +5,9 @@ import { gql, TypedDocumentNode, useMutation } from '@apollo/client'
 import { value } from '@/lib/State'
 import Input from '@/components/Input'
 import { useTrans } from '@/lib/trans'
-import { User } from '@/pages/api/graphql/types'
 import Loading from './Loading'
 import Error from './Error'
+import { Profile } from '@/generated/graphql'
 
 const SetProfileMutation: TypedDocumentNode<SetProfileResult, SetProfileVariables> = gql`
     mutation SetProfile($name: String, $isTeacher: Boolean, $isStudent: Boolean) {
@@ -37,12 +37,12 @@ type SetProfileVariables = {
   };
 
 export default function SetProfile({profile}:{
-    profile: User,
+    profile: Profile,
 }) {
     const [setProfile, {loading, error}] = useMutation(SetProfileMutation)
     const nameState = useState(profile?.name || '')
     const [what, setWhat] = useState<string>(profile.isTeacher ? "teacher" : "")
-    const [alertStudent, setAlertStudent] = useState<boolean>(profile.isStudent)
+    const [alertStudent, setAlertStudent] = useState<boolean>(profile.isStudent || false)
     const [alertViewer, setAlertViewer] = useState<boolean>(false)
     const name = value(nameState)
     const _ = useTrans()

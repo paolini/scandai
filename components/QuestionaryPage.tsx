@@ -1,6 +1,6 @@
 import { IFormElement, IQuestionary } from '@/lib/questionary'
 import Question, { IAnswers } from './Question'
-import { Answer } from '@/models/Entry'
+import { Answer } from '@/lib/types'
 import { trans } from '@/lib/questionary'
 import { State, value, update } from '@/lib/State'
 

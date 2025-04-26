@@ -15,7 +15,7 @@ import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
-import { User, Poll, School } from '@/generated/graphql'
+import { User, Poll, School, Profile } from '@/generated/graphql'
 
 const formTypes = Object.keys(questionary.forms)
 
@@ -122,7 +122,7 @@ export default function Polls({}) {
 }
 
 function PollsTable({user, polls}:{
-    user?: User|null,
+    user?: Profile|null,
     polls: Poll[],
 }) {
     const router = useRouter()

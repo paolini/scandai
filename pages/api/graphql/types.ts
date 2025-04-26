@@ -1,58 +1,13 @@
 import { GraphQLScalarType, Kind, ValueNode } from "graphql"
 import type { NextRequest } from "next/server"
-import { ObjectId } from "mongodb"
-// Removed ResolverContext import as it is not exported from '@/generated/graphql'
+import { ObjectId, WithId } from "mongodb"
 
-/*
-export type Config = {
-  siteTitle: {
-    fu: string,
-    it: string,
-    en: string
-  }
-}
-*/
+import { MongoUser } from "@/lib/mongodb"
 
-export type User = {
-  _id: ObjectId,
-  name: string,
-  username: string,
-  email: string,
-  isAdmin: boolean,
-  isSuper: boolean,
-  isViewer: boolean,
-  isTeacher: boolean,
-  isStudent: boolean,
-  image: string,
-}
-  
-/*
-export type School = {
-  _id: ObjectId,
-  name: string,
-  city: string,
-  city_fu: string,
-}
-
-export type Poll = {
-  _id: ObjectId,
-  secret: string,
-  adminSecret: string,
-  entriesCount: number,
-  date: Date,
-  school: School,
-  class: string,
-  year: string,
-  form: string,
-  closed: boolean,
-  createdBy: User,
-  createdAt: Date,
-}
-*/
 export type Context = {
     req: NextRequest
     res: Response|undefined
-    user?: User
+    user?: WithId<MongoUser>
   }
   
 export const ObjectIdType = new GraphQLScalarType({

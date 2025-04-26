@@ -22,6 +22,5 @@ export default function PollFake({}) {
             langState={langState}
             answersState={answersState}
             timestamp={timestamp}
-            mutate={null}
             />
     </Page>}

@@ -6,10 +6,10 @@ import { gql, useMutation } from '@apollo/client'
 import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages, getPhrase } from '@/lib/questionary'
 import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
-import { IGetPoll } from '@/models/Poll'
 import PollSplash from '@/components/PollSplash'
 import { State, value, set } from '@/lib/State'
 import Error from '@/components/Error'
+import { Poll } from '@/generated/graphql'
 
 const SubmitQuery = gql`
   mutation ($_id: ObjectId!, $answers: JSON!, $lang: String, $timestamp: Timestamp) {
@@ -19,7 +19,7 @@ const SubmitQuery = gql`
 export default function Questionary({langState, poll, form, answersState, timestamp } : {
     langState: State<string>,
     form: string,
-    poll: IGetPoll|null,
+    poll: Poll|null,
     answersState: State<IAnswers>,
     timestamp: number,
   }) {

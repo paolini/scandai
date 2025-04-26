@@ -1,5 +1,4 @@
-import mongoose, {Types} from 'mongoose'
-import {Document, ObjectId, Collection} from 'mongodb'
+import {Document, ObjectId, InferIdType, MongoClient, Collection} from 'mongodb'
 
 import migrate from './migrations'
 import createAdminUser from './createAdminUser'
@@ -11,19 +10,18 @@ async function db() {
     throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
   }
 
-  const promise = mongoose.connect(uri, {})
-
-  await promise
+  const mongoClient = new MongoClient(uri)
+  const client = await mongoClient.connect()
+  const db = client.db()
 
   console.log(`connected to mongodb at ${uri}`)
 
-  await createAdminUser(mongoose.connection)
-  await migrate(mongoose.connection, { apply: true })
-  const mongodb = await mongoose.connection.getClient()
+  await createAdminUser(db)
+  await migrate(db, { apply: true })
 
-  await updateConfiguration()
+  await updateConfiguration(db)
 
-  return mongodb
+  return client
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a
@@ -31,11 +29,13 @@ async function db() {
 const clientPromise = db()
 export default clientPromise
 
-export async function trashDocument<T extends Document>(collection: Collection<T>, _id: ObjectId) {
+export async function trashDocument<T extends Document>(collection: Collection<T>, _id: InferIdType<T>) {
   const collectionName = collection.collectionName
   console.log(`trashDocument ${collectionName} ${_id}`)
   const db = (await clientPromise).db()
-  const document = await collection.findOne({ _id })
+
+  // non sono riuscito a trovare un modo per fare il cast di _id in modo che funzioni con il tipo di mongoose
+  const document = await collection.findOne<T>({ _id: _id as unknown as T["_id"] })
   if (!document) throw new Error(`document ${_id} not found in collection ${collectionName}`)
   // save document to "trash" collection
   const trashCollection = db.collection(`${collectionName}_trash`)
@@ -45,11 +45,14 @@ export async function trashDocument<T extends Document>(collection: Collection<T
       ...document, 
       trashedAt,
     }}, { upsert: true })
-  await collection.deleteOne({ _id: document._id})
+
+    // anche qui non sono riuscito a trovare un modo per fare il cast di _id in modo che funzioni con il tipo di mongoose
+  await collection.deleteOne({ _id: document._id as unknown as T["_id"] })
 }
 
 export async function getCollection<T extends Document=Document>(collection: string) {
-  const db = (await clientPromise).db()
+  const client = await clientPromise
+  const db = client.db()
   return db.collection<T>(collection)
 }
 
@@ -65,7 +68,7 @@ export async function getConfigCollection() {
   return getCollection<MongoConfig>("configs")
 }
 
-type MongoUser = {
+export type MongoUser = {
     email: string,
     name?: string,
     username?: string,
@@ -75,6 +78,8 @@ type MongoUser = {
     isTeacher?: boolean,
     isStudent?: boolean,
     image?: string,
+    password?: string,
+    verified?: boolean,
 }
 
 export async function getUserCollection() {
@@ -101,7 +106,7 @@ export type MapLanguageToAgeAnswer = {[key: string]: string}
 export type Answer = LanguageAnswer | MapLanguageToAgeAnswer | MapLanguageToCompetenceAnswer
 
 export interface MongoEntry {
-    pollId: Types.ObjectId,
+    pollId: ObjectId,
     answers: {
         [key: QuestionCode]: Answer
     },

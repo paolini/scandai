@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import assert from 'assert'
 import { useQuery } from '@apollo/client'
@@ -14,7 +14,7 @@ import Error from './Error'
 const Link = Nav.Link
 
 export default function Header() {
-  const {data, loading, error} = useQuery(ProfileQuery)
+  const {data, loading} = useQuery(ProfileQuery)
   const router = useRouter()
   const profile = data?.profile
   const isAdmin = profile?.isAdmin

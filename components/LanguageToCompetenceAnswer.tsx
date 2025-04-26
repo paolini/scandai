@@ -1,7 +1,7 @@
 import { Dispatch } from 'react'
 
 import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questionary"
-import { MapLanguageToCompetenceAnswer } from '@/models/Entry'
+import { MapLanguageToCompetenceAnswer } from '@/lib/types'
 import { trans } from "@/lib/questionary"
 
 export default function LanguageToCompetenceAnswer({ lang, answer, setAnswer, competences, languages, competenceValues, extraLanguages }:{

@@ -1,9 +1,9 @@
-import {ObjectId} from 'mongodb'
+import {ObjectId, WithId} from 'mongodb'
 import randomstring from 'randomstring'
 
 import {Context} from '../types'
 import {schoolYearMatch} from '@/lib/utils'
-import {getCollection, getPollCollection, trashDocument} from '@/lib/mongodb'
+import {getCollection, getPollCollection, MongoUser, trashDocument} from '@/lib/mongodb'
 import {MutationNewPollArgs, Poll, QueryPollArgs, QueryPollsArgs, MutationOpenPollArgs, MutationClosePollArgs, MutationPollCreateAdminSecretArgs, MutationPollRemoveAdminSecretArgs, MutationDeletePollArgs, MutationPollsRemoveAdminSecretsArgs, Profile} from '@/generated/graphql'
 
 export const POLL_PIPELINE = [
@@ -180,7 +180,7 @@ export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {u
     return true
 }
 
-async function getPoll(_id: ObjectId, secret: string|null, user: Profile|undefined) {
+async function getPoll(_id: ObjectId, secret: string|null, user: WithId<MongoUser>|undefined) {
     if (!user) throw new Error('not authenticated')
     const collection = await getPollCollection()
     const poll = await collection.findOne({_id})

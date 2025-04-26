@@ -1,11 +1,10 @@
 import { ObjectId } from 'mongodb'
 import { assert } from '@/lib/assert'
 
-import Dict from '@/models/Dict'
 import questionary, { IQuestion, extractLevels } from '../../../../lib/questionary'
 import { schoolYearMatch } from '@/lib/utils'
 import { Context } from '../types'
-import { getCollection } from '@/lib/mongodb'
+import { getCollection, getDictCollection } from '@/lib/mongodb'
 import { QueryStatsArgs } from '@/generated/graphql'
 
 export default async function resolver(_parent: any, query: QueryStatsArgs, context: Context) {
@@ -293,9 +292,11 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
 //    const polls: IGetPoll[] = []
     const pollDict: {[key: string]: IGetPoll} = {}
 
+    const collection = await getDictCollection()
+
     const dict = Object.fromEntries([
         ...Object.entries(questionary.languages).map(([lang, x]) => [lang, x.it]),
-        ...(await Dict.aggregate([{$project:{lang:1, map:1}}])).map(d => [d.lang, d.map]),
+        ...(await collection.aggregate([{$project:{lang:1, map:1}}]).toArray()).map(d => [d.lang, d.map]),
     ])
 
     const schoolDict: {[key: string]: IGetSchool} = {}

@@ -40,10 +40,9 @@ import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
 import State, { value, set, update } from "@/lib/State"
-import { IGetSchool } from "@/models/School"
 import { requireSingle, requireArray } from "@/lib/utils"
 import Provider from "@/components/Provider"
-import { Profile, Translation } from "@/generated/graphql";
+import { Profile, School, Translation } from "@/generated/graphql";
 
 const CHART_WIDTH = 640
 const CHART_WIDTH_SMALL = 400
@@ -242,7 +241,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     adminSecret: string,
     translations: Translation[],
     pollIdsState: State<string[]>,
-    schools: IGetSchool[],
+    schools: School[],
     yearState: State<string>,
 }) {
     const schoolIdState = useState(schoolId)
@@ -337,7 +336,7 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
     formState: State<string>,
     classState: State<string>,
     yearState: State<string>,
-    schools: IGetSchool[],
+    schools: School[],
     classes: string[],
 }) {    
     const city = value(cityState)
@@ -345,13 +344,13 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
     const citiesInfo = Object.keys(map_city_fu).map(city => {
         let pollCount = 0
         for (const school of schools.filter(school => school.city===city)) {
-            pollCount += school.pollCount
+            pollCount += school.pollCount || 0
         }
         return {pollCount, city}
     }).sort((a,b) => b.pollCount-a.pollCount)
     const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
-        : [...schools]).sort((a,b) => b.pollCount-a.pollCount)
+        : [...schools]).sort((a,b) => (b.pollCount || 0)-(a.pollCount || 0))
     const _ = useTrans()
     return <>
         { /*JSON.stringify({schools,citiesInfo})*/ }

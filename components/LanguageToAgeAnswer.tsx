@@ -2,8 +2,8 @@ import { Dispatch } from 'react'
 
 import { assert } from '@/lib/assert'
 import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questionary"
-import { MapLanguageToAgeAnswer, Answer } from "@/models/Entry"
 import { trans } from "@/lib/questionary"
+import { Answer } from '@/lib/types'
 
 function AgeAnswerRow({ lang, code, language, ages, answer, setAnswer }
   :{

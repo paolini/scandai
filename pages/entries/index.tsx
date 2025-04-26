@@ -10,9 +10,9 @@ import Error from '../../components/Error'
 import { formatDate, formatTime } from '../../lib/utils'
 import { useTrans } from '../../lib/trans'
 import { currentSchoolYear } from '../../lib/utils'
-import { IGetEntry, LanguageAnswer, MapLanguageToAgeAnswer, MapLanguageToCompetenceAnswer } from '../../models/Entry'
 import questionary from '../../lib/questionary'
 import { Entry } from '@/generated/graphql'
+import { LanguageAnswer, MapLanguageToAgeAnswer, MapLanguageToCompetenceAnswer } from '@/lib/mongodb'
 
 const EntriesQuery = gql`
     query EntriesQuery($year: Int!) {
@@ -109,7 +109,7 @@ function Entries({}) {
             ...entries.map(entry=>entryRow(attributes, question_codes, entry))]
     }
 
-    function entryRow(attributes: string[], question_codes: string[], entry: IGetEntry) {
+    function entryRow(attributes: string[], question_codes: string[], entry: Entry) {
         const answers = entry.answers
         const columns = []
         for (const attribute of attributes) {
@@ -136,7 +136,7 @@ function Entries({}) {
         
     }
 
-    function cells(question_code: string, entry: IGetEntry|null = null) {
+    function cells(question_code: string, entry: Entry|null = null) {
         const langs = Object.keys(questionary.languages)
         const type = questionary.questions[question_code].type
         switch(type) {

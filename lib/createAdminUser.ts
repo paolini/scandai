@@ -1,7 +1,7 @@
-import { Connection } from 'mongoose'
 import { hash, compare } from 'bcrypt'
+import { Db } from 'mongodb'
 
-export default async function createAdminUser(db: Connection) {
+export default async function createAdminUser(db: Db) {
     const username = process.env.ADMIN_USERNAME
     const password = process.env.ADMIN_PASSWORD
     if (!username) {
@@ -14,7 +14,6 @@ export default async function createAdminUser(db: Connection) {
     }
     const encryptedPassword = await hash(password, 12)
     const users = db.collection('users')
-
     const user = await users.findOne({ username })
     if (user) {
         console.log(`admin user "${username}" already exists.`)

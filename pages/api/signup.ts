@@ -1,5 +1,4 @@
-import dbConnect from '../../lib/mongodb'
-import User from '../../models/User'
+import dbConnect, { getUserCollection } from '@/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(
@@ -40,14 +39,15 @@ export default async function handler(
         })
         return
     }
+    const collection = await getUserCollection()
     await dbConnect
     try {
-        const user1 = await User.find({username})
+        const user1 = await collection.find({username}).toArray()
         console.log(`user1: ${JSON.stringify(user1)}`)
         if (user1.length > 0) {
             invalid.push('username')
         }
-        const user2 = await User.find({email})
+        const user2 = await collection.find({email}).toArray()
         console.log(`user2: ${JSON.stringify(user2)}`)
         if (user2.length > 0) {
             invalid.push('email')
@@ -59,14 +59,13 @@ export default async function handler(
             })
             return
         }
-        const newUser = await User.create({
+        const newUser = await collection.insertOne({
             username,
             name,
             email,
             password,
             isAdmin: false,
             verified: false,
-
         })
         res.status(200).json({ data: 'ok' })
     } catch (error) {

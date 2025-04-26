@@ -4,10 +4,7 @@ import { FaCirclePlus, FaTrash, FaKey } from "react-icons/fa6"
 import { useState } from "react"
 import { gql, useMutation, useQuery } from "@apollo/client"
 
-import { postUser, deleteUser, patchUser } from '@/lib/api'
-import { IGetUser, IPostUser } from '@/models/User'
 import { useAddMessage } from '@/components/Messages'
-import useSessionUser from '@/lib/useSessionUser'
 import { value, set, get } from '@/lib/State'
 import Input from '@/components/Input'
 import Page from '@/components/Page'
@@ -15,6 +12,7 @@ import Loading from '@/components/Loading'
 import Error from '@/components/Error'
 import { useTrans } from '@/lib/trans'
 import { User } from "@/generated/graphql"
+import { ProfileQuery } from "@/lib/api"
 
 const UsersQuery = gql`
     query {
@@ -51,14 +49,14 @@ const DeleteMutation = gql`
     }`
 
 function Users() {
-    const sessionUser = useSessionUser()
+    const profileQuery = useQuery(ProfileQuery)
+    const profile = profileQuery?.data?.profile
     const usersQuery = useQuery(UsersQuery)
     const users = usersQuery?.data?.users as User[]
-    const addMessage = useAddMessage()
     const newUserState = useState<boolean>(false)
     const showDeleteState = useState<boolean>(false)
     const showPasswordState = useState<boolean>(false)
-    const isSuper = sessionUser?.isSuper
+    const isSuper = profile?.isSuper
     const _ = useTrans()
     const [patchMutation, {loading, error}] = useMutation(PatchMutation,{
         refetchQueries: [UsersQuery]
@@ -134,18 +132,18 @@ function Users() {
                     </td>
                     <td>
                         <Switch
-                        disabled={user._id === sessionUser?._id}
+                        disabled={user._id === profile?._id}
                         checked={!!user.isAdmin}
                         onChange={(checked) => {patch(user, {isAdmin: checked})}} />
                     </td>
                     { isSuper && <td>
                         <Switch
-                        disabled={user._id === sessionUser?._id}                        
+                        disabled={user._id === profile?._id}                        
                         checked={!!user.isSuper}
                         onChange={(checked) => {patch(user, {isSuper: checked})}} />
                     </td>}
                     { value(showDeleteState) && <td>
-                        <Button variant="danger" size="sm" disabled={deleteLoading || user._id === sessionUser?._id}
+                        <Button variant="danger" size="sm" disabled={deleteLoading || user._id === profile?._id}
                             onClick={() => clickDeleteUser(user)}><FaTrash />elimina</Button>
                     </td>}
                     { value(showPasswordState) && <td>

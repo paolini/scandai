@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb'
 
 import { schoolYearMatch } from '@/lib/utils'
 import { getEntryCollection, trashDocument } from '@/lib/mongodb'
-import { Entry, MutationDeleteEntryArgs, QueryEntriesArgs } from '@/generated/graphql'
+import { Entry, MutationDeleteEntryArgs, QueryEntriesArgs, QueryEntryArgs } from '@/generated/graphql'
 import { Context } from '../types'
 
 const ENTRY_PIPELINE = [
@@ -55,7 +55,7 @@ export async function entries(_:any,{poolId,year,_id}:QueryEntriesArgs,{user}:Co
     return data as Entry[]
 }
 
-export async function entry(_:any,{_id}:QueryEntriesArgs,{user}:Context): Promise<Entry> {
+export async function entry(_:any,{_id}:QueryEntryArgs,{user}:Context): Promise<Entry> {
     if (!user) throw Error('not authenticated')
     if (!user.isAdmin || !user.isSuper) throw Error('not authorized')
 

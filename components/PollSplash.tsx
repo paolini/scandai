@@ -4,7 +4,6 @@ import QRCode from "react-qr-code"
 import copyToClipboard from 'copy-to-clipboard'
 import { useEffect, useState } from "react"
 
-import { IGetPoll } from "@/models/Poll"
 import Page from "@/components/Page"
 import { useAddMessage } from "@/components/Messages"
 import Error from "@/components/Error"
@@ -12,9 +11,10 @@ import Loading from "@/components/Loading"
 import questions, { getPhrase } from "@/lib/questionary"
 import { value, State, set } from "@/lib/State"
 import questionary, { trans } from "@/lib/questionary"
+import { Poll } from "@/generated/graphql"
 
 export default function PollSplash({poll, form, langState, start}:{
-    poll: IGetPoll|null,
+    poll: Poll|null,
     form: string, // se non c'è poll, usa questa form
     langState: State<string>,
     start: () => void,

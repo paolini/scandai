@@ -2,8 +2,7 @@ import { useState } from "react"
 import { useRouter } from 'next/router'
 import { Card, Button } from 'react-bootstrap'
 
-import { IPostUser } from '@/models/User'
-import { set, update, value, onChange, State } from '@/lib/State'
+import { set, update, value, State } from '@/lib/State'
 import Error from '@/components/Error'
 
 export default function SignupPage({}) {
@@ -52,7 +51,7 @@ export default function SignupPage({}) {
                 passwordAgain: value(passwordAgainState),
                 isTeacher: false,
                 isStudent: false,
-            } as IPostUser)
+            })
         })
         if (response.ok) {
             console.log('ok')

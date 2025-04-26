@@ -11,6 +11,6 @@ export default function Title(){
     if (!data) return <Error>{`${error}`}</Error>
     const config = data.config
     return <h2>
-        {config.siteTitle[_.locale]} 
+        {config?.siteTitle ? config.siteTitle[_.locale] : "Untitled"} 
     </h2>
 }

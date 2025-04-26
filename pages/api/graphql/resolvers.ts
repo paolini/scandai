@@ -11,7 +11,7 @@ import {schools,school,newSchool,patchSchool,schoolCreateSecret,schoolRemoveSecr
 import {dict,addDict} from './resolvers/dict'
 import {entry, entries, deleteEntry} from './resolvers/entry'
 
-export const resolvers: Resolvers<Context> = {
+export const resolvers = {
   ObjectId: ObjectIdType,
   JSON: JSONType,
 
@@ -67,5 +67,15 @@ export const resolvers: Resolvers<Context> = {
     postTranslation,
 
     deleteEntry,
-  }
-}
+  },
+
+  Account: {
+    provider: (parent: any) => parent.provider || null,
+    __resolveType: (obj: any) => {
+      if (obj.provider) {
+        return 'Account'
+      }
+      return null
+    }
+  },
+} satisfies Partial<Resolvers<Context>>

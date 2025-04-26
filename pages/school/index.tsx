@@ -3,7 +3,6 @@ import { FaCirclePlus } from "react-icons/fa6"
 import { useRouter } from "next/router"
 
 import { useAddMessage } from '@/components/Messages'
-import useSessionUser from '@/lib/useSessionUser'
 import Page from '@/components/Page'
 import Loading from '@/components/Loading'
 import { useTrans } from '@/lib/trans'
@@ -29,10 +28,8 @@ export default function SchoolsPage() {
 function Schools() {
     const _ = useTrans()
     const router = useRouter()
-    const sessionUser = useSessionUser()
     const schoolsQuery = useQuery(SchoolsQuery)
     const schools = schoolsQuery?.data?.schools
-    const addMessage = useAddMessage()
 
     if (schoolsQuery.loading) return <Loading />
     if (!schools) return <div>{`${schoolsQuery.error}`}</div>

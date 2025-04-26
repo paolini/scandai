@@ -2,14 +2,14 @@ import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 import { IQuestion, IQuestionary } from '@/lib/questionary' 
-import { Answer, QuestionCode } from '@/models/Entry'
+import { Answer, QuestionCode } from '@/lib/types'
 import { trans } from '@/lib/questionary'
 
 export interface IAnswers {
   [key: QuestionCode]: Answer,
 }
 
-function Answer({ lang, question, answer, setAnswer, questionary, extraLanguages }
+function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLanguages }
   : { lang: string, question: IQuestion, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[] }) {
   if (question.type === 'choose-language') {
     return <LanguageAnswer 
@@ -47,7 +47,7 @@ export default function Question({ lang, question, answer, setAnswer, questionar
   { lang: string, question: IQuestion, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[] }) {
   return <div className="my-2">
     <b>{question.compulsory && '(*) '}{trans(question.question,lang)}</b><br />
-    <Answer lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
+    <AnswerPage lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
     <br />
   </div>
 }
