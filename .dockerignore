@@ -1,0 +1,19 @@
+# Ignora tutto
+*
+
+# Ma NON 
+!package.json
+!package-lock.json
+!next.config.js
+!tsconfig.json
+entrypoint.sh
+trans.js
+!public/**
+!.next/**
+!lib/**
+!pages/**
+!styles/**
+!components/**
+!generated/**
+!locales/**
+

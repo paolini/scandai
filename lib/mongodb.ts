@@ -10,6 +10,8 @@ async function db() {
     throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
   }
 
+  console.log(`connecting to mongodb at ${uri}...`)
+
   const mongoClient = new MongoClient(uri)
   const client = await mongoClient.connect()
   const db = client.db()

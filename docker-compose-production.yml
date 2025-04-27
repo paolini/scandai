@@ -1,15 +1,13 @@
-version: "2.1"
-
 services:
   scandai:
-    image: paolini/scandai
-    restart: unless-stopped
+    image: paolini/scandai:test
+#    restart: unless-stopped
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/scandai
       - GOOGLE_CLIENT_ID=xxxxx
 #      - GOOGLE_CLIENT_SECRET=xxxxx
-#      - NEXTAUTH_SECRET=xxxxx
-      - NEXTAUTH_URL=https://<your server>/api/auth
+      - NEXTAUTH_SECRET=replace_with_your_secret
+      - NEXTAUTH_URL=http://localhost:3000/api/auth
 #      - ADMIN_USERNAME=admin
 #      - ADMIN_PASSWORD= 
 #      - SMTP_HOST=xxxxx
@@ -17,15 +15,15 @@ services:
 #      - SMTP_USER=xxxxx
 #      - SMTP_PASSWORD=xxxxx
 #      - EMAIL_FROM=xxxxx
-#    ports:
-#      - 3000:3000
+    ports:
+      - 3000:3000
 
     networks:
       - backend
 
   mongodb:
-    image: mongo
-    restart: unless-stopped
+    image: mongo:7
+#    restart: unless-stopped
     environment:
       - PUID=1000
       - PGID=1000
