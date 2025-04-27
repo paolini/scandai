@@ -9,6 +9,7 @@ import { IAnswers } from './Question'
 import PollSplash from '@/components/PollSplash'
 import { State, value, set } from '@/lib/State'
 import Error from '@/components/Error'
+import Loading from './Loading'
 import { Poll } from '@/generated/graphql'
 
 const SubmitQuery = gql`
@@ -41,7 +42,7 @@ export default function Questionary({langState, poll, form, answersState, timest
         const answer_code = questionary.questions[code]?.code || code
         return [answer_code, empty_answer(code)]
       })))
-    return <div>Loading...</div>
+    return <Loading />
   }
 
   const extraLanguages = extractExtraLanguages(questionCodes, answers, questionary.languages)

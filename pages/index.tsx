@@ -30,7 +30,7 @@ function Home() {
 
   if (session.status === "unauthenticated") {
     router.push('/api/auth/signin')
-    return <Loading>...</Loading>
+    return <Loading/>
   }
   const profile = data.profile
 
@@ -42,12 +42,12 @@ function Home() {
   if (session.status === "authenticated" && !profile) {
     /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
     signOut()
-    return <Loading>logging out...</Loading>
+    return <Loading />
   }
 
   // profile potrebbe non esserci se la sessione è "loading"
   // controlliamo entrambe per far contento il type checker
-  if (session.status === "loading" || !profile) return <Loading>....</Loading>
+  if (session.status === "loading" || !profile) return <Loading />
 
   if (profile.isViewer) {
     router.push('/report')

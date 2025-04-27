@@ -15,7 +15,7 @@ import { currentSchoolYear, formatDate } from '@/lib/utils'
 import Input from '@/components/Input'
 import questionary from '@/lib/questionary'
 import {useTrans} from '@/lib/trans'
-import { User, Poll, School, Profile } from '@/generated/graphql'
+import { Poll, School, Profile } from '@/generated/graphql'
 
 const formTypes = Object.keys(questionary.forms)
 
@@ -297,7 +297,7 @@ function SelectForm({ formState }: {
 function SelectSchool({ schoolState }: {
     schoolState: State<string>
 }) {
-    const schoolsQuery = useQuery(gql`query { schools }`)
+    const schoolsQuery = useQuery(gql`query { schools { _id name city city_fu } }`)
     const _ = useTrans()
 
     if (schoolsQuery.loading) return <Loading />
