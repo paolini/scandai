@@ -440,6 +440,7 @@ function BlockElement({item,stats,t,pollIdsState}:{
             <div className="mb-5" style={{maxWidth: 640}}>
                 {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
             </div>
+            { !hide && <div className="noPrint" onClick={() => setHide(true)} style={{cursor: "pointer", textAlign: "right"}}><b>△</b></div>}
             <hr />
         </div>
     </div>
