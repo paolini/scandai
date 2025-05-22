@@ -24,6 +24,7 @@ import { useReactToPrint } from 'react-to-print'
 import { assert } from '@/lib/assert'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
+import classNames from 'classnames'
 
 import { ProfileQuery, TranslationsQuery } from '@/lib/api'
 import { 
@@ -435,7 +436,7 @@ function BlockElement({item,stats,t,pollIdsState}:{
     const _ = useTrans() 
     return <div>
         <Title title={item.title[_.locale]} hide={hide} bold={item?.bold} setHide={setHide}/>
-        <div className={hide?"hideBlock":""}>
+        <div className={"avoid-break-before " + (hide?"hideBlock":"")}>
             <div className="mb-5" style={{maxWidth: 640}}>
                 {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
             </div>
@@ -472,12 +473,17 @@ function Title({title, hide, bold, setHide}:{
     </h3>
 }
 
-function Item({title, small, children}: {
+function Item({title, small, avoidBreakInside, avoidBreakBefore, children}: {
     title?: string,
     small?: boolean,
+    avoidBreakInside?: boolean,
+    avoidBreakBefore?: boolean,
     children: ReactNode,
     }) {    
-    return <div>
+    return <div className={classNames({
+            "avoid-break-inside" : avoidBreakInside,
+            "avoid-break-before" : avoidBreakBefore,
+        })}>
         <Title title={title} />
         <div className="mb-5" style={{maxWidth: small ? 400 : 640}}>
         { children }
@@ -490,7 +496,7 @@ function CompetenceLegend({title}:{
 }) {
     const _ = useTrans()
     const competences = questionary.competences
-    return <Item title={title}>
+    return <Item avoidBreakInside={true} title={title}>
         <b>{_("Legenda")}</b>
         <br/>
         <Table  style={{fontSize: "75%"}}>
@@ -786,20 +792,20 @@ function ReportChart({ question, item, t } : {
             switch (item.variant) {
                 case undefined:
                 case 'chart':
-                    return <Item title={item_title}>
+                    return <Item avoidBreakInside={true} title={item_title}>
                         <GraphChooseLanguageQuestion item={item} stat={question} count={item?.count || "positive" } t={t}/>
                         <TableChooseLanguageQuestion stat={question} count={item?.count || "positive"} t={t}/>
                     </Item>
                 case 'count':
-                    return <Item small={true} title={item_title || 'yyy'}>
+                    return <Item avoidBreakInside={true} small={true} title={item_title || 'yyy'}>
                             <GraphChooseLanguageQuestionCounts item={item} stat={question} />
                             <TableChooseLanguageQuestionCounts item={item} stat={question} />
                     </Item>
             }
-        case 'map-language-to-competence': return <Item>
+        case 'map-language-to-competence': return <Item avoidBreakBefore={true}>
                 <CompetenceLegend />
                 { Object.keys(questionary.languages).map(lang =>
-                    <Item key={lang} title={`${item_title || question.question.question.it} - ${questionary.languages[lang][_.locale] || lang}`}>
+                    <Item avoidBreakInside={true} key={lang} title={`${item_title || question.question.question.it} - ${questionary.languages[lang][_.locale] || lang}`}>
                         <GraphMapLanguageToCompetenceQuestion 
                             stat={question} 
                             title={_("Competenze linguistiche autovalutate")}
@@ -810,7 +816,7 @@ function ReportChart({ question, item, t } : {
                     </Item>)
                 }   
             </Item>
-        case 'map-language-to-age': return <Item title={item_title || question.question.question.it}>
+        case 'map-language-to-age': return <Item title={item_title || question.question.question.it} avoidBreakInside={true}>
                 <GraphMapLanguageToAgeQuestion stat={question} t={t}/>
             </Item>
         default: return <Item>

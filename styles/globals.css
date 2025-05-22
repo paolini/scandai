@@ -25,12 +25,33 @@
 }
 
 .hideBlock {
-    display: none;
+    /* Con display none, se provo a stampare un grafico che non era visualizzato 
+     * nella pagina, su chrome dà errore, probabilmente perché il grafico non c'è
+     * e viene stampato con una animazione quando lo si visualizza.
+     * per questo motivo si mette height: 0 e overflow hidden
+     * */
+    /* display: none; */ 
+    overflow: hidden; height: 0; /* hack per nascondere senza dare problemi con la stampa */
 }
 
-/*
-@media print {
-    .noPrint{display: none;} 
-    .hideBlock{display: "block"}
+.avoid-break-before {
+    page-break-before: avoid;
+    break-before: avoid;
 }
-*/
+
+.avoid-break-inside {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+@media print {
+    .noPrint {
+        display: none;
+    }
+
+    .hideBlock{
+        /* display: "block"; */
+        overflow: hidden; height: auto;
+    }
+}
+
