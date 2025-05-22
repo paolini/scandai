@@ -775,33 +775,51 @@ const questionary: IQuestionary = {
             {
               element: "info",
             },
-            {
-              element: "chart",
-              question: "1.1.a.1", 
+            { element: "block",
               title: {
-                it: "Nella mia famiglia si parla abitualmente",
-                en: "In my family, we habitually speak",
-                fu: "Inte mê famee pal solit si fevele",
+                it: "Informazioni generali",
+                en: "General information",
+                fu: "Informazions gjenerâls",
               },
-            },
-/*            {
-              element: "chart",
-              question: "friends", 
-              title: {
-                it: "Con gli amici parlo abitualmente",
-                en: "With my friends, we habitually speak",
-                fu: "Cui miei amis pal solit si fevele",
+              bold: true,
+              elements: [
+              {
+                element: "chart",
+                question: "1.1.a.1", 
+                title: {
+                  it: "Nella mia famiglia si parla abitualmente",
+                  en: "In my family, we habitually speak",
+                  fu: "Inte mê famee pal solit si fevele",
+                },
               },
-            },*/
-            {
-              element: "chart",
-              variant: "count",
-              question: "1.1.a.1",
-              title: {
-                it: "Numero di lingue parlate in famiglia",
-                en: "Number of languages spoken in the family",
-                fu: "Numar di lenghis feveladis in famee",            
+  /*            {
+                element: "chart",
+                question: "friends", 
+                title: {
+                  it: "Con gli amici parlo abitualmente",
+                  en: "With my friends, we habitually speak",
+                  fu: "Cui miei amis pal solit si fevele",
+                },
+              },*/
+              {
+                element: "chart",
+                variant: "count",
+                question: "1.1.a.1",
+                title: {
+                  it: "Numero di lingue parlate in famiglia",
+                  en: "Number of languages spoken in the family",
+                  fu: "Numar di lenghis feveladis in famee",            
+                },
               },
+              {
+                element: "preferred",
+                title: {
+                  it: "Lingua scelta per la compilazione",
+                  en: "Language chosen for filling out the questionnaire",
+                  fu: "Lenghe sielte pe compilazion",
+                },
+                table: true,
+              }]
             },
             { element: "block",
               title: {
@@ -987,18 +1005,7 @@ const questionary: IQuestionary = {
                   //title: "Prova ...",
                   question: "1.4.5",
                 }]
-            }, {
-              element: "preferred",
-              title: {
-                it: "Lingua scelta per la compilazione",
-                en: "Language chosen for filling out the questionnaire",
-                fu: "Lenghe sielte pe compilazion",
-              },
-            },
-            {
-              element: "preferred",
-              table: true,          
-            },
+            }, 
           ],    /* Fine Report del questionario lungo */    
         },
       /* Report del questionario breve -- attualmente non utilizzato!*/

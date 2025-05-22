@@ -415,9 +415,8 @@ function ReportItem({ stats, item, t, pollIdsState}: {
         case 'info':
             return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")} pollIdsState={pollIdsState}/>
         case 'preferred':
-            if (item.table) return <PreferredTable stats={stats.preferredLanguageCount} title={item_title}/>
-            else return <Item title={item_title}>
-                <PreferredPie stats={stats.preferredLanguageCount} title={item_title}/>
+            return <Item title={item_title}>
+                <PreferredPie showTable={item.table} stats={stats.preferredLanguageCount} title={item_title}/>
             </Item>
         case 'block':
             return <BlockElement item={item} stats={stats} t={t} pollIdsState={pollIdsState}/>
@@ -669,9 +668,10 @@ function questionary_language(k: string, locale: string) {
     return (s ? s[locale] : k) || k
 }
 
-function PreferredPie({ stats, title} : {
+function PreferredPie({ stats, title, showTable} : {
     stats: IPreferredLanguageCount,
     title?: string,
+    showTable?: boolean,
 }) {
     const _ = useTrans()
     const total = stats._total
@@ -744,6 +744,7 @@ function PreferredPie({ stats, title} : {
                 ],
             }} 
         />}
+        {showTable && <PreferredTable stats={stats} />}
     </Item>
 }
 
