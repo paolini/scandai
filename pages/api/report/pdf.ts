@@ -11,6 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser',
     })
     const page = await browser.newPage()
 

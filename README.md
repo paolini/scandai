@@ -61,6 +61,7 @@ set these variables in the environment:
     ADMIN_PASSWORD=your_secret_password
     SITE_TITLE="Fotografia linguistica"
     SITE_VARIANT="(sviluppo)"
+    CHROME_PATH=/usr/bin/chromium-browser
 ```
 
 ## links
