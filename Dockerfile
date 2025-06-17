@@ -39,7 +39,34 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Install Chromium for Puppeteer PDF generation
-RUN apk add --no-cache chromium
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    nodejs \
+    yarn \
+    udev \
+    dumb-init \
+    font-noto \
+    font-noto-cjk \
+    font-noto-emoji \
+    fontconfig \
+    cups-libs \
+    dbus-libs \
+    expat \
+    gtk+3.0 \
+    libxcomposite \
+    libxdamage \
+    libxrandr \
+    libxtst \
+    mesa-gl \
+    pango \
+    alsa-lib \
+    bash \
+    && rm -rf /var/cache/apk/*
 ENV CHROME_PATH=/usr/bin/chromium-browser
 EXPOSE 3000
 USER nextjs

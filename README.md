@@ -62,6 +62,7 @@ set these variables in the environment:
     SITE_TITLE="Fotografia linguistica"
     SITE_VARIANT="(sviluppo)"
     CHROME_PATH=/usr/bin/chromium-browser
+    PUPPETEER_BASE_URL=http://localhost:3000
 ```
 
 ## links
