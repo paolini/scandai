@@ -29,47 +29,30 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build 
 
-# Production image, copy all the files and run next
-FROM base AS runner
+# Use Puppeteer's official image for production
+FROM ghcr.io/puppeteer/puppeteer:latest AS runner
+
 WORKDIR /app
 ENV NODE_ENV=production
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-# Install Chromium for Puppeteer PDF generation
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    nodejs \
-    yarn \
-    udev \
-    dumb-init \
-    font-noto \
-    font-noto-cjk \
-    font-noto-emoji \
-    fontconfig \
-    cups-libs \
-    dbus-libs \
-    expat \
-    gtk+3.0 \
-    libxcomposite \
-    libxdamage \
-    libxrandr \
-    libxtst \
-    mesa-gl \
-    pango \
-    alsa-lib \
-    bash \
-    && rm -rf /var/cache/apk/*
-ENV CHROME_PATH=/usr/bin/chromium-browser
-EXPOSE 3000
-USER nextjs
 
-#CMD ["tail", "-f", "/dev/null"]
+# Install mongodump and dumb-init
+USER root
+RUN apt-get update \
+    && apt-get install -y wget gnupg dumb-init \
+    && wget -qO - https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg \
+    && echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/6.0 main" > /etc/apt/sources.list.d/mongodb-org-6.0.list \
+    && apt-get update \
+    && apt-get install -y mongodb-database-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy built app from builder stage
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set correct user (puppeteer image uses user 'pptruser')
+USER pptruser
+
+EXPOSE 3000
+
 CMD ["node", "server.js"]
