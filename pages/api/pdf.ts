@@ -28,9 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     
     // Prepara la configurazione per browserless
+    const waitFor = process.env.BROWSERLESS_WAITFOR ? parseInt(process.env.BROWSERLESS_WAITFOR, 10) : 5000
     const browserlessConfig: any = {
       url,
-      waitFor: 5000, // Attendi 5 secondi per il caricamento della pagina
+      waitFor, // Attendi il tempo configurato per il caricamento della pagina
       options: { printBackground: true }
     }
     

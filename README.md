@@ -20,10 +20,11 @@ Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da r
 
 ## puppeteer
 
-Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare la variabile `BROWSERLESS_URL` e `BROWSERLESS_SCANDAI_URL` ad esempio:
+Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare le variabili `BROWSERLESS_URL`, `BROWSERLESS_SCANDAI_URL` e opzionalmente `BROWSERLESS_WAITFOR` (attesa in millisecondi per il caricamento della pagina, default 5000) ad esempio:
 ```
 BROWSERLESS_URL=http://localhost:3002
 BROWSERLESS_SCANDAI_URL=http://192.168.1.2:3000
+BROWSERLESS_WAITFOR=5000
 ```
 nel proprio `.env` o nella configurazione di produzione. 
 
