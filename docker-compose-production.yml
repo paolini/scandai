@@ -15,6 +15,7 @@ services:
 #      - SMTP_USER=xxxxx
 #      - SMTP_PASSWORD=xxxxx
 #      - EMAIL_FROM=xxxxx
+      - BROWSERLESS_URL=http://browserless:3000
     ports:
       - 3000:3000
 
@@ -31,6 +32,15 @@ services:
       - ./database:/data/db
     networks:
       - backend
+
+  browserless:
+    image: browserless/chrome:latest
+    environment:
+      - MAX_CONCURRENT_SESSIONS=2
+      - PRE_REQUEST_HEALTH_CHECK=true
+    networks:
+      - backend
+    restart: unless-stopped
 
 networks:
   backend:

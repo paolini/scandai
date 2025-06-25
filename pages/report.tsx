@@ -246,9 +246,10 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     yearState: State<string>,
 }) {
     const schoolIdState = useState(schoolId)
-    const cityState = useState('')
-    const formState = useState('')
-    const classState = useState('')
+    const router = useRouter()
+    const cityState = useState(typeof router.query.city === 'string' ? router.query.city : '')
+    const formState = useState(typeof router.query.form === 'string' ? router.query.form : '')
+    const classState = useState(typeof router.query.class === 'string' ? router.query.class : '')
     const _ = useTrans()
     const ref = useRef(null)
     const pollIds = value(pollIdsState)
@@ -262,6 +263,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
         year: value(yearState) ? parseInt(value(yearState)) : null,
         polls: pollIds.length>0 ? pollIds : null, // empty means all
     }})
+    const [downloadingPDF, setDownloadingPDF] = useState<boolean>(false)
     const print = useReactToPrint({
         content: () => ref.current,
     })
@@ -284,7 +286,7 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
 
     return <>
         { /*JSON.stringify({stats_schools: stats.schools})*/ }
-        { showFilter.length>0 && <div style={{
+        { showFilter.length>0 && <div className="noPrint" style={{
             paddingBottom:"1em",
             paddingTop:"1em",
         }}>
@@ -299,13 +301,17 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
                 classes={classes}
                 /></div> }
         <div className="container noPrint">
-            <Button onClick={print} style={{float:"right"}}>
+            {/* <Button onClick={print} style={{float:"right"}}>
+                {_("stampa")}
+            </Button> */}
+            <Button onClick={downloadPDF} style={{float:"right"}} disabled={downloadingPDF}>
                 {_("stampa")}
             </Button>
             <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">
                 {_("visualizza questionario")}
             </Link>
         </div>
+        {downloadingPDF && <Loading />}
         { stats.entriesCount === 0 
         ? <Error>{_("Impossibile fare il report: nessun questionario compilato")}</Error>
         : <div ref={ref}>
@@ -323,11 +329,36 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
      * @param source nome della lingua
      * @returns nome tradotto
      */
-        function t(source:string) {
-            const d = translationsDict[source]
-            if (!d) return source
-            return d[_.locale] || source
-        }    
+    function t(source:string) {
+        const d = translationsDict[source]
+        if (!d) return source
+        return d[_.locale] || source
+    }    
+
+    function downloadPDF() {
+        setDownloadingPDF(true);
+        const url = window.location.href
+        fetch(`/api/report/pdf?url=${encodeURIComponent(url)}`)
+            .then(async res => {
+                if (!res.ok) {
+                    const ErrorComponent = require('@/components/Error').default;
+                    const errorDiv = document.createElement('div');
+                    errorDiv.innerHTML = ErrorComponent({ children: 'PDF download failed' });
+                    document.body.appendChild(errorDiv);
+                    setTimeout(() => document.body.removeChild(errorDiv), 3000);
+                    throw new window.Error('PDF download failed');
+                }
+                const blob = await res.blob()
+                const link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'report.pdf'
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            })
+            .catch(err => alert('Errore download PDF: ' + err))
+            .finally(() => setDownloadingPDF(false));
+    }    
 }
 
 function Filter({fields, schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
@@ -353,28 +384,64 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
         ? schools.filter(school => school.city===city)
         : [...schools]).sort((a,b) => (b.pollCount || 0)-(a.pollCount || 0))
     const _ = useTrans()
+    const router = useRouter();
+
+    // Calcolo dinamico degli anni scolastici
+    const now = new Date()
+    const currentYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
+    const years = []
+    for (let y = 2023; y <= currentYear; ++y) years.push(y)
+
     return <>
         { /*JSON.stringify({schools,citiesInfo})*/ }
         {_("Filtra")}: {fields.includes("year") &&
-        <select value={value(yearState)} onChange={evt => set(yearState,evt.target.value)}>
+        <select value={value(yearState)} onChange={evt => {
+            const year = evt.target.value
+            set(yearState, year);
+            // Aggiorna la query string nell'URL
+            const query: Record<string,string> = { ...router.query, year };
+            if (!year && 'year' in query) delete query.year;
+            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        }}>
             <option value=''>{_("tutti gli anni")}</option>
-            {[2023,2024].map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
+            {years.map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
         </select>} {}
         {fields.includes("city") &&
         <select value={value(cityState)} onChange={evt => {
+            const city = evt.target.value;
             set(schoolIdState,'')
-            set(cityState,evt.target.value)
+            set(cityState,city)
+            // Aggiorna la query string nell'URL
+            const query: Record<string,string> = { ...router.query, city };
+            if (!city && 'city' in query) delete query.city;
+            // Quando cambio città, azzero anche la scuola
+            if ('school_id' in query) delete query.school_id;
+            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
         }}>
             <option value=''>{_("tutte le città")}</option>
             {citiesInfo.map(info => <option key={info.city} value={info.city}>{_.locale === 'fu' ? (map_city_fu[info.city] || info.city) : info.city}</option>)}
         </select>} {}
         { fields.includes("school") &&
-        <select value={value(schoolIdState)} onChange={evt => set(schoolIdState,evt.target.value)}>
+        <select value={value(schoolIdState)} onChange={evt => {
+            const school_id = evt.target.value;
+            set(schoolIdState,school_id);
+            // Aggiorna la query string nell'URL
+            const query: Record<string,string> = { ...router.query, school_id };
+            if (!school_id && 'school_id' in query) delete query.school_id;
+            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        }}>
             <option value=''>{_("tutte le scuole")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
         </select>} {}
         { fields.includes("class") && 
-        <select value={value(classState)} onChange={evt => set(classState,evt.target.value)}>
+        <select value={value(classState)} onChange={evt => {
+            const classValue = evt.target.value;
+            set(classState,classValue);
+            // Aggiorna la query string nell'URL
+            const query: Record<string,string> = { ...router.query, class: classValue };
+            if (!classValue && 'class' in query) delete query.class;
+            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        }}>
             <option value=''>{_("tutte le classi")}</option>
             {classes.map(c => <option key={c} value={c}>{{
                 '1': _("classi prime"), 
@@ -384,7 +451,14 @@ function Filter({fields, schoolIdState, cityState, formState, classState, yearSt
                 '5': _("classi quinte") }[c]}</option>)}
         </select>} {}
         { fields.includes("form") &&
-        <select value={value(formState)} onChange={evt => set(formState,evt.target.value)}>
+        <select value={value(formState)} onChange={evt => {
+            const form = evt.target.value;
+            set(formState,form);
+            // Aggiorna la query string nell'URL
+            const query: Record<string,string> = { ...router.query, form };
+            if (!form && 'form' in query) delete query.form;
+            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        }}>
             <option value=''>{_("tutti i questionari")}</option>
             {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
         </select>} {}
@@ -435,7 +509,7 @@ function BlockElement({item,stats,t,pollIdsState}:{
     const _ = useTrans() 
     return <div>
         <Title title={item.title[_.locale]} hide={hide} bold={item?.bold} setHide={setHide}/>
-        <div className={"avoid-break-before " + (hide?"hideBlock":"")}>
+        <div className={"mb-5 " + (hide?"hideBlock":"")}>
             <div className="mb-5" style={{maxWidth: 640}}>
                 {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
             </div>
