@@ -44,35 +44,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const cookies = req.headers.cookie.split(';').map(cookie => {
         const [name, ...valueParts] = cookie.trim().split('=')
         const value = valueParts.join('=') // In caso il valore contenga '='
-        
+
         const cookieObj: any = {
           name: name.trim(),
           value: decodeURIComponent(value), // Decodifica il valore URL-encoded
           domain: urlHost,
           path: '/',
           httpOnly: false,
-          secure: false // Default a false
+          secure: false, // Default a false
+          url // <-- aggiungi sempre la proprietà url
         }
-        
+
         // Gestisci cookie con prefissi di sicurezza
         if (name.startsWith('__Secure-')) {
           cookieObj.secure = true
           cookieObj.httpOnly = true
         }
-        
+
         // Per cookie __Host-, il domain deve essere omesso e path deve essere '/'
         if (name.startsWith('__Host-')) {
-          delete cookieObj.domain
+          delete cookieObj.domain // Rimuovi domain
           cookieObj.path = '/'
           cookieObj.secure = true
           cookieObj.httpOnly = true
         }
-        
+
         // Imposta secure solo se l'URL di destinazione è HTTPS
         if (isSecure && (name.startsWith('__Secure-') || name.startsWith('__Host-'))) {
           cookieObj.secure = true
         }
-        
+
         return cookieObj
       }).filter(cookie => cookie.name && cookie.value) // Filtra cookie invalidi
       
