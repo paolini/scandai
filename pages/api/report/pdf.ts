@@ -27,14 +27,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Passa i cookie come opzione di browserless invece che negli headers HTTP
     if (req.headers.cookie) {
       // Converte i cookie in formato array di oggetti per browserless
+      const targetUrl = new URL(url)
+      const urlHost = targetUrl.hostname
+      const isSecure = targetUrl.protocol === 'https:'
+      
       const cookies = req.headers.cookie.split(';').map(cookie => {
-        const [name, value] = cookie.trim().split('=')
-        return {
-          name: name,
-          value: value,
-          domain: new URL(url).hostname
+        const [name, ...valueParts] = cookie.trim().split('=')
+        const value = valueParts.join('=') // In caso il valore contenga '='
+        
+        const cookieObj: any = {
+          name: name.trim(),
+          value: decodeURIComponent(value), // Decodifica il valore URL-encoded
+          domain: urlHost,
+          path: '/',
+          httpOnly: false,
+          secure: false // Default a false
         }
-      })
+        
+        // Gestisci cookie con prefissi di sicurezza
+        if (name.startsWith('__Secure-')) {
+          cookieObj.secure = true
+          cookieObj.httpOnly = true
+        }
+        
+        // Per cookie __Host-, il domain deve essere omesso e path deve essere '/'
+        if (name.startsWith('__Host-')) {
+          delete cookieObj.domain
+          cookieObj.path = '/'
+          cookieObj.secure = true
+          cookieObj.httpOnly = true
+        }
+        
+        // Imposta secure solo se l'URL di destinazione è HTTPS
+        if (isSecure && (name.startsWith('__Secure-') || name.startsWith('__Host-'))) {
+          cookieObj.secure = true
+        }
+        
+        return cookieObj
+      }).filter(cookie => cookie.name && cookie.value) // Filtra cookie invalidi
+      
       browserlessConfig.cookies = cookies
     }
     

@@ -24,7 +24,9 @@ Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può ess
 ```
 BROWSERLESS_URL=http://localhost:3002/pdf
 ```
-nel proprio `.env` o nella configurazione di produzione.
+nel proprio `.env` o nella configurazione di produzione. 
+
+Nello sviluppo in locale non si potrà però utilizzare l'indirizzo localhost per l'applicazione scandai perché puppeteer richiede un indirizzo assoluto. Bisognerà quindi usare l'IP della macchina (e il login sarà un po' più complicato perché verremo probabilmente ridiretti a localhost).
 
 ## Development
 
