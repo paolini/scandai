@@ -6,9 +6,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(400).send('Missing url')
     return
   }
+  // Verifica che la variabile d'ambiente BROWSERLESS_URL sia configurata
+  const browserlessUrl = process.env.BROWSERLESS_URL
+  if (!browserlessUrl) {
+    res.status(500).send('BROWSERLESS_URL environment variable is not set. Please set it to your browserless instance URL (e.g., http://browserless:3000/pdf)')
+    return
+  }
+
   try {
     // Chiamata a browserless/chrome
-    const browserlessUrl = process.env.BROWSERLESS_URL || 'http://browserless:3000/pdf'
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     
     // Prepara la configurazione per browserless

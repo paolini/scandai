@@ -18,6 +18,14 @@ Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da r
     docker exec -i ${MONGODB_CONTAINER_NAME} mongorestore --archive --drop < ${BACKUP_FILENAME}
 ```
 
+## puppeteer
+
+Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare la variabile `BROWSERLESS_URL` ad esempio:
+```
+BROWSERLESS_URL=http://localhost:3002/pdf
+```
+nel proprio `.env` o nella configurazione di produzione.
+
 ## Development
 
 First, run the development server:
@@ -61,6 +69,7 @@ set these variables in the environment:
     ADMIN_PASSWORD=your_secret_password
     SITE_TITLE="Fotografia linguistica"
     SITE_VARIANT="(sviluppo)"
+    BROWSERLESS_URL=http://localhost:3002/pdf
 ```
 
 ## links
