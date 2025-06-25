@@ -337,8 +337,8 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
 
     function downloadPDF() {
         setDownloadingPDF(true);
-        const url = window.location.href
-        fetch(`/api/report/pdf?url=${encodeURIComponent(url)}`)
+        const pathWithQuery = window.location.pathname + window.location.search
+        fetch(`/api/pdf?path=${encodeURIComponent(pathWithQuery)}`)
             .then(async res => {
                 if (!res.ok) {
                     const ErrorComponent = require('@/components/Error').default;

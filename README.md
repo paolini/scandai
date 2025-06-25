@@ -20,13 +20,14 @@ Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da r
 
 ## puppeteer
 
-Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare la variabile `BROWSERLESS_URL` ad esempio:
+Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare la variabile `BROWSERLESS_URL` e `BROWSERLESS_SCANDAI_URL` ad esempio:
 ```
-BROWSERLESS_URL=http://localhost:3002/pdf
+BROWSERLESS_URL=http://localhost:3002
+BROWSERLESS_SCANDAI_URL=http://192.168.1.2:3000
 ```
 nel proprio `.env` o nella configurazione di produzione. 
 
-Nello sviluppo in locale non si potrà però utilizzare l'indirizzo localhost per l'applicazione scandai perché puppeteer richiede un indirizzo assoluto. Bisognerà quindi usare l'IP della macchina (e il login sarà un po' più complicato perché verremo probabilmente ridiretti a localhost).
+Nello sviluppo in locale non si potrà però utilizzare l'indirizzo localhost per l'applicazione scandai perché puppeteer richiede un indirizzo assoluto.
 
 ## Development
 
@@ -71,7 +72,8 @@ set these variables in the environment:
     ADMIN_PASSWORD=your_secret_password
     SITE_TITLE="Fotografia linguistica"
     SITE_VARIANT="(sviluppo)"
-    BROWSERLESS_URL=http://localhost:3002/pdf
+    BROWSERLESS_URL=http://browserless
+    BROWSERLESS_SCANDAI_URL=http://scandai
 ```
 
 ## links
