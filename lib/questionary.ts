@@ -395,7 +395,7 @@ const questionary: IQuestionary = {
           en: "My father speaks to me in ...",
         },
       },
-      "1.1.c.4": {
+    "1.1.c.4": {
         type: "choose-language",
         question: {
           it: "i miei fratelli/sorelle a me parlano in...",
@@ -403,7 +403,7 @@ const questionary: IQuestionary = {
           en: "My siblings speak to me in ...",
         },
       },
-      "1.1.c.5": {
+    "1.1.c.5": {
         type: "choose-language",
         question: {
           it: "i miei nonni a me parlano in...",
@@ -412,125 +412,125 @@ const questionary: IQuestionary = {
         },
       },
     "1.2.a.1": {
-      type: "choose-language",
-      question: {
-        it: "ai miei amici parlo in...",
-        fu: "ai miei amîs i feveli par ...",
-        en: "with my friends I speak ...",
+        type: "choose-language",
+        question: {
+          it: "ai miei amici parlo in...",
+          fu: "ai miei amîs i feveli par ...",
+          en: "with my friends I speak ...",
+        },
       },
-    },
     "1.2.a.2": {
-      type: "choose-language",
-      question: {
-        it: "alle persone dei negozi parlo in...",
-        fu: "aes personis dai negozis i feveli par ...",
-        en: "with people in shops I speak ...",
+        type: "choose-language",
+        question: {
+          it: "alle persone dei negozi parlo in...",
+          fu: "aes personis dai negozis i feveli par ...",
+          en: "with people in shops I speak ...",
+        },
       },
-    },
     "1.2.a.3": {
-      type: "choose-language",
-      question: {
-        it: "agli adulti del mio paese/città/quartiere parlo in...",
-        fu: "ai adults dal gno paîs/citât/borc i feveli par ...",
-        en: "with adults in my town/city/area I speak ...",
+        type: "choose-language",
+        question: {
+          it: "agli adulti del mio paese/città/quartiere parlo in...",
+          fu: "ai adults dal gno paîs/citât/borc i feveli par ...",
+          en: "with adults in my town/city/area I speak ...",
+        },
       },
-    },
     "1.2.b.1": {
-      type: "choose-language",
-      question: {
-        it: "i miei amici a me parlano in...",
-        fu: "i miei amîs mi fevelin par ...",
-        en: "my friends speak to me in ...",
+        type: "choose-language",
+        question: {
+          it: "i miei amici a me parlano in...",
+          fu: "i miei amîs mi fevelin par ...",
+          en: "my friends speak to me in ...",
+        },
       },
-    },
     "1.2.b.2": {
-      type: "choose-language",
-      question: {
-        it: "le persone dei negozi a me parlano in...",
-        fu: "lis personis dai negozis mi fevelin par ...",
-        en: "people in shops speak to me in ...",
+        type: "choose-language",
+        question: {
+          it: "le persone dei negozi a me parlano in...",
+          fu: "lis personis dai negozis mi fevelin par ...",
+          en: "people in shops speak to me in ...",
+        },
       },
-    },
     "1.2.b.3": {
-      type: "choose-language",
-      question: {
-        it: "gli adulti del mio paese/città/quartiere a me parlano in...",
-        fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
-        en: "Adults in my town/city/area speak to me in ...",
+        type: "choose-language",
+        question: {
+          it: "gli adulti del mio paese/città/quartiere a me parlano in...",
+          fu: "i adults dal gno paîs/citât/borc mi fevelin par ...",
+          en: "Adults in my town/city/area speak to me in ...",
+        },
       },
-    },
     "1.3.a.1": {
-      type: "choose-language",
-      question: {
-        it: "ai miei compagni di classe parlo in...",
-        fu: "ai miei compagns di classe i feveli par ...",
-        en: "with my classmates I speak ...", 
+        type: "choose-language",
+        question: {
+          it: "ai miei compagni di classe parlo in...",
+          fu: "ai miei compagns di classe i feveli par ...",
+          en: "with my classmates I speak ...", 
+        },
       },
-    },
     "1.3.a.2": {
-      type: "choose-language",
-      question: {
-        it: "ai professori parlo in... (esclusi quelli di lingue)",
-        fu: "ai professôrs i feveli par ... (gjavant chei di lenghis)",
-        en: "with my teachers (not including language teachers) I speak ...",
+        type: "choose-language",
+        question: {
+          it: "ai professori parlo in... (esclusi quelli di lingue)",
+          fu: "ai professôrs i feveli par ... (gjavant chei di lenghis)",
+          en: "with my teachers (not including language teachers) I speak ...",
+        },
       },
-    },
     "1.3.b.1": {
-      type: "choose-language",
-      question: {
-        it: "i miei compagni di classe a me parlano in...",
-        fu: "i miei compagns di classe mi fevelin par ...",
-        en: "my classmates speak to me in ...",
+        type: "choose-language",
+        question: {
+          it: "i miei compagni di classe a me parlano in...",
+          fu: "i miei compagns di classe mi fevelin par ...",
+          en: "my classmates speak to me in ...",
+        },
       },
-    },
     "1.3.b.2": {
-      type: "choose-language",
-      question: {
-        it: "i professori a me parlano in... (esclusi quelli di lingue straniere)",
-        fu: "i professôrs mi fevelin par ... (gjavant chei di lenghis)",
-        en: "my teachers (not including language teachers) speak to me in ...",
+        type: "choose-language",
+        question: {
+          it: "i professori a me parlano in... (esclusi quelli di lingue straniere)",
+          fu: "i professôrs mi fevelin par ... (gjavant chei di lenghis)",
+          en: "my teachers (not including language teachers) speak to me in ...",
+        },
       },
-    },
     "1.4.1": {
-      type: "choose-language",
-      question: {
-        it: "quali lingue usi quando telefoni agli amici?",
-        fu: "ce lenghis dopristu cuant che tu fevelis cui amîs?",
-        en: "what languages do you use when speaking on the phone with your friends?",
+        type: "choose-language",
+        question: {
+          it: "quali lingue usi quando telefoni agli amici?",
+          fu: "ce lenghis dopristu cuant che tu fevelis cui amîs?",
+          en: "what languages do you use when speaking on the phone with your friends?",
+        },
       },
-    },
     "1.4.2": {
-      type: "choose-language",
-      question: {
-        it: "quali lingue usi nelle mail, sui social e nelle chat?",
-        fu: "ce lenghis dopristu intes mails, sui social e intes chats?",
-        en: "what languages do you use in e-mail, social-networks and chats?",
+        type: "choose-language",
+        question: {
+          it: "quali lingue usi nelle mail, sui social e nelle chat?",
+          fu: "ce lenghis dopristu intes mails, sui social e intes chats?",
+          en: "what languages do you use in e-mail, social-networks and chats?",
+        },
       },
-    },
     "1.4.3": {
-      type: "choose-language",
-      question: {
-        it: "quali lingue vengono usate nei programmi TV che guardi?",
-        fu: "ce lenghis si doprìno intai programs TV che tu cjalis?",
-        en: "what languages are used in the TV shows you watch?",
+        type: "choose-language",
+        question: {
+          it: "quali lingue vengono usate nei programmi TV che guardi?",
+          fu: "ce lenghis si doprìno intai programs TV che tu cjalis?",
+          en: "what languages are used in the TV shows you watch?",
+        },
       },
-    },
     "1.4.4": {
-      type: "choose-language",
-      question: {
-        it: "quali lingue vengono usate nei siti internet che visiti?",
-        fu: "ce lenghis si doprìno tai sîts internet che tu visitis?",
-        en: "what languages are used in the Internet websites you use?",
+        type: "choose-language",
+        question: {
+          it: "quali lingue vengono usate nei siti internet che visiti?",
+          fu: "ce lenghis si doprìno tai sîts internet che tu visitis?",
+          en: "what languages are used in the Internet websites you use?",
+        },
       },
-    },
     "1.4.5": {
-      type: "choose-language",
-      question: {
-        it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?",
-        fu: "cuale ise la lenghe dai libris, des storiis e dai fumets che tu leis?",
-        en: "What languages are used in the books that you read?",
+        type: "choose-language",
+        question: {
+          it: "in quali lingue sono scritti i libri, le storie e i fumetti che leggi?",
+          fu: "cuale ise la lenghe dai libris, des storiis e dai fumets che tu leis?",
+          en: "What languages are used in the books that you read?",
+        },
       },
-    },
     "2.1.1": {
         type: 'map-language-to-age',
         question: {
@@ -539,14 +539,14 @@ const questionary: IQuestionary = {
           en: "How old were you when you started speaking the languages you know?",
         },
       compulsory: true,
-    },
-    "2.2.1": {
-      type: 'map-language-to-competence',
-      question: {
-        it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (Se non conosci la lingua indica competenza 0)",
-        fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (Se no tu cognossis la lenghe segne competence 0)",
-        en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (If you don't know the language, choose the value 0)",
       },
+    "2.2.1": {
+        type: 'map-language-to-competence',
+        question: {
+          it: "Esprimi una autovalutazione da 0 a 10 delle tue competenze linguistiche compilando la tabella seguente. (Se non conosci la lingua indica competenza 0)",
+          fu: "Prove a dâ une autovalutazion di 0 a 10 des tôs competencis linguistichis inte tabelle chi sot. (Se no tu cognossis la lenghe segne competence 0)",
+          en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (If you don't know the language, choose the value 0)",
+        },
       compulsory: true,
     }
   },

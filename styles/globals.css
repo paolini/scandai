@@ -44,9 +44,14 @@
     break-inside: avoid;
 }
 
+.avoid-break-after {
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
 @media print {
     html, body {
-        font-size: 12pt !important;
+        font-size: 9pt !important;
         font-family: Arial, Helvetica, sans-serif !important;
         color: #000 !important;
         background: #fff !important;
@@ -56,15 +61,33 @@
 
     @page {
         size: A4;
-        margin: 1.5cm;
+        margin: 1cm;
     }
 
+    h1, .report-title {
+        font-size: 14pt !important;
+    }
+    h2 {
+        font-size: 12pt !important;
+    }
+    h3 {
+        font-size: 10pt !important;
+    }
+    .chart, .graph, canvas, svg {
+        max-width: 80% !important;
+        height: auto !important;
+    }
     .noPrint {
         display: none !important;
     }
-
     .hideBlock{
         overflow: hidden; height: auto;
+    }
+    table {
+        font-size: 8pt !important;
+    }
+    th, td {
+        padding: 2px 4px !important;
     }
 }
 

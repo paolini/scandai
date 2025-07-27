@@ -489,7 +489,7 @@ function ReportItem({ stats, item, t, pollIdsState}: {
         case 'info':
             return <ListClasses stats={stats} title={item.title ? trans(item.title,_.locale) : _("Partecipanti")} pollIdsState={pollIdsState}/>
         case 'preferred':
-            return <Item title={item_title}>
+            return <Item title={item_title} avoidBreakInside={true}>
                 <PreferredPie showTable={item.table} stats={stats.preferredLanguageCount} title={item_title}/>
             </Item>
         case 'block':
@@ -541,7 +541,7 @@ function Title({title, hide, bold, setHide}:{
     setHide?: (b:boolean) => void,
 }) {
     if (!title) return null
-    return <h3 style={bold ? htmlBoldTitleStyle : htmlTitleStyle}>
+    return <h3 className="avoid-break-after" style={bold ? htmlBoldTitleStyle : htmlTitleStyle}>
         {setHide && (hide ? <span className="noPrint" onClick={() => setHide(false)} style={{cursor: "pointer"}} >&#9655;</span> : hide==undefined?"":<span className="noPrint" onClick={() => setHide(true)} style={{cursor:"pointer"}}>&#9661;</span>)}
         {} {title}
     </h3>
