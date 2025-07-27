@@ -476,8 +476,8 @@ function ReportItem({ stats, item, t, pollIdsState}: {
     switch(item.element) {
         case 'chart':
         case 'table':
-            const [question, ErrorElement] = StatsQuestionOrError(stats, item) 
-            if (question === null) return ErrorElement
+            const [question, ErrorElement] = StatsQuestionOrError(stats, item)
+            if (question === null) return ErrorElement // potrebbe essere null
             switch(item.element) {
                 case 'chart':
                     return <ReportChart question={question} item={item} t={t}/>
@@ -507,11 +507,25 @@ function BlockElement({item,stats,t,pollIdsState}:{
 }) {
     const [hide, setHide] = useState<boolean>(true)
     const _ = useTrans() 
+
+//    const elements = item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)
+    // Chiamo ReportItem come funzione per verificare se restituisce null
+    const elements = item.elements.map((el, i) => {
+        const result = ReportItem({ stats, item: el, t, pollIdsState });
+        // Se vuoi mantenere la chiave, puoi usare cloneElement se result è un React element
+        if (result && typeof result === 'object' && 'type' in result) {
+            return { ...result, key: i };
+        }
+        return result; // può essere null
+    }).filter(e => e !== null)
+
+    if (elements.length === 0) return null
+
     return <div>
         <Title title={item.title[_.locale]} hide={hide} bold={item?.bold} setHide={setHide}/>
         <div className={"mb-5 " + (hide?"hideBlock":"")}>
             <div className="mb-5" style={{maxWidth: 640}}>
-                {item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)}
+                {elements}
             </div>
             { !hide && <div className="noPrint" onClick={() => setHide(true)} style={{cursor: "pointer", textAlign: "right"}}><b>△</b></div>}
             <hr />
@@ -523,7 +537,7 @@ function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQu
     const _ = useTrans()
     const question = stats.questions[item.question]
     if (!question) {
-        return [null, <></>] // non ci sono statistiche per questa domanda
+        return [null, null] // non ci sono statistiche per questa domanda
     }
     if (question.type === 'error') return [null, <Error key={item.question}>
         {_("Errore:")} {question.error}
