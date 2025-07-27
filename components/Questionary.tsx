@@ -64,6 +64,9 @@ export default function Questionary({langState, poll, form, answersState, timest
           case 'choose-language':
             assert(Array.isArray(answer))
             return answer.length>0
+          case 'choice':
+            assert(typeof answer === 'string')
+            return answer !== ''
           default:
             assert(false, "unknown question type: "+question.type)
         }
@@ -125,6 +128,8 @@ export default function Questionary({langState, poll, form, answersState, timest
         return {}
       case 'choose-language':
         return []
+      case 'choice':
+        return ''
       default:
         assert(false, "unknown question type: "+question.type)
     }

@@ -548,7 +548,34 @@ const questionary: IQuestionary = {
           en: "Please give a self-evaluation from 0 to 10 of your language proficiency in the following table. (If you don't know the language, choose the value 0)",
         },
       compulsory: true,
-    }
+    },
+    "3.0.1": {
+      type: 'choice',
+      question: {
+        it: "Nella scuola primaria hai fatto attività in lingua friulana?",
+        fu: "Te scuele primarie tu âs fat ativitâts in lenghe furlane?",
+        en: "In primary school did you do activities in Friulian?",
+      },
+      choices: [
+        {
+          value: 'yes',
+          label: {
+            it: "Sì",
+            fu: "Sì",
+            en: "Yes",
+          },
+        },
+        {
+          value: 'no',
+          label: {
+            it: "No",
+            fu: "No",
+            en: "No",
+          },
+        },
+      ],
+      compulsory: true,
+    },
   },
 
   forms: {
@@ -727,6 +754,17 @@ const questionary: IQuestionary = {
             en: "Short linguistic survey",
           },
         },
+        { element: "title",
+          title: {
+            it: "Lingue studiate a scuola",
+            fu: "Lenghis studiadis a scuele",
+            en: "Languages studied at school",
+          }
+        },
+        { element: "questions",
+          questions: [ "3.0.1" ],
+        },
+        { element: "newpage" },
         {
           element: "title",
           title: {
@@ -1199,9 +1237,15 @@ export type IFormNewPage = {
   element: 'newpage',
 }
 
+export interface IChoice {
+    value: string,
+    label: LocalizedString,
+}
+
 export interface IQuestion {
-    type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age',
+    type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age' | 'choice',
     question: LocalizedString,
+    choices?: IChoice[],
     compulsory?: boolean,
     // if specified, this question will be saved with this 
     // code instead of the key in the questions object

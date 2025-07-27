@@ -1,6 +1,7 @@
 import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
+import ChoiceAnswer from './ChoiceAnswer'
 import { IQuestion, IQuestionary } from '@/lib/questionary' 
 import { Answer, QuestionCode } from '@/lib/types'
 import { trans } from '@/lib/questionary'
@@ -38,6 +39,14 @@ function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLangu
       competenceValues={questionary.competenceValues} 
       extraLanguages={extraLanguages} />
   }
+  if (question.type === 'choice') {
+    return <ChoiceAnswer
+      lang={lang}
+      answer={answer}
+      setAnswer={setAnswer}
+      choices={question.choices || []}
+    />
+  }
   return <div>
     Unknown question type: {question.type}
   </div>
@@ -47,7 +56,7 @@ export default function Question({ lang, question, answer, setAnswer, questionar
   { lang: string, question: IQuestion, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[] }) {
   return <div className="my-2">
     <b>{question.compulsory && '(*) '}{trans(question.question,lang)}</b><br />
-    <AnswerPage lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
+      <AnswerPage lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
     <br />
   </div>
 }
