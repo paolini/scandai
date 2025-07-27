@@ -172,7 +172,8 @@ export type IQuestionStat =
     IErrorQuestionStat | 
     IChooseLanguageQuestionStat | 
     IMapLanguageToCompetenceQuestionStat |
-    IMapLanguageToAgeQuestionStat
+    IMapLanguageToAgeQuestionStat |
+    IChoiceQuestionStat
 
 interface IErrorQuestionStat {
     question: IQuestion,
@@ -234,6 +235,15 @@ interface IMapLanguageToAgeStat {
     }
 }
 
+export interface IChoiceQuestionStat {
+    code: string,
+    question: IQuestion,
+    type: 'choice',
+    count: number,
+    countPositive: number,
+    answers: {[key: string]: number}, // answer -> count
+}
+
 type QuestionCode = string
 type LanguageAnswer = string[]
 type MapLanguageToCompetenceAnswer = {[key: string]: {[key: string]: string}}
@@ -257,7 +267,7 @@ interface IEntryWithPoll extends IEntry {
 
 async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Promise<IStats> {
     const questionsMap = questionary.questions
-    let baseLanguages = Object.keys(questionary.languages)
+    // let baseLanguages = Object.keys(questionary.languages)
 
     /*
     // collect all languages used in all answers of all entries
@@ -467,6 +477,35 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                         q.answers[lang] = agesZero()
                     }
                     q.answers[lang][age]++
+                }
+            } else if (question.type === 'choice') {
+                let q = questions[code]
+                if (!q) {
+                    q = {
+                        code,
+                        question,
+                        type: question.type,
+                        count: 0,
+                        countPositive: 0,
+                        answers: {},
+                    }
+                    questions[code] = q
+                }
+                assert(q.type === question.type)
+                const answer = e.answers[code]
+                if (!answer) {
+                    console.error(`cannot find answer for question ${code} in entry ${e._id}`)
+                    return
+                }
+                assert(typeof answer === 'string')
+                q.count ++
+                if (answer) {
+                    q.countPositive ++
+                    if (answer in q.answers) {
+                        q.answers[answer]++
+                    } else {
+                        q.answers[answer] = 1
+                    }
                 }
             } else {
                 console.error(`unknown question type ${question.type}`)

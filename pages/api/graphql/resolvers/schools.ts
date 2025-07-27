@@ -20,7 +20,7 @@ export async function schools(_parent: any, {year}: QuerySchoolsArgs, context: C
         pipeline.push({$match: {"createdAt": schoolYearMatch(year)}})
     }
     const collection = await getSchoolCollection()
-    console.log(`schools resolver`, JSON.stringify({pipeline},null,2))
+    // console.log(`schools resolver`, JSON.stringify({pipeline},null,2))
     const schools = await collection.aggregate([
         { $lookup: { 
             from: 'polls', 

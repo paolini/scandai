@@ -561,7 +561,7 @@ const questionary: IQuestionary = {
           value: 'yes',
           label: {
             it: "Sì",
-            fu: "Sì",
+            fu: "Si",
             en: "Yes",
           },
         },
@@ -857,6 +857,24 @@ const questionary: IQuestionary = {
             },
             {
               element: "info",
+            },
+            { element: "block",
+              title: {
+                it: "Lingue studiate a scuola",
+                en: "Languages studied at school",
+                fu: "Lenghis studiadis a scuele",
+              },
+              bold: true,
+              elements: [
+                {
+                  element: "chart",
+                  question: "3.0.1",
+                },
+                {
+                  element: "chart",
+                  question: "3.0.2",
+                },
+              ]
             },
             { element: "block",
               title: {

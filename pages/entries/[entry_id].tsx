@@ -58,8 +58,6 @@ function EntryPage({}) {
             router.push('/entries')
         }
     })
-    const addMessage = useAddMessage()
-
     if (!entryId || Array.isArray(entryId)) return <ErrorElement>id non valido</ErrorElement>
 
     if (entryQuery.loading) return <Loading />
@@ -134,6 +132,7 @@ function EntryPage({}) {
 
     function display(ans:any) {
         if (Array.isArray(ans)) return ans.join(', ')
+        if (typeof ans === 'string') return ans
         return Object.entries(ans).map(([key, val]) => `${key}: ${g(val)}`).join(', ')
     }   
 

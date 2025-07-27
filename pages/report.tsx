@@ -34,6 +34,7 @@ import {
     IMapLanguageToCompetenceQuestionStat, 
     IMapLanguageToAgeQuestionStat,
     IPreferredLanguageCount,
+    IChoiceQuestionStat,
 } from '@/pages/api/graphql/resolvers/stats'
 import questionary, { extractLevels, trans, IReportBlockElement, IReportTableElement, IReportElement, IReportQuestionElement } from '@/lib/questionary'
 import { PageWithoutProvider } from '@/components/Page'
@@ -275,6 +276,8 @@ function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, transla
     const stats = {
         ...statsQuery.data.stats,
     } as IStats
+
+    // console.log(`Stats: ${JSON.stringify({stats, showFilter, schoolId, schoolSecret, adminSecret, translations})}`)
 
     const classes = true ? ['1','2','3','4','5'] : stats.polls
         .map(p => p.year)
@@ -877,6 +880,7 @@ function ReportChart({ question, item, t } : {
         (item.title && trans(item.title, _.locale)) 
         || question.question.question[_.locale]
     assert(item.element === 'chart')
+    console.log(`ReportChart: ${JSON.stringify({item, question, item_title})}`)
     switch(question.type) {
         case 'choose-language': 
             switch (item.variant) {
@@ -909,10 +913,14 @@ function ReportChart({ question, item, t } : {
         case 'map-language-to-age': return <Item title={item_title || question.question.question.it} avoidBreakInside={true}>
                 <GraphMapLanguageToAgeQuestion stat={question} t={t}/>
             </Item>
+        case 'choice': return <Item title={item_title || question.question.question.it} avoidBreakInside={true}>
+                <GraphChoiceQuestion stat={question} t={t} item={item}/>
+                <TableChoiceQuestion stat={question} t={t} />     
+            </Item>
         default: return <Item>
             <Error>
             invalid question type {question.type} 
-            for report item {item.element}
+            {} for report item {item.element}
             </Error>
         </Item>
     }
@@ -1072,6 +1080,91 @@ function TableChooseLanguageQuestion({stat, count, t}: {
         {_("non risponde")}: {stat.count-stat.countPositive}, {}
         {_("risponde")}: {stat.countPositive}, {}
         {_("numero risposte")}: {stat.countAnswers}
+    </p>
+    </>
+}
+
+function GraphChoiceQuestion({item, stat, t} : {
+        item: IReportElement,
+        stat: IChoiceQuestionStat,
+        t: T,
+    }) {
+    const _ = useTrans()
+    if (!stat.answers) return <div>invalid answers</div>
+    assert(item.element === 'chart')
+    const total = stat.count
+    const labels = Object.fromEntries(stat.question.choices?.map(c => [c.value, c.label[_.locale] || c.label.it || c.value]) || [])
+    return <Bar 
+        options={{
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top' as const,
+                },
+                datalabels: {
+                    anchor: 'center',
+                    align: 'center',
+                    formatter: value => `${Math.round(value*100)}%`
+                },
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1,
+                    ticks: {
+                        precision: 1,
+                        format: {
+                            style: 'percent',
+                        },
+                        callback: value => typeof(value)==='number'?`${Math.round(value*100)}%`:'???',
+                    },
+                }
+            }
+        }} 
+        data={{
+            labels: Object.keys(stat.answers).map(id => id===''?_("altre"):labels[id]),
+            datasets: [
+                {
+                data: Object.entries(stat.answers).map(([key, val])=> (total ? val / total : 0) ),
+                // backgroundColor: 'orange',
+                },
+            ],
+            }} 
+    />
+}
+
+function TableChoiceQuestion({stat, t}: {
+    stat: IChoiceQuestionStat,
+    t: T,
+}) {
+    const _ = useTrans()
+    const labels = Object.fromEntries(stat.question.choices?.map(c => [c.value, c.label[_.locale] || c.label.it || c.value]) || [])
+    if (!stat.answers) return <div>invalid answers</div>
+
+    return <><Table className="my-0">
+        <thead>
+            <tr>
+                <td></td>
+                    {Object.keys(stat.answers).map(id => 
+                <td key={id}>
+                    {id===''?_("altre"):labels[id]}
+                </td>)}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>{_("conteggio")}</th>
+                    {Object.entries(stat.answers).map(([key, val])=>
+                <td key={key}>
+                    {val}
+                </td>)}
+            </tr>
+        </tbody>
+    </Table>
+    <p className="mx-2" style={{fontSize:"smaller"}}>
+        {_("questionari")}: {stat.count}, {}
+        {_("numero risposte")}: {stat.countPositive}
     </p>
     </>
 }
