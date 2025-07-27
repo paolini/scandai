@@ -13,11 +13,16 @@ export interface IAnswers {
 function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLanguages }
   : { lang: string, question: IQuestion, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[] }) {
   if (question.type === 'choose-language') {
+    const choices = question.choices
+    const default_languages = choices === undefined 
+      ? questionary.languagesExtended
+      : Object.fromEntries(choices.map(c => [c.value, c.label]))
+    const languages = {...default_languages,...Object.fromEntries(extraLanguages.filter(l => !default_languages[l]).map(l => [l,l]))}
     return <LanguageAnswer 
       lang={lang}
       answer={answer} 
       setAnswer={setAnswer} 
-      languages={{...questionary.languagesExtended,...Object.fromEntries(extraLanguages.map(l => [l,l]))}}
+      languages={languages}
       />
   }
   if (question.type === 'map-language-to-age') {

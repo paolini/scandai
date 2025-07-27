@@ -1,7 +1,13 @@
+import { IChoice } from '@/lib/questionary'
 import Checkbox from './Checkbox'
 
-export default function LanguageCheckbox({ name, label, answer, setAnswer }
-  : { name: string, label: string, answer: string[], setAnswer: (f: ((a: string[]) => void)) => void }) {
+export default function LanguageCheckbox({ name, label, answer, setAnswer}
+  : { 
+      name: string, 
+      label: string, 
+      answer: string[], 
+      setAnswer: (f: ((a: string[]) => void)) => void,
+    }) {
     return <Checkbox
       name={name}
       label={label} 

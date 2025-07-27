@@ -576,6 +576,51 @@ const questionary: IQuestionary = {
       ],
       compulsory: true,
     },
+    "3.0.2": {
+      type: "choose-language",
+      question: {
+        'it': "Nella scuola secondaria di primo grado, quali lingue hai studiato, oltre l'italiano e l'inglese?",
+        'fu': "In te scuele secondarie di prim grad, cualis lenghis tu âs studiât, a part l'italian e l'ingles?",
+        'en': "In lower secondary school, what languages did you study, besides Italian and English?"
+      },
+      choices: [{
+          value: 'es',
+          label: {
+            'it': "Spagnolo",
+            'fu': "Spagnûl",
+            'en': "Spanish"
+        }}, {
+          value: 'fr',
+          label: {
+            'it': "Francese",
+            'fu': "Francês",
+            'en': "French",
+          }
+        }, {
+          value: 'de',
+          label: {
+            'it': "Tedesco",
+            'fu': "Todesc",
+            'en': "German",
+          }
+        }, {
+          value: 'sl',
+          label: {
+            'it': "Sloveno",
+            'fu': "Sloven",
+            'en': "Slovenian",
+          }
+        }, {
+          value: 'fu',
+          label: {
+            'it': "Friulano",
+            'fu': "Furlan",
+            'en': "Friulian",
+          }
+        }
+      ],
+      compulsory: true,
+    }
   },
 
   forms: {
@@ -762,7 +807,7 @@ const questionary: IQuestionary = {
           }
         },
         { element: "questions",
-          questions: [ "3.0.1" ],
+          questions: [ "3.0.1", "3.0.2" ],
         },
         { element: "newpage" },
         {
