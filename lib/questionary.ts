@@ -534,9 +534,9 @@ const questionary: IQuestionary = {
     "2.1.1": {
         type: 'map-language-to-age',
         question: {
-          it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
-          fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
-          en: "How old were you when you started speaking the languages you know?",
+          it: "A quale età sei stato esposto alle lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
+          fu: "A ce etât sêstu jentrât in contat cu lis lenghis che tu cognossis? (segne une sole fasse di etât par ogni vôs)",
+          en: "At what age were you first exposed to the languages you know? (choose only one age range for each language)",
         },
       compulsory: true,
       },
@@ -697,7 +697,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Fuori casa abitualmente...",
             fu: "Fûr di cjase pal solit...",
-            en: "When I’m out I usually...",
+            en: "When I'm out I usually...",
           },
         },
         {
@@ -713,7 +713,7 @@ const questionary: IQuestionary = {
           title: {
             it: "A scuola abitualmente...",
             fu: "A scuele pal solit ...",
-            en: "When I’m at school I usually speak ...",
+            en: "When I'm at school I usually speak ...",
           },
         },
         {
@@ -942,9 +942,9 @@ const questionary: IQuestionary = {
                 {
                   element: "chart",
                   title: {
-                    it: "A che età hai cominciato a parlare le lingue che conosci?",
-                    en: "At what age did you start speaking the languages you know?",
-                    fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+                    it: "A quale età sei stato esposto alle lingue che conosci?",
+                    fu: "A ce etât sêstu jentrât in contat cu lis lenghis che tu cognossis?",
+                    en: "At what age were you first exposed to the languages you know?",
                   }, 
                   question: "2.1.1",
                 },
