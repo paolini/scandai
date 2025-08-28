@@ -726,6 +726,20 @@ const questionary: IQuestionary = {
         {
           element: "title",
           title: {
+            it: "Lingue studiate a scuola",
+            fu: "Lenghis studiadis a scuele",
+            en: "Languages studied at school",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "3.0.1", "3.0.2"],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
             it: "Abitualmente...",
             fu: "Pal solit ...",
             en: "Usually ...",
@@ -827,6 +841,20 @@ const questionary: IQuestionary = {
              "1.2.b.1",
           ],
         },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Lingue studiate a scuola",
+            fu: "Lenghis studiadis a scuele",
+            en: "Languages studied at school",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "3.0.1", "3.0.2"],
+        },
         { element: "newpage" },
         {
           element: "title",
@@ -857,24 +885,6 @@ const questionary: IQuestionary = {
             },
             {
               element: "info",
-            },
-            { element: "block",
-              title: {
-                it: "Lingue studiate a scuola",
-                en: "Languages studied at school",
-                fu: "Lenghis studiadis a scuele",
-              },
-              bold: true,
-              elements: [
-                {
-                  element: "chart",
-                  question: "3.0.1",
-                },
-                {
-                  element: "chart",
-                  question: "3.0.2",
-                },
-              ]
             },
             { element: "block",
               title: {
@@ -1071,6 +1081,24 @@ const questionary: IQuestionary = {
                 //title: "Prova ...",
                 question: "1.3.b.2",
               }]
+            },
+            { element: "block",
+              title: {
+                it: "Lingue studiate a scuola",
+                en: "Languages studied at school",
+                fu: "Lenghis studiadis a scuele",
+              },
+              bold: true,
+              elements: [
+                {
+                  element: "chart",
+                  question: "3.0.1",
+                },
+                {
+                  element: "chart",
+                  question: "3.0.2",
+                },
+              ]
             },
             {
               element: "block",
