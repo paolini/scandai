@@ -2,6 +2,44 @@ import assert from "assert"
 
 export const languageCodes = ['it','fu','sl','de','en']
 
+export const languageNames: Record<string, LocalizedString> = {
+  it: {
+    it: 'Italiano',
+    fu: 'Talian',
+    en: 'Italian',
+  },
+  fu: {
+    it: 'Friulano',
+    fu: 'Furlan',
+    en: 'Friulian',
+  },
+  de: {
+    it: 'Tedesco',
+    fu: 'Todesc',
+    en: 'German',
+  },
+  sl: {
+    it: 'Sloveno',
+    fu: 'Sloven',
+    en: 'Slovenian',
+  },
+  en: {
+    it: 'Inglese',
+    fu: 'Inglês',
+    en: 'English',
+  },
+  es: {
+    it: "Spagnolo",
+    fu: "Spagnûl",
+    en: "Spanish"
+  },
+  fr: {
+    it: "Francese",
+    fu: "Francês",
+    en: "French",
+  },
+}
+
 const questionary: IQuestionary = {
   version: "0.2.0",
 
@@ -100,61 +138,16 @@ const questionary: IQuestionary = {
     en: 'english',
   },
 
-  languages: {
-    it: {
-      it: 'Italiano',
-      fu: 'Talian',
-      en: 'Italian',
-    },
-    fu: {
-      it: 'Friulano',
-      fu: 'Furlan',
-      en: 'Friulian',
-    },
-    de: {
-      it: 'Tedesco',
-      fu: 'Todesc',
-      en: 'German',
-    },
-    sl: {
-      it: 'Sloveno',
-      fu: 'Sloven',
-      en: 'Slovenian',
-    },
-    en: {
-      it: 'Inglese',
-      fu: 'Inglês',
-      en: 'English',
-    }
-  },
+  languages: Object.fromEntries(languageCodes.map(l => [l,languageNames[l]])),
 
-  languagesExtended: {
-    it: {
-      it: 'Italiano',
-      fu: 'Talian',
-      en: 'Italian',
-    },
-    fu: {
+  languagesExtended: Object.fromEntries(languageCodes.map(l => {
+    if (l == 'fu') return [l, {
       it: 'Friulano (o varianti)',
       fu: 'Furlan (o variantis)',
       en: 'Friulian (any variety)',
-    },
-    de: {
-      it: 'Tedesco',
-      fu: 'Todesc',
-      en: 'German',
-    },
-    sl: {
-      it: 'Sloveno',
-      fu: 'Sloven',
-      en: 'Slovenian',
-    },
-    en: {
-      it: 'Inglese',
-      fu: 'Inglês',
-      en: 'English',
-    }
-  },
+    }]
+    else return [l,languageNames[l]]
+  })),
 
   ages: [
     { 
@@ -583,43 +576,10 @@ const questionary: IQuestionary = {
         'fu': "In te scuele secondarie di prim grad, cualis lenghis tu âs studiât, a part l'italian e l'ingles?",
         'en': "In lower secondary school, what languages did you study, besides Italian and English?"
       },
-      choices: [{
-          value: 'es',
-          label: {
-            'it': "Spagnolo",
-            'fu': "Spagnûl",
-            'en': "Spanish"
-        }}, {
-          value: 'fr',
-          label: {
-            'it': "Francese",
-            'fu': "Francês",
-            'en': "French",
-          }
-        }, {
-          value: 'de',
-          label: {
-            'it': "Tedesco",
-            'fu': "Todesc",
-            'en': "German",
-          }
-        }, {
-          value: 'sl',
-          label: {
-            'it': "Sloveno",
-            'fu': "Sloven",
-            'en': "Slovenian",
-          }
-        }, {
-          value: 'fu',
-          label: {
-            'it': "Friulano",
-            'fu': "Furlan",
-            'en': "Friulian",
-          }
-        }
-      ],
-      compulsory: true,
+      choices: ['es','fr','de','sl','fu'].map(lang => ({
+        value: lang,
+        label: languageNames[lang]
+      }))
     }
   },
 
