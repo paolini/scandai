@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
-import { trans, LocalizedString, getPhrase, IChoice } from '@/lib/questionary'
+import { trans, LocalizedString, getPhrase, languageNames } from '@/lib/questionary'
 
 function OtherLanguage({lang, addLanguage}: {
     lang: string,
@@ -20,6 +20,11 @@ function OtherLanguage({lang, addLanguage}: {
           value={other} 
           onChange={(evt)=>setOther(evt.target.value)}
           onBlur={commit}
+          onKeyDown={(evt) => {
+            if (evt.key === 'Enter' || evt.key === 'Tab') {
+              commit()
+            }
+          }}
         />
       {other && <Button onClick={commit}>+</Button>}
     </>
@@ -47,7 +52,24 @@ export default function LanguageAnswer({lang, answer, setAnswer, languages}
             )} 
         <OtherLanguage 
           lang={lang}
-          addLanguage={(language: string) => setAnswer((a: string[]) => [...a, language])}/> 
+          addLanguage={addLanguage}/> 
     </>
+
+    function addLanguage(language: string) {
+      let l = ''
+
+      // vediamo se hai scelto il nome di una lingua di cui ho il codice
+      Object.entries(languageNames).forEach(([code, names]) => {
+        console.log(JSON.stringify({code,names}))
+        Object.entries(names).forEach(([langCode, nameInLang]) => {
+          console.log(JSON.stringify({langCode,nameInLang}) )
+          if (nameInLang.toLowerCase() === language.toLowerCase()) {
+            l = code
+          }
+        })
+      })
+      console.log(`l: ${l}`)
+      setAnswer((a: string[]) => [...a, l || language])
+    }
 }
 
