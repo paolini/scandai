@@ -2,6 +2,44 @@ import assert from "assert"
 
 export const languageCodes = ['it','fu','sl','de','en']
 
+export const languageNames: Record<string, LocalizedString> = {
+  it: {
+    it: 'Italiano',
+    fu: 'Talian',
+    en: 'Italian',
+  },
+  fu: {
+    it: 'Friulano',
+    fu: 'Furlan',
+    en: 'Friulian',
+  },
+  de: {
+    it: 'Tedesco',
+    fu: 'Todesc',
+    en: 'German',
+  },
+  sl: {
+    it: 'Sloveno',
+    fu: 'Sloven',
+    en: 'Slovenian',
+  },
+  en: {
+    it: 'Inglese',
+    fu: 'Inglês',
+    en: 'English',
+  },
+  es: {
+    it: "Spagnolo",
+    fu: "Spagnûl",
+    en: "Spanish"
+  },
+  fr: {
+    it: "Francese",
+    fu: "Francês",
+    en: "French",
+  },
+}
+
 const questionary: IQuestionary = {
   version: "0.2.0",
 
@@ -100,61 +138,16 @@ const questionary: IQuestionary = {
     en: 'english',
   },
 
-  languages: {
-    it: {
-      it: 'Italiano',
-      fu: 'Talian',
-      en: 'Italian',
-    },
-    fu: {
-      it: 'Friulano',
-      fu: 'Furlan',
-      en: 'Friulian',
-    },
-    de: {
-      it: 'Tedesco',
-      fu: 'Todesc',
-      en: 'German',
-    },
-    sl: {
-      it: 'Sloveno',
-      fu: 'Sloven',
-      en: 'Slovenian',
-    },
-    en: {
-      it: 'Inglese',
-      fu: 'Inglês',
-      en: 'English',
-    }
-  },
+  languages: Object.fromEntries(languageCodes.map(l => [l,languageNames[l]])),
 
-  languagesExtended: {
-    it: {
-      it: 'Italiano',
-      fu: 'Talian',
-      en: 'Italian',
-    },
-    fu: {
+  languagesExtended: Object.fromEntries(languageCodes.map(l => {
+    if (l == 'fu') return [l, {
       it: 'Friulano (o varianti)',
       fu: 'Furlan (o variantis)',
       en: 'Friulian (any variety)',
-    },
-    de: {
-      it: 'Tedesco',
-      fu: 'Todesc',
-      en: 'German',
-    },
-    sl: {
-      it: 'Sloveno',
-      fu: 'Sloven',
-      en: 'Slovenian',
-    },
-    en: {
-      it: 'Inglese',
-      fu: 'Inglês',
-      en: 'English',
-    }
-  },
+    }]
+    else return [l,languageNames[l]]
+  })),
 
   ages: [
     { 
@@ -534,9 +527,9 @@ const questionary: IQuestionary = {
     "2.1.1": {
         type: 'map-language-to-age',
         question: {
-          it: "A che età hai cominciato a parlare le lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
-          fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis (segne une sole fasse di etât par ogni vôs)",
-          en: "How old were you when you started speaking the languages you know?",
+          it: "A quale età sei stato esposto alle lingue che conosci? (indica una sola fascia d'età per ciascuna voce)",
+          fu: "A ce etât sêstu jentrât in contat cu lis lenghis che tu cognossis? (segne une sole fasse di etât par ogni vôs)",
+          en: "At what age were you first exposed to the languages you know? (choose only one age range for each language)",
         },
       compulsory: true,
       },
@@ -583,43 +576,10 @@ const questionary: IQuestionary = {
         'fu': "In te scuele secondarie di prim grad, cualis lenghis tu âs studiât, a part l'italian e l'ingles?",
         'en': "In lower secondary school, what languages did you study, besides Italian and English?"
       },
-      choices: [{
-          value: 'es',
-          label: {
-            'it': "Spagnolo",
-            'fu': "Spagnûl",
-            'en': "Spanish"
-        }}, {
-          value: 'fr',
-          label: {
-            'it': "Francese",
-            'fu': "Francês",
-            'en': "French",
-          }
-        }, {
-          value: 'de',
-          label: {
-            'it': "Tedesco",
-            'fu': "Todesc",
-            'en': "German",
-          }
-        }, {
-          value: 'sl',
-          label: {
-            'it': "Sloveno",
-            'fu': "Sloven",
-            'en': "Slovenian",
-          }
-        }, {
-          value: 'fu',
-          label: {
-            'it': "Friulano",
-            'fu': "Furlan",
-            'en': "Friulian",
-          }
-        }
-      ],
-      compulsory: true,
+      choices: ['es','fr','de','sl','fu'].map(lang => ({
+        value: lang,
+        label: languageNames[lang]
+      }))
     }
   },
 
@@ -697,7 +657,7 @@ const questionary: IQuestionary = {
           title: {
             it: "Fuori casa abitualmente...",
             fu: "Fûr di cjase pal solit...",
-            en: "When I’m out I usually...",
+            en: "When I'm out I usually...",
           },
         },
         {
@@ -713,7 +673,7 @@ const questionary: IQuestionary = {
           title: {
             it: "A scuola abitualmente...",
             fu: "A scuele pal solit ...",
-            en: "When I’m at school I usually speak ...",
+            en: "When I'm at school I usually speak ...",
           },
         },
         {
@@ -721,6 +681,20 @@ const questionary: IQuestionary = {
           questions: [
                 "1.3.a.1", "1.3.a.2",
                 "1.3.b.1", "1.3.b.2" ],
+        },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Lingue studiate a scuola",
+            fu: "Lenghis studiadis a scuele",
+            en: "Languages studied at school",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "3.0.1", "3.0.2"],
         },
         { element: "newpage"},
         {
@@ -827,6 +801,20 @@ const questionary: IQuestionary = {
              "1.2.b.1",
           ],
         },
+        { element: "newpage"},
+        {
+          element: "title",
+          title: {
+            it: "Lingue studiate a scuola",
+            fu: "Lenghis studiadis a scuele",
+            en: "Languages studied at school",
+          },
+        },
+        {
+          element: "questions",
+          questions: [
+                "3.0.1", "3.0.2"],
+        },
         { element: "newpage" },
         {
           element: "title",
@@ -857,24 +845,6 @@ const questionary: IQuestionary = {
             },
             {
               element: "info",
-            },
-            { element: "block",
-              title: {
-                it: "Lingue studiate a scuola",
-                en: "Languages studied at school",
-                fu: "Lenghis studiadis a scuele",
-              },
-              bold: true,
-              elements: [
-                {
-                  element: "chart",
-                  question: "3.0.1",
-                },
-                {
-                  element: "chart",
-                  question: "3.0.2",
-                },
-              ]
             },
             { element: "block",
               title: {
@@ -942,9 +912,9 @@ const questionary: IQuestionary = {
                 {
                   element: "chart",
                   title: {
-                    it: "A che età hai cominciato a parlare le lingue che conosci?",
-                    en: "At what age did you start speaking the languages you know?",
-                    fu: "A ce etât âstu scomençât a fevelâ lis lenghis che tu cognossis?",
+                    it: "A quale età sei stato esposto alle lingue che conosci?",
+                    fu: "A ce etât sêstu jentrât in contat cu lis lenghis che tu cognossis?",
+                    en: "At what age were you first exposed to the languages you know?",
                   }, 
                   question: "2.1.1",
                 },
@@ -1071,6 +1041,24 @@ const questionary: IQuestionary = {
                 //title: "Prova ...",
                 question: "1.3.b.2",
               }]
+            },
+            { element: "block",
+              title: {
+                it: "Lingue studiate a scuola",
+                en: "Languages studied at school",
+                fu: "Lenghis studiadis a scuele",
+              },
+              bold: true,
+              elements: [
+                {
+                  element: "chart",
+                  question: "3.0.1",
+                },
+                {
+                  element: "chart",
+                  question: "3.0.2",
+                },
+              ]
             },
             {
               element: "block",

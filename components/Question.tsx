@@ -2,7 +2,7 @@ import LanguageAnswer from './LanguageAnswer'
 import LanguageToAgeAnswer from './LanguageToAgeAnswer'
 import LanguageToCompetenceAnswer from './LanguageToCompetenceAnswer'
 import ChoiceAnswer from './ChoiceAnswer'
-import { IQuestion, IQuestionary } from '@/lib/questionary' 
+import { IQuestion, IQuestionary, languageNames } from '@/lib/questionary' 
 import { Answer, QuestionCode } from '@/lib/types'
 import { trans } from '@/lib/questionary'
 
@@ -17,7 +17,11 @@ function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLangu
     const default_languages = choices === undefined 
       ? questionary.languagesExtended
       : Object.fromEntries(choices.map(c => [c.value, c.label]))
-    const languages = {...default_languages,...Object.fromEntries(extraLanguages.filter(l => !default_languages[l]).map(l => [l,l]))}
+    const languages = {
+      ...default_languages,
+      ...Object.fromEntries(extraLanguages
+        .filter(l => !default_languages[l])
+        .map(l => [l,languageNames[l] || l]))}
     return <LanguageAnswer 
       lang={lang}
       answer={answer} 

@@ -1,4 +1,3 @@
-import { IChoice } from '@/lib/questionary'
 import Checkbox from './Checkbox'
 
 export default function LanguageCheckbox({ name, label, answer, setAnswer}
