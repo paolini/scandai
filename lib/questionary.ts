@@ -778,17 +778,6 @@ const questionary: IQuestionary = {
             en: "Short linguistic survey",
           },
         },
-        { element: "title",
-          title: {
-            it: "Lingue studiate a scuola",
-            fu: "Lenghis studiadis a scuele",
-            en: "Languages studied at school",
-          }
-        },
-        { element: "questions",
-          questions: [ "3.0.1", "3.0.2" ],
-        },
-        { element: "newpage" },
         {
           element: "title",
           title: {
