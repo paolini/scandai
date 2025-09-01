@@ -551,7 +551,7 @@ const questionary: IQuestionary = {
       type: 'choice',
       question: {
         it: "Nella scuola primaria hai fatto attività in lingua friulana?",
-        fu: "Inte scuele primarie âs fat ativitâts in lenghe furlane?",
+        fu: "Inte scuele primarie âstu fat ativitâts in lenghe furlane?",
         en: "In primary school did you do activities in Friulian?",
       },
       choices: [
@@ -578,7 +578,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
             question: {
         'it': "Nella scuola secondaria di primo grado, quali lingue hai studiato, oltre l'italiano e l'inglese?",
-        'fu': "Inte scuele secondarie di prin grâd, cualis lenghis âstu studiât, in plui dal talian e dal inglês?",
+        'fu': "Inte scuele secondarie di prin grât, cualis lenghis âstu studiât, in plui dal talian e dal inglês?",
         'en': "In lower secondary school, what languages did you study, besides Italian and English?"
       },
       choices: ['es','fr','de','sl','fu'].map(lang => ({
