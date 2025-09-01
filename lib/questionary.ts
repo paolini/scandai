@@ -125,6 +125,11 @@ const questionary: IQuestionary = {
       fu: 'Altre lenghe:',
       en: 'Other language:',
     },
+    oneLanguageAtATime: {
+        it: 'inserisci una sola lingua alla volta',
+        en: 'insert only one language at a time',
+        fu: 'inserìs une sole lenghe a la volte',
+    },
     compulsoryExplanation: {
       it: 'Le domande marcate con (*) sono a risposta obbligatoria',
       fu: 'Lis domandis marcadis cun (*) a son a rispueste obligatorie',
@@ -546,7 +551,7 @@ const questionary: IQuestionary = {
       type: 'choice',
       question: {
         it: "Nella scuola primaria hai fatto attività in lingua friulana?",
-        fu: "Te scuele primarie tu âs fat ativitâts in lenghe furlane?",
+        fu: "Inte scuele primarie âs fat ativitâts in lenghe furlane?",
         en: "In primary school did you do activities in Friulian?",
       },
       choices: [
@@ -571,9 +576,9 @@ const questionary: IQuestionary = {
     },
     "3.0.2": {
       type: "choose-language",
-      question: {
+            question: {
         'it': "Nella scuola secondaria di primo grado, quali lingue hai studiato, oltre l'italiano e l'inglese?",
-        'fu': "In te scuele secondarie di prim grad, cualis lenghis tu âs studiât, a part l'italian e l'ingles?",
+        'fu': "Inte scuele secondarie di prin grâd, cualis lenghis âstu studiât, in plui dal talian e dal inglês?",
         'en': "In lower secondary school, what languages did you study, besides Italian and English?"
       },
       choices: ['es','fr','de','sl','fu'].map(lang => ({

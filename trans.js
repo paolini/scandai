@@ -23,7 +23,6 @@ function main() {
         ...parse("components"),
         ...parse("lib"),
         ...parse("pages"),
-        ...parse("models"),
     ]
 
     const out = {};

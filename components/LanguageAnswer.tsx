@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
 import { trans, LocalizedString, getPhrase, languageNames } from '@/lib/questionary'
+import { useTrans } from '@/lib/trans'
 
 function OtherLanguage({lang, addLanguage}: {
     lang: string,
@@ -27,6 +28,8 @@ function OtherLanguage({lang, addLanguage}: {
           }}
         />
       {other && <Button onClick={commit}>+</Button>}
+      &nbsp;
+      {other && <span className="ml-4">{getPhrase("oneLanguageAtATime", lang)}</span>}
     </>
   }
   
