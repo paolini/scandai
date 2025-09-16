@@ -181,14 +181,14 @@ export async function deletePoll(_parent: any, {_id}: MutationDeletePollArgs, {u
 }
 
 async function getPoll(_id: ObjectId, secret: string|null, user: WithId<MongoUser>|undefined) {
-    if (!user) throw new Error('not authenticated')
     const collection = await getPollCollection()
     const poll = await collection.findOne({_id})
     if (!poll) throw new Error(`poll not found`)
     
     const userKnowsSecret = poll.adminSecret && poll.adminSecret === secret
-    const userIsOwnerOrAdmin = user.isAdmin || user._id == poll.createdBy
-
+    const userIsOwnerOrAdmin = user?.isAdmin || user?._id == poll.createdBy
+                
+    if (!user && !userKnowsSecret) throw new Error('not authenticated')
     if (!userKnowsSecret && !userIsOwnerOrAdmin) throw Error('not authorized')
 
     return {
