@@ -32,7 +32,7 @@ export default function Report() {
 
     if (profileQuery.loading || !profileQuery.data) return <Loading /> 
     const user = profileQuery.data.profile
-    if (!user) return <Error>{_("Accesso non autorizzato")}</Error>
+    if (!user && !schoolSecret) return <Error>{_("Accesso non autorizzato")}</Error>
 
     if (!router.isReady) return <Loading />
 
