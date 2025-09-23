@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import { assert } from '@/lib/assert'
 
-import questionary, { IQuestion, extractLevels } from '../../../../lib/questionary'
+import questionary, { IQuestion, extractLevels, languageNames } from '../../../../lib/questionary'
 import { schoolYearMatch } from '@/lib/utils'
 import { Context } from '../types'
 import { getCollection, getDictCollection } from '@/lib/mongodb'
@@ -312,7 +312,8 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
     const schoolDict: {[key: string]: IGetSchool} = {}
 
     function langMap(lang: string) {
-        const f = questionary.languages[lang]
+//        const f = questionary.languages[lang]
+        const f = languageNames[lang]
         if (f) return f.it // una delle cinque lingue base
         const m = dict[lang.toLowerCase()]
         if (m !== undefined) return m // if m === '' va scartato
