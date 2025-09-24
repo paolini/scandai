@@ -1,6 +1,6 @@
 import { Dispatch } from 'react'
 
-import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages } from "@/lib/questionary"
+import { LocalizedString, LocalizedStringWithCode, LocalizedLanguages, languageNames } from "@/lib/questionary"
 import { MapLanguageToCompetenceAnswer } from '@/lib/types'
 import { trans } from "@/lib/questionary"
 
@@ -15,7 +15,9 @@ export default function LanguageToCompetenceAnswer({ lang, answer, setAnswer, co
     }) {
     return <>
         {[...Object.entries(languages),
-          ...extraLanguages.map(l => [l,l])].map(([code, language]) =>
+          ...extraLanguages
+                .map(l => [l,map_language(l)])
+            ].map(([code, language]) =>
             <div key={code}>
                 <b>{typeof(language)==='string' ? language : trans(language, lang)}</b><br />
                     <SingleLanguageToCompetence 
@@ -26,6 +28,12 @@ export default function LanguageToCompetenceAnswer({ lang, answer, setAnswer, co
             </div>
         )}
     </>
+
+    function map_language(l:string) {
+        const localizedString = languageNames[l]
+        if (localizedString) return localizedString[lang]
+        return l
+    }
   }
 
 function SingleLanguageToCompetence({ lang, language, answer, setAnswer, competences, competenceValues }

@@ -3,7 +3,6 @@ import { Button } from 'react-bootstrap'
 
 import LanguageCheckbox from './LanguageCheckbox'
 import { trans, LocalizedString, getPhrase, languageNames } from '@/lib/questionary'
-import { useTrans } from '@/lib/trans'
 
 function OtherLanguage({lang, addLanguage}: {
     lang: string,
@@ -63,15 +62,12 @@ export default function LanguageAnswer({lang, answer, setAnswer, languages}
 
       // vediamo se hai scelto il nome di una lingua di cui ho il codice
       Object.entries(languageNames).forEach(([code, names]) => {
-        console.log(JSON.stringify({code,names}))
         Object.entries(names).forEach(([langCode, nameInLang]) => {
-          console.log(JSON.stringify({langCode,nameInLang}) )
           if (nameInLang.toLowerCase() === language.toLowerCase()) {
             l = code
           }
         })
       })
-      console.log(`l: ${l}`)
       setAnswer((a: string[]) => [...a, l || language])
     }
 }
