@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages } from '@/lib/questionary'
+import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages, getPhrase, trans } from '@/lib/questionary'
 import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
 import Loading from './Loading'
 import { State, set } from '@/lib/State'
 
-export default function PrintableQuestionary({ langState, form }: {
+export default function PrintableQuestionary({ langState, form, poll }: {
     langState: State<string>,
     form: string,
+    poll?: any,
 }) {
     const answersState = useState<IAnswers>({})
     const [answers] = answersState
@@ -52,14 +53,17 @@ export default function PrintableQuestionary({ langState, form }: {
             <style>
                 {`
                 @media print {
+                    .printable-questionary .splash-page,
                     .printable-questionary .question-page {
                         page-break-after: avoid;
                         break-after: avoid;
                     }
+                    .printable-questionary .splash-page + .question-page,
                     .printable-questionary .question-page + .question-page {
                         page-break-before: always;
                         break-before: always;
                     }
+                    .printable-questionary h1, .printable-questionary h2,
                     .printable-questionary h3, .printable-questionary h4 {
                         page-break-after: avoid;
                         break-after: avoid;
@@ -72,13 +76,30 @@ export default function PrintableQuestionary({ langState, form }: {
                 `}
             </style>
             
-            {/* Questionnaire title and intro */}
-            <div className="questionary-header">
-                <h1>{questionary.forms[form].name[lang]}</h1>
-                <div className="questionary-intro">
-                    {questionary.forms[form].intro[lang]?.split('\n').map((line, i) => (
-                        <p key={i}>{line.trim()}</p>
-                    ))}
+            {/* Splash Page */}
+            <div className="splash-page">
+                <h1>{getPhrase('title', lang)}</h1>
+                
+                {poll && (
+                    <div className="poll-info mb-4">
+                        <div className="mb-2">
+                            <strong>{getPhrase('school', lang)}:</strong> {poll.school?.name} - {poll.school?.city}
+                        </div>
+                        <div className="mb-2">
+                            <strong>{getPhrase('class', lang)}:</strong> {poll.year} {poll.class}
+                        </div>
+                    </div>
+                )}
+
+                <div className="questionary-header mb-4">
+                    <h2>{questionary.forms[form].name[lang]}</h2>
+                    <div className="questionary-intro">
+                        {trans(questionary.forms[form].intro, lang)}
+                    </div>
+                </div>
+
+                <div className="disclaimer mb-4 p-3 border rounded bg-light">
+                    {getPhrase('disclaimer', lang)}
                 </div>
             </div>
 
