@@ -4,23 +4,25 @@ import { Answer } from '@/lib/types'
 import { trans } from '@/lib/questionary'
 import { State, value, update } from '@/lib/State'
 
-export default function QuestionaryPage({ lang, page, answersState, questionary, extraLanguages }:{ 
+export default function QuestionaryPage({ lang, page, answersState, questionary, extraLanguages, showCodes = false }:{ 
   lang: string, 
   page: IFormElement[], 
   answersState: State<IAnswers>,
   questionary: IQuestionary, 
-  extraLanguages: string[]}) {    
+  extraLanguages: string[],
+  showCodes?: boolean}) {    
   return <div>
-    { page.map((item,i) => <QuestionaryFormItem key={i} item={item} lang={lang} questionary={questionary} answersState={answersState} extraLanguages={extraLanguages}/>) }
+    { page.map((item,i) => <QuestionaryFormItem key={i} item={item} lang={lang} questionary={questionary} answersState={answersState} extraLanguages={extraLanguages} showCodes={showCodes}/>) }
   </div>
 }
 
-function QuestionaryFormItem({ item, lang, questionary, answersState, extraLanguages } : { 
+function QuestionaryFormItem({ item, lang, questionary, answersState, extraLanguages, showCodes = false } : { 
     item: IFormElement,
     lang: string, 
     questionary: IQuestionary,
     answersState: State<IAnswers>,
     extraLanguages: string[],
+    showCodes?: boolean,
   }) {
   switch (item.element) {
     case 'questions': return <>
@@ -31,10 +33,11 @@ function QuestionaryFormItem({ item, lang, questionary, answersState, extraLangu
       return <Question 
         lang={lang}
         key={code} 
-        question={question}
+        question={{...question, questionCode: code}} // Pass the question code for display
         answer={value(answersState)[answer_code]}
         questionary={questionary}
         extraLanguages={extraLanguages}
+        showCode={showCodes}
         setAnswer={(a: Answer|((_:Answer)=> Answer)) => update(answersState,
           (answers: IAnswers) => ({
             ...answers, 

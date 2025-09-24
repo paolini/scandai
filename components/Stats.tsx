@@ -136,7 +136,10 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
                 {_("stampa")}
             </Button> */}
             <Button onClick={downloadPDF} style={{float:"right"}} disabled={downloadingPDF}>
-                {_("stampa")}
+                {_("stampa report")}
+            </Button>
+            <Button onClick={downloadQuestionaryPDF} style={{float:"right", marginRight: "10px"}} disabled={downloadingPDF}>
+                {_("stampa questionario")}
             </Button>
             <Link className="btn btn-primary mx-1" href={`/p/fake?form=${form}`} style={{float:"right"}} target="_blank">
                 {_("visualizza questionario")}
@@ -188,6 +191,31 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
                 document.body.removeChild(link)
             })
             .catch(err => alert('Errore download PDF: ' + err))
+            .finally(() => setDownloadingPDF(false));
+    }
+
+    function downloadQuestionaryPDF() {
+        setDownloadingPDF(true);
+        const questionaryPath = `/p/print?form=${form}`
+        fetch(`/api/pdf?path=${encodeURIComponent(questionaryPath)}`)
+            .then(async res => {
+                if (!res.ok) {
+                    const ErrorComponent = require('@/components/Error').default;
+                    const errorDiv = document.createElement('div');
+                    errorDiv.innerHTML = ErrorComponent({ children: 'PDF questionary download failed' });
+                    document.body.appendChild(errorDiv);
+                    setTimeout(() => document.body.removeChild(errorDiv), 3000);
+                    throw new window.Error('PDF questionary download failed');
+                }
+                const blob = await res.blob()
+                const link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'questionario.pdf'
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            })
+            .catch(err => alert('Errore download PDF questionario: ' + err))
             .finally(() => setDownloadingPDF(false));
     }    
 }
