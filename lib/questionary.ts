@@ -134,6 +134,11 @@ const questionary: IQuestionary = {
       it: 'Le domande marcate con (*) sono a risposta obbligatoria',
       fu: 'Lis domandis marcadis cun (*) a son a rispueste obligatorie',
       en: 'The questions marked with (*) are mandatory to answer',
+    },
+    disclaimer: {
+      it: 'La Fotografia Linguistica è un progetto della rete "La Lavagne Plurilengâl" (www.lavplu.eu) sostenuto dall\'ARLeF (Ajenzie Regjonâl pe Lenghe Furlane). Il questionario è stato elaborato con la collaborazione del prof.Gabriele Zanello, della prof.ssa Fabiana Fusco (Università di Udine/Universitât dal Friûl) e della prof.ssa Ada Bier (Universidad del País Vasco/Euskal Herriko Unibertsitatea).',
+      fu: 'La Fotografie Linguistiche e je un progjet de rêt "La Lavagne Pluirlengâl" (www.lavplu.eu) supuartât de ARLeF (Ajenzie Regjonâl pe Lenghe Furlane). Il cuestionari al è stât elaborât cu la colaborazion dal prof. Gabriele Zanello, de prof. Fabiana Fusco (Università di Udine/Universitât dal Friûl) e de prof. Ada Bier (Universidad del País Vasco/Euskal Herriko Unibertsitatea).',
+      en: 'The Linguistic Photography is a project of the network "La Lavagne Plurilengâl" (www.lavplu.eu) supported by ARLeF (Regional Agency for Friulian Language). The questionnaire was developed in collaboration with Prof. Gabriele Zanello, Prof. Fabiana Fusco (University of Udine/Universitât dal Friûl), and Prof. Ada Bier (University of the Basque Country/Euskal Herriko Unibertsitatea).',
     }
   },
 

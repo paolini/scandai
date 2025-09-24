@@ -51,11 +51,14 @@ export default function PollSplash({poll, form, langState, start}:{
                         <Button className="flex my-4" variant="success" size="lg" onClick={start}>
                             {phrase('compileButton')}
                         </Button>
+                        <div className="my-4 small text-muted">
+                            {phrase('disclaimer')}
+                        </div>
                         { poll && <>
+                            <QRCode className="flex my-4 w-100" value={myUrl} />
                             <Button className="flex my-4" onClick={() => {copyToClipboard(myUrl);addMessage('success', 'indirizzo (url) copiato')}}>
                                 <FaShareAlt /> {phrase('shareButton')}
                             </Button>
-                            <QRCode className="flex my-4 w-100" value={myUrl} />
                         </>}
                     </>)
                 }
