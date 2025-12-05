@@ -1,5 +1,5 @@
 import {Button} from "react-bootstrap"
-import { FaShareAlt } from "react-icons/fa"
+import { FaShareAlt, FaInfoCircle } from "react-icons/fa"
 import QRCode from "react-qr-code"
 import copyToClipboard from 'copy-to-clipboard'
 import { useEffect, useState } from "react"
@@ -51,11 +51,15 @@ export default function PollSplash({poll, form, langState, start}:{
                         <Button className="flex my-4" variant="success" size="lg" onClick={start}>
                             {phrase('compileButton')}
                         </Button>
+                        <div className="my-4 p-3 border rounded bg-light d-flex align-items-start">
+                            <FaInfoCircle className="text-info me-2 mt-1 flex-shrink-0" />
+                            <span>{phrase('disclaimer')}</span>
+                        </div>
                         { poll && <>
+                            <QRCode className="flex my-4 w-100" value={myUrl} />
                             <Button className="flex my-4" onClick={() => {copyToClipboard(myUrl);addMessage('success', 'indirizzo (url) copiato')}}>
                                 <FaShareAlt /> {phrase('shareButton')}
                             </Button>
-                            <QRCode className="flex my-4 w-100" value={myUrl} />
                         </>}
                     </>)
                 }

@@ -61,10 +61,13 @@ function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLangu
   </div>
 }
 
-export default function Question({ lang, question, answer, setAnswer, questionary, extraLanguages }: 
-  { lang: string, question: IQuestion, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[] }) {
+export default function Question({ lang, question, answer, setAnswer, questionary, extraLanguages, showCode = false }: 
+  { lang: string, question: IQuestion & { questionCode?: string }, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[], showCode?: boolean }) {
   return <div className="my-2">
-    <b>{question.compulsory && '(*) '}{trans(question.question,lang)}</b><br />
+    <b>
+      {showCode && <span className="question-code text-muted">[{question.questionCode || question.code}] </span>}
+      {question.compulsory && '(*) '}{trans(question.question,lang)}
+    </b><br />
       <AnswerPage lang={lang} question={question} answer={answer} setAnswer={setAnswer} questionary={questionary} extraLanguages={extraLanguages} />
     <br />
   </div>
