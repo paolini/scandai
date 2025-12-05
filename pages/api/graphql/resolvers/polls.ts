@@ -186,8 +186,8 @@ async function getPoll(_id: ObjectId, secret: string|null, user: WithId<MongoUse
     if (!poll) throw new Error(`poll not found`)
     
     const userKnowsSecret = poll.adminSecret && poll.adminSecret === secret
-    const userIsOwnerOrAdmin = user?.isAdmin || user?._id == poll.createdBy
-                
+    const userIsOwnerOrAdmin = user?.isAdmin || user?._id.equals(poll.createdBy)
+
     if (!user && !userKnowsSecret) throw new Error('not authenticated')
     if (!userKnowsSecret && !userIsOwnerOrAdmin) throw Error('not authorized')
 
