@@ -14,6 +14,11 @@ export default async function resolver(_parent: any, query: QueryStatsArgs, cont
 
         if (0) $match["poll.closed"] = true // solo i sondaggi chiusi
 
+        if (query.schoolType) {
+            $match["poll.school.type"] = query.schoolType
+            filters.schoolType = query.schoolType
+        }
+
         if (query.schoolId) {
             $match["poll.school._id"] = query.schoolId
             filters.school = query.schoolId

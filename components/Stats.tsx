@@ -11,7 +11,7 @@ import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
 import State, { value } from "@/lib/State"
-import { School, Translation } from "@/generated/graphql"
+import { School, SchoolType, Translation } from "@/generated/graphql"
 import StatsFilter from "./StatsFilter"
 import ReportItem from "./ReportItem"
 import {
@@ -30,6 +30,7 @@ import {
     Colors,
   } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { SchoolTypeString } from "@/lib/mongodb"
 
 ChartJS.register(
     CategoryScale,
@@ -57,9 +58,9 @@ const getPageMargins = () => {
 };
 
 const StatsQuery = gql`
-    query Stats($schoolId: ObjectId, $schoolSecret: String, $adminSecret: String, 
+    query Stats($schoolType: SchoolType, $schoolId: ObjectId, $schoolSecret: String, $adminSecret: String, 
         $city: String, $form: String, $class: String, $year: Int, $poll: ObjectId, $polls: [ObjectId]) {
-        stats(schoolId: $schoolId, schoolSecret: $schoolSecret, adminSecret: $adminSecret, city: $city, form: $form, class: $class, year: $year, poll: $poll, polls: $polls)
+        stats(schoolType: $schoolType, schoolId: $schoolId, schoolSecret: $schoolSecret, adminSecret: $adminSecret, city: $city, form: $form, class: $class, year: $year, poll: $poll, polls: $polls)
         }   
 `
 
@@ -74,6 +75,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
     schools: School[],
     yearState: State<string>,
 }) {
+    const schoolTypeState = useState<SchoolTypeString>("second")
     const schoolIdState = useState(schoolId)
     const router = useRouter()
     const cityState = useState(typeof router.query.city === 'string' ? router.query.city : '')
@@ -83,6 +85,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
     const ref = useRef(null)
     const pollIds = value(pollIdsState)
     const statsQuery = useQuery(StatsQuery, {variables: {
+        schoolType: value(schoolTypeState),
         schoolId:  value(schoolIdState) || null,
         schoolSecret,
         adminSecret,
@@ -123,6 +126,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
         }}>
             <StatsFilter 
                 fields={showFilter}
+                schoolTypeState={schoolTypeState}
                 schoolIdState={schoolIdState} 
                 cityState={cityState} 
                 formState={formState} 

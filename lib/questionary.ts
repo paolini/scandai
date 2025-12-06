@@ -40,6 +40,24 @@ export const languageNames: Record<string, LocalizedString> = {
   },
 }
 
+export const schoolType = {
+  primary: {
+    it: "Primaria",
+    fu: "Primarie",
+    en: "Primary",
+  },
+  first: {
+    it: "Secondaria di primo grado",
+    fu: "Secondarie di prin grad",
+    en: "First grade secondary",
+  },
+  second: {
+    it: "Secondaria di secondo grado",
+    fu: "Secondarie di second grad",
+    en: "Second grade secondary",
+  },
+}
+
 const questionary: IQuestionary = {
   version: "0.2.0",
 

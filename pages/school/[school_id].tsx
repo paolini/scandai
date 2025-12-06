@@ -6,16 +6,17 @@ import { FaShareAlt } from "react-icons/fa"
 import { gql, useQuery, useMutation } from "@apollo/client"
 
 import Page from '@/components/Page'
-import { Poll, School } from '@/generated/graphql'
+import { Poll, School, SchoolType } from '@/generated/graphql'
 import Loading from '@/components/Loading'
 import Input from '@/components/Input'
-import { value, set } from '@/lib/State'
+import { value, set, State } from '@/lib/State'
 import { useAddMessage } from '@/components/Messages'
 import Error from '@/components/Error'
 import { formatDate, formatTime, currentSchoolYear } from '@/lib/utils'
 import { useTrans } from '@/lib/trans'
 import MutationButton from '@/components/MutationButton'
 import { PollQuery } from '@/lib/api'
+import { schoolType } from '@/lib/questionary'
 
 function useRouterQuery(key: string): string | null {
     const router = useRouter()
@@ -32,6 +33,7 @@ const SchoolQuery = gql`
             name
             city
             city_fu
+            type
             reportSecret
         }
     }`
@@ -79,8 +81,9 @@ function TheSchool({ school } : {
     const cityState = useState<string>(original_city)
     const original_city_fu = school.city_fu || ''
     const cityFuState = useState<string>(original_city_fu)
+    const typeState = useState<string>(school.type || 'second')
     const [edit, setEdit] = useState<boolean>(createNew)
-    const modified = value(nameState) !== original_name || value(cityState) !== original_city || value(cityFuState) !== original_city_fu
+    const modified = value(nameState) !== original_name || value(cityState) !== original_city || value(cityFuState) !== original_city_fu || value(typeState) !== (school.type || 'second')
     const router = useRouter()
     const addMessage = useAddMessage()
     const year = currentSchoolYear()
@@ -104,6 +107,9 @@ function TheSchool({ school } : {
                 </p>
                 <p>{_("Città (in friulano)")}: {}
                     { edit ? <Input state={cityFuState} /> : <b>{school.city_fu}</b> }
+                </p>
+                <p>{_("Grado")}: {}
+                    { edit ? <SchoolTypeSelector state={typeState} /> : <b>{(schoolType[(school.type || 'second') as keyof typeof schoolType] as any)[_.locale]}</b> }
                 </p>
             </Card.Body>
             <Card.Footer>
@@ -178,6 +184,7 @@ function TheSchool({ school } : {
             name: value(nameState),
             city: value(cityState),
             city_fu: value(cityFuState),
+            type: value(typeState) as SchoolType,
         }
 
         if (createNew) {
@@ -220,6 +227,19 @@ function TheSchool({ school } : {
             addMessage('success', _("indirizzo somministrazione (url) copiato") + `: ${absoluteUrl}`)
         }
     }
+}
+
+function SchoolTypeSelector({state}:{state: State<string>}) {
+    const _ = useTrans()
+    return <select
+        className="form-control"
+        value={value(state)}
+        onChange={e => set(state, e.target.value)}
+        >
+        <option value="primary">{schoolType['primary'][_.locale]}</option>
+        <option value="first">{schoolType['first'][_.locale]}</option>
+        <option value="second">{schoolType['second'][_.locale]}</option>
+    </select>
 }
 
 function SchoolPolls({school}: {school: School}) {
