@@ -33,13 +33,6 @@ export async function schools(_parent: any, {year}: QuerySchoolsArgs, context: C
         { $addFields: {
             pollCount: {$size: "$polls"}}
         },
-        { $project: {
-            name: 1,
-            city: 1,
-            city_fu: 1,
-            pollCount: 1
-            }
-        },
     ]).toArray()
     return schools as School[]
 }
@@ -55,14 +48,16 @@ export async function school(_:any,{_id}:QuerySchoolArgs,{user}:Context) {
 }
 
 export async function newSchool(_:any,{data}:MutationNewSchoolArgs,{user}:Context) {
-    const {name, city, city_fu} = data
+    const {name, city, city_fu, type} = data
     if (!user) throw Error('not authenticated')
     if (!user.isAdmin) throw Error('not authorized')
     const collection = await getSchoolCollection()
     const res = await collection.insertOne({
         name: name,
         city: city || '',
-        city_fu: city_fu || city || ''})
+        city_fu: city_fu || city || '',
+        type: data.type || 'second',
+    })
     const _id = res.insertedId
     const out = await collection.findOne({_id})
     if (!out) throw Error('database error')
@@ -70,7 +65,7 @@ export async function newSchool(_:any,{data}:MutationNewSchoolArgs,{user}:Contex
 }
 
 export async function patchSchool(_:any,{_id, data}:MutationPatchSchoolArgs,{user}:Context) {
-    const {name, city, city_fu} = data
+    const {name, city, city_fu, type} = data
     if (!user) throw Error('not authenticated')
     if (!user.isAdmin) throw Error('not authorized')
     let $set: any = {}
@@ -78,6 +73,7 @@ export async function patchSchool(_:any,{_id, data}:MutationPatchSchoolArgs,{use
     if (valid(name)) $set.name = name
     if (valid(city)) $set.city = city
     if (valid(city_fu)) $set.city_fu = city_fu
+    if (valid(type)) $set.type = type
     const collection = await getSchoolCollection()
     const res = await collection.updateOne({_id},{$set})
     const out = await collection.findOne({_id})

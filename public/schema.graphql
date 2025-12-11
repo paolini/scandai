@@ -24,6 +24,12 @@ type Account {
     provider: String
 }
 
+enum SchoolType {
+  first
+  second
+  primary
+}
+
 type School {
     _id: ObjectId
     name: String
@@ -31,12 +37,14 @@ type School {
     city_fu: String
     reportSecret: String
     pollCount: Int
+    type: SchoolType
 }
 
 input SchoolData {
     name: String!
     city: String!
     city_fu: String
+    type: SchoolType!
 }
 
 type User {
@@ -128,6 +136,7 @@ type Query {
         year: Int,
         class: String, city: String, form: String,
         schoolId: ObjectId,
+        schoolType: SchoolType
     ): JSON
     translations: [Translation!]!
     users: [User!]!

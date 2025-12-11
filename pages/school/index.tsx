@@ -7,6 +7,8 @@ import Page from '@/components/Page'
 import Loading from '@/components/Loading'
 import { useTrans } from '@/lib/trans'
 import { gql, useQuery } from '@apollo/client'
+import { schoolType } from "@/lib/questionary"
+import { SchoolTypeString } from "@/lib/mongodb"
 
 const SchoolsQuery = gql`
 query SchoolsQuery {
@@ -15,6 +17,7 @@ query SchoolsQuery {
         name
         city
         city_fu
+        type
         pollCount
     }
 }`
@@ -46,6 +49,7 @@ function Schools() {
                     <th>{_("nome")}</th>
                     <th>{_("città (in italiano)")}</th>
                     <th>{_("città (in friulano)")}</th>
+                    <th>{_("grado")}</th>
                     <th>{_("questionari")}</th>
                 </tr>
             </thead>
@@ -55,6 +59,7 @@ function Schools() {
                     <td>{school.name}</td>
                     <td>{school.city}</td>
                     <td>{school.city_fu}</td>
+                    <td>{schoolType[school.type as SchoolTypeString][_.locale]}</td>
                     <td>{school.pollCount}</td>
                 </tr>)}
             </tbody>

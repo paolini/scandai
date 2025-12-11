@@ -301,6 +301,7 @@ export type QueryStatsArgs = {
   polls: InputMaybe<Array<InputMaybe<Scalars['ObjectId']['input']>>>;
   schoolId: InputMaybe<Scalars['ObjectId']['input']>;
   schoolSecret: InputMaybe<Scalars['String']['input']>;
+  schoolType: InputMaybe<SchoolType>;
   year: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -312,13 +313,21 @@ export type School = {
   name: Maybe<Scalars['String']['output']>;
   pollCount: Maybe<Scalars['Int']['output']>;
   reportSecret: Maybe<Scalars['String']['output']>;
+  type: Maybe<SchoolType>;
 };
 
 export type SchoolData = {
   city: Scalars['String']['input'];
   city_fu: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  type: SchoolType;
 };
+
+export enum SchoolType {
+  First = 'first',
+  Primary = 'primary',
+  Second = 'second'
+}
 
 export type Translation = {
   __typename?: 'Translation';
@@ -430,6 +439,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   School: ResolverTypeWrapper<School>;
   SchoolData: SchoolData;
+  SchoolType: SchoolType;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   Translation: ResolverTypeWrapper<Translation>;
@@ -579,6 +589,7 @@ export type SchoolResolvers<ContextType = Context, ParentType extends ResolversP
   name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   pollCount: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   reportSecret: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type: Resolver<Maybe<ResolversTypes['SchoolType']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

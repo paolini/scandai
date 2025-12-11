@@ -142,11 +142,15 @@ export async function getPollCollection() {
   return getCollection<MongoPoll>("polls")
 }
 
+export type SchoolTypeString = "primary" | "first" | "second"
+// "primary" (elementare), "first" (media), "second" (superiore)
+
 type MongoSchool = {
     name: string,
     city: string,
     city_fu: string,
     reportSecret?: string,
+    type: SchoolTypeString, 
 }
 
 export async function getSchoolCollection() {
