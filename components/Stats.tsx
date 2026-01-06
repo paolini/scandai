@@ -189,7 +189,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
                 const blob = await res.blob()
                 const link = document.createElement('a')
                 link.href = window.URL.createObjectURL(blob)
-                link.download = 'report.pdf'
+                link.download = `report-${_.locale}.pdf`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
