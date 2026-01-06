@@ -155,7 +155,7 @@ function ReportChart({ question, item, t } : {
         (item.title && trans(item.title, _.locale)) 
         || question.question.question[_.locale]
     assert(item.element === 'chart')
-    console.log(`ReportChart: ${JSON.stringify({item, question, item_title})}`)
+    // console.log(`ReportChart: ${JSON.stringify({item, question, item_title})}`)
     switch(question.type) {
         case 'choose-language': 
             switch (item.variant) {

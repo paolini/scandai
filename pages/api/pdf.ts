@@ -82,7 +82,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     
     const endpoint = `${BROWSERLESS_URL}/pdf`
-    console.log('Fetching PDF from:', endpoint, 'with URL:', url, 'and cookies:', browserlessConfig.cookies)
+    console.log('Fetching PDF from:', endpoint, 'with URL:', url)
+    //console.log({cookies: browserlessConfig.cookies})
     const pdfRes = await fetch(endpoint, {
       method: 'POST',
       headers,
@@ -90,6 +91,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
     if (!pdfRes.ok) {
       const text = await pdfRes.text()
+      console.log('Browserless error:', text)
       res.setHeader('Content-Type', 'text/plain')
       res.status(500).send('Browserless error: ' + text)
       return
@@ -99,6 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const buffer = Buffer.from(await pdfRes.arrayBuffer())
     res.end(buffer)
   } catch (err: any) {
+    console.error('PDF proxy error:', err)
     res.setHeader('Content-Type', 'text/plain')
     res.status(500).send('PDF proxy error: ' + err?.message)
   }

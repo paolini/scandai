@@ -64,7 +64,7 @@ export default function handler(req, res) {
 
     transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-        console.log(error);
+        console.log({error});
         res.status(400).json({ 
           error: 'errore invio email',
           info: error })
