@@ -15,7 +15,7 @@ import { SchoolTypeString } from "@/lib/mongodb"
 
 export default function StatsFilter({fields, schoolTypeState, schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
     fields: string[],
-    schoolTypeState: State<SchoolTypeString>,
+    schoolTypeState: State<SchoolTypeString | null>,
     schoolIdState: State<string>,
     cityState: State<string>,
     formState: State<string>,
@@ -75,17 +75,18 @@ export default function StatsFilter({fields, schoolTypeState, schoolIdState, cit
             {citiesInfo.map(info => <option key={info.city} value={info.city}>{_.locale === 'fu' ? (map_city_fu[info.city] || info.city) : info.city}</option>)}
         </select>} {}
         { fields.includes("school") &&
-        <select value={value(schoolIdState) || `type:${value(schoolTypeState)}`} onChange={evt => {
+        <select value={value(schoolIdState) || (value(schoolTypeState) ? `type:${value(schoolTypeState)}` : '')} onChange={evt => {
             const school_type:SchoolTypeString|'' = evt.target.value.startsWith('type:') ? (evt.target.value.slice(5) as SchoolTypeString) : ''; 
             const school_id = school_type ? '' : evt.target.value;
             set(schoolIdState,school_id || '');
-            set(schoolTypeState, school_type as SchoolTypeString || 'second');
+            set(schoolTypeState, school_type as SchoolTypeString || null);
             // Aggiorna la query string nell'URL
             const query: Record<string,string> = { ...router.query, school_id, school_type };
             if (!school_id && 'school_id' in query) delete query.school_id;
             if (!school_type && 'school_type' in query) delete query.school_type;
             router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
         }}>
+            <option value=''>{_("tutte le scuole")}</option>
             <option value='type:second'>{_("tutte le scuole di secondo grado")}</option>
             <option value='type:first'>{_("tutte le scuole di primo grado")}</option>
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}

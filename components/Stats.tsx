@@ -75,7 +75,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
     schools: School[],
     yearState: State<string>,
 }) {
-    const schoolTypeState = useState<SchoolTypeString>("second")
+    const schoolTypeState = useState<SchoolTypeString | null>(null)
     const schoolIdState = useState(schoolId)
     const router = useRouter()
     const cityState = useState(typeof router.query.city === 'string' ? router.query.city : '')
