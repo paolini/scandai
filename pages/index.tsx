@@ -1,4 +1,3 @@
-import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
 
@@ -11,7 +10,7 @@ import { ProfileQuery } from '@/lib/api'
 import { useTrans } from '@/lib/trans'
 import Title from '@/components/Title'
 import Provider from '@/components/Provider'
-import { useSession } from 'next-auth/react'
+import { authClient } from '@/lib/auth-client'
 
 export default function Index() {
   return <Provider>
@@ -20,16 +19,16 @@ export default function Index() {
 }
 
 function Home() {
-  const session = useSession()
+  const { data: sessionData, isPending: sessionLoading } = authClient.useSession()
   const router = useRouter()
   const { data, loading, error } = useQuery(ProfileQuery)
   const _ = useTrans()
 
-  if (loading) return <Loading />
+  if (loading || sessionLoading) return <Loading />
   if (!data) return <Error>{`${error}`}</Error>
 
-  if (session.status === "unauthenticated") {
-    router.push('/api/auth/signin')
+  if (!sessionData?.session) {
+    router.push('/login')
     return <Loading/>
   }
   const profile = data.profile
@@ -39,15 +38,15 @@ function Home() {
   if (loading) return <Loading />
   if (error) return <Error>{`${error}`}</Error>
 
-  if (session.status === "authenticated" && !profile) {
+  if (sessionData?.session && !profile) {
     /* l'utente aveva una sessione ma evidentemente non esiste più nel db */
-    signOut()
+    authClient.signOut()
     return <Loading />
   }
 
   // profile potrebbe non esserci se la sessione è "loading"
   // controlliamo entrambe per far contento il type checker
-  if (session.status === "loading" || !profile) return <Loading />
+  if (!profile) return <Loading />
 
   if (profile.isViewer) {
     router.push('/report')

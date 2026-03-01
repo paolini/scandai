@@ -1,14 +1,18 @@
-import { getToken } from 'next-auth/jwt'
 import { NextApiRequest } from 'next'
 import { ObjectId } from 'mongodb'
 import { getUserCollection } from './mongodb'
+import { auth } from './auth'
+import { fromNodeHeaders } from 'better-auth/node'
 
 export default async function getSessionUser(req: NextApiRequest) {
-    const token = await getToken({req})
-    if (!token) return null
-    // console.log(JSON.stringify({token}))
+    // Better Auth requires headers in the correct format
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    })
+    if (!session?.user?.id) return null
+
     const collection = await getUserCollection()
-    const user = collection.findOne({_id: new ObjectId(token.sub)})
+    const user = collection.findOne({_id: new ObjectId(session.user.id)})
     return user
   }
   

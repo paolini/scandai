@@ -1,6 +1,5 @@
 import {Document, ObjectId, InferIdType, MongoClient, Collection} from 'mongodb'
 
-import migrate from './migrations'
 import createAdminUser from './createAdminUser'
 import updateConfiguration from './updateConfiguration'
 
@@ -19,7 +18,6 @@ async function db() {
   console.log(`connected to mongodb at ${uri}`)
 
   await createAdminUser(db)
-  await migrate(db, { apply: true })
 
   await updateConfiguration(db)
 
