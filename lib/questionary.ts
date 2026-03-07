@@ -364,7 +364,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "a mia mamma parlo in...",
-        fu: "cun mê mari o feveli par ...",
+        fu: "a mê mari i feveli par ...",
         en: "With my mother I speak ...",
       },
     },
@@ -372,7 +372,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "a mio papà parlo in...",
-        fu: "cun gno pari o feveli par ...",
+        fu: "a gno pari i feveli par ...",
         en: "With my father I speak ...",
       },
     },
@@ -380,7 +380,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "ai miei fratelli/sorelle parlo in...",
-        fu: "cui miei fradis / cu lis mês sûrs o feveli par ...",
+        fu: "ai miei fradis / a lis mês sûrs i feveli par ...",
         en: "With my siblings I speak ...",
       },
     },
@@ -388,7 +388,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "ai miei nonni parlo in...",
-        fu: "cui miei nonos o feveli par ...",
+        fu: "ai miei nonos i feveli par ...",
         en: "With my grandparents I speak ...",
       },
     },
