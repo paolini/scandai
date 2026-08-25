@@ -17,8 +17,9 @@ export const ObjectIdType = new GraphQLScalarType({
   parseValue(value: unknown): ObjectId {
     switch(typeof value) {
       case "string":
-      case "number":
         return new ObjectId(value); // Converte in ObjectId
+      case "number":
+        return new ObjectId(String(value)); // Converte numero in stringa, poi in ObjectId
       case "object":
         if (value instanceof ObjectId) return value; // Se è già un ObjectId, lo ritorna
       default:

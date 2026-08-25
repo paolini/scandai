@@ -6,8 +6,9 @@
 !package-lock.json
 !next.config.js
 !tsconfig.json
-entrypoint.sh
-trans.js
+!start.sh
+!migrations/**
+!migrate-mongo-config.js
 !public/**
 !.next/**
 !lib/**

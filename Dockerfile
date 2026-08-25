@@ -20,7 +20,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -38,8 +38,15 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/migrations ./migrations
+COPY --from=builder --chown=nextjs:nodejs /app/migrate-mongo-config.js ./migrate-mongo-config.js
+COPY --from=builder --chown=nextjs:nodejs /app/start.sh ./start.sh
+# Install migrate-mongo globally
+RUN npm install -g migrate-mongo
+RUN chmod +x ./start.sh
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 EXPOSE 3000
 USER nextjs
 
-#CMD ["tail", "-f", "/dev/null"]
-CMD ["node", "server.js"]
+CMD ["./start.sh"]

@@ -60,11 +60,11 @@ export default function Polls({}) {
 
     const polls = pollsQuery.data?.polls || []
     let openPolls = polls
-        .filter(poll => !poll.closed)
-        .sort((a,b) => a.createdAt > b.createdAt ? -1 : 1)
+        .filter((poll: Poll) => !poll.closed)
+        .sort((a: Poll, b: Poll) => a.createdAt > b.createdAt ? -1 : 1)
     let closedPolls = polls
-        .filter(poll => poll.closed)
-        .sort((a,b) => a.date  > b.date ? -1 : 1)
+        .filter((poll: Poll) => poll.closed)
+        .sort((a: Poll, b: Poll) => a.date  > b.date ? -1 : 1)
 
     return <>
         { newForm !== null

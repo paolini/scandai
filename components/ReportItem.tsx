@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { Table } from 'react-bootstrap'
 import { assert } from '@/lib/assert'
 
@@ -69,24 +69,25 @@ function ReportBlockElement({item,stats,t,pollIdsState}:{
     const [hide, setHide] = useState<boolean>(true)
     const _ = useTrans() 
 
-//    const elements = item.elements.map((item, i) => <ReportItem key={i} stats={stats} item={item} t={t} pollIdsState={pollIdsState} />)
-    // Chiamo ReportItem come funzione per verificare se restituisce null
-    const elements = item.elements.map((el, i) => {
-        const result = ReportItem({ stats, item: el, t, pollIdsState });
-        // Se vuoi mantenere la chiave, puoi usare cloneElement se result è un React element
-        if (result && typeof result === 'object' && 'type' in result) {
-            return { ...result, key: i };
+    // Filter elements - we need to call ReportItem to check if it returns null
+    // Then render non-null elements using JSX
+    const nonNullIndices: number[] = []
+    item.elements.forEach((el, i) => {
+        const result = ReportItem({ stats, item: el, t, pollIdsState })
+        if (result !== null) {
+            nonNullIndices.push(i)
         }
-        return result; // può essere null
-    }).filter(e => e !== null)
+    })
 
-    if (elements.length === 0) return null
+    if (nonNullIndices.length === 0) return null
 
     return <div>
         <ReportTitle title={item.title[_.locale]} hide={hide} bold={item?.bold} setHide={setHide}/>
         <div className={"mb-5 " + (hide?"hideBlock":"")}>
             <div className="mb-5" style={{maxWidth: 640}}>
-                {elements}
+                {nonNullIndices.map(i => (
+                    <ReportItem key={i} stats={stats} item={item.elements[i]} t={t} pollIdsState={pollIdsState} />
+                ))}
             </div>
             { !hide && <div className="noPrint" onClick={() => setHide(true)} style={{cursor: "pointer", textAlign: "right"}}><b>△</b></div>}
             <hr />
@@ -94,7 +95,7 @@ function ReportBlockElement({item,stats,t,pollIdsState}:{
     </div>
 }
 
-function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, JSX.Element|null] {
+function StatsQuestionOrError(stats: IStats, item: IReportQuestionElement): [IQuestionStat|null, ReactNode] {
     const _ = useTrans()
     const question = stats.questions[item.question]
     if (!question) {

@@ -42,9 +42,9 @@ export async function setProfile(_parent: any, {name, isTeacher, isStudent}: Mut
     if (name!==null) $set.name = name
     if (isTeacher!==null) $set.isTeacher = isTeacher
     if (isStudent!=null) $set.isStudent = isStudent
-    const out = await collection.findOneAndUpdate({_id: context.user._id}, {$set})
+    const out = await collection.findOneAndUpdate({_id: context.user._id}, {$set}, {returnDocument: 'after'})
     if (!out) throw new Error('user not found')
-    return out.value as Profile
+    return out as Profile
 }
 
 export async function newUser(_parent: any, {name,username,email}: MutationNewUserArgs, {user}: Context) {

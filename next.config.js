@@ -6,7 +6,16 @@ const nextConfig = {
   i18n: {
     locales: ['it', 'en', 'fu'],
     defaultLocale: 'it',
-  },}
+  },
+  turbopack: {},
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/database/**'],
+    };
+    return config;
+  },
+}
 
 module.exports = nextConfig
 

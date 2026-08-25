@@ -1,8 +1,8 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import assert from 'assert'
 import { useQuery } from '@apollo/client'
+import { authClient } from '@/lib/auth-client'
 
 import package_json from '../package.json'
 import { useTrans } from '@/lib/trans'
@@ -56,7 +56,7 @@ export default function Header() {
               <Link className="superadmin" href={`/${locale}/entries`}>{_("Entries")}</Link>
           }
           { !isAuthenticated && 
-            <Link href="/api/auth/signin">{_("Login")}</Link>
+            <Link href="/login">{_("Login")}</Link>
           }
           <Nav className="right">
             <NavDropdown title={_({it: 'italiano', en: 'inglese', fu: 'friulano'}[locale])}>
@@ -75,10 +75,10 @@ export default function Header() {
           <Nav className="right">
           {!profile && <NavDropdown title="user">
             <NavDropdown.Item
-                href={`/api/auth/signin`}
+                href={`/login`}
                 onClick={(e) => {
                   e.preventDefault()
-                  signIn()
+                  window.location.href = '/login'
                 }}>{_("login")}
             </NavDropdown.Item>
           </NavDropdown>} 
@@ -99,11 +99,10 @@ export default function Header() {
                     {_("download backup")}
                 </NavDropdown.Item>}
                 <NavDropdown.Item
-                    href={`/api/auth/signout`}
+                    href={`#`}
                     onClick={async (e) => {
                       e.preventDefault()
-                      await signOut()
-                      // router.push('/') // non funziona!
+                      await authClient.signOut()
                       window.location.href = '/'
                     }}  
                   >{_("logout")}

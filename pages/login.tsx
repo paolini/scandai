@@ -1,7 +1,4 @@
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { ClientSafeProvider, getProviders, signIn, getCsrfToken } from "next-auth/react"
-import { getServerSession } from "next-auth/next"
-import authOptions from "./api/auth/[...nextauth]"
 import { useSearchParams } from "next/navigation"
 import { Button, Card } from "react-bootstrap"
 import { useState } from "react"
@@ -9,15 +6,16 @@ import { useState } from "react"
 import Error from '@/components/Error'
 import { useTrans } from '@/lib/trans'
 import clientPromise from "@/lib/mongodb"
+import { authClient } from "@/lib/auth-client"
 
-export default function SignIn({ providers, csrfToken, siteTitle }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+export default function SignIn({ siteTitle, hasGoogle, hasMagicLink }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? undefined
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
   const error = searchParams.get('error')
   const invalidCredentials = error === 'Invalid username or password'
   const oAuthAccountNotLinkedError = error === 'OAuthAccountNotLinked'
-  const querystring = callbackUrl === undefined ? '' : `?callbackUrl=${encodeURIComponent(callbackUrl)}`
-  const google = Object.values(providers).find((provider) => provider.name === 'google')
   const [expanded, setExpanded] = useState(invalidCredentials)
 
   return <>
@@ -27,14 +25,14 @@ export default function SignIn({ providers, csrfToken, siteTitle }: InferGetServ
       </Card.Header>
       <Card.Body>
         {error && !invalidCredentials && <Error>{ error }</Error>}
-        {oAuthAccountNotLinkedError && <Error>Il tuo account non è collegato a nessun account locale. Chiedi l&aps;intervento di un amministratore.</Error>}
-        <EmailLogin csrfToken={csrfToken} querystring={querystring} />
+        {oAuthAccountNotLinkedError && <Error>Il tuo account non è collegato a nessun account locale. Chiedi l&apos;intervento di un amministratore.</Error>}
+        {hasMagicLink && <EmailLogin callbackUrl={callbackUrl} />}
         {expanded ? <>
           <hr />
-          {google && <GoogleLogin provider={google} callbackUrl={callbackUrl}/>}
+          {hasGoogle && <GoogleLogin callbackUrl={callbackUrl}/>}
           <hr />
           { invalidCredentials && <Error>Username o password errati</Error>}
-          <CredentialsLogin querystring={querystring} callbackUrl={callbackUrl} csrfToken={csrfToken}/>
+          <CredentialsLogin callbackUrl={callbackUrl}/>
         </> : <>
           <br className="py-2"/>
           <p><a href="#" onClick={() => setExpanded(true)}>[accedi tramite credenziali]</a></p>
@@ -54,82 +52,131 @@ export default function SignIn({ providers, csrfToken, siteTitle }: InferGetServ
 </> 
 }
 
-function EmailLogin({querystring, csrfToken}: {
-  querystring: string,
-  csrfToken: string|undefined,
+function EmailLogin({ callbackUrl }: {
+  callbackUrl: string,
 }) {
   const _ = useTrans()
   const [email, setEmail] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
-  return <form method="post" action={`/api/auth/signin/email${querystring}`}>
-    <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await authClient.signIn.magicLink({
+        email,
+        callbackURL: callbackUrl,
+      })
+      setSent(true)
+    } catch (err) {
+      console.error('Magic link error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (sent) {
+    return <div>
+      <p>Ti abbiamo inviato un&apos;email con un link per entrare nel sito.</p>
+      <p>Controlla la tua casella di posta.</p>
+    </div>
+  }
+
+  return <form onSubmit={handleSubmit}>
     <label htmlFor="email">
         Inserisci il tuo indirizzo email<br/>
         <input type="email" id="email" name="email" value={email} onChange={evt => setEmail(evt.target.value)}/>
     </label>
     <br />
-    <Button disabled={!email.includes('@')} type="submit">Inviami Email</Button>
+    <Button disabled={!email.includes('@') || loading} type="submit">
+      {loading ? 'Invio...' : 'Inviami Email'}
+    </Button>
     <br />
     Ti invieremo un messaggio per entrare nel sito.
   </form>
 }
 
-function GoogleLogin({provider, callbackUrl}: {
-  provider: ClientSafeProvider,
-  callbackUrl: string|undefined,
+function GoogleLogin({ callbackUrl }: {
+  callbackUrl: string,
 }) {
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: callbackUrl,
+    })
+  }
+
   return <div className="py-2">
-    <Button onClick={() => signIn(provider.id,{callbackUrl})}>
+    <Button onClick={handleGoogleLogin}>
       Entra con un account google
     </Button>
   </div>
 }
 
-function CredentialsLogin({querystring,callbackUrl,csrfToken} : {
-    querystring: string,
-    callbackUrl: string|undefined,
-    csrfToken: string|undefined,
+function CredentialsLogin({ callbackUrl } : {
+    callbackUrl: string,
   }) {
-  return <form method="post" action={`/api/auth/callback/credentials${querystring}`}>
-    <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      // Try username login first
+      const result = await authClient.signIn.username({
+        username,
+        password,
+      })
+      if (result.error) {
+        setError(result.error.message || 'Username o password errati')
+      } else {
+        window.location.href = callbackUrl
+      }
+    } catch (err: any) {
+      setError(err.message || 'Errore durante il login')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return <form onSubmit={handleSubmit}>
+    {error && <Error>{error}</Error>}
     <label className="my-2" htmlFor="username">
     Username <br/>
-    <input name="username" type="text" />
+    <input name="username" type="text" value={username} onChange={e => setUsername(e.target.value)} />
     </label>
     <br/>
     <label className="my-2" htmlFor="password">
     Password <br/>
-    <input name="password" type="password" />
+    <input name="password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
     </label>
     <br/>
-    <Button type="submit">Entra</Button>
+    <Button type="submit" disabled={loading}>
+      {loading ? 'Accesso...' : 'Entra'}
+    </Button>
   </form>
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
   const db = (await clientPromise).db()
 
   const result = await db.collection("configs").findOne({});
-  const siteTitle = result?.siteTitle || "*** titolo non configurato ***"
+  const siteTitle = result?.siteTitle || { it: "*** titolo non configurato ***" }
 
-  // If the user is already logged in, redirect.
-  // Note: Make sure not to redirect to the same page
-  // To avoid an infinite loop!
-
-  if (session) {
-    return { redirect: { destination: "/" } };
-  }
-
-  const providers = await getProviders();
-  const csrfToken = await getCsrfToken(context)
+  // Check which providers are available
+  const hasGoogle = !!(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID)
+  const hasMagicLink = !!process.env.SMTP_HOST
 
   return {
     props: { 
-        providers: providers ?? [],
-        csrfToken,
         siteTitle,
+        hasGoogle,
+        hasMagicLink,
     },
   }
 }

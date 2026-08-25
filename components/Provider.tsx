@@ -1,4 +1,3 @@
-import { SessionProvider } from 'next-auth/react'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const apolloClient = new ApolloClient({
@@ -9,10 +8,10 @@ const apolloClient = new ApolloClient({
 export default function Provider({children}:{
     children: React.ReactNode
 }) {
-    return <SessionProvider>
-        <ApolloProvider client={apolloClient}>
-                {children}
-        </ApolloProvider>
-    </SessionProvider>
+    // Better Auth doesn't need a session provider wrapper like next-auth
+    // Session is fetched directly via authClient.useSession() hook
+    return <ApolloProvider client={apolloClient}>
+        {children}
+    </ApolloProvider>
 }
 
