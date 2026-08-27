@@ -10,8 +10,9 @@ export function formatTime(date:string) {
     return dayjs(date).format("HH:mm")
 }
 
-// l'anno scolastico inizia col primo luglio:
-const SCHOOL_MONTH_STRING = '07'
+
+// l'anno scolastico inizia col primo settembre:
+const SCHOOL_MONTH_STRING = '09'
 const SCHOOL_MONTH_COUNT = parseInt(SCHOOL_MONTH_STRING) - 1
 
 export function currentSchoolYear() {
