@@ -360,7 +360,26 @@ const questionary: IQuestionary = {
       },
       compulsory: true,
     },
+    "family-speaking": {
+      type: "choose-language",
+      question: {
+        it: "ai miei familiari parlo in...",
+        fu: "cui miei familiârs o feveli par ...",
+        en: "With my family members I speak ...",
+      },
+      aggregateFrom: ["1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4"],
+    },
+    "family-listening": {
+      type: "choose-language",
+      question: {
+        it: "i miei familiari a me parlano in...",
+        fu: "i miei familiârs mi fevelin par ...",
+        en: "My family members speak to me in ...",
+      },
+      aggregateFrom: ["1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5"],
+    },
     "1.1.b.1": {
+      reportAccess: "restricted",
       type: "choose-language",
       question: {
         it: "a mia mamma parlo in...",
@@ -369,6 +388,7 @@ const questionary: IQuestionary = {
       },
     },
     "1.1.b.2": {
+      reportAccess: "restricted",
       type: "choose-language",
       question: {
         it: "a mio papà parlo in...",
@@ -377,6 +397,7 @@ const questionary: IQuestionary = {
       },
     },
     "1.1.b.3": {
+      reportAccess: "restricted",
       type: "choose-language",
       question: {
         it: "ai miei fratelli/sorelle parlo in...",
@@ -385,6 +406,7 @@ const questionary: IQuestionary = {
       },
     },
     "1.1.b.4": {
+      reportAccess: "restricted",
       type: "choose-language",
       question: {
         it: "ai miei nonni parlo in...",
@@ -401,6 +423,7 @@ const questionary: IQuestionary = {
         },
       },
     "1.1.c.2": {
+      reportAccess: "restricted",
         type: "choose-language",
         question: {
           it: "mia madre a me parla in...",
@@ -409,6 +432,7 @@ const questionary: IQuestionary = {
         },
       },
     "1.1.c.3": {
+      reportAccess: "restricted",
         type: "choose-language",
         question: {
           it: "mio padre a me parla in...",
@@ -417,6 +441,7 @@ const questionary: IQuestionary = {
         },
       },
     "1.1.c.4": {
+      reportAccess: "restricted",
         type: "choose-language",
         question: {
           it: "i miei fratelli/sorelle a me parlano in...",
@@ -425,6 +450,7 @@ const questionary: IQuestionary = {
         },
       },
     "1.1.c.5": {
+      reportAccess: "restricted",
         type: "choose-language",
         question: {
           it: "i miei nonni a me parlano in...",
@@ -955,6 +981,14 @@ const questionary: IQuestionary = {
               elements: [
               {
                 element: "chart",
+                question: "family-speaking",
+              },
+              {
+                element: "chart",
+                question: "family-listening",
+              },
+              {
+                element: "chart",
                 //title: "Prova ...",
                 question: "1.1.b.1",
               },
@@ -1313,6 +1347,10 @@ export interface IChoice {
 export interface IQuestion {
     type: 'choose-language' | 'map-language-to-competence' | 'map-language-to-age' | 'choice',
     question: LocalizedString,
+    // Derived per respondent, after language normalization; never stored or asked in forms.
+    aggregateFrom?: string[],
+    // Detailed report statistics are available only to administrators and viewers.
+    reportAccess?: 'restricted',
     choices?: IChoice[],
     compulsory?: boolean,
     // if specified, this question will be saved with this 

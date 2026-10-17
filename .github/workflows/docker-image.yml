@@ -47,3 +47,40 @@ jobs:
         tags: paolini/scandai:latest , paolini/scandai:${{ github.ref_name }} , paolini/scandai:${{ github.ref_name }}_${{ env.VERSION }} 
 #        tags: ${{ steps.meta.outputs.tags }}
 #        labels: ${{ steps.meta.outputs.labels }}
+    - name: Notify WUD of published image
+      if: ${{ steps.docker_build.outcome == 'success' }}
+      env:
+        WUD_WEBHOOK_TOKEN: ${{ secrets.WUD_WEBHOOK_TOKEN }}
+        IMAGE_TAG: ${{ github.ref_name }}
+        IMAGE_DIGEST: ${{ steps.docker_build.outputs.digest }}
+      run: |
+        set -euo pipefail
+        if [ -z "$WUD_WEBHOOK_TOKEN" ]; then
+          echo "::error::Configure the WUD_WEBHOOK_TOKEN repository secret before deploying."
+          exit 1
+        fi
+        node <<'NODE' > "$RUNNER_TEMP/wud-event.json"
+        const { IMAGE_TAG, IMAGE_DIGEST } = process.env;
+        if (!['main', 'develop'].includes(IMAGE_TAG) || !/^sha256:[a-f0-9]{64}$/.test(IMAGE_DIGEST || '')) {
+          throw new Error('Invalid published image tag or digest');
+        }
+        process.stdout.write(JSON.stringify({
+          events: [{
+            action: 'push',
+            target: {
+              mediaType: 'application/vnd.docker.distribution.manifest.v2+json',
+              repository: 'paolini/scandai',
+              tag: IMAGE_TAG,
+              digest: IMAGE_DIGEST,
+              url: `https://registry-1.docker.io/v2/paolini/scandai/manifests/${IMAGE_TAG}`,
+            },
+          }],
+        }));
+        NODE
+        curl --fail-with-body --silent --show-error \
+          --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 5 \
+          --header "Authorization: Bearer $WUD_WEBHOOK_TOKEN" \
+          --header 'Content-Type: application/json' \
+          --data-binary "@$RUNNER_TEMP/wud-event.json" \
+          'https://wud5.matb.it/api/registries/hub.public/events'
+        echo "WUD notified for paolini/scandai:$IMAGE_TAG. Update processing is asynchronous." >> "$GITHUB_STEP_SUMMARY"

@@ -6,6 +6,7 @@ import { schoolYearMatch } from '@/lib/utils'
 import { Context } from '../types'
 import { getCollection, getDictCollection } from '@/lib/mongodb'
 import { QueryStatsArgs } from '@/generated/graphql'
+import { aggregateReportAnswers, canReadReportQuestion } from '@/lib/reportQuestions'
 
 export default async function resolver(_parent: any, query: QueryStatsArgs, context: Context) {
         const user = context.user
@@ -92,6 +93,9 @@ export default async function resolver(_parent: any, query: QueryStatsArgs, cont
         const collection = await getCollection("entries")
         const entries = await collection.aggregate(pipeline).toArray()
         const data: IStats = await aggregate(entries as IEntryWithPoll[], filters)
+        data.questions = Object.fromEntries(Object.entries(data.questions).filter(
+            ([code]) => canReadReportQuestion(questionary.questions[code], user)
+        ))
         return data
 }
 
@@ -354,7 +358,13 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
             preferredLanguageCount[preferredLanguage] = count + 1
         }
         
-        Object.entries(e.answers).forEach(([code, answer]) => {
+        const answers = {
+            ...Object.fromEntries(Object.entries(e.answers).filter(
+                ([code]) => !questionsMap[code]?.aggregateFrom
+            )),
+            ...aggregateReportAnswers(questionsMap, e.answers, langMap),
+        }
+        Object.entries(answers).forEach(([code, answer]) => {
             const question = questionsMap[code]
             if (!question) return
             if (question.type === 'choose-language') {
@@ -373,7 +383,7 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                     questions[code] = q
                 }
                 assert(q.type === question.type)
-                const answer = e.answers[code]
+                const answer = answers[code]
                 if (!answer) {
                     console.error(`cannot find answer for question ${code} in entry ${e._id}`)
                     return
@@ -387,7 +397,7 @@ async function aggregate(entries: IEntryWithPoll[], filters: IStatsFilters): Pro
                 }
                 q.counts[n] ++ 
                 for (const sourceLang of answer) {
-                    const lang = langMap(sourceLang)
+                    const lang = question.aggregateFrom ? sourceLang : langMap(sourceLang)
                     if (!lang) continue // language marked for discard
                     q.countAnswers ++
                     if (lang in q.answers) q.answers[lang]++
