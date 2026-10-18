@@ -64,6 +64,8 @@ I test dei report verificano che la selezione delle classi e tutti i filtri
 rimangano applicati dopo il ricaricamento e nell'esportazione PDF. Riaprono
 l'URL inviato alla stampa usando API e database reali e generano il PDF con
 Chromium, sostituendo soltanto il servizio esterno Browserless.
+Verificano inoltre che il menu delle scuole sia ordinato per compilazioni
+effettive in base ai filtri attivi, mantenendo disponibili le scuole con zero risultati.
 
 La stampa del questionario è verificata in italiano, inglese e friulano, nelle
 versioni completa e breve. I test controllano anche la lingua scelta dal report

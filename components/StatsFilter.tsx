@@ -10,24 +10,31 @@ import { formatDate } from '@/lib/utils'
 import useReportFilters from '@/lib/useReportFilters'
 
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
-export default function StatsFilter({fields, schools, classes}:{
+export default function StatsFilter({fields, schools, polls, classes}:{
     fields: string[],
     schools: School[],
+    polls: IStats['polls'],
     classes: string[],
 }) {    
     const { city, schoolId, schoolType, year, className, form, updateFilters } = useReportFilters()
+    const _ = useTrans()
+    const entriesBySchool: Record<string, number> = {}
+    for (const poll of polls) {
+        const id = poll.school?._id
+        if (id) entriesBySchool[id] = (entriesBySchool[id] || 0) + poll.entriesCount
+    }
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
     const citiesInfo = Object.keys(map_city_fu).map(city => {
-        let pollCount = 0
+        let entriesCount = 0
         for (const school of schools.filter(school => school.city===city)) {
-            pollCount += school.pollCount || 0
+            entriesCount += entriesBySchool[school._id] || 0
         }
-        return {pollCount, city}
-    }).sort((a,b) => b.pollCount-a.pollCount)
+        return {entriesCount, city}
+    }).sort((a,b) => b.entriesCount-a.entriesCount || a.city.localeCompare(b.city, _.locale))
     const selectedSchools = (city 
         ? schools.filter(school => school.city===city)
-        : [...schools]).sort((a,b) => (b.pollCount || 0)-(a.pollCount || 0))
-    const _ = useTrans()
+        : [...schools]).sort((a,b) =>
+            (entriesBySchool[b._id] || 0)-(entriesBySchool[a._id] || 0) || (a.name || '').localeCompare(b.name || '', _.locale))
 
     // Calcolo dinamico degli anni scolastici
     const now = new Date()

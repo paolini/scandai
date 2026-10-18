@@ -115,6 +115,7 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
             <StatsFilter 
                 fields={showFilter}
                 schools={schools}
+                polls={stats.polls}
                 classes={classes}
                 /></div> }
         <div className="container noPrint">

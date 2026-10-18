@@ -38,7 +38,7 @@ const test = base.extend({
                     pollId: poll._id, lang: 'it', createdAt, answers: { '1.1.a.1': ['it'] },
                 })
             }
-            await use({ polls, schoolIds, path: `/report?schoolSecret=${secret}` })
+            await use({ db, polls, schoolIds, path: `/report?schoolSecret=${secret}` })
             expect(errors, 'The report must not throw browser errors').toEqual([])
         } finally {
             await db.collection('entries').deleteMany({ pollId: { $in: polls.map(poll => poll._id) } })
@@ -182,4 +182,39 @@ test('print questionnaire button exports the language selected in the report', a
         expect(await download.failure()).toBeNull()
         await page.unroute('**/api/pdf?*')
     }
+})
+
+test('school options rank actual respondents using every active report filter', async ({ page, report }) => {
+    const counts = [2, 1, 1, 20, 10, 6]
+    for (const [index, poll] of report.polls.entries()) {
+        if (counts[index] <= 1) continue
+        await report.db.collection('entries').insertMany(Array.from({ length: counts[index] - 1 }, () => ({
+            pollId: poll._id, lang: 'it', createdAt: new Date(), answers: { '1.1.a.1': ['it'] },
+        })))
+    }
+    const ids = report.schoolIds.map(id => id.toString())
+    async function expectOrder(indices) {
+        await expect.poll(async () => page.getByRole('combobox', { name: 'scuola', exact: true })
+            .locator('option').evaluateAll((options, ids) => options.map(option => option.value).filter(value => ids.includes(value)), ids))
+            .toEqual(indices.map(index => ids[index]))
+    }
+    await page.goto(report.path)
+    await expectOrder([0, 1, 2])
+    // The school with more classes is overtaken by schools with more respondents.
+    await page.getByRole('combobox', { name: 'anno scolastico', exact: true }).selectOption('2025')
+    await expectOrder([1, 2, 0])
+    await page.getByRole('combobox', { name: 'fotografia', exact: true }).selectOption('short')
+    await expectOrder([0, 2, 1])
+    await page.getByRole('combobox', { name: 'fotografia', exact: true }).selectOption('full')
+    await expectOrder([1, 2, 0])
+    await page.getByRole('combobox', { name: 'classe', exact: true }).selectOption('5')
+    await expectOrder([2, 0, 1])
+    await page.getByRole('combobox', { name: 'classe', exact: true }).selectOption('3')
+    await expectOrder([1, 2, 0])
+    await page.getByRole('combobox', { name: 'città', exact: true }).selectOption('Udine')
+    await expectOrder([1, 0])
+    await page.getByRole('combobox', { name: 'scuola', exact: true }).selectOption('type:first')
+    await expectOrder([0, 1])
+    await page.reload()
+    await expectOrder([0, 1])
 })
