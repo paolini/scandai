@@ -1,8 +1,7 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { useRouter } from 'next/router'
 import { useQuery, gql } from '@apollo/client'
 import { Button } from 'react-bootstrap'
-import { useReactToPrint } from 'react-to-print'
 import Link from 'next/link'
 
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
@@ -82,7 +81,6 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
     const formState = useState(typeof router.query.form === 'string' ? router.query.form : '')
     const classState = useState(typeof router.query.class === 'string' ? router.query.class : '')
     const _ = useTrans()
-    const ref = useRef(null)
     const pollIds = value(pollIdsState)
     const statsQuery = useQuery(StatsQuery, {variables: {
         schoolType: value(schoolTypeState),
@@ -96,9 +94,6 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
         polls: pollIds.length>0 ? pollIds : null, // empty means all
     }})
     const [downloadingPDF, setDownloadingPDF] = useState<boolean>(false)
-    const print = useReactToPrint({
-        content: () => ref.current,
-    })
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
     if (statsQuery.loading) return <Loading />
@@ -136,9 +131,6 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
                 classes={classes}
                 /></div> }
         <div className="container noPrint">
-            {/* <Button onClick={print} style={{float:"right"}}>
-                {_("stampa")}
-            </Button> */}
             <Button onClick={downloadPDF} style={{float:"right"}} disabled={downloadingPDF}>
                 {_("stampa report")}
             </Button>
@@ -152,7 +144,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
         {downloadingPDF && <Loading />}
         { stats.entriesCount === 0 
         ? <Error>{_("Impossibile fare il report: nessun questionario compilato")}</Error>
-        : <div ref={ref}>
+        : <div>
             <style>
                 {getPageMargins()}
             </style>

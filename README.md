@@ -12,6 +12,45 @@ Se si modifica il testo del questionario è opportuno incrementare il numero
 di versione, nello stesso file. Questo numero viene visualizzato in alto a destra sul questionario e quindi è utile per verificare che effettivamente 
 il server si sia aggiornato.
 
+## Dipendenze e verifiche
+
+La versione 2.2.5 aggiorna Next.js, Better Auth, bcrypt, Nodemailer e le Action,
+rimuove le librerie inutilizzate e genera i tipi GraphQL direttamente dallo
+schema locale con `npm run codegen` (`codegen.mjs`).
+
+Verifiche:
+
+```sh
+npm ci --legacy-peer-deps
+npm run codegen
+npx tsc --noEmit
+npm test
+npm audit --omit=dev
+npm run build
+```
+
+Il test completo del login richiede un MongoDB temporaneo locale. Il database
+si deve chiamare `scandai_dependency_test`; senza la variabile seguente il test
+MongoDB viene saltato. La CI avvia un servizio MongoDB dedicato e lo esegue.
+
+```sh
+SCANDAI_TEST_MONGODB_URI=mongodb://127.0.0.1:27017/scandai_dependency_test npm test
+```
+
+Better Auth richiede ora `accountId = userId` negli account password. La
+migrazione `20261017180000-normalize-credential-account-ids.js` aggiorna gli
+account precedenti conservando il valore originale per il rollback. Lo script
+`start.sh` applica le migrazioni prima di avviare il container.
+
+Al 17 ottobre 2026, `npm audit --omit=dev` non segnala vulnerabilità e il
+lockfile non contiene pacchetti deprecati. L'audit completo segnala ancora
+cinque pacchetti della stessa catena di sviluppo:
+`eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`.
+La causa è [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm),
+per cui non esiste ancora una versione correttiva di `braces`. La catena serve
+al lint, non al runtime dell'applicazione; resta da aggiornare quando sarà
+pubblicata una correzione compatibile.
+
 ## backup
 
 Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da riga di comando sul server. Per il restore si dà un comando del tipo:

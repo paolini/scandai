@@ -2,11 +2,6 @@ import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from '
 import { Context } from '../pages/api/graphql/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -359,7 +354,7 @@ export type ResolverTypeWrapper<T> = Promise<T> | T;
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -396,21 +391,21 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+export type SubscriptionResolver<TResult, TKey extends string, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
-export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+export type TypeResolveFn<TTypes, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (
   parent: TParent,
   context: TContext,
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
@@ -420,27 +415,29 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Account: ResolverTypeWrapper<Account>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   Config: ResolverTypeWrapper<Config>;
   Dict: ResolverTypeWrapper<Dict>;
   Entry: ResolverTypeWrapper<Entry>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LocalizedString: ResolverTypeWrapper<LocalizedString>;
   LocalizedStringInput: LocalizedStringInput;
-  Mutation: ResolverTypeWrapper<{}>;
+  Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   ObjectId: ResolverTypeWrapper<Scalars['ObjectId']['output']>;
   PatchUserData: PatchUserData;
   Poll: ResolverTypeWrapper<Poll>;
   Profile: ResolverTypeWrapper<Profile>;
-  Query: ResolverTypeWrapper<{}>;
+  Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   School: ResolverTypeWrapper<School>;
   SchoolData: SchoolData;
   SchoolType: SchoolType;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   Translation: ResolverTypeWrapper<Translation>;
   User: ResolverTypeWrapper<User>;
@@ -449,23 +446,23 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Account: Account;
-  Boolean: Scalars['Boolean']['output'];
+  String: Scalars['String']['output'];
   Config: Config;
   Dict: Dict;
   Entry: Entry;
-  Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
   LocalizedString: LocalizedString;
   LocalizedStringInput: LocalizedStringInput;
-  Mutation: {};
+  Mutation: Record<PropertyKey, never>;
+  Boolean: Scalars['Boolean']['output'];
+  Int: Scalars['Int']['output'];
   ObjectId: Scalars['ObjectId']['output'];
   PatchUserData: PatchUserData;
   Poll: Poll;
   Profile: Profile;
-  Query: {};
+  Query: Record<PropertyKey, never>;
   School: School;
   SchoolData: SchoolData;
-  String: Scalars['String']['output'];
   Timestamp: Scalars['Timestamp']['output'];
   Translation: Translation;
   User: User;
@@ -473,19 +470,16 @@ export type ResolversParentTypes = ResolversObject<{
 
 export type AccountResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = ResolversObject<{
   provider: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ConfigResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Config'] = ResolversParentTypes['Config']> = ResolversObject<{
   siteTitle: Resolver<Maybe<ResolversTypes['LocalizedString']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type DictResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dict'] = ResolversParentTypes['Dict']> = ResolversObject<{
   lang: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   map: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   variants: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type EntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Entry'] = ResolversParentTypes['Entry']> = ResolversObject<{
@@ -496,7 +490,6 @@ export type EntryResolvers<ContextType = Context, ParentType extends ResolversPa
   createdAt: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   lang: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   poll: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
@@ -507,7 +500,6 @@ export type LocalizedStringResolvers<ContextType = Context, ParentType extends R
   en: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fu: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   it: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
@@ -549,7 +541,6 @@ export type PollResolvers<ContextType = Context, ParentType extends ResolversPar
   school: Resolver<Maybe<ResolversTypes['School']>, ParentType, ContextType>;
   secret: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   year: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ProfileResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
@@ -563,7 +554,6 @@ export type ProfileResolvers<ContextType = Context, ParentType extends Resolvers
   isViewer: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -590,7 +580,6 @@ export type SchoolResolvers<ContextType = Context, ParentType extends ResolversP
   pollCount: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   reportSecret: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type: Resolver<Maybe<ResolversTypes['SchoolType']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
@@ -600,7 +589,6 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
 export type TranslationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Translation'] = ResolversParentTypes['Translation']> = ResolversObject<{
   map: Resolver<ResolversTypes['LocalizedString'], ParentType, ContextType>;
   source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
@@ -615,7 +603,6 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   isViewer: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
