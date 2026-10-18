@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
 import questionary from '@/lib/questionary'
+import { reportFilename } from '@/lib/reportFilename'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
@@ -181,7 +182,7 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
                 const blob = await res.blob()
                 const link = document.createElement('a')
                 link.href = window.URL.createObjectURL(blob)
-                link.download = `report-${_.locale}.pdf`
+                link.download = reportFilename(stats, _.locale)
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
