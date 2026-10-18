@@ -35,6 +35,12 @@ jobs:
       env:
         SCANDAI_TEST_MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports[27017] }}/scandai_dependency_test
       run: npm test
+    - name: Install test browser
+      run: npx playwright install --with-deps chromium
+    - name: Test student questionnaire in browser
+      env:
+        SCANDAI_E2E_MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports[27017] }}/scandai_questionnaire_test
+      run: npm run test:e2e
     - name: Extract version number
       run: echo VERSION=$( node -e 'console.log(require("./package.json").version)' ) >> $GITHUB_ENV
     - name: Test version number and branch name

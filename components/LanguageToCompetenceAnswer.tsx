@@ -54,7 +54,7 @@ function SingleLanguageToCompetence({ lang, language, answer, setAnswer, compete
                     {trans(competence,lang)}
                 </td>
                 <td>
-                    <CompetenceSelect lang={lang} competence={competence} answer={answer} setAnswer={setAnswer} competenceValues={competenceValues} />
+                    <CompetenceSelect lang={lang} language={language} competence={competence} answer={answer} setAnswer={setAnswer} competenceValues={competenceValues} />
                 </td>
             </tr>)}
         </tbody>
@@ -62,8 +62,9 @@ function SingleLanguageToCompetence({ lang, language, answer, setAnswer, compete
   </>
 }
 
-function CompetenceSelect({lang, competence, answer, setAnswer, competenceValues}:{
+function CompetenceSelect({lang, language, competence, answer, setAnswer, competenceValues}:{
     lang: string,
+    language: string|LocalizedString,
     competence: LocalizedStringWithCode,
     answer: {[key: string]: string},
     setAnswer: Dispatch<(a: {[key: string]: string})=>void>,
@@ -79,7 +80,8 @@ function CompetenceSelect({lang, competence, answer, setAnswer, competenceValues
         change('0')
     }
 
-    return <select 
+    return <select
+        aria-label={`${typeof language === 'string' ? language : trans(language, lang)} - ${trans(competence, lang)}`}
         value={answer[competence.code] || ''}
         onChange={evt => change(evt.target.value)}>
         {Object.entries(competenceValues)

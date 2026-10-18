@@ -1,6 +1,6 @@
 {
   "name": "scandai",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +13,8 @@
     "migrate": "migrate-mongo up",
     "migrate:down": "migrate-mongo down",
     "migrate:status": "migrate-mongo status",
-    "test": "node --test tests/*.test.cjs"
+    "test": "node --test tests/*.test.cjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@apollo/client": "^3.13.4",
@@ -48,11 +49,12 @@
     "typescript": "^5.7.3"
   },
   "devDependencies": {
+    "@graphql-codegen/core": "^6.2.2",
     "@graphql-codegen/typescript": "^6.1.2",
     "@graphql-codegen/typescript-resolvers": "^6.1.1",
+    "@playwright/test": "^1.64.1",
     "@types/bcrypt": "^6.0.0",
     "@types/nodemailer": "^8.0.2",
-    "@graphql-codegen/core": "^6.2.2",
     "eslint": "^10.13.0",
     "eslint-config-next": "^16.4.2"
   }

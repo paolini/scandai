@@ -51,6 +51,35 @@ per cui non esiste ancora una versione correttiva di `braces`. La catena serve
 al lint, non al runtime dell'applicazione; resta da aggiornare quando sarà
 pubblicata una correzione compatibile.
 
+## Test del questionario nel browser
+
+`npm run test:e2e` usa Playwright per compilare il questionario come uno studente,
+attraverso le API reali, e verifica le risposte salvate in MongoDB. Copre il
+questionario completo in italiano, il breve in inglese e friulano, le risposte
+obbligatorie, la navigazione indietro, le lingue aggiunte, tutti i tipi di risposta
+e il blocco dei questionari chiusi nell'interfaccia studente. Verifica anche che
+le due domande aggregate restino escluse dalla somministrazione e dal salvataggio.
+
+Per eseguirlo localmente:
+
+```sh
+npx playwright install chromium
+docker run --detach --rm --name scandai-e2e-mongo -p 127.0.0.1:27018:27017 mongo:8
+SCANDAI_E2E_MONGODB_URI=mongodb://127.0.0.1:27018/scandai_questionnaire_test npm run test:e2e
+docker stop scandai-e2e-mongo
+```
+
+Il test accetta soltanto un MongoDB locale con database
+`scandai_questionnaire_test`, crea dati sintetici e li elimina alla fine.
+Compila l'applicazione in `.next-e2e`, avvia il server standalone sulla porta
+3199 e lo arresta a fine esecuzione. Non riutilizza un server esistente e non
+usa le credenziali dell'applicazione. Si possono impostare `SCANDAI_E2E_PORT`
+e `SCANDAI_E2E_BROWSER_CHANNEL=chrome` per scegliere un'altra porta o Chrome già
+installato. Screenshot e trace dei fallimenti finiscono in `test-results/e2e`.
+
+La Action esegue questi test prima di pubblicare l'immagine Docker e notificare
+WUD: un fallimento interrompe il deploy.
+
 ## backup
 
 Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da riga di comando sul server. Per il restore si dà un comando del tipo:

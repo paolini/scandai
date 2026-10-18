@@ -16,7 +16,8 @@ function OtherLanguage({lang, addLanguage}: {
       }
     }
     return <>
-      {getPhrase("otherLanguage", lang)} <input 
+      {getPhrase("otherLanguage", lang)} <input
+          aria-label={getPhrase("otherLanguage", lang)}
           value={other} 
           onChange={(evt)=>setOther(evt.target.value)}
           onBlur={commit}

@@ -29,7 +29,8 @@ function AgeAnswerRow({ lang, code, language, ages, answer, setAnswer }
     <td>{typeof(language)==='string'? language : trans(language,lang)}</td>
     {ages.map(age => <td key={age.code}>
       <input 
-        type="radio" 
+        type="radio"
+        aria-label={`${typeof language === 'string' ? language : trans(language, lang)} - ${trans(age, lang)}`}
         name={code} 
         value={age.code} 
         checked={answer[code] === age.code} 

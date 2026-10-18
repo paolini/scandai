@@ -63,7 +63,7 @@ function AnswerPage({ lang, question, answer, setAnswer, questionary, extraLangu
 
 export default function Question({ lang, question, answer, setAnswer, questionary, extraLanguages, showCode = false }: 
   { lang: string, question: IQuestion & { questionCode?: string }, answer: any, setAnswer: any, questionary: IQuestionary, extraLanguages: string[], showCode?: boolean }) {
-  return <div className="my-2">
+  return <div className="my-2" role="group" aria-label={trans(question.question, lang)}>
     <b>
       {showCode && <span className="question-code text-muted">[{question.questionCode || question.code}] </span>}
       {question.compulsory && '(*) '}{trans(question.question,lang)}

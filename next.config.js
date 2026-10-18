@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   //standalone: true,
   output: 'standalone',
+  distDir: process.env.SCANDAI_E2E === '1' ? '.next-e2e' : '.next',
   i18n: {
     locales: ['it', 'en', 'fu'],
     defaultLocale: 'it',
