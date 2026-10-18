@@ -55,7 +55,7 @@ export default function LanguageToAgeAnswer({ lang, answer, setAnswer, ages, lan
     ...extraLanguages.map(l => [l,l])]
 
   return <>
-    <table>
+    <table className="language-to-age">
       <thead>
         <tr>
           <th></th>

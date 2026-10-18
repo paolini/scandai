@@ -152,3 +152,34 @@ test('school type and all other report filters are restored when generating the 
     await expectClasses(page, [polls[4]])
     await expectExport(page, context, [polls[4]], 'report-scuola-e2e-seconda-3e-it.pdf')
 })
+
+test('print questionnaire button exports the language selected in the report', async ({ page, context, report }) => {
+    for (const locale of [
+        { code: 'it', button: 'stampa questionario', title: 'Fotografia linguistica' },
+        { code: 'en', button: 'print questionnaire', title: 'Linguistic Photography' },
+        { code: 'fu', button: 'stampe cuestionari', title: 'Fotografie linguistiche' },
+    ]) {
+        await page.goto(`/${locale.code}${report.path}`)
+        const button = page.getByRole('button', { name: locale.button, exact: true })
+        await expect(button).toBeVisible()
+        await page.route('**/api/pdf?*', async route => {
+            const path = new URL(route.request().url()).searchParams.get('path')
+            expect(path).toBe(`/${locale.code}/p/print?form=full`)
+            const printPage = await context.newPage()
+            try {
+                await printPage.goto(path)
+                await expect(printPage.getByRole('heading', { name: locale.title, exact: true })).toBeVisible()
+                const pdf = await printPage.pdf()
+                await route.fulfill({ status: 200, contentType: 'application/pdf', body: pdf })
+            } finally {
+                await printPage.close()
+            }
+        })
+        const downloaded = page.waitForEvent('download')
+        await button.click()
+        const download = await downloaded
+        expect(download.suggestedFilename()).toBe('questionario.pdf')
+        expect(await download.failure()).toBeNull()
+        await page.unroute('**/api/pdf?*')
+    }
+})

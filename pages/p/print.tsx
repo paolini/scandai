@@ -1,17 +1,17 @@
-import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Page from '@/components/Page'
 import PrintableQuestionary from '@/components/PrintableQuestionary'
+import Loading from '@/components/Loading'
 
 export default function PrintQuestionary() {
     const router = useRouter()
     const form = (router.query.form as string) || 'full'
-    const langState = useState('it')
+    if (!router.isReady) return <Loading />
 
     return (
         <Page header={false}>
             <PrintableQuestionary
-                langState={langState}
+                lang={router.locale || 'it'}
                 form={form}
             />
         </Page>

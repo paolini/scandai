@@ -179,7 +179,7 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
 
     function downloadQuestionaryPDF() {
         setDownloadingPDF(true);
-        const questionaryPath = `/p/print?form=${form}`
+        const questionaryPath = `/${_.locale}/p/print?form=${form}`
         fetch(`/api/pdf?path=${encodeURIComponent(questionaryPath)}`)
             .then(async res => {
                 if (!res.ok) {

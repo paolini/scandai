@@ -65,6 +65,11 @@ rimangano applicati dopo il ricaricamento e nell'esportazione PDF. Riaprono
 l'URL inviato alla stampa usando API e database reali e generano il PDF con
 Chromium, sostituendo soltanto il servizio esterno Browserless.
 
+La stampa del questionario è verificata in italiano, inglese e friulano, nelle
+versioni completa e breve. I test controllano anche la lingua scelta dal report
+e l'assenza dei pulsanti radio dalla tabella delle età nel PDF. I PDF di prova
+vengono salvati in `test-results/e2e`.
+
 Per eseguirlo localmente:
 
 ```sh

@@ -3,16 +3,15 @@ import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages,
 import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
 import Loading from './Loading'
-import { State, set } from '@/lib/State'
+import { set } from '@/lib/State'
 
-export default function PrintableQuestionary({ langState, form, poll }: {
-    langState: State<string>,
+export default function PrintableQuestionary({ lang, form, poll }: {
+    lang: string,
     form: string,
     poll?: any,
 }) {
     const answersState = useState<IAnswers>({})
     const [answers] = answersState
-    const [lang] = langState
 
     const questionCodes = extractQuestionCodes(form)
 
@@ -53,6 +52,9 @@ export default function PrintableQuestionary({ langState, form, poll }: {
             <style>
                 {`
                 @media print {
+                    .printable-questionary .language-to-age input[type="radio"] {
+                        visibility: hidden;
+                    }
                     .printable-questionary .splash-page,
                     .printable-questionary .question-page {
                         page-break-after: avoid;
