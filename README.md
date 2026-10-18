@@ -51,7 +51,7 @@ per cui non esiste ancora una versione correttiva di `braces`. La catena serve
 al lint, non al runtime dell'applicazione; resta da aggiornare quando sarà
 pubblicata una correzione compatibile.
 
-## Test del questionario nel browser
+## Test nel browser
 
 `npm run test:e2e` usa Playwright per compilare il questionario come uno studente,
 attraverso le API reali, e verifica le risposte salvate in MongoDB. Copre il
@@ -59,6 +59,11 @@ questionario completo in italiano, il breve in inglese e friulano, le risposte
 obbligatorie, la navigazione indietro, le lingue aggiunte, tutti i tipi di risposta
 e il blocco dei questionari chiusi nell'interfaccia studente. Verifica anche che
 le due domande aggregate restino escluse dalla somministrazione e dal salvataggio.
+
+I test dei report verificano che la selezione delle classi e tutti i filtri
+rimangano applicati dopo il ricaricamento e nell'esportazione PDF. Riaprono
+l'URL inviato alla stampa usando API e database reali e generano il PDF con
+Chromium, sostituendo soltanto il servizio esterno Browserless.
 
 Per eseguirlo localmente:
 

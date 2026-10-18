@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useRouter } from 'next/router'
 import { useQuery, gql } from '@apollo/client'
 
@@ -7,8 +6,8 @@ import { PageWithoutProvider } from '@/components/Page'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
-import { value } from "@/lib/State"
-import { requireSingle, requireArray } from "@/lib/utils"
+import { requireSingle } from "@/lib/utils"
+import useReportFilters from '@/lib/useReportFilters'
 import { Profile } from "@/generated/graphql";
 
 import Stats from './Stats'
@@ -16,10 +15,7 @@ import Stats from './Stats'
 export default function Report() {
     const profileQuery = useQuery(ProfileQuery)
     const router = useRouter()
-    const year = requireSingle(router.query.year)
     const report = requireSingle(router.query.report, "full")
-    const pollIds = requireArray(router.query.poll)
-    const schoolId = requireSingle(router.query.school_id)
     const schoolSecret = requireSingle(router.query.schoolSecret)
     const adminSecret = requireSingle(router.query.adminSecret)
     const showFilter = 
@@ -39,10 +35,7 @@ export default function Report() {
     return <ReportInner 
         showFilter={showFilter}
         user={user} 
-        year={year} 
         report={report} 
-        pollIds={pollIds} 
-        schoolId={schoolId}
         schoolSecret={schoolSecret}
         adminSecret={adminSecret}
     />
@@ -60,23 +53,19 @@ const SchoolsQuery = gql`
     }
 `
 
-export function ReportInner({showFilter, user, year, report, pollIds, schoolId, schoolSecret, adminSecret}:{
+export function ReportInner({showFilter, user, report, schoolSecret, adminSecret}:{
     showFilter: string[],
     user: Profile|null,
-    year: string,
     report: string,
-    pollIds: string[],
-    schoolId: string,
     schoolSecret: string,
     adminSecret: string,
 }) {
     const translationsQuery = useQuery(TranslationsQuery)
     const _ = useTrans()
-    const yearState = useState(year)
+    const { year, pollIdsState } = useReportFilters()
     const schoolsQuery = useQuery(SchoolsQuery, { variables: {
-        year: value(yearState)?parseInt(value(yearState)):null},
+        year: year?parseInt(year):null},
         skip: !showFilter.includes("school")})
-    const pollIdsState = useState<string[]>(pollIds)
     const router = useRouter()
     const locale = router.locale || 'it'
     const isAuthenticated = !!user
@@ -117,12 +106,10 @@ export function ReportInner({showFilter, user, year, report, pollIds, schoolId, 
             showFilter={showFilter}
             pollIdsState={pollIdsState}
             report={report} 
-            schoolId={schoolId}
             schoolSecret={schoolSecret}
             adminSecret={adminSecret}
             translations={translations}
             schools={schoolsQuery.data?.schools || []}
-            yearState={yearState}
         />
     </PageWithoutProvider>
 

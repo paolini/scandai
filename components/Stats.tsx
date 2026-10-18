@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useRouter } from 'next/router'
 import { useQuery, gql } from '@apollo/client'
 import { Button } from 'react-bootstrap'
 import Link from 'next/link'
@@ -11,7 +10,8 @@ import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
 import State, { value } from "@/lib/State"
-import { School, SchoolType, Translation } from "@/generated/graphql"
+import { School, Translation } from "@/generated/graphql"
+import useReportFilters from '@/lib/useReportFilters'
 import StatsFilter from "./StatsFilter"
 import ReportItem from "./ReportItem"
 import {
@@ -30,7 +30,6 @@ import {
     Colors,
   } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { SchoolTypeString } from "@/lib/mongodb"
 
 ChartJS.register(
     CategoryScale,
@@ -64,34 +63,27 @@ const StatsQuery = gql`
         }   
 `
 
-export default function Stats({showFilter, report, schoolId, schoolSecret, adminSecret, translations, pollIdsState, schools, yearState}:{
+export default function Stats({showFilter, report, schoolSecret, adminSecret, translations, pollIdsState, schools}:{
     showFilter: string[],
     report: string,
-    schoolId: string,
     schoolSecret: string,
     adminSecret: string,
     translations: Translation[],
     pollIdsState: State<string[]>,
     schools: School[],
-    yearState: State<string>,
 }) {
-    const schoolTypeState = useState<SchoolTypeString | null>(null)
-    const schoolIdState = useState(schoolId)
-    const router = useRouter()
-    const cityState = useState(typeof router.query.city === 'string' ? router.query.city : '')
-    const formState = useState(typeof router.query.form === 'string' ? router.query.form : '')
-    const classState = useState(typeof router.query.class === 'string' ? router.query.class : '')
+    const { schoolType, schoolId, city, form: selectedForm, className, year } = useReportFilters()
     const _ = useTrans()
     const pollIds = value(pollIdsState)
     const statsQuery = useQuery(StatsQuery, {variables: {
-        schoolType: value(schoolTypeState),
-        schoolId:  value(schoolIdState) || null,
+        schoolType,
+        schoolId: schoolId || null,
         schoolSecret,
         adminSecret,
-        city: value(cityState),
-        form: value(formState),
-        class: value(classState),
-        year: value(yearState) ? parseInt(value(yearState)) : null,
+        city,
+        form: selectedForm,
+        class: className,
+        year: year ? parseInt(year) : null,
         polls: pollIds.length>0 ? pollIds : null, // empty means all
     }})
     const [downloadingPDF, setDownloadingPDF] = useState<boolean>(false)
@@ -122,12 +114,6 @@ export default function Stats({showFilter, report, schoolId, schoolSecret, admin
         }}>
             <StatsFilter 
                 fields={showFilter}
-                schoolTypeState={schoolTypeState}
-                schoolIdState={schoolIdState} 
-                cityState={cityState} 
-                formState={formState} 
-                classState={classState}
-                yearState={yearState}
                 schools={schools}
                 classes={classes}
                 /></div> }

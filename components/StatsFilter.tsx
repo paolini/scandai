@@ -1,6 +1,4 @@
 import { useState, ReactElement } from "react"
-import { useRouter } from 'next/router'
-import { useSearchParams } from "next/navigation"
 import questionary from '@/lib/questionary'
 import { useTrans } from "@/lib/trans"
 import State, { value, set, update } from "@/lib/State"
@@ -9,22 +7,15 @@ import Item from "./Item"
 
 import { Table, Button } from 'react-bootstrap'
 import { formatDate } from '@/lib/utils'
+import useReportFilters from '@/lib/useReportFilters'
 
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
-import { SchoolTypeString } from "@/lib/mongodb"
-
-export default function StatsFilter({fields, schoolTypeState, schoolIdState, cityState, formState, classState, yearState, schools, classes}:{
+export default function StatsFilter({fields, schools, classes}:{
     fields: string[],
-    schoolTypeState: State<SchoolTypeString | null>,
-    schoolIdState: State<string>,
-    cityState: State<string>,
-    formState: State<string>,
-    classState: State<string>,
-    yearState: State<string>,
     schools: School[],
     classes: string[],
 }) {    
-    const city = value(cityState)
+    const { city, schoolId, schoolType, year, className, form, updateFilters } = useReportFilters()
     const map_city_fu = Object.fromEntries(schools.map(school => [school.city, school.city_fu]))
     const citiesInfo = Object.keys(map_city_fu).map(city => {
         let pollCount = 0
@@ -37,7 +28,6 @@ export default function StatsFilter({fields, schoolTypeState, schoolIdState, cit
         ? schools.filter(school => school.city===city)
         : [...schools]).sort((a,b) => (b.pollCount || 0)-(a.pollCount || 0))
     const _ = useTrans()
-    const router = useRouter();
 
     // Calcolo dinamico degli anni scolastici
     const now = new Date()
@@ -48,43 +38,19 @@ export default function StatsFilter({fields, schoolTypeState, schoolIdState, cit
     return <>
         { /*JSON.stringify({schools,citiesInfo})*/ }
         {_("Filtra")}: {fields.includes("year") &&
-        <select value={value(yearState)} onChange={evt => {
-            const year = evt.target.value
-            set(yearState, year);
-            // Aggiorna la query string nell'URL
-            const query: Record<string,string> = { ...router.query, year };
-            if (!year && 'year' in query) delete query.year;
-            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
-        }}>
+        <select aria-label={_("anno scolastico")} value={year} onChange={evt => updateFilters({ year: evt.target.value })}>
             <option value=''>{_("tutti gli anni")}</option>
             {years.map(y => <option key={y} value={y}>{y}-{y+1}</option>)}
         </select>} {}
         {fields.includes("city") &&
-        <select value={value(cityState)} onChange={evt => {
-            const city = evt.target.value;
-            set(schoolIdState,'')
-            set(cityState,city)
-            // Aggiorna la query string nell'URL
-            const query: Record<string,string> = { ...router.query, city };
-            if (!city && 'city' in query) delete query.city;
-            // Quando cambio città, azzero anche la scuola
-            if ('school_id' in query) delete query.school_id;
-            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
-        }}>
+        <select aria-label={_("città")} value={city} onChange={evt => updateFilters({ city: evt.target.value, school_id: '' })}>
             <option value=''>{_("tutte le città")}</option>
             {citiesInfo.map(info => <option key={info.city} value={info.city}>{_.locale === 'fu' ? (map_city_fu[info.city] || info.city) : info.city}</option>)}
         </select>} {}
         { fields.includes("school") &&
-        <select value={value(schoolIdState) || (value(schoolTypeState) ? `type:${value(schoolTypeState)}` : '')} onChange={evt => {
-            const school_type:SchoolTypeString|'' = evt.target.value.startsWith('type:') ? (evt.target.value.slice(5) as SchoolTypeString) : ''; 
-            const school_id = school_type ? '' : evt.target.value;
-            set(schoolIdState,school_id || '');
-            set(schoolTypeState, school_type as SchoolTypeString || null);
-            // Aggiorna la query string nell'URL
-            const query: Record<string,string> = { ...router.query, school_id, school_type };
-            if (!school_id && 'school_id' in query) delete query.school_id;
-            if (!school_type && 'school_type' in query) delete query.school_type;
-            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        <select aria-label={_("scuola")} value={schoolId || (schoolType ? `type:${schoolType}` : '')} onChange={evt => {
+            const school_type = evt.target.value.startsWith('type:') ? evt.target.value.slice(5) : ''
+            void updateFilters({ school_id: school_type ? '' : evt.target.value, school_type })
         }}>
             <option value=''>{_("tutte le scuole")}</option>
             <option value='type:second'>{_("tutte le scuole di secondo grado")}</option>
@@ -92,14 +58,7 @@ export default function StatsFilter({fields, schoolTypeState, schoolIdState, cit
             {selectedSchools.map(school => <option key={school._id} value={school._id}>{school.name}</option>)}
         </select>} {}
         { fields.includes("class") && 
-        <select value={value(classState)} onChange={evt => {
-            const classValue = evt.target.value;
-            set(classState,classValue);
-            // Aggiorna la query string nell'URL
-            const query: Record<string,string> = { ...router.query, class: classValue };
-            if (!classValue && 'class' in query) delete query.class;
-            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
-        }}>
+        <select aria-label={_("classe")} value={className} onChange={evt => updateFilters({ class: evt.target.value })}>
             <option value=''>{_("tutte le classi")}</option>
             {classes.map(c => <option key={c} value={c}>{{
                 '1': _("classi prime"), 
@@ -109,14 +68,7 @@ export default function StatsFilter({fields, schoolTypeState, schoolIdState, cit
                 '5': _("classi quinte") }[c]}</option>)}
         </select>} {}
         { fields.includes("form") &&
-        <select value={value(formState)} onChange={evt => {
-            const form = evt.target.value;
-            set(formState,form);
-            // Aggiorna la query string nell'URL
-            const query: Record<string,string> = { ...router.query, form };
-            if (!form && 'form' in query) delete query.form;
-            router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
-        }}>
+        <select aria-label={_("fotografia")} value={form} onChange={evt => updateFilters({ form: evt.target.value })}>
             <option value=''>{_("tutti i questionari")}</option>
             {Object.keys(questionary.forms).map(form => <option key={form} value={form}>{questionary.forms[form].namePlural[_.locale||'it']}</option>)}
         </select>} {}
@@ -147,8 +99,6 @@ export function ListClasses({ stats, title, pollIdsState}: {
     pollIdsState: State<string[]>,
 }) {
     const _ = useTrans()
-    const router = useRouter()
-    const searchParams = useSearchParams()
     const isShort = stats.polls.length <= 5
     const isLong = stats.polls.length > 20
     const [isOpen, setOpen] = useState<boolean>(isShort)
@@ -191,7 +141,7 @@ export function ListClasses({ stats, title, pollIdsState}: {
         { 
             stats.polls.map(c => {
                 const selected = value(selectedPollIdsState).includes(c._id)?"bg-warning":""
-                return <tr key={c._id.toString()} onClick={() => true ? toggle(c._id) : router.push(composeURL(c._id))}>
+                return <tr key={c._id.toString()} onClick={() => toggle(c._id)}>
                     <td className={selected}>
                         {c?.school?.name} 
                     </td>
@@ -243,12 +193,6 @@ export function ListClasses({ stats, title, pollIdsState}: {
                 </Button>
             }
         </> 
-    }
-
-    function composeURL(poll: string) {
-        const query = new URLSearchParams(searchParams.toString())
-        query.set('poll', poll)
-        return `${window.location.origin}${window.location.pathname}?${query.toString()}`
     }
 
     function toggle(poll_id: string) {
