@@ -103,6 +103,7 @@ export function ReportInner({showFilter, user, report, schoolSecret, adminSecret
             <div className="container noPrint">
         </div>
         <Stats 
+            canShare={!!(user?.isAdmin || user?.isViewer || user?.isTeacher) && !schoolSecret && !adminSecret}
             showFilter={showFilter}
             pollIdsState={pollIdsState}
             report={report} 

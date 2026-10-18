@@ -123,7 +123,37 @@ type Entry {
     IP: String
 }
 
+input ReportFiltersInput {
+    year: Int
+    class: String
+    city: String
+    form: String
+    schoolId: ObjectId
+    schoolType: SchoolType
+    polls: [ObjectId!]
+}
+
+type SharedReportAuthor {
+    _id: ObjectId!
+    name: String
+    username: String
+    email: String
+}
+
+type SharedReport {
+    _id: ObjectId!
+    name: String!
+    token: String!
+    report: String!
+    filters: JSON!
+    schoolName: String
+    createdAt: Timestamp!
+    createdBy: SharedReportAuthor
+}
+
 type Query {
+    sharedReports(all: Boolean): [SharedReport!]!
+    sharedReport(token: String!): JSON
     hello: String
     config: Config!
     profile: Profile
@@ -146,6 +176,8 @@ type Query {
 }
 
 type Mutation {
+    createSharedReport(name: String!, filters: ReportFiltersInput!, report: String!): SharedReport!
+    revokeSharedReport(_id: ObjectId!): Boolean!
     submit(_id: ObjectId!, answers: JSON, lang: String, timestamp: Timestamp): Boolean
     
     newUser(name: String, username: String, email: String): Profile

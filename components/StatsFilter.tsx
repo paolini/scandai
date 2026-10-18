@@ -103,7 +103,7 @@ function ListFilters({stats}:{
 export function ListClasses({ stats, title, pollIdsState}: {
     stats: IStats,
     title?: string,
-    pollIdsState: State<string[]>,
+    pollIdsState?: State<string[]>,
 }) {
     const _ = useTrans()
     const isShort = stats.polls.length <= 5
@@ -148,7 +148,7 @@ export function ListClasses({ stats, title, pollIdsState}: {
         { 
             stats.polls.map(c => {
                 const selected = value(selectedPollIdsState).includes(c._id)?"bg-warning":""
-                return <tr key={c._id.toString()} onClick={() => toggle(c._id)}>
+                return <tr key={c._id.toString()} onClick={pollIdsState ? () => toggle(c._id) : undefined}>
                     <td className={selected}>
                         {c?.school?.name} 
                     </td>
@@ -188,6 +188,7 @@ export function ListClasses({ stats, title, pollIdsState}: {
     </Item>
 
     function FilterButtons() {
+        if (!pollIdsState) return null
         return <>
             { value(selectedPollIdsState).length > 0 &&
                 <Button className="noPrint mx-1" onClick={() => {set(selectedPollIdsState,[]);set(pollIdsState,[...value(selectedPollIdsState)])}}>

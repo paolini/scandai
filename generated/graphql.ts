@@ -60,6 +60,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDict: Maybe<Scalars['Boolean']['output']>;
   closePoll: Maybe<Scalars['Boolean']['output']>;
+  createSharedReport: SharedReport;
   deleteEntry: Maybe<Scalars['Boolean']['output']>;
   deletePoll: Maybe<Scalars['Boolean']['output']>;
   deleteUser: Maybe<Scalars['Boolean']['output']>;
@@ -73,6 +74,7 @@ export type Mutation = {
   pollRemoveAdminSecret: Maybe<Scalars['Boolean']['output']>;
   pollsRemoveAdminSecrets: Maybe<Scalars['Int']['output']>;
   postTranslation: Maybe<Translation>;
+  revokeSharedReport: Scalars['Boolean']['output'];
   schoolCreateSecret: Maybe<School>;
   schoolRemoveSecret: Maybe<School>;
   setProfile: Maybe<Profile>;
@@ -89,6 +91,13 @@ export type MutationAddDictArgs = {
 export type MutationClosePollArgs = {
   _id: Scalars['ObjectId']['input'];
   secret: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationCreateSharedReportArgs = {
+  filters: ReportFiltersInput;
+  name: Scalars['String']['input'];
+  report: Scalars['String']['input'];
 };
 
 
@@ -165,6 +174,11 @@ export type MutationPollsRemoveAdminSecretsArgs = {
 export type MutationPostTranslationArgs = {
   map: LocalizedStringInput;
   source: Scalars['String']['input'];
+};
+
+
+export type MutationRevokeSharedReportArgs = {
+  _id: Scalars['ObjectId']['input'];
 };
 
 
@@ -247,6 +261,8 @@ export type Query = {
   profile: Maybe<Profile>;
   school: Maybe<School>;
   schools: Array<School>;
+  sharedReport: Maybe<Scalars['JSON']['output']>;
+  sharedReports: Array<SharedReport>;
   stats: Maybe<Scalars['JSON']['output']>;
   translations: Array<Translation>;
   users: Array<User>;
@@ -287,6 +303,16 @@ export type QuerySchoolsArgs = {
 };
 
 
+export type QuerySharedReportArgs = {
+  token: Scalars['String']['input'];
+};
+
+
+export type QuerySharedReportsArgs = {
+  all: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryStatsArgs = {
   adminSecret: InputMaybe<Scalars['String']['input']>;
   city: InputMaybe<Scalars['String']['input']>;
@@ -296,6 +322,16 @@ export type QueryStatsArgs = {
   polls: InputMaybe<Array<InputMaybe<Scalars['ObjectId']['input']>>>;
   schoolId: InputMaybe<Scalars['ObjectId']['input']>;
   schoolSecret: InputMaybe<Scalars['String']['input']>;
+  schoolType: InputMaybe<SchoolType>;
+  year: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ReportFiltersInput = {
+  city: InputMaybe<Scalars['String']['input']>;
+  class: InputMaybe<Scalars['String']['input']>;
+  form: InputMaybe<Scalars['String']['input']>;
+  polls: InputMaybe<Array<Scalars['ObjectId']['input']>>;
+  schoolId: InputMaybe<Scalars['ObjectId']['input']>;
   schoolType: InputMaybe<SchoolType>;
   year: InputMaybe<Scalars['Int']['input']>;
 };
@@ -323,6 +359,26 @@ export enum SchoolType {
   Primary = 'primary',
   Second = 'second'
 }
+
+export type SharedReport = {
+  __typename?: 'SharedReport';
+  _id: Scalars['ObjectId']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  createdBy: Maybe<SharedReportAuthor>;
+  filters: Scalars['JSON']['output'];
+  name: Scalars['String']['output'];
+  report: Scalars['String']['output'];
+  schoolName: Maybe<Scalars['String']['output']>;
+  token: Scalars['String']['output'];
+};
+
+export type SharedReportAuthor = {
+  __typename?: 'SharedReportAuthor';
+  _id: Scalars['ObjectId']['output'];
+  email: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  username: Maybe<Scalars['String']['output']>;
+};
 
 export type Translation = {
   __typename?: 'Translation';
@@ -435,9 +491,12 @@ export type ResolversTypes = ResolversObject<{
   Poll: ResolverTypeWrapper<Poll>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  ReportFiltersInput: ReportFiltersInput;
   School: ResolverTypeWrapper<School>;
   SchoolData: SchoolData;
   SchoolType: SchoolType;
+  SharedReport: ResolverTypeWrapper<SharedReport>;
+  SharedReportAuthor: ResolverTypeWrapper<SharedReportAuthor>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   Translation: ResolverTypeWrapper<Translation>;
   User: ResolverTypeWrapper<User>;
@@ -461,8 +520,11 @@ export type ResolversParentTypes = ResolversObject<{
   Poll: Poll;
   Profile: Profile;
   Query: Record<PropertyKey, never>;
+  ReportFiltersInput: ReportFiltersInput;
   School: School;
   SchoolData: SchoolData;
+  SharedReport: SharedReport;
+  SharedReportAuthor: SharedReportAuthor;
   Timestamp: Scalars['Timestamp']['output'];
   Translation: Translation;
   User: User;
@@ -505,6 +567,7 @@ export type LocalizedStringResolvers<ContextType = Context, ParentType extends R
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addDict: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationAddDictArgs, 'lang' | 'map'>>;
   closePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationClosePollArgs, '_id'>>;
+  createSharedReport: Resolver<ResolversTypes['SharedReport'], ParentType, ContextType, RequireFields<MutationCreateSharedReportArgs, 'filters' | 'name' | 'report'>>;
   deleteEntry: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteEntryArgs, '_id'>>;
   deletePoll: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePollArgs, '_id'>>;
   deleteUser: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, '_id'>>;
@@ -518,6 +581,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   pollRemoveAdminSecret: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPollRemoveAdminSecretArgs, '_id'>>;
   pollsRemoveAdminSecrets: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, MutationPollsRemoveAdminSecretsArgs>;
   postTranslation: Resolver<Maybe<ResolversTypes['Translation']>, ParentType, ContextType, RequireFields<MutationPostTranslationArgs, 'map' | 'source'>>;
+  revokeSharedReport: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRevokeSharedReportArgs, '_id'>>;
   schoolCreateSecret: Resolver<Maybe<ResolversTypes['School']>, ParentType, ContextType, RequireFields<MutationSchoolCreateSecretArgs, '_id'>>;
   schoolRemoveSecret: Resolver<Maybe<ResolversTypes['School']>, ParentType, ContextType, RequireFields<MutationSchoolRemoveSecretArgs, '_id'>>;
   setProfile: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, MutationSetProfileArgs>;
@@ -567,6 +631,8 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   profile: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   school: Resolver<Maybe<ResolversTypes['School']>, ParentType, ContextType, QuerySchoolArgs>;
   schools: Resolver<Array<ResolversTypes['School']>, ParentType, ContextType, QuerySchoolsArgs>;
+  sharedReport: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<QuerySharedReportArgs, 'token'>>;
+  sharedReports: Resolver<Array<ResolversTypes['SharedReport']>, ParentType, ContextType, QuerySharedReportsArgs>;
   stats: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, QueryStatsArgs>;
   translations: Resolver<Array<ResolversTypes['Translation']>, ParentType, ContextType>;
   users: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
@@ -580,6 +646,24 @@ export type SchoolResolvers<ContextType = Context, ParentType extends ResolversP
   pollCount: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   reportSecret: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type: Resolver<Maybe<ResolversTypes['SchoolType']>, ParentType, ContextType>;
+}>;
+
+export type SharedReportResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SharedReport'] = ResolversParentTypes['SharedReport']> = ResolversObject<{
+  _id: Resolver<ResolversTypes['ObjectId'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  createdBy: Resolver<Maybe<ResolversTypes['SharedReportAuthor']>, ParentType, ContextType>;
+  filters: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  report: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  schoolName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  token: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
+export type SharedReportAuthorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SharedReportAuthor'] = ResolversParentTypes['SharedReportAuthor']> = ResolversObject<{
+  _id: Resolver<ResolversTypes['ObjectId'], ParentType, ContextType>;
+  email: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  username: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
@@ -618,6 +702,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Profile: ProfileResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
   School: SchoolResolvers<ContextType>;
+  SharedReport: SharedReportResolvers<ContextType>;
+  SharedReportAuthor: SharedReportAuthorResolvers<ContextType>;
   Timestamp: GraphQLScalarType;
   Translation: TranslationResolvers<ContextType>;
   User: UserResolvers<ContextType>;

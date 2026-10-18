@@ -30,7 +30,7 @@ export default function ReportItem({ stats, item, t, pollIdsState}: {
     stats: IStats,
     item: IReportElement,
     t: T,
-    pollIdsState: State<string[]>,
+    pollIdsState?: State<string[]>,
 }) {
     const _ = useTrans()
     const item_title = item.title && trans(item.title, _.locale)
@@ -64,7 +64,7 @@ function ReportBlockElement({item,stats,t,pollIdsState}:{
     item: IReportBlockElement,
     stats: IStats,
     t: T,
-    pollIdsState: State<string[]>,
+    pollIdsState?: State<string[]>,
 }) {
     const [hide, setHide] = useState<boolean>(true)
     const _ = useTrans() 

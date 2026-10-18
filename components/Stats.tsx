@@ -14,6 +14,7 @@ import { School, Translation } from "@/generated/graphql"
 import useReportFilters from '@/lib/useReportFilters'
 import StatsFilter from "./StatsFilter"
 import ReportItem from "./ReportItem"
+import ShareReportButton from './ShareReportButton'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -63,19 +64,21 @@ const StatsQuery = gql`
         }   
 `
 
-export default function Stats({showFilter, report, schoolSecret, adminSecret, translations, pollIdsState, schools}:{
+export default function Stats({showFilter, report, schoolSecret, adminSecret, translations, pollIdsState, schools, sharedStats, canShare = false}:{
     showFilter: string[],
     report: string,
     schoolSecret: string,
     adminSecret: string,
     translations: Translation[],
-    pollIdsState: State<string[]>,
+    pollIdsState?: State<string[]>,
     schools: School[],
+    sharedStats?: IStats,
+    canShare?: boolean,
 }) {
     const { schoolType, schoolId, city, form: selectedForm, className, year } = useReportFilters()
     const _ = useTrans()
-    const pollIds = value(pollIdsState)
-    const statsQuery = useQuery(StatsQuery, {variables: {
+    const pollIds = pollIdsState ? value(pollIdsState) : []
+    const statsQuery = useQuery(StatsQuery, {skip: !!sharedStats, variables: {
         schoolType,
         schoolId: schoolId || null,
         schoolSecret,
@@ -89,11 +92,11 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
     const [downloadingPDF, setDownloadingPDF] = useState<boolean>(false)
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
-    if (statsQuery.loading) return <Loading />
-    if (!statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`} [sq])</Error>
+    if (!sharedStats && statsQuery.loading) return <Loading />
+    if (!sharedStats && !statsQuery.data) return <Error>{_("Errore caricamento")} ({`${statsQuery.error}`} [sq])</Error>
 
     const stats = {
-        ...statsQuery.data.stats,
+        ...(sharedStats || statsQuery.data.stats),
     } as IStats
 
     // console.log(`Stats: ${JSON.stringify({stats, showFilter, schoolId, schoolSecret, adminSecret, translations})}`)
@@ -119,6 +122,7 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
                 classes={classes}
                 /></div> }
         <div className="container noPrint">
+            {canShare && <ShareReportButton report={report} schoolName={stats.schools.find(school => school._id === schoolId)?.name} />}
             <Button onClick={downloadPDF} style={{float:"right"}} disabled={downloadingPDF}>
                 {_("stampa report")}
             </Button>

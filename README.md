@@ -92,6 +92,26 @@ installato. Screenshot e trace dei fallimenti finiscono in `test-results/e2e`.
 La Action esegue questi test prima di pubblicare l'immagine Docker e notificare
 WUD: un fallimento interrompe il deploy.
 
+## Report condivisi
+
+Dal report, amministratori, visualizzatori e docenti possono usare **Condividi
+questo report**, scegliere un nome e creare un link pubblico. Nel menu personale,
+**I miei report condivisi** permette di aprire, copiare e revocare i propri link.
+Gli amministratori possono mostrare anche quelli degli altri utenti e revocarli.
+
+I criteri sono salvati sul server e rimangono bloccati per il destinatario; i dati
+si aggiornano con le nuove compilazioni corrispondenti. Il link rispetta i permessi
+attuali dell'autore e il perimetro autorizzato alla creazione: una promozione di un
+docente non amplia i link precedenti. Se l'autore viene eliminato o perde tutti i
+ruoli che consentono la condivisione, i link diventano indisponibili.
+
+La vista pubblica esclude sempre i dettagli riservati sui familiari, anche quando
+chi apre il link è amministratore, e non espone gli indirizzi segreti di compilazione
+o amministrazione. L'esportazione PDF usa la stessa vista pubblica. Le condivisioni
+sono conservate nella collezione MongoDB `sharedReports`, creata automaticamente.
+I test nel browser coprono creazione, menu personale, copia, accesso anonimo,
+filtri bloccati, stampa, isolamento tra utenti, cambi di ruolo e revoca.
+
 ## backup
 
 Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da riga di comando sul server. Per il restore si dà un comando del tipo:

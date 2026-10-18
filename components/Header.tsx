@@ -95,6 +95,9 @@ export default function Header() {
                 />}
                 <span className="me-2">{profile.email || profile.username || '---'}</span>
               </>}>
+                <NavDropdown.Item href={`/${locale}/shared-reports`}>
+                    {_("I miei report condivisi")}
+                </NavDropdown.Item>
                 { isSuper && <NavDropdown.Item className="bg-danger" href={`/api/backup`}>
                     {_("download backup")}
                 </NavDropdown.Item>}

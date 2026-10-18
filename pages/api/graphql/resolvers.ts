@@ -10,12 +10,15 @@ import { Resolvers } from '@/generated/graphql'
 import {schools,school,newSchool,patchSchool,schoolCreateSecret,schoolRemoveSecret} from './resolvers/schools'
 import {dict,addDict} from './resolvers/dict'
 import {entry, entries, deleteEntry} from './resolvers/entry'
+import { sharedReport, sharedReports, createSharedReport, revokeSharedReport } from './resolvers/sharedReports'
 
 export const resolvers = {
   ObjectId: ObjectIdType,
   JSON: JSONType,
 
   Query: {
+    sharedReport,
+    sharedReports,
     hello: async (_parent: any, _args: any, context: Context) => {
       return "Hello world!"
     },
@@ -42,6 +45,8 @@ export const resolvers = {
   },
 
   Mutation: {
+    createSharedReport,
+    revokeSharedReport,
     submit,
 
     setProfile,
