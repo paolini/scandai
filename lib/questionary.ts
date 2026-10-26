@@ -363,8 +363,8 @@ const questionary: IQuestionary = {
     "family-speaking": {
       type: "choose-language",
       question: {
-        it: "ai miei familiari parlo in...",
-        fu: "cui miei familiârs o feveli par ...",
+        it: "In famiglia parlo ....",
+        fu: "In famee o feveli ...",
         en: "With my family members I speak ...",
       },
       aggregateFrom: ["1.1.b.1", "1.1.b.2", "1.1.b.3", "1.1.b.4"],
@@ -372,8 +372,8 @@ const questionary: IQuestionary = {
     "family-listening": {
       type: "choose-language",
       question: {
-        it: "i miei familiari a me parlano in...",
-        fu: "i miei familiârs mi fevelin par ...",
+        it: "In famiglia mi si parla in ....",
+        fu: "In famee mi ven fevelât in ...",
         en: "My family members speak to me in ...",
       },
       aggregateFrom: ["1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5"],
