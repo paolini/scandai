@@ -415,6 +415,7 @@ const questionary: IQuestionary = {
       },
     },
     "1.1.c.1": {
+      reportAccess: "restricted",
         type: "choose-language",
         question: {
           it: "i miei genitori tra di loro parlano...",

@@ -40,7 +40,7 @@ function fixture(entries) {
 }
 
 const teacher = { _id: '000000000000000000000001', isTeacher: true }
-const restricted = ['1.1.b.1', '1.1.b.2', '1.1.b.3', '1.1.b.4', '1.1.c.2', '1.1.c.3', '1.1.c.4', '1.1.c.5']
+const restricted = ['1.1.b.1', '1.1.b.2', '1.1.b.3', '1.1.b.4', '1.1.c.1', '1.1.c.2', '1.1.c.3', '1.1.c.4', '1.1.c.5']
 
 test('union is per respondent, normalized and distinct for each direction', async () => {
     const entries = [
@@ -67,7 +67,6 @@ test('union is per respondent, normalized and distinct for each direction', asyn
     assert.equal(listening.countPositive, 1)
     assert.deepEqual(listening.answers, { Inglese: 1 })
     assert.deepEqual(listening.counts, [1, 1])
-    assert.deepEqual(stats.questions['1.1.c.1'].answers, { Tedesco: 1 })
     for (const code of restricted) assert.equal(stats.questions[code], undefined)
     assert.equal(stats.entriesCount, 3)
     assert.deepEqual(entries[0].answers['1.1.b.1'], ['it', 'Italian', 'discard'])
