@@ -373,7 +373,7 @@ const questionary: IQuestionary = {
       type: "choose-language",
       question: {
         it: "In famiglia mi si parla in ....",
-        fu: "In famee mi ven fevelât in ...",
+        fu: "In famee mi ven fevelât par ...",
         en: "My family members speak to me in ...",
       },
       aggregateFrom: ["1.1.c.2", "1.1.c.3", "1.1.c.4", "1.1.c.5"],
