@@ -9,11 +9,11 @@ on:
 
 jobs:
   build:
-    # MongoDB 8 cannot start on the Linux 6.19 kernel used by Ubuntu 26.04.
     runs-on: ubuntu-24.04
     services:
       mongodb:
-        image: mongo:8
+        # Match the MongoDB version configured in production.
+        image: mongo:8.2
         ports:
           - 27017/tcp
         options: >-
