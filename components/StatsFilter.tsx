@@ -6,7 +6,7 @@ import { School } from "@/generated/graphql"
 import Item from "./Item"
 
 import { Table, Button } from 'react-bootstrap'
-import { formatDate } from '@/lib/utils'
+import { formatDate, currentSchoolYear } from '@/lib/utils'
 import useReportFilters from '@/lib/useReportFilters'
 
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
@@ -37,8 +37,7 @@ export default function StatsFilter({fields, schools, polls, classes}:{
             (entriesBySchool[b._id] || 0)-(entriesBySchool[a._id] || 0) || (a.name || '').localeCompare(b.name || '', _.locale))
 
     // Calcolo dinamico degli anni scolastici
-    const now = new Date()
-    const currentYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
+    const currentYear = currentSchoolYear()
     const years = []
     for (let y = 2023; y <= currentYear; ++y) years.push(y)
 

@@ -76,7 +76,7 @@ export async function polls(_parent: any, {year}: QueryPollsArgs, context: Conte
     const { user } = context
     const $match: any = {}
 
-    if (year) $match.date = schoolYearMatch(year)
+    if (year) $match.createdAt = schoolYearMatch(year)
 
     // set filters from user authorization
     if (user) {
@@ -249,7 +249,7 @@ export async function pollsRemoveAdminSecrets(_parent: any, {year}: MutationPoll
     if (!user) throw Error("not authenticated")
     if (!user.isSuper) throw Error("not authorized")
     const $match: any = { adminSecret: {$exists: true}}
-    if (year) $match.date = schoolYearMatch(year)
+    if (year) $match.createdAt = schoolYearMatch(year)
     const collection = await getPollCollection()
     const result = await collection.updateMany(
         $match,

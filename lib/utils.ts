@@ -11,8 +11,8 @@ export function formatTime(date:string) {
 }
 
 
-// l'anno scolastico inizia col primo settembre:
-const SCHOOL_MONTH_STRING = '09'
+// l'anno scolastico inizia col primo agosto:
+const SCHOOL_MONTH_STRING = '08'
 const SCHOOL_MONTH_COUNT = parseInt(SCHOOL_MONTH_STRING) - 1
 
 export function currentSchoolYear() {
@@ -22,7 +22,7 @@ export function currentSchoolYear() {
 }
 
 export function schoolYearMatch(n: number) {
-    // l'anno scolastico finisce con l'inizio di luglio
+    // l'anno scolastico finisce con la fine di luglio
     return {
         $gte: new Date(`${n}-${SCHOOL_MONTH_STRING}-01`),
         $lt: new Date(`${n+1}-${SCHOOL_MONTH_STRING}-01`),
