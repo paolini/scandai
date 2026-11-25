@@ -26,6 +26,7 @@ for (const locale of [
         } else {
             await expect(page.locator('.language-to-age')).toHaveCount(0)
         }
+        await expect(page.locator('[data-pdf-ready="true"]')).toHaveCount(1)
         await page.pdf({ path: testInfo.outputPath(`questionario-${form}-${locale.code}.pdf`), preferCSSPageSize: true })
         await page.emulateMedia({ media: 'screen' })
     }

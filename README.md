@@ -121,11 +121,11 @@ Il backup può essere fatto dal super-admin tramite interfaccia web. Oppure da r
 
 ## puppeteer
 
-Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare le variabili `BROWSERLESS_URL`, `BROWSERLESS_SCANDAI_URL` e opzionalmente `BROWSERLESS_WAITFOR` (attesa in millisecondi per il caricamento della pagina, default 5000) ad esempio:
+Per la stampa in PDF viene utilizzato il servizio `browserless-chrome`. Può essere avviato in docker come descritto in `docker-compose.yml`. Bisogna quindi configurare le variabili `BROWSERLESS_URL`, `BROWSERLESS_SCANDAI_URL` (e `BROWSERLESS_API_VERSION=2` solo per un servizio Browserless v2) ad esempio:
 ```
 BROWSERLESS_URL=http://localhost:3002
 BROWSERLESS_SCANDAI_URL=http://192.168.1.2:3000
-BROWSERLESS_WAITFOR=5000
+BROWSERLESS_API_VERSION=1
 ```
 nel proprio `.env` o nella configurazione di produzione. 
 
@@ -233,13 +233,13 @@ La stampa del report avviene tramite la generazione di una pagina web che riassu
 
 1. **Generazione della pagina report**: L'applicazione Next.js crea una pagina web con tutti i dati e le visualizzazioni del report, in base alle risposte raccolte e alla struttura definita in `lib/questionary.ts`.
 2. **Rendering headless**: Il servizio `browserless-chrome` riceve una richiesta HTTP contenente l'URL della pagina report da stampare. Questo servizio esegue la pagina in modalità headless (senza interfaccia grafica) tramite Puppeteer.
-3. **Attesa del caricamento**: È possibile configurare un tempo di attesa (`BROWSERLESS_WAITFOR`) per assicurarsi che tutti i dati e i grafici siano caricati prima della stampa.
+3. **Attesa del caricamento**: Il renderer attende il selettore `[data-pdf-ready="true"]`, emesso dopo il caricamento dei dati, dei font e il completamento dei grafici. `BROWSERLESS_WAITFOR` non viene più usato. Le richieste al renderer scadono dopo 90 secondi; errori di accesso o caricamento non producono un PDF della pagina incompleta.
 4. **Generazione PDF**: Una volta che la pagina è completamente renderizzata, Puppeteer la esporta in formato PDF e restituisce il file all'utente o lo salva dove richiesto.
 
 ### Note tecniche
 
 - L'indirizzo della pagina da stampare deve essere assoluto (non localhost) affinché Puppeteer possa accedervi correttamente.
-- Le variabili di ambiente `BROWSERLESS_URL` e `BROWSERLESS_SCANDAI_URL` devono essere configurate per collegare correttamente il servizio di stampa all'applicazione.
+- Le variabili di ambiente `BROWSERLESS_URL` e `BROWSERLESS_SCANDAI_URL` devono essere configurate per collegare correttamente il servizio di stampa all'applicazione. Con cookie di sessione `__Secure-` o `__Host-`, usare come `BROWSERLESS_SCANDAI_URL` l’indirizzo pubblico HTTPS di Scandai, raggiungibile dal container Browserless. I valori dei cookie vengono inoltrati senza decodificarli. Il default supporta `browserless/chrome` (API v1); impostare `BROWSERLESS_API_VERSION=2` per API v2.
 - La stampa può essere avviata tramite interfaccia web (pulsante di stampa) o tramite chiamata API.
 
 Questa soluzione garantisce una stampa fedele e automatica dei report, utile per archiviazione, condivisione o presentazione dei risultati.

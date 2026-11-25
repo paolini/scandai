@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { IStats } from '@/pages/api/graphql/resolvers/stats'
 import questionary from '@/lib/questionary'
 import { reportFilename } from '@/lib/reportFilename'
+import PdfReady from './PdfReady'
 import Error from '@/components/Error'
 import Loading from "@/components/Loading"
 import { useTrans } from "@/lib/trans"
@@ -47,6 +48,14 @@ ChartJS.register(
     ChartDataLabels,
     Colors,
 )
+
+function prepareChartsForPDF() {
+    Object.values(ChartJS.instances).forEach(chart => {
+        chart.stop()
+        chart.resize()
+        chart.update('none')
+    })
+}
 
 const getPageMargins = () => {
     const marginTop="1cm"
@@ -90,6 +99,7 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
         polls: pollIds.length>0 ? pollIds : null, // empty means all
     }})
     const [downloadingPDF, setDownloadingPDF] = useState<boolean>(false)
+    const [pdfError, setPdfError] = useState<string | null>(null)
     const form="full" // questionario visualizzato dal pulsante "visualizza questionario"
 
     if (!sharedStats && statsQuery.loading) return <Loading />
@@ -134,9 +144,11 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
             </Link>
         </div>
         {downloadingPDF && <Loading />}
+        {pdfError && <div role="alert" className="noPrint"><Error dismiss={() => setPdfError(null)}>{pdfError}</Error></div>}
         { stats.entriesCount === 0 
         ? <Error>{_("Impossibile fare il report: nessun questionario compilato")}</Error>
         : <div>
+            <PdfReady prepare={prepareChartsForPDF} />
             <style>
                 {getPageMargins()}
             </style>
@@ -158,53 +170,39 @@ export default function Stats({showFilter, report, schoolSecret, adminSecret, tr
     }    
 
     function downloadPDF() {
-        setDownloadingPDF(true);
-        const pathWithQuery = window.location.pathname + window.location.search
-        fetch(`/api/pdf?path=${encodeURIComponent(pathWithQuery)}`)
-            .then(async res => {
-                if (!res.ok) {
-                    const ErrorComponent = require('@/components/Error').default;
-                    const errorDiv = document.createElement('div');
-                    errorDiv.innerHTML = ErrorComponent({ children: 'PDF download failed' });
-                    document.body.appendChild(errorDiv);
-                    setTimeout(() => document.body.removeChild(errorDiv), 3000);
-                    throw new window.Error('PDF download failed');
-                }
-                const blob = await res.blob()
-                const link = document.createElement('a')
-                link.href = window.URL.createObjectURL(blob)
-                link.download = reportFilename(stats, _.locale)
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            })
-            .catch(err => alert('Errore download PDF: ' + err))
-            .finally(() => setDownloadingPDF(false));
+        return download(window.location.pathname + window.location.search, reportFilename(stats, _.locale))
     }
 
     function downloadQuestionaryPDF() {
-        setDownloadingPDF(true);
-        const questionaryPath = `/${_.locale}/p/print?form=${form}`
-        fetch(`/api/pdf?path=${encodeURIComponent(questionaryPath)}`)
-            .then(async res => {
-                if (!res.ok) {
-                    const ErrorComponent = require('@/components/Error').default;
-                    const errorDiv = document.createElement('div');
-                    errorDiv.innerHTML = ErrorComponent({ children: 'PDF questionary download failed' });
-                    document.body.appendChild(errorDiv);
-                    setTimeout(() => document.body.removeChild(errorDiv), 3000);
-                    throw new window.Error('PDF questionary download failed');
-                }
-                const blob = await res.blob()
-                const link = document.createElement('a')
-                link.href = window.URL.createObjectURL(blob)
-                link.download = 'questionario.pdf'
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            })
-            .catch(err => alert('Errore download PDF questionario: ' + err))
-            .finally(() => setDownloadingPDF(false));
-    }    
-}
+        return download(`/${_.locale}/p/print?form=${form}`, 'questionario.pdf')
+    }
 
+    async function download(path: string, filename: string) {
+        setDownloadingPDF(true)
+        setPdfError(null)
+        try {
+            const res = await fetch(`/api/pdf?path=${encodeURIComponent(path)}`, {
+                signal: AbortSignal.timeout(95_000),
+            })
+            if (!res.ok) throw new window.Error(await res.text() || `HTTP ${res.status}`)
+            if (!res.headers.get('content-type')?.includes('application/pdf')) {
+                throw new window.Error('Invalid PDF response')
+            }
+            const blob = await res.blob()
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = filename
+            document.body.appendChild(link)
+            try { link.click() } finally {
+                link.remove()
+                // Let the browser start reading the download before releasing it.
+                setTimeout(() => window.URL.revokeObjectURL(url), 30_000)
+            }
+        } catch (err) {
+            setPdfError(`${_("Errore caricamento")} PDF: ${err instanceof window.Error ? err.message : String(err)}`)
+        } finally {
+            setDownloadingPDF(false)
+        }
+    }
+}

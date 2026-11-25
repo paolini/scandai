@@ -2,6 +2,7 @@ import { useState } from 'react'
 import questionary, { extractQuestionCodes, extractPages, extractExtraLanguages, getPhrase, trans } from '@/lib/questionary'
 import QuestionaryPage from './QuestionaryPage'
 import { IAnswers } from './Question'
+import PdfReady from './PdfReady'
 import Loading from './Loading'
 import { set } from '@/lib/State'
 
@@ -49,6 +50,7 @@ export default function PrintableQuestionary({ lang, form, poll }: {
 
     return (
         <div className="printable-questionary">
+            <PdfReady />
             <style>
                 {`
                 @media print {

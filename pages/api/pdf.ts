@@ -1,108 +1,79 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader('Cache-Control', 'no-store')
+  const fail = (status: number, message: string) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    res.status(status).send(message)
+  }
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET')
+    return fail(405, 'Method not allowed')
+  }
   const { path } = req.query
-  if (!path || typeof path !== 'string') {
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(400).send('Missing path')
-    return
+  // Only printable application routes, never arbitrary URLs or API endpoints.
+  if (typeof path !== 'string' || !/^\/(?:it\/|en\/|fu\/)?(?:report(?:\/shared\/[A-Za-z0-9_-]+)?|p\/print)(?:\?|$)/.test(path) || /[\\\r\n#]/.test(path)) {
+    return fail(400, 'Invalid PDF path')
   }
-  // Verifica che la variabile d'ambiente BROWSERLESS_URL sia configurata
-  const BROWSERLESS_URL = process.env.BROWSERLESS_URL
-  const BROWSERLESS_SCANDAI_URL = process.env.BROWSERLESS_SCANDAI_URL
-  if (!BROWSERLESS_URL) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(500).send('BROWSERLESS_URL environment variable is not set. Please set it to your browserless instance URL (e.g., http://browserless:3000)')
-    return
-  } 
-  if (!BROWSERLESS_SCANDAI_URL) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(500).send('BROWSERLESS_SCANDAI_URL environment variable is not set. Please set it to your browserless Scandai instance URL (e.g., http://scandai)')
-    return
+  const { BROWSERLESS_URL, BROWSERLESS_SCANDAI_URL } = process.env
+  if (!BROWSERLESS_URL || !BROWSERLESS_SCANDAI_URL) {
+    return fail(503, 'PDF service is not configured: BROWSERLESS_URL and BROWSERLESS_SCANDAI_URL are required')
   }
-
-  const url = BROWSERLESS_SCANDAI_URL + path
 
   try {
-    // Chiamata a browserless/chrome
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    
-    // Prepara la configurazione per browserless
-    const waitFor = process.env.BROWSERLESS_WAITFOR ? parseInt(process.env.BROWSERLESS_WAITFOR, 10) : 5000
-    const browserlessConfig: any = {
-      url,
-      waitFor, // Attendi il tempo configurato per il caricamento della pagina
-      options: { printBackground: true }
+    const target = new URL(path, BROWSERLESS_SCANDAI_URL)
+    const endpoint = new URL(BROWSERLESS_URL)
+    if (![target.protocol, endpoint.protocol].every(protocol => ['http:', 'https:'].includes(protocol))) {
+      return fail(503, 'Invalid PDF service configuration')
     }
-    
-    // Passa i cookie come opzione di browserless invece che negli headers HTTP
-    if (req.headers.cookie) {
-      // Converte i cookie in formato array di oggetti per browserless
-      const targetUrl = new URL(url)
-      const urlHost = targetUrl.hostname
-      const isSecure = targetUrl.protocol === 'https:'
-      
-      const cookies = req.headers.cookie.split(';').map(cookie => {
-        const [name, ...valueParts] = cookie.trim().split('=')
-        const value = valueParts.join('=') // In caso il valore contenga '='
-
-        const cookieObj: any = {
-          name: name.trim(),
-          value: decodeURIComponent(value), // Decodifica il valore URL-encoded
-          domain: urlHost,
-          path: '/',
-          httpOnly: false,
-          secure: false, // Default a false
-          url // <-- aggiungi sempre la proprietà url
-        }
-
-        // Gestisci cookie con prefissi di sicurezza
-        if (name.startsWith('__Secure-')) {
-          cookieObj.secure = true
-          cookieObj.httpOnly = true
-        }
-
-        // Per cookie __Host-, il domain deve essere omesso e path deve essere '/'
-        if (name.startsWith('__Host-')) {
-          delete cookieObj.domain // Rimuovi domain
-          cookieObj.path = '/'
-          cookieObj.secure = true
-          cookieObj.httpOnly = true
-        }
-
-        // Imposta secure solo se l'URL di destinazione è HTTPS
-        if (isSecure && (name.startsWith('__Secure-') || name.startsWith('__Host-'))) {
-          cookieObj.secure = true
-        }
-
-        return cookieObj
-      }).filter(cookie => cookie.name && cookie.value) // Filtra cookie invalidi
-      
-      browserlessConfig.cookies = cookies
+    // Preserve any Browserless token in the query string.
+    endpoint.pathname = endpoint.pathname.replace(/\/$/, '') + '/pdf'
+    const cookies = (req.headers.cookie || '').split(';').flatMap(cookie => {
+      const separator = cookie.indexOf('=')
+      if (separator < 1) return []
+      const name = cookie.slice(0, separator).trim()
+      // Cookie values must reach the app exactly as received (including % and =).
+      const value = cookie.slice(separator + 1).trim()
+      if (!name || !value) return []
+      const secure = name.startsWith('__Secure-') || name.startsWith('__Host-')
+      return [{ name, value, url: target.origin, path: '/', secure, httpOnly: true }]
+    })
+    if (target.protocol !== 'https:' && cookies.some(cookie => cookie.secure)) {
+      return fail(503, 'PDF session requires HTTPS: configure BROWSERLESS_SCANDAI_URL with the public HTTPS address of Scandai')
     }
-    
-    const endpoint = `${BROWSERLESS_URL}/pdf`
-    console.log('Fetching PDF from:', endpoint, 'with URL:', url)
-    //console.log({cookies: browserlessConfig.cookies})
+    const selector = '[data-pdf-ready="true"]'
+    // browserless/chrome uses the v1 API; v2 uses waitForSelector instead.
+    const wait = process.env.BROWSERLESS_API_VERSION === '2'
+      ? { waitForSelector: { selector, timeout: 60_000 } }
+      : { waitFor: selector }
     const pdfRes = await fetch(endpoint, {
       method: 'POST',
-      headers,
-      body: JSON.stringify(browserlessConfig)
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(90_000),
+      body: JSON.stringify({
+        url: target.href,
+        ...wait,
+        cookies,
+        options: { printBackground: true, preferCSSPageSize: true },
+      }),
     })
     if (!pdfRes.ok) {
-      const text = await pdfRes.text()
-      console.log('Browserless error:', text)
-      res.setHeader('Content-Type', 'text/plain')
-      res.status(500).send('Browserless error: ' + text)
-      return
+      // Do not log response bodies or URLs: they can contain report secrets/cookies.
+      console.error('PDF renderer returned HTTP', pdfRes.status)
+      return fail(502, 'PDF generation failed. Check renderer availability, page access and loading time.')
+    }
+    const buffer = Buffer.from(await pdfRes.arrayBuffer())
+    if (buffer.subarray(0, 5).toString() !== '%PDF-') {
+      return fail(502, 'PDF service returned an invalid document')
     }
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Disposition', 'attachment; filename=report.pdf')
-    const buffer = Buffer.from(await pdfRes.arrayBuffer())
     res.end(buffer)
-  } catch (err: any) {
-    console.error('PDF proxy error:', err)
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(500).send('PDF proxy error: ' + err?.message)
+  } catch (err: unknown) {
+    const timeout = err instanceof Error && ['TimeoutError', 'AbortError'].includes(err.name)
+    console.error('PDF generation failed:', timeout ? 'timeout' : 'connection or configuration error')
+    return fail(timeout ? 504 : 502, timeout
+      ? 'PDF generation timed out. Please try again.'
+      : 'Unable to contact the PDF service. Check its configuration and availability.')
   }
 }

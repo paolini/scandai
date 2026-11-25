@@ -84,6 +84,7 @@ async function expectExport(page, context, polls, filename) {
                 .toEqual(polls.map(poll => poll._id.toString()).sort())
             expect(result.data.stats.entriesCount).toBe(polls.length)
             await expectClasses(printPage, polls)
+            await expect(printPage.locator('[data-pdf-ready="true"]')).toHaveCount(1)
             renderedPDF = await printPage.pdf()
             await route.fulfill({ status: 200, contentType: 'application/pdf', body: renderedPDF })
         } finally {
@@ -217,4 +218,27 @@ test('school options rank actual respondents using every active report filter', 
     await expectOrder([0, 1])
     await page.reload()
     await expectOrder([0, 1])
+})
+
+
+test('PDF errors are visible and the user can retry the download', async ({ page, report }) => {
+    await page.goto(report.path)
+    const button = page.getByRole('button', { name: 'stampa report', exact: true })
+    await expect(button).toBeVisible()
+    const alert = page.getByRole('alert').filter({ hasText: 'PDF' })
+    let attempts = 0
+    await page.route('**/api/pdf?*', route => {
+        attempts++
+        return attempts === 1
+            ? route.fulfill({ status: 504, contentType: 'text/plain', body: 'PDF generation timed out. Please try again.' })
+            : route.fulfill({ status: 200, contentType: 'application/pdf', body: '%PDF-1.7\nretry fixture' })
+    })
+    await button.click()
+    await expect(alert).toContainText('PDF generation timed out')
+    await expect(button).toBeEnabled()
+    const downloaded = page.waitForEvent('download')
+    await button.click()
+    expect(await (await downloaded).failure()).toBeNull()
+    await expect(alert).toHaveCount(0)
+    await expect(button).toBeEnabled()
 })
